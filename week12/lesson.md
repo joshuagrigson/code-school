@@ -66,6 +66,7 @@ Record 10 minutes (voice memo or video): walk through your feature — the desig
 - **Real front-end**: your vanilla-JS fluency is the *best possible* foundation for React — you'll understand what it automates.
 - **Databases**: your pantry lives in a list that dies on restart; SQLite + SQL is the natural next chapter, and it slots straight into Flask.
 - **More AI engineering**: tool use, streaming, agents, evals. You already have the hard part — treating models as fallible suppliers behind contracts.
+- **Want a map of the whole territory?** The [developer-roadmap](https://github.com/kamranahmedse/developer-roadmap) repo charts every path (frontend, backend, DevOps...). Deliberately saved for now: roadmaps overwhelm mid-journey and orient at journey's end. You'll recognize a shocking amount of it.
 - **Above all: ship things.** Small, finished, deployed things. Ten shipped pantry-sized projects beat one abandoned masterpiece every time.
 
 Now go read your `course/journal.md` from Week 1. Look how far you've come. Then go teach somebody — you're qualified now, and nothing will sharpen you faster.

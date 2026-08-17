@@ -129,6 +129,13 @@ Why doesn't the iPhone app call Anthropic directly? Three reasons, all fundament
 
 This "thin client, smart proxy" pattern is everywhere in industry. You now know why.
 
+## Go deeper: what we deliberately skipped
+
+This week treats HTTP as the waiter and stops there. Below the waiter is a whole kitchen infrastructure — DNS (turning `paper-plate.onrender.com` into a numeric address), TCP (the reliable delivery trucks), TLS (the armored ones — the S in HTTPS). You don't need them to build apps, but knowing they exist makes you unshakeable in debugging and interviews. Two free reads, in order:
+
+1. [vasanthk/how-web-works](https://github.com/vasanthk/how-web-works) — the approachable version with diagrams. Read it at the END of this week; you'll recognize most of it, and the new parts will have hooks to hang on.
+2. [alex/what-happens-when](https://github.com/alex/what-happens-when) — the legendary deep-dive, from the keyboard interrupt up. Save it for after Week 8 (or Week 12); it's the interview classic "what happens when you type google.com and press Enter?" answered completely. Reading it then will be a victory lap: you'll understand nearly all of it.
+
 ## Break It Lab
 
 Run the proxy locally (fake keys fine). With curl:

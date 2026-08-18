@@ -926,6 +926,51 @@ function friendlySyntax(msg, code){
   return 'The computer got confused reading this: ' + esc(msg) + '. Check brackets, quotes, and spelling.';
 }
 
+/* ===== the coach: universal structure checks that explain, not just fail ===== */
+const VOID_TAGS=new Set(['img','br','hr','input','meta','link','source','wbr','area','base','col','embed','track']);
+const BLOCK_TAGS=new Set(['h1','h2','h3','h4','h5','h6','p','div','ul','ol','section','article','header','footer','blockquote','table']);
+const INLINE_HINT={h1:'strong',h2:'strong',h3:'strong',h4:'strong',h5:'strong',h6:'strong'};
+function htmlLint(code){
+  const re=/<(\/?)([a-zA-Z][\w-]*)([^>]*)>/g;
+  const stack=[]; let m;
+  while((m=re.exec(code))){
+    const closing=m[1]==='/', name=m[2].toLowerCase(), attrs=m[3];
+    if(!closing && /^\s*\//.test(attrs))
+      return 'That <code>'+hlEsc('<'+name+attrs.trim()+'>')+'</code> tag looks jumbled — a closing tag puts the slash right after the pointy bracket, like <code>'+hlEsc('</'+name+'>')+'</code>. The shape is: <code>&lt;tag&gt;</code> opens, <code>&lt;/tag&gt;</code> closes.';
+    if(closing){
+      if(!stack.length)
+        return 'You closed <code>'+hlEsc('</'+name+'>')+'</code> but there is no open <code>'+hlEsc('<'+name+'>')+'</code> hug waiting for it. Did you close something twice, or forget to open it?';
+      const top=stack[stack.length-1];
+      if(top!==name)
+        return 'Hugs must close inside-out: right now the innermost open hug is <code>'+hlEsc('<'+top+'>')+'</code>, but you closed <code>'+hlEsc('</'+name+'>')+'</code>. Close <code>'+hlEsc('</'+top+'>')+'</code> first (or check for a typo).';
+      stack.pop();
+    } else if(!VOID_TAGS.has(name)){
+      if(stack.includes('p') && BLOCK_TAGS.has(name)){
+        const fix=INLINE_HINT[name];
+        return 'A <code>'+hlEsc('<'+name+'>')+'</code> is a big BLOCK and is not allowed inside a <code>&lt;p&gt;</code> — paragraphs can only hug small inline things. The browser will secretly end your paragraph early and the layout will jump. '+(fix?'Want one bold/big word inside the sentence? Use <code>'+hlEsc('<'+fix+'>')+'</code> instead. Want a real heading? Close the <code>&lt;/p&gt;</code> first, then put the <code>'+hlEsc('<'+name+'>')+'</code> on its own line.':'Close the <code>&lt;/p&gt;</code> first, then open the <code>'+hlEsc('<'+name+'>')+'</code> as its own block.');
+      }
+      stack.push(name);
+    }
+  }
+  if(stack.length){
+    const name=stack[stack.length-1];
+    return 'You opened <code>'+hlEsc('<'+name+'>')+'</code> but never closed it — every hug needs its end. Add <code>'+hlEsc('</'+name+'>')+'</code> where the hug should stop. (Watch out: typing <code>'+hlEsc('<'+name+'>')+'</code> again OPENS a second one; the closer needs the slash.)';
+  }
+  return null;
+}
+function cssLint(code){
+  const opens=(code.match(/\{/g)||[]).length, closes=(code.match(/\}/g)||[]).length;
+  if(opens>closes) return 'A { was opened but never closed — every rule ends with }. Count your braces.';
+  if(closes>opens) return 'There is a } too many (or a { is missing). Count your braces.';
+  const bad=code.match(/\{[^}]*\}/g);
+  if(bad) for(const rule of bad){
+    const lines=rule.slice(1,-1).split('\n').map(l=>l.trim()).filter(l=>l);
+    for(const l of lines) if(/^[a-zA-Z-]+\s*:[^;]*$/.test(l) && lines.length>1 && l!==lines[lines.length-1])
+      return 'The line "'+l+'" is missing its semicolon ; — without it, CSS silently ignores the NEXT line too. Every property line ends with ;.';
+  }
+  return null;
+}
+
 function runCheck(){
   syncHl();
   if (sandbox) return;
@@ -941,7 +986,8 @@ function runCheck(){
       res = {ok:false, msg:'Nothing reaches the screen yet. Remember: working it out is not showing it &mdash; you need a <code>screen.textContent =</code> line.'};
     else res = normRes(les, code);
   } else {
-    res = normRes(les, code);
+    const lint = les.lang==='html' ? htmlLint(code) : cssLint(code);
+    res = lint ? {ok:false, msg:'🧑‍🏫 '+lint} : normRes(les, code);
   }
   statusEl.className = res.ok ? 'ok' : '';
   statusEl.innerHTML = (res.ok ? '✓ ' : '') + res.msg;

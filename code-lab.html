@@ -45,7 +45,9 @@ nav{width:230px;flex:0 0 auto;overflow-y:auto;background:var(--panel);border-rig
 .right{flex:1;display:flex;flex-direction:column;min-width:0}
 .remind{flex:0 0 auto;background:#fbf6da;border-bottom:2px solid #e8dfae;padding:6px 12px;font-size:.8rem;font-family:Menlo,Consolas,monospace;display:flex;gap:8px;align-items:center}
 .remind button{margin-left:auto;border:none;background:none;cursor:pointer;font-size:.75rem;color:var(--soft)}
-#ed{flex:1;min-height:80px;resize:none;border:none;outline:none;padding:12px 14px;font-family:Menlo,Consolas,monospace;font-size:.95rem;line-height:1.55;background:#fffdf8;color:var(--ink);white-space:pre;tab-size:2}
+#ed{flex:1;min-height:80px;resize:none;border:none;outline:none;padding:12px 14px;font-family:Menlo,Consolas,monospace;font-size:.95rem;line-height:1.55;background:#1e1e1e;color:#d4d4d4;caret-color:#aeafad;white-space:pre;tab-size:2}
+#ed::selection{background:#264f78;color:#fff}
+#ed::placeholder{color:#6a6a6a}
 .btnrow{flex:0 0 auto;display:flex;gap:8px;padding:8px 12px;background:var(--panel);border-top:2px solid var(--line);flex-wrap:wrap}
 .btnrow button, header .hbtn{font-family:inherit;font-size:.85rem;padding:6px 12px;border-radius:8px;border:2px solid var(--line);background:var(--panel);cursor:pointer}
 .btnrow button:hover, header .hbtn:hover{border-color:var(--accent)}

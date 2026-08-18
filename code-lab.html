@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Code Lab — K through College</title>
+<style>
+:root{
+  --bg:#f7f4ee; --panel:#ffffff; --ink:#2b2320; --soft:#6b6058;
+  --line:#e5ddd2; --accent:#2f7d5c; --accent2:#1d5c8f; --warn:#b3542e;
+  --good:#e8f5ee; --goodline:#9fd4b8; --bad:#fdf0ec; --badline:#eec3b2;
+  --code:#f3efe8;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,'Times New Roman',serif;background:var(--bg);color:var(--ink);height:100vh;display:flex;flex-direction:column;overflow:hidden}
+header{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:2px solid var(--line);flex:0 0 auto}
+header h1{font-size:1.1rem;letter-spacing:.5px}
+#progTxt{font-family:Menlo,Consolas,monospace;font-size:.85rem;color:var(--soft)}
+#progBar{flex:1;max-width:260px;height:10px;background:var(--code);border-radius:5px;overflow:hidden}
+#progFill{height:100%;width:0;background:var(--accent);transition:width .3s}
+header .hbtn{margin-left:auto}
+.main{flex:1;display:flex;min-height:0}
+nav{width:230px;flex:0 0 auto;overflow-y:auto;background:var(--panel);border-right:2px solid var(--line);padding:8px 0}
+.ghead{display:flex;align-items:center;gap:6px;padding:8px 12px 4px;font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--soft)}
+.ghead .gsub{display:block;font-size:.68rem;text-transform:none;letter-spacing:0;color:#a09488}
+.ghreset{margin-left:auto;border:1px solid var(--line);background:none;border-radius:4px;font-size:.65rem;cursor:pointer;padding:1px 5px;color:var(--soft)}
+.navitem{display:flex;gap:8px;align-items:center;width:100%;text-align:left;border:none;background:none;padding:6px 12px 6px 20px;font-size:.85rem;cursor:pointer;font-family:inherit;color:var(--ink)}
+.navitem:hover{background:var(--code)}
+.navitem.cur{background:var(--good);font-weight:bold}
+.tick{width:16px;flex:0 0 auto;color:var(--accent);font-weight:bold}
+.work{flex:1;display:flex;min-width:0}
+.left{flex:1.05;display:flex;flex-direction:column;min-width:0;border-right:2px solid var(--line)}
+.teach{padding:16px 20px;overflow-y:auto;flex:1;background:var(--panel)}
+.teach h2{margin-bottom:10px;font-size:1.3rem}
+.teach p{margin:0 0 10px;line-height:1.55}
+.teach[data-lv="0"] p{font-size:1.22rem;line-height:1.65}
+.teach[data-lv="1"] p{font-size:1.08rem}
+.teach[data-lv="2"] p{font-size:.97rem}
+.teach code, .goalbox code, #qaOut code{font-family:Menlo,Consolas,monospace;background:var(--code);padding:1px 5px;border-radius:4px;font-size:.9em}
+.teach pre{background:var(--code);padding:10px 12px;border-radius:8px;margin:0 0 10px;overflow-x:auto;font-family:Menlo,Consolas,monospace;font-size:.88rem;line-height:1.5}
+.goalbox{flex:0 0 auto;background:#e9f1f8;border-top:2px solid #bcd4e8;padding:10px 20px;font-size:.98rem}
+.goalbox b{color:var(--accent2)}
+.right{flex:1;display:flex;flex-direction:column;min-width:0}
+.remind{flex:0 0 auto;background:#fbf6da;border-bottom:2px solid #e8dfae;padding:6px 12px;font-size:.8rem;font-family:Menlo,Consolas,monospace;display:flex;gap:8px;align-items:center}
+.remind button{margin-left:auto;border:none;background:none;cursor:pointer;font-size:.75rem;color:var(--soft)}
+#ed{flex:1;min-height:80px;resize:none;border:none;outline:none;padding:12px 14px;font-family:Menlo,Consolas,monospace;font-size:.95rem;line-height:1.55;background:#fffdf8;color:var(--ink);white-space:pre;tab-size:2}
+.btnrow{flex:0 0 auto;display:flex;gap:8px;padding:8px 12px;background:var(--panel);border-top:2px solid var(--line);flex-wrap:wrap}
+.btnrow button, header .hbtn{font-family:inherit;font-size:.85rem;padding:6px 12px;border-radius:8px;border:2px solid var(--line);background:var(--panel);cursor:pointer}
+.btnrow button:hover, header .hbtn:hover{border-color:var(--accent)}
+#btnNext{background:var(--accent);color:#fff;border-color:var(--accent);display:none}
+#status{flex:0 0 auto;padding:9px 14px;font-size:.92rem;border-top:2px solid var(--line);background:var(--bad);border-color:var(--badline)}
+#status.ok{background:var(--good)}
+.prevwrap{flex:0 0 42%;display:flex;flex-direction:column;border-top:2px solid var(--line)}
+.prevlabel{flex:0 0 auto;font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--soft);padding:4px 12px;background:var(--panel)}
+#out{flex:1;border:none;background:#fff;width:100%}
+#qaPanel{position:fixed;inset:auto 16px 16px auto;width:340px;max-height:70vh;background:var(--panel);border:2px solid var(--line);border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.15);display:none;flex-direction:column;overflow:hidden;z-index:50}
+#qaPanel.open{display:flex}
+#qaPanel .qhead{padding:8px 12px;background:var(--code);display:flex;align-items:center}
+#qaPanel .qhead button{margin-left:auto;border:none;background:none;cursor:pointer;font-size:1rem}
+#qaIn{border:none;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:8px 12px;font-family:inherit;font-size:.9rem;outline:none}
+#qaOut{padding:10px 12px;overflow-y:auto;font-size:.88rem;line-height:1.5}
+#qaOut p{margin-bottom:8px}
+.hint-on #status{background:#eef;border-color:#ccd}
+@media (max-width:900px){nav{width:170px}.work{flex-direction:column}.left{border-right:none;border-bottom:2px solid var(--line)}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Code Lab</h1>
+  <div id="progBar"><div id="progFill"></div></div>
+  <span id="progTxt">0 / 0</span>
+  <button class="hbtn" id="btnSandbox">Free play</button>
+  <button class="hbtn" id="btnQA">Ask a question</button>
+</header>
+<div class="main">
+  <nav id="nav"></nav>
+  <div class="work">
+    <div class="left">
+      <div class="teach" id="teach"></div>
+      <div class="goalbox" id="goal"></div>
+    </div>
+    <div class="right">
+      <div class="remind" id="remind"><span id="remindTxt"></span><button id="remindHide">hide</button></div>
+      <textarea id="ed" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea>
+      <div class="btnrow">
+        <button id="btnHelp">Help me</button>
+        <button id="btnLead">Give me a lead</button>
+        <button id="btnSol">Show me</button>
+        <button id="btnReDo">Start over</button>
+        <button id="btnNext">Next lesson &rarr;</button>
+      </div>
+      <div id="status">Start typing in the box above.</div>
+      <div class="prevwrap">
+        <div class="prevlabel">What your code makes</div>
+        <iframe id="out" sandbox="allow-scripts allow-modals"></iframe>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="qaPanel">
+  <div class="qhead"><b>Ask a question</b><button id="qaClose">&times;</button></div>
+  <input id="qaIn" placeholder="Type your question and press Enter">
+  <div id="qaOut"><p>Ask me anything about what you have learned so far. I live inside this file, so I work with no internet at all.</p></div>
+</div>
+
+<script>
+'use strict';
+
+/* ===== progress seed: used ONLY when the browser has no saved progress ===== */
+const CARRIED = {done:[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27], idx:28};
+
+const GRADES = [
+  {id:'K',  name:'Kindergarten', sub:'Words on a screen',      lv:0},
+  {id:'G1', name:'Grade 1',      sub:'Hugs have names',        lv:0},
+  {id:'G2', name:'Grade 2',      sub:'Colouring things in',    lv:0},
+  {id:'G3', name:'Grade 3',      sub:'Name tags',              lv:1},
+  {id:'G4', name:'Grade 4',      sub:'Making things happen',   lv:1},
+  {id:'G5', name:'Grade 5',      sub:'Words and numbers',      lv:1},
+  {id:'G6', name:'Grade 6',      sub:'Lists',                  lv:1},
+  {id:'G7', name:'Grade 7',      sub:'Teaching tricks',        lv:2},
+  {id:'G8', name:'Grade 8',      sub:'Making choices',         lv:2},
+  {id:'G9', name:'Grade 9',      sub:'Doing it again',         lv:2},
+  {id:'G10',name:'Grade 10',     sub:'Build the machine',      lv:2},
+  {id:'G11',name:'Grade 11',     sub:'Boxes with labels',      lv:2},
+  {id:'G12',name:'Grade 12',     sub:'When things go wrong',   lv:2},
+  {id:'C',  name:'College',      sub:'Thinking like a pro',    lv:2},
+];
+
+/* shared scaffolds for lessons that teach one language while we supply the rest */
+const NICE_CSS = 'body{font-family:Georgia,serif;padding:24px;font-size:1.1rem;color:#2b2320;background:#fffdf8}h1,h2,h3,h4,h5,h6{margin:0 0 10px}p{margin:0 0 10px}#screen{border:2px solid #2f7d5c;border-radius:10px;padding:14px;background:#f0f7f3;min-height:1.5em;font-size:1.15rem}button{font-size:1rem;padding:8px 14px;border-radius:8px;border:2px solid #999;cursor:pointer;margin-bottom:12px}';
+const JS_HTML  = '<p id="screen">nothing yet</p>';
+const JS_HTML_BTN = '<button id="btn">Press me</button>\n<p id="screen">nothing yet</p>';
+
+function hasRe(code, re){ return re.test(code); }
+function txtOf(doc, sel){ const el = doc.querySelector(sel); return el ? el.textContent.trim() : null; }
+
+/* small builders so every lesson object has the same shape */
+function HL(title, teach, goal, start, sol, hint, check){
+  return {lang:'html', title, teach, goal, start, sol, hint, check, css:NICE_CSS, js:'', html:''};
+}
+function CL(title, teach, goal, start, sol, hint, check, pageHtml){
+  return {lang:'css', title, teach, goal, start, sol, hint, check, html:pageHtml, css:'', js:''};
+}
+function JL(title, teach, goal, start, sol, hint, check, pageHtml){
+  return {lang:'js', title, teach, goal, start, sol, hint, check, html:(pageHtml||JS_HTML), css:NICE_CSS, js:''};
+}
+
+const L = [];
+function grade(id, lessons){ for (const les of lessons){ les.g = id; L.push(les); } }
+
+/* ============================ KINDERGARTEN (0-7) ============================ */
+grade('K', [
+HL('Type your name',
+ '<p>This box on the right is called an <b>editor</b>. Whatever you type in it shows up in the white space below, like magic paper.</p><p>Computers do exactly what you tell them. Right now, tell this one who you are.</p>',
+ 'Type your name in the editor.',
+ '',
+ 'Josh',
+ 'Just type your name. No special anything &mdash; letters are enough.',
+ (c)=> c.trim().length>=2 && !c.includes('<')
+   ? {ok:true,msg:'There you are! The computer shows exactly what you typed. That is the whole deal, forever.'}
+   : {ok:false,msg:'Type your name in the box &mdash; at least a couple of letters.'}),
+
+HL('Type a whole sentence',
+ '<p>The computer is happy to show one word or a thousand. Let’s give it a whole sentence.</p><p>Notice as you type: every letter appears below <b>instantly</b>. You never have to press a save button here.</p>',
+ 'Type a full sentence about yourself &mdash; at least five words.',
+ '',
+ 'My name is Josh and I am learning to code.',
+ 'Anything true works: “I am learning to talk to computers.”',
+ (c)=> c.trim().split(/\s+/).length>=5 && !c.includes('<')
+   ? {ok:true,msg:'A whole sentence, delivered word for word. You are officially telling a computer what to do.'}
+   : {ok:false,msg:'Give me at least five words &mdash; a real sentence.'}),
+
+HL('Make it BIG',
+ '<p>Plain words are fine, but sometimes you want a <b>headline</b>. To change how words look, you wrap them in a <b>hug</b>: <code>&lt;h1&gt;</code> before, <code>&lt;/h1&gt;</code> after.</p><pre>&lt;h1&gt;My words&lt;/h1&gt;</pre><p>The <code>h</code> means heading. The <code>1</code> means the biggest kind.</p>',
+ 'Wrap your sentence in an h1 hug so it becomes big.',
+ 'My name is Josh',
+ '<h1>My name is Josh</h1>',
+ 'Put <code>&lt;h1&gt;</code> at the very start and <code>&lt;/h1&gt;</code> at the very end.',
+ (c,d)=>{ const t=txtOf(d,'h1'); return t && t.length>=2
+   ? {ok:true,msg:'BIG. You just used your first tag. The pointy-bracket parts are instructions; the words inside are yours.'}
+   : {ok:false,msg:'Wrap the words in &lt;h1&gt; at the front and &lt;/h1&gt; at the back.'}; }),
+
+HL('Where did the pointy bits go?',
+ '<p>Look at the result: the <code>&lt;h1&gt;</code> parts are <b>invisible</b>. Tags are stage directions &mdash; the audience never sees them, only what they do.</p><p>There is a tag for ordinary paragraphs too: <code>&lt;p&gt;</code>. It says “this is a normal block of text.”</p>',
+ 'Write a sentence wrapped in a p hug.',
+ '',
+ '<p>Tags are invisible instructions.</p>',
+ 'Same shape as before: <code>&lt;p&gt;</code>your words<code>&lt;/p&gt;</code>.',
+ (c,d)=>{ const t=txtOf(d,'p'); return t && t.length>=5
+   ? {ok:true,msg:'And again the tags vanish, leaving only their effect. Every webpage you have ever seen works like this.'}
+   : {ok:false,msg:'Wrap a sentence in &lt;p&gt; and &lt;/p&gt;.'}; }),
+
+HL('What happens if you forget the end',
+ '<p>Every opening tag wants its closing partner &mdash; the one with the slash: <code>&lt;/h1&gt;</code>.</p><p>Below, someone forgot the closing hug. The browser tries to guess what you meant, and browser guesses cause weird bugs. Finish the hug properly.</p>',
+ 'Add the missing closing tag.',
+ '<h1>Hello there',
+ '<h1>Hello there</h1>',
+ 'The closer is the same tag with a slash: <code>&lt;/h1&gt;</code> at the end.',
+ (c,d)=> c.includes('</h1>') && txtOf(d,'h1')
+   ? {ok:true,msg:'Closed and correct. Rule for life: every hug you open, you close.'}
+   : {ok:false,msg:'Add &lt;/h1&gt; at the end of the line.'}),
+
+HL('A small hug',
+ '<p>Hugs can go <b>inside</b> other hugs. To make just one word lean over (italics), wrap only that word in <code>&lt;em&gt;</code> &mdash; short for emphasis.</p><pre>&lt;p&gt;I &lt;em&gt;really&lt;/em&gt; mean it.&lt;/p&gt;</pre>',
+ 'Write a sentence in a p hug with ONE word inside an em hug.',
+ '<p>I really mean it.</p>',
+ '<p>I <em>really</em> mean it.</p>',
+ 'Only the one word goes inside &lt;em&gt;...&lt;/em&gt;. The p hug wraps the whole sentence.',
+ (c,d)=>{ const e=d.querySelector('p em'); return e && e.textContent.trim()
+   ? {ok:true,msg:'A hug inside a hug. Small tags style small pieces; big tags shape big pieces.'}
+   : {ok:false,msg:'Wrap exactly one word in &lt;em&gt; and &lt;/em&gt;, inside the p.'}; }),
+
+HL('Make one word bold',
+ '<p>The bold hug is <code>&lt;strong&gt;</code>. Same idea as em, stronger look.</p><p>You now know the pattern for every tag that will ever exist: open, contents, close.</p>',
+ 'Write a sentence with one word made bold using strong.',
+ '<p>This part matters most.</p>',
+ '<p>This part <strong>matters</strong> most.</p>',
+ 'Wrap one word in &lt;strong&gt; and &lt;/strong&gt;.',
+ (c,d)=>{ const s=d.querySelector('strong'); return s && s.textContent.trim()
+   ? {ok:true,msg:'Bold as brass. em and strong are the salt and pepper of text.'}
+   : {ok:false,msg:'Put &lt;strong&gt; around exactly one word.'}; }),
+
+HL('Make your own sign',
+ '<p>Time to combine everything: a big headline AND a paragraph under it, like a proper sign.</p><pre>&lt;h1&gt;THE HEADLINE&lt;/h1&gt;\n&lt;p&gt;The smaller words underneath.&lt;/p&gt;</pre>',
+ 'Make a sign: an h1 headline plus a p sentence below it.',
+ '',
+ '<h1>Josh’s Room</h1>\n<p>Knock before entering.</p>',
+ 'Two lines: an h1 hug, then a p hug. Close both.',
+ (c,d)=> txtOf(d,'h1') && txtOf(d,'p')
+   ? {ok:true,msg:'A real sign, built from parts. Kindergarten: complete. You can put words on a screen and shape them.'}
+   : {ok:false,msg:'I need both: an &lt;h1&gt; line and a &lt;p&gt; line, each properly closed.'}),
+]);
+
+/* ============================ GRADE 1 (8-13) ============================ */
+grade('G1', [
+HL('Six sizes of big',
+ '<p>Headings come in six sizes: <code>h1</code> (biggest) down to <code>h6</code> (smallest). They are for <b>structure</b> &mdash; chapter title, section, sub-section &mdash; like the headings in a school report.</p>',
+ 'Make three headings: an h1, an h3, and an h6, each with words in it.',
+ '',
+ '<h1>The Book</h1>\n<h3>Chapter One</h3>\n<h6>a tiny footnote heading</h6>',
+ 'Three lines, three different hugs: h1, h3, h6.',
+ (c,d)=> txtOf(d,'h1') && txtOf(d,'h3') && txtOf(d,'h6')
+   ? {ok:true,msg:'Big, middle, small. Pick sizes for meaning, not just looks &mdash; h1 says “this page is about THIS.”'}
+   : {ok:false,msg:'I need all three: an h1, an h3, and an h6 with text inside each.'}),
+
+HL('A real button',
+ '<p>Some tags make things you can <b>touch</b>. <code>&lt;button&gt;</code> makes an actual pressable button.</p><pre>&lt;button&gt;Press me&lt;/button&gt;</pre><p>Press it in the preview! It clicks down. It does nothing else <b>yet</b> &mdash; buttons need JavaScript to act, and that is Grade 4.</p>',
+ 'Make a button with your own words on it.',
+ '',
+ '<button>Do not press this button</button>',
+ 'Same hug pattern: &lt;button&gt;words&lt;/button&gt;.',
+ (c,d)=>{ const b=d.querySelector('button'); return b && b.textContent.trim()
+   ? {ok:true,msg:'A real, clickable button. Remember this moment in Grade 4, when you wire it up to actually do something.'}
+   : {ok:false,msg:'Wrap some words in &lt;button&gt; and &lt;/button&gt;.'}; }),
+
+HL('A list',
+ '<p>Lists take two tags working together: <code>&lt;ul&gt;</code> is the whole list (unordered list), and each <code>&lt;li&gt;</code> is one bullet (list item).</p><pre>&lt;ul&gt;\n  &lt;li&gt;milk&lt;/li&gt;\n  &lt;li&gt;bread&lt;/li&gt;\n&lt;/ul&gt;</pre><p>The li hugs live <b>inside</b> the ul hug.</p>',
+ 'Make a list of three things you like, using ul and li.',
+ '<ul>\n\n</ul>',
+ '<ul>\n  <li>tacos</li>\n  <li>camping</li>\n  <li>naps</li>\n</ul>',
+ 'Three &lt;li&gt;...&lt;/li&gt; lines between the &lt;ul&gt; and &lt;/ul&gt;.',
+ (c,d)=> d.querySelectorAll('ul li').length>=3
+   ? {ok:true,msg:'Bullets appear on their own &mdash; the tags did it. Teams of tags build structures.'}
+   : {ok:false,msg:'I need at least three &lt;li&gt; items inside the &lt;ul&gt;.'}),
+
+HL('An extra note on a hug',
+ '<p>Tags can carry extra notes called <b>attributes</b>. They go inside the opening tag: <code>name="value"</code>.</p><pre>&lt;p title="a secret note"&gt;Hover over me&lt;/p&gt;</pre><p>Try it, then hover your mouse over the sentence in the preview and hold still &mdash; the note pops up.</p>',
+ 'Give a p tag a title attribute with a message in it.',
+ '<p>Hover over me and wait</p>',
+ '<p title="You found the secret note!">Hover over me and wait</p>',
+ 'Inside the opening tag: <code>&lt;p title="your message"&gt;</code>. Quotes around the value.',
+ (c,d)=>{ const p=d.querySelector('p[title]'); return p && p.getAttribute('title').length>=3
+   ? {ok:true,msg:'That name="value" shape is everywhere in code. You will use it a thousand times.'}
+   : {ok:false,msg:'Add title="some message" inside the opening &lt;p&gt; tag.'}; }),
+
+HL('A link you can click',
+ '<p>The tag that makes the web a <b>web</b>: <code>&lt;a&gt;</code> (anchor). Its <code>href</code> attribute says where the link goes.</p><pre>&lt;a href="https://example.com"&gt;Visit my favourite site&lt;/a&gt;</pre>',
+ 'Make a link with an href and your own link words.',
+ '',
+ '<a href="https://example.com">My favourite place on the internet</a>',
+ 'An a hug with href="some address" in the opening tag.',
+ (c,d)=>{ const a=d.querySelector('a[href]'); return a && a.textContent.trim()
+   ? {ok:true,msg:'One tag plus one attribute connects every page on Earth to every other. That is the whole web.'}
+   : {ok:false,msg:'I need an &lt;a&gt; tag with an href attribute and words inside.'}; }),
+
+HL('Boxes to group things',
+ '<p>The <code>&lt;div&gt;</code> tag is a plain cardboard box: invisible on its own, but perfect for <b>grouping</b> things that belong together, so later you can style or move them as one unit.</p>',
+ 'Put an h2 and a p together inside one div.',
+ '',
+ '<div>\n  <h2>My corner</h2>\n  <p>Everything in this box belongs together.</p>\n</div>',
+ 'Open a &lt;div&gt;, put the h2 line and p line inside, close with &lt;/div&gt;.',
+ (c,d)=>{ const dv=d.querySelector('div'); return dv && dv.querySelector('h2') && dv.querySelector('p')
+   ? {ok:true,msg:'Grouped. Grade 1 complete &mdash; you know tags, attributes, and boxes. Next: making it all look good.'}
+   : {ok:false,msg:'The h2 and the p must BOTH be inside one &lt;div&gt;...&lt;/div&gt;.'}; }),
+]);
+
+/* ============================ GRADE 2 (14-18) ============================ */
+const G2HTML = '<h1>My page</h1>\n<p>This paragraph is about to get some style.</p>';
+grade('G2', [
+CL('Your first colour',
+ '<p>A second language! <b>CSS</b> describes how things <b>look</b>. You write rules with this shape:</p><pre>p {\n  color: red;\n}</pre><p>Read it aloud: “Find every <code>p</code>. Make its text colour red.” The part before the brace picks WHO; the lines inside say WHAT. Every line ends with a semicolon <code>;</code>.</p>',
+ 'Make every p on the page have the colour red.',
+ 'p {\n\n}',
+ 'p {\n  color: red;\n}',
+ 'Inside the braces: <code>color: red;</code> &mdash; note the American spelling of color, and the semicolon.',
+ (c)=> hasRe(c,/p\s*\{[^}]*color\s*:\s*\w+/)
+   ? {ok:true,msg:'The paragraph obeyed. One rule, applied to every matching tag automatically.'}
+   : {ok:false,msg:'Put <code>color: red;</code> between the braces. Spelling: c-o-l-o-r.'},
+ G2HTML),
+
+CL('Background colour',
+ '<p>Text colour is <code>color</code>; the paint BEHIND the text is <code>background</code>.</p><pre>body {\n  background: lightyellow;\n}</pre><p><code>body</code> means the whole page. Try other colours: <code>lavender</code>, <code>mintcream</code>, <code>peachpuff</code> &mdash; CSS knows about 140 by name.</p>',
+ 'Give the whole page (body) a background colour.',
+ 'body {\n\n}',
+ 'body {\n  background: lightyellow;\n}',
+ '<code>background: somecolour;</code> inside the body rule.',
+ (c)=> hasRe(c,/body\s*\{[^}]*background(-color)?\s*:\s*\w+/)
+   ? {ok:true,msg:'Whole page repainted with one line. This is why designers love CSS.'}
+   : {ok:false,msg:'Inside the body braces: <code>background: lightyellow;</code> (or any colour).'},
+ G2HTML),
+
+CL('Size and centre',
+ '<p>Two more properties for your collection:</p><pre>h1 {\n  font-size: 60px;\n  text-align: center;\n}</pre><p><code>px</code> means pixels &mdash; screen dots. And notice: one rule can hold MANY lines. Each one still ends with <code>;</code>.</p>',
+ 'Make the h1 bigger with font-size AND centred with text-align.',
+ 'h1 {\n\n}',
+ 'h1 {\n  font-size: 60px;\n  text-align: center;\n}',
+ 'Two lines inside the braces: <code>font-size: 60px;</code> and <code>text-align: center;</code>.',
+ (c)=> hasRe(c,/font-size\s*:\s*\d+px/) && hasRe(c,/text-align\s*:\s*center/)
+   ? {ok:true,msg:'Big and centred. You are stacking properties like a pro already.'}
+   : {ok:false,msg:'I need both lines: font-size with a px number, and text-align: center.'},
+ G2HTML),
+
+CL('Breathing room',
+ '<p>Squashed text is hard to read. <code>padding</code> adds space INSIDE a box, between its edge and its contents &mdash; like the cardboard around a framed photo.</p><pre>p {\n  padding: 20px;\n  background: mintcream;\n}</pre><p>The background makes the padding visible &mdash; watch the coloured area grow around the words.</p>',
+ 'Give the p a background colour and at least 20px of padding.',
+ 'p {\n\n}',
+ 'p {\n  background: mintcream;\n  padding: 20px;\n}',
+ 'Two lines: a background colour, and <code>padding: 20px;</code>.',
+ (c)=> hasRe(c,/padding\s*:\s*\d+px/) && hasRe(c,/background(-color)?\s*:/)
+   ? {ok:true,msg:'Room to breathe. Space is not wasted screen &mdash; it is what makes things readable.'}
+   : {ok:false,msg:'I need both: a background, and padding of at least a few px.'},
+ G2HTML),
+
+CL('Lines and round corners',
+ '<p>Boxes can wear an outline: <code>border</code>. It takes three values in one line &mdash; how thick, what style, what colour:</p><pre>p {\n  border: 3px solid darkgreen;\n  border-radius: 12px;\n}</pre><p><code>border-radius</code> rounds the corners. Together they turn plain text into a card.</p>',
+ 'Give the p a border AND rounded corners.',
+ 'p {\n\n}',
+ 'p {\n  border: 3px solid darkgreen;\n  border-radius: 12px;\n}',
+ 'Two lines: <code>border: 3px solid somecolour;</code> and <code>border-radius: 12px;</code>.',
+ (c)=> hasRe(c,/border\s*:\s*\d+px\s+\w+\s+\w+/) && hasRe(c,/border-radius\s*:\s*\d+px/)
+   ? {ok:true,msg:'A proper card! Grade 2 done: you can colour, size, space, and frame anything on a page.'}
+   : {ok:false,msg:'I need a full border (thickness, style, colour) plus a border-radius.'},
+ G2HTML),
+]);
+
+/* ============================ GRADE 3 (19-21) ============================ */
+grade('G3', [
+CL('Why you need name tags',
+ '<p>A problem: the page below has TWO paragraphs, but you only want to style ONE. A <code>p</code> rule hits both.</p><p>The fix: in HTML, give an element a <b>class</b> &mdash; a name tag: <code>&lt;p class="special"&gt;</code>. In CSS you point at it with a dot:</p><pre>.special {\n  color: crimson;\n}</pre><p>The dot means “things CLASSED as.” The second paragraph already wears the name tag &mdash; write the rule for it.</p>',
+ 'Style ONLY the paragraph with class="special", using the .special selector.',
+ '.special {\n\n}',
+ '.special {\n  color: crimson;\n  font-size: 1.3rem;\n}',
+ 'Keep the selector <code>.special</code> (with the dot) and give it a color line.',
+ (c)=> hasRe(c,/\.special\s*\{[^}]*(color|background|font)/)
+   ? {ok:true,msg:'Only the named one changed! Aim precisely: tags select kinds of things, classes select CHOSEN things.'}
+   : {ok:false,msg:'Write the rule on <code>.special</code> &mdash; dot included &mdash; with at least a color inside.'},
+ '<p>I am an ordinary paragraph.</p>\n<p class="special">I am the special one.</p>'),
+
+CL('Many things, one name',
+ '<p>A class is reusable: put <code>class="fancy"</code> on five elements and one <code>.fancy</code> rule dresses all five. That is the point of classes &mdash; define a look once, apply it anywhere.</p><p>Below, three items wear <code>class="fancy"</code>. One rule to style them all:</p>',
+ 'Write one .fancy rule giving them a background and padding.',
+ '.fancy {\n\n}',
+ '.fancy {\n  background: lavender;\n  padding: 10px;\n  border-radius: 8px;\n}',
+ 'One rule: <code>.fancy { background: ...; padding: ...px; }</code>',
+ (c)=> hasRe(c,/\.fancy\s*\{[^}]*background/) && hasRe(c,/padding\s*:/)
+   ? {ok:true,msg:'Three styled with one rule. Write once, use everywhere &mdash; you will meet this idea again in every language.'}
+   : {ok:false,msg:'The .fancy rule needs a background and a padding.'},
+ '<p class="fancy">First fancy thing</p>\n<p>Plain thing</p>\n<p class="fancy">Second fancy thing</p>\n<p class="fancy">Third fancy thing</p>'),
+
+CL('A name for exactly one thing',
+ '<p>Classes are for many; an <b>id</b> is for exactly ONE element per page: <code>&lt;h1 id="title"&gt;</code>. In CSS you point at an id with a hash:</p><pre>#title {\n  color: royalblue;\n}</pre><p>Dot = class (many). Hash = id (one). This distinction matters enormously in Grade 4, where JavaScript uses ids to grab elements by name.</p>',
+ 'Style the element with id="title" using the #title selector.',
+ '#title {\n\n}',
+ '#title {\n  color: royalblue;\n  text-align: center;\n}',
+ 'Selector is <code>#title</code> with the hash, then style lines inside.',
+ (c)=> hasRe(c,/#title\s*\{[^}]*(color|background|text-align|font)/)
+   ? {ok:true,msg:'Grade 3 complete. Tag, .class, #id &mdash; the three ways of pointing at things. JavaScript is next, and it needs exactly this.'}
+   : {ok:false,msg:'Use <code>#title</code> &mdash; hash, not dot &mdash; with at least one style inside.'},
+ '<h1 id="title">The one and only title</h1>\n<p>Everything else is ordinary.</p>'),
+]);
+
+/* ============================ GRADE 4 (22-24) ============================ */
+const T_SCREEN='<p>See the green box in the preview? Its HTML is <code>&lt;p id="screen"&gt;</code>, and we have already introduced it to JavaScript under the name <code>screen</code>. It is your output window for everything from here on.</p>';
+grade('G4', [
+JL('A third language',
+ '<p>Language three: <b>JavaScript</b>. HTML says what exists, CSS says how it looks &mdash; JavaScript makes things <b>happen</b>.</p>'+T_SCREEN+'<p>To put words in the box:</p><pre>screen.textContent = \'Hello!\';</pre><p>Read it right to left: take the words <code>\'Hello!\'</code>, and set them as the text content of screen. Words in JavaScript wear quotes. Lines end with <code>;</code>.</p>',
+ 'Use screen.textContent to put your own message in the box.',
+ '',
+ 'screen.textContent = \'I am writing JavaScript!\';',
+ 'Exactly this shape: <code>screen.textContent = \'your words\';</code> &mdash; quotes and semicolon included.',
+ (c)=> hasRe(c,/screen\.textContent\s*=\s*['"].+['"]/)
+   ? {ok:true,msg:'Your first working JavaScript. That one line &mdash; put THIS into THAT box &mdash; is the heart of every app you will build here.'}
+   : {ok:false,msg:'The pattern is <code>screen.textContent = \'some words\';</code> &mdash; check the quotes.'}),
+
+JL('A box with a name on it',
+ '<p>JavaScript can remember things in <b>named boxes</b> called variables. You make one with <code>const</code>:</p><pre>const myName = \'Josh\';</pre><p>That means: make a box labelled <code>myName</code>, put <code>\'Josh\'</code> inside. From then on, writing <code>myName</code> (no quotes!) means “whatever is in that box.”</p><pre>const myName = \'Josh\';\nscreen.textContent = myName;</pre>',
+ 'Make a const box holding some words, then show the BOX (not quoted words) on screen.',
+ '',
+ 'const myName = \'Josh\';\nscreen.textContent = myName;',
+ 'Line 1 makes the box with const. Line 2 shows it: <code>screen.textContent = myName;</code> &mdash; no quotes around the box name.',
+ (c)=> hasRe(c,/const\s+\w+\s*=\s*['"].+['"]/) && hasRe(c,/screen\.textContent\s*=\s*\w+\s*;?\s*$/m) && !hasRe(c,/screen\.textContent\s*=\s*['"]/)
+   ? {ok:true,msg:'The box went in, its contents came out. Quotes mean literal words; no quotes means a box name. Burn that in &mdash; it is THE beginner trap.'}
+   : {ok:false,msg:'Two lines: a <code>const</code> box with quoted words, then screen.textContent = the box name (unquoted).'}),
+
+JL('Waiting for a click',
+ '<p>Remember your Grade 1 button that did nothing? Time to wire one up. The button below is known to JavaScript as <code>btn</code>. You can hand it instructions to run <b>later</b>, when clicked:</p><pre>btn.onclick = function () {\n  screen.textContent = \'You clicked!\';\n};</pre><p><code>function () { ... }</code> means “a bundle of instructions for later.” Nothing runs until the click. Try your finished code &mdash; press the button in the preview!</p>',
+ 'Make clicking the button change the screen text.',
+ '',
+ 'btn.onclick = function () {\n  screen.textContent = \'You clicked me!\';\n};',
+ 'Start with <code>btn.onclick = function () {</code>, put a screen.textContent line inside, close with <code>};</code>',
+ (c)=> hasRe(c,/btn\.onclick\s*=\s*function|btn\.addEventListener/) && hasRe(c,/\{[\s\S]*screen\.textContent\s*=[\s\S]*\}/)
+   ? {ok:true,msg:'INTERACTIVE. The page now responds to a human. Grade 4 complete &mdash; you speak all three languages of the web.'}
+   : {ok:false,msg:'The screen.textContent line must be INSIDE the function’s braces, and it all starts with btn.onclick =.'},
+ JS_HTML_BTN),
+]);
+
+/* ============================ GRADE 5 (25-26) ============================ */
+grade('G5', [
+JL('Sticking words together',
+ '<p>The <code>+</code> sign glues words together:</p><pre>screen.textContent = \'Hello \' + \'Josh\';</pre><p>Here is the powerful part &mdash; you can glue quoted words to a BOX:</p><pre>const name = \'Josh\';\nscreen.textContent = \'Hello \' + name + \'!\';</pre><p>Quoted pieces appear exactly as written; unquoted box names are swapped for their contents. Mind the space inside <code>\'Hello \'</code> &mdash; the computer only puts spaces where you type them.</p>',
+ 'Make a name box, then greet it by gluing quoted words + the box.',
+ '',
+ 'const name = \'Josh\';\nscreen.textContent = \'Hello \' + name + \'!\';',
+ 'The glued line mixes both kinds: <code>\'Hello \' + name</code> &mdash; quotes on the greeting, none on the box.',
+ (c)=> hasRe(c,/const\s+\w+\s*=/) && hasRe(c,/screen\.textContent\s*=\s*['"][^'"]*['"]\s*\+\s*\w+/)
+   ? {ok:true,msg:'Glued! Mixing fixed words with box contents is how apps say “Welcome back, Josh” instead of “Welcome back, user.”'}
+   : {ok:false,msg:'I want to see quoted words + an unquoted box name, glued with +, going to the screen.'}),
+
+JL('Words and numbers are different',
+ '<p>To a computer, <code>\'4\'</code> (word) and <code>4</code> (number) are different species. <code>+</code> adds numbers but glues words &mdash; and when they mix, gluing wins. Watch this trap:</p><pre>screen.textContent = \'Total: \' + 4 + 3;</pre><p>Step 1: <code>\'Total: \' + 4</code> glues into <code>\'Total: 4\'</code>. Step 2: <code>\'Total: 4\' + 3</code> glues into <code>\'Total: 43\'</code>. Wrong!</p><p>Brackets fix it by forcing the maths first:</p><pre>screen.textContent = \'Total: \' + (4 + 3);</pre><p>Now step 1 is <code>(4 + 3)</code> &rarr; <code>7</code>, and you get <code>Total: 7</code>.</p>',
+ 'Show a label plus a CORRECT sum, using brackets around the maths.',
+ 'screen.textContent = \'Total: \' + 4 + 3;',
+ 'screen.textContent = \'Total: \' + (4 + 3);',
+ 'Wrap the maths in round brackets: <code>(4 + 3)</code>.',
+ (c)=> hasRe(c,/\(\s*\d+\s*\+\s*\d+\s*\)/)
+   ? {ok:true,msg:'Total: 7. You just fixed a bug that bites real professionals weekly. Grade 5 done.'}
+   : {ok:false,msg:'The numbers need round brackets around their sum: <code>(4 + 3)</code>.'}),
+]);
+
+/* ============================ GRADE 6 (27-28) ============================ */
+grade('G6', [
+JL('A list in a box',
+ '<p>A box can hold a whole LIST. Square brackets, items separated by commas:</p><pre>const excuses = [\'My dog ate it\', \'Aliens\', \'I overslept\'];</pre><p>Each item has a numbered position &mdash; and the computer counts from ZERO. So <code>excuses[0]</code> is the first item, <code>excuses[1]</code> the second. Yes, zero. Every programmer trips on this exactly once.</p>',
+ 'Make a list box with at least three quoted items, then show item [0].',
+ '',
+ 'const excuses = [\'My dog ate it\', \'Aliens took it\', \'I overslept\'];\nscreen.textContent = excuses[0];',
+ 'Line 1: <code>const something = [\'a\', \'b\', \'c\'];</code>. Line 2: show <code>something[0]</code>.',
+ (c)=> hasRe(c,/=\s*\[\s*['"]/) && hasRe(c,/screen\.textContent\s*=\s*\w+\s*\[\s*\d+\s*\]/)
+   ? {ok:true,msg:'One box, many things, each reachable by number. Lists are how programs handle MANY of anything.'}
+   : {ok:false,msg:'I need a list in square brackets AND a screen line showing an item by its [number].'}),
+
+JL('Picking at random',
+ '<p>To pick a random item, two helpers team up:</p><pre>Math.random()</pre><p>gives a random decimal between 0 and 1 (like 0.63). Multiply by the list’s length and chop off the decimals with <code>Math.floor</code>, and you get a fair random position:</p><pre>const pick = Math.floor(Math.random() * excuses.length);\nscreen.textContent = excuses[pick];</pre><p>Press “Start over” and re-type it a few times &mdash; a different excuse (sometimes) each run. Randomness is what will make your Excuse-O-Matic feel alive.</p>',
+ 'Pick a random item from your list and show it.',
+ 'const excuses = [\'My dog ate it\', \'Aliens took it\', \'I overslept\'];\n',
+ 'const excuses = [\'My dog ate it\', \'Aliens took it\', \'I overslept\'];\nconst pick = Math.floor(Math.random() * excuses.length);\nscreen.textContent = excuses[pick];',
+ 'The magic line: <code>Math.floor(Math.random() * excuses.length)</code> &mdash; save it in a box, use the box as the position.',
+ (c)=> hasRe(c,/Math\.random\s*\(\s*\)/) && hasRe(c,/Math\.floor\s*\(/) && hasRe(c,/screen\.textContent\s*=\s*\w+\s*\[/)
+   ? {ok:true,msg:'Random choice achieved! Grade 6 done. You now hold every ingredient of the Excuse-O-Matic &mdash; the rest of school is learning to combine them with style.'}
+   : {ok:false,msg:'I need Math.random(), Math.floor(...), and the screen showing a list item by that random position.'}),
+]);
+
+/* ============================ GRADE 7 (29-32) ============================ */
+grade('G7', [
+JL('Teaching the computer a trick',
+ '<p>So far you write instructions and they run once, top to bottom. A <b>function</b> is different: you teach the computer a named trick, and it does nothing until you SAY the name.</p><pre>function sayHello() {\n  screen.textContent = \'Hello!\';\n}\n\nsayHello();</pre><p>Lines 1&ndash;3 are the teaching &mdash; nothing happens yet. The last line, name plus <code>()</code>, is the command: “do the trick NOW.” Delete that last line and watch the screen go quiet &mdash; taught but never told.</p>',
+ 'Teach a named trick that writes to the screen, then call it.',
+ '',
+ 'function sayHello() {\n  screen.textContent = \'Hello from my first function!\';\n}\n\nsayHello();',
+ 'Teach with <code>function name() { ... }</code>, then command with <code>name();</code> on its own line after.',
+ (c)=> hasRe(c,/function\s+(\w+)\s*\(\s*\)\s*\{[\s\S]*screen\.textContent[\s\S]*\}/) && hasRe(c,/\}\s*[\s\S]*\w+\s*\(\s*\)\s*;/)
+   ? {ok:true,msg:'Taught AND performed. Teaching is not doing &mdash; the trick waits for its name. You met this in Grade 4: the click function also waited.'}
+   : {ok:false,msg:'Two parts: the function {...} teaching it, and a separate <code>name();</code> line calling it.'}),
+
+JL('A trick with an ingredient',
+ '<p>Tricks get powerful when they accept an <b>ingredient</b>. Name the ingredient inside the round brackets:</p><pre>function greet(person) {\n  screen.textContent = \'Hello \' + person + \'!\';\n}\n\ngreet(\'Josh\');</pre><p><code>person</code> is a temporary box that exists only inside the trick. Whatever you hand over in the call &mdash; <code>greet(\'Josh\')</code>, <code>greet(\'Mum\')</code> &mdash; lands in that box. One trick, endless uses.</p>',
+ 'Teach a trick that takes an ingredient and uses it on screen, then call it with a value.',
+ '',
+ 'function greet(person) {\n  screen.textContent = \'Hello \' + person + \'!\';\n}\n\ngreet(\'Josh\');',
+ 'Put an ingredient name in the () of the function, use it (unquoted) inside, and hand a quoted value in the call.',
+ (c)=> hasRe(c,/function\s+\w+\s*\(\s*\w+\s*\)\s*\{[\s\S]*screen\.textContent[\s\S]*\}/) && hasRe(c,/\w+\s*\(\s*['"].+['"]\s*\)\s*;/)
+   ? {ok:true,msg:'One recipe, many meals. Change the call’s ingredient and the same trick greets anyone.'}
+   : {ok:false,msg:'The function needs a named ingredient in its (), and the call needs a quoted value: <code>greet(\'Josh\');</code>'}),
+
+JL('A trick that hands something back',
+ '<p>Some tricks don’t show anything &mdash; they <b>work something out and hand it back</b>, using <code>return</code>:</p><pre>function double(number) {\n  return number * 2;\n}\n\nscreen.textContent = \'Answer: \' + double(5);</pre><p>The call <code>double(5)</code> gets REPLACED by what came back: 10. Big idea, worth carving in stone: <b>working something out is not the same as showing it.</b> return hands back; only screen.textContent shows.</p>',
+ 'Teach a trick that returns a worked-out value, and SHOW the result on screen.',
+ '',
+ 'function double(number) {\n  return number * 2;\n}\n\nscreen.textContent = \'Answer: \' + double(5);',
+ 'The function body uses <code>return</code>; the screen line glues a label + the call.',
+ (c)=> hasRe(c,/function\s+\w+\s*\([^)]*\)\s*\{[\s\S]*return\b[\s\S]*\}/) && hasRe(c,/screen\.textContent\s*=[\s\S]*\w+\s*\(/)
+   ? {ok:true,msg:'Worked out AND shown. Tricks that return values are LEGO bricks &mdash; next lesson you snap them together.'}
+   : {ok:false,msg:'I need a <code>return</code> inside the function, and the screen line using the function’s result.'}),
+
+JL('Tricks using tricks',
+ '<p>The professional move: small tricks that use each other. Each does ONE job; together they do something bigger.</p><pre>function double(number) {\n  return number * 2;\n}\n\nfunction describe(number) {\n  return number + \' doubled is \' + double(number);\n}\n\nscreen.textContent = describe(6);</pre><p><code>describe</code> calls <code>double</code> mid-sentence. All large programs &mdash; games, apps, this very page &mdash; are exactly this: little tricks stacked into towers.</p>',
+ 'Teach TWO tricks where the second one calls the first, and show the result.',
+ '',
+ 'function double(number) {\n  return number * 2;\n}\n\nfunction describe(number) {\n  return number + \' doubled is \' + double(number);\n}\n\nscreen.textContent = describe(6);',
+ 'Function one returns something. Function two’s return line CALLS function one. Screen shows function two’s result.',
+ (c)=>{ const fns=[...c.matchAll(/function\s+(\w+)/g)].map(m=>m[1]);
+   if (fns.length<2) return {ok:false,msg:'I need TWO functions taught with the function keyword.'};
+   const inner = new RegExp('function\\s+'+fns[1]+'[\\s\\S]*?'+fns[0]+'\\s*\\(');
+   const inner2 = new RegExp('function\\s+'+fns[0]+'[\\s\\S]*?'+fns[1]+'\\s*\\(');
+   return (inner.test(c)||inner2.test(c)) && hasRe(c,/screen\.textContent\s*=/)
+     ? {ok:true,msg:'Tricks calling tricks &mdash; Grade 7 complete. You now organise code the way professionals do.'}
+     : {ok:false,msg:'One of the functions must CALL the other by name inside its body, and the result must reach the screen.'}; }),
+]);
+
+/* ============================ GRADE 8 (33-36) ============================ */
+grade('G8', [
+JL('Making a choice',
+ '<p>Programs become clever the moment they can choose. The <code>if</code> shape:</p><pre>const score = 8;\n\nif (score > 5) {\n  screen.textContent = \'Great score!\';\n}</pre><p>Read: “IF what’s in the brackets is true, do what’s in the braces.” Comparisons you can use: <code>&gt;</code> more than, <code>&lt;</code> less than, <code>===</code> exactly equal (yes, THREE equals signs &mdash; one <code>=</code> means put-into, three asks “is it?”).</p><p>Change score to 3 and watch the screen stay quiet &mdash; the braces were skipped.</p>',
+ 'Make a number box and an if that only writes to the screen when the number is big enough.',
+ '',
+ 'const score = 8;\n\nif (score > 5) {\n  screen.textContent = \'Great score!\';\n}',
+ 'Shape: <code>if (box > number) { screen line }</code>.',
+ (c)=> hasRe(c,/if\s*\([^)]+\)\s*\{[\s\S]*screen\.textContent[\s\S]*\}/)
+   ? {ok:true,msg:'The computer chose. Every game, every app, every “wrong password” message is an if.'}
+   : {ok:false,msg:'I need an if with a comparison in (), and a screen.textContent line inside its braces.'}),
+
+JL('Otherwise...',
+ '<p>An if alone stays silent when the test fails. <code>else</code> gives it a second path:</p><pre>const score = 3;\n\nif (score > 5) {\n  screen.textContent = \'Great score!\';\n} else {\n  screen.textContent = \'Keep practising.\';\n}</pre><p>Now EXACTLY one of the two branches always runs. Flip score between 3 and 8 and watch the screen switch sides.</p>',
+ 'Write an if/else where each branch writes something different.',
+ '',
+ 'const score = 3;\n\nif (score > 5) {\n  screen.textContent = \'Great score!\';\n} else {\n  screen.textContent = \'Keep practising.\';\n}',
+ 'After the if’s closing brace: <code>} else {</code> then the other screen line, then <code>}</code>.',
+ (c)=> hasRe(c,/if\s*\([^)]+\)\s*\{[\s\S]*\}\s*else\s*\{[\s\S]*screen\.textContent[\s\S]*\}/) && (c.match(/screen\.textContent/g)||[]).length>=2
+   ? {ok:true,msg:'Two roads, one always taken. That certainty &mdash; SOMETHING always happens &mdash; is what makes programs feel dependable.'}
+   : {ok:false,msg:'I need both branches, each with its own screen.textContent line.'}),
+
+JL('A chain of choices',
+ '<p>More than two possibilities? Chain them with <code>else if</code>:</p><pre>const temp = 15;\n\nif (temp > 25) {\n  screen.textContent = \'Shorts weather\';\n} else if (temp > 10) {\n  screen.textContent = \'Jacket weather\';\n} else {\n  screen.textContent = \'Stay inside\';\n}</pre><p>The computer checks top to bottom and takes the FIRST door that opens &mdash; then skips the rest. Order matters: put the most demanding test first.</p>',
+ 'Write a chain: if, else if, else &mdash; three different messages.',
+ '',
+ 'const temp = 15;\n\nif (temp > 25) {\n  screen.textContent = \'Shorts weather\';\n} else if (temp > 10) {\n  screen.textContent = \'Jacket weather\';\n} else {\n  screen.textContent = \'Stay inside\';\n}',
+ 'Middle branch: <code>} else if (another test) {</code>. Try temp values 30, 15, and 3 to see all three doors.',
+ (c)=> hasRe(c,/else\s+if\s*\(/) && hasRe(c,/\}\s*else\s*\{/) && (c.match(/screen\.textContent/g)||[]).length>=3
+   ? {ok:true,msg:'A proper decision ladder. First open door wins &mdash; remember that when a branch mysteriously never runs.'}
+   : {ok:false,msg:'I need all three: if, else if, and a final else &mdash; each writing to the screen.'}),
+
+JL('Two things at once',
+ '<p>Sometimes a choice needs two tests together. <code>&amp;&amp;</code> means AND (both must be true); <code>||</code> means OR (either is enough):</p><pre>const day = \'Saturday\';\nconst sunny = true;\n\nif (day === \'Saturday\' &amp;&amp; sunny) {\n  screen.textContent = \'Beach day!\';\n} else {\n  screen.textContent = \'Normal day.\';\n}</pre><p><code>true</code> and <code>false</code> are their own kind of value &mdash; the answer a test gives. A box can hold one, just like it holds words or numbers.</p>',
+ 'Write an if that combines two tests with && (or ||), plus an else.',
+ '',
+ 'const day = \'Saturday\';\nconst sunny = true;\n\nif (day === \'Saturday\' && sunny) {\n  screen.textContent = \'Beach day!\';\n} else {\n  screen.textContent = \'Normal day.\';\n}',
+ 'Inside the if’s brackets, join two tests with <code>&amp;&amp;</code>.',
+ (c)=> hasRe(c,/if\s*\([^)]*(&&|\|\|)[^)]*\)/) && hasRe(c,/else/)
+   ? {ok:true,msg:'Compound choices! Grade 8 complete &mdash; your programs can now weigh up situations, not just follow orders.'}
+   : {ok:false,msg:'The if needs two tests joined by <code>&amp;&amp;</code> or <code>||</code>, plus an else branch.'}),
+]);
+
+/* ============================ GRADE 9 (37-40) ============================ */
+grade('G9', [
+JL('Doing it again and again',
+ '<p>Computers never get bored. A <code>for</code> loop repeats instructions a set number of times:</p><pre>let out = \'\';\nfor (let i = 1; i <= 5; i = i + 1) {\n  out = out + i + \' \';\n}\nscreen.textContent = out;</pre><p>The three parts in the brackets: START (<code>let i = 1</code>), KEEP GOING WHILE (<code>i &lt;= 5</code>), AFTER EACH LAP (<code>i = i + 1</code>). Note <code>let</code> not <code>const</code>: let boxes are allowed to CHANGE, and loops change them every lap.</p>',
+ 'Use a for loop to build the text "1 2 3 4 5 " and show it.',
+ '',
+ 'let out = \'\';\nfor (let i = 1; i <= 5; i = i + 1) {\n  out = out + i + \' \';\n}\nscreen.textContent = out;',
+ 'An empty let box before, the loop adds to it each lap, the screen line after the loop shows it.',
+ (c)=> hasRe(c,/for\s*\(\s*let\s+\w+/) && hasRe(c,/screen\.textContent\s*=/)
+   ? {ok:true,msg:'Five laps, no complaints. Start empty, add each lap, show at the end &mdash; the accumulator pattern. You will use it forever.'}
+   : {ok:false,msg:'I need a for loop with (let i = ...; test; change), building something the screen then shows.'}),
+
+JL('A loop over a list',
+ '<p>The loveliest loop: visit every item in a list, no counting needed. <code>for...of</code>:</p><pre>const excuses = [\'My dog ate it\', \'Aliens\', \'I overslept\'];\nlet out = \'\';\nfor (const excuse of excuses) {\n  out = out + excuse + \'. \';\n}\nscreen.textContent = out;</pre><p>Each lap, <code>excuse</code> holds the next item. Read it as English: “for each excuse of the excuses...”</p>',
+ 'Loop over a list of at least three items with for...of, building text the screen shows.',
+ 'const excuses = [\'My dog ate it\', \'Aliens\', \'I overslept\'];\n',
+ 'const excuses = [\'My dog ate it\', \'Aliens\', \'I overslept\'];\nlet out = \'\';\nfor (const excuse of excuses) {\n  out = out + excuse + \'. \';\n}\nscreen.textContent = out;',
+ 'Shape: <code>for (const item of listName) { ... }</code> with the accumulator pattern inside.',
+ (c)=> hasRe(c,/for\s*\(\s*const\s+\w+\s+of\s+\w+\s*\)/) && hasRe(c,/screen\.textContent\s*=/)
+   ? {ok:true,msg:'Every item visited by name. Lists and loops are dance partners &mdash; you will rarely see one without the other.'}
+   : {ok:false,msg:'Use the for (const something of yourList) shape, and show the built-up result.'}),
+
+JL('Building a sentence in a loop',
+ '<p>Combine EVERYTHING: loop over a list, make a choice about each item, build a result.</p><pre>const scores = [3, 9, 6, 10];\nlet out = \'\';\nfor (const s of scores) {\n  if (s >= 6) {\n    out = out + s + \' passed. \';\n  } else {\n    out = out + s + \' failed. \';\n  }\n}\nscreen.textContent = out;</pre><p>An if INSIDE a for: each lap makes its own little decision. This nesting &mdash; structures inside structures &mdash; is where real programming power lives.</p>',
+ 'Loop over a list of numbers; use an if inside to treat big and small ones differently; show the result.',
+ 'const scores = [3, 9, 6, 10];\n',
+ 'const scores = [3, 9, 6, 10];\nlet out = \'\';\nfor (const s of scores) {\n  if (s >= 6) {\n    out = out + s + \' passed. \';\n  } else {\n    out = out + s + \' failed. \';\n  }\n}\nscreen.textContent = out;',
+ 'The if/else lives INSIDE the loop braces. Both branches add to the same out box.',
+ (c)=> hasRe(c,/for\s*\([\s\S]*\)\s*\{[\s\S]*if\s*\([\s\S]*\}/) && hasRe(c,/screen\.textContent\s*=/)
+   ? {ok:true,msg:'A choice made on every lap. You just combined three grades of learning into eight lines.'}
+   : {ok:false,msg:'I need an if (with else) nested inside a for loop, building text the screen shows.'}),
+
+JL('Knowing when to stop',
+ '<p>A <code>for</code> loop runs a set number of laps. A <code>while</code> loop runs “as long as something is true”:</p><pre>let pile = 10;\nlet bites = 0;\nwhile (pile > 0) {\n  pile = pile - 3;\n  bites = bites + 1;\n}\nscreen.textContent = \'Finished in \' + bites + \' bites.\';</pre><p><b>Warning, and it’s a real one:</b> if the condition can never become false, the loop never ends and the page freezes. Something inside the braces MUST push toward the exit &mdash; here, the pile shrinks every lap.</p>',
+ 'Write a while loop that counts something down to zero, counting its laps, then show the count.',
+ '',
+ 'let pile = 10;\nlet bites = 0;\nwhile (pile > 0) {\n  pile = pile - 3;\n  bites = bites + 1;\n}\nscreen.textContent = \'Finished in \' + bites + \' bites.\';',
+ 'Two let boxes; the while shrinks one and grows the other; the screen line comes AFTER the loop.',
+ (c)=> hasRe(c,/while\s*\([^)]+\)\s*\{[\s\S]*\}/) && hasRe(c,/screen\.textContent\s*=/)
+   ? {ok:true,msg:'Grade 9 complete. for = known laps, while = keep going until. Choose by which thing you know in advance.'}
+   : {ok:false,msg:'I need a while loop whose body changes its own condition, then a screen line after it.'}),
+]);
+
+/* ============================ GRADE 10 (41-43) ============================ */
+grade('G10', [
+JL('The machine’s body',
+ '<p>Time to build the <b>Excuse-O-Matic</b> for real, in three sittings, the way professionals build: skeleton first, brain second, polish third.</p><p>Today: the skeleton. A button that puts SOMETHING on screen &mdash; a fixed excuse for now. Boring on purpose: get the wiring working before making it clever.</p>',
+ 'Wire the button so clicking shows a (fixed) excuse.',
+ '',
+ 'btn.onclick = function () {\n  screen.textContent = \'My dog ate my homework.\';\n};',
+ 'Grade 4 skills: <code>btn.onclick = function () { screen line };</code>',
+ (c)=> hasRe(c,/btn\.onclick\s*=\s*function|btn\.addEventListener/) && hasRe(c,/screen\.textContent\s*=/)
+   ? {ok:true,msg:'The body works: press &rarr; excuse. Build the dumb version first, ALWAYS &mdash; it finds wiring problems while they are cheap.'}
+   : {ok:false,msg:'Clicking btn must set screen.textContent to some excuse text.'},
+ '<button id="btn">Give me an excuse</button>\n<p id="screen">press the button...</p>'),
+
+JL('The machine’s brain',
+ '<p>Now the brain: a function that picks a random excuse from a list and RETURNS it (Grade 7!), with the click handler showing whatever comes back.</p><pre>const excuses = [\'My dog ate it\', \'Aliens took it\', \'I overslept\', \'Gravity failed\'];\n\nfunction pickExcuse() {\n  const pick = Math.floor(Math.random() * excuses.length);\n  return excuses[pick];\n}\n\nbtn.onclick = function () {\n  screen.textContent = pickExcuse();\n};</pre><p>Look at the shape: data at the top, brain in the middle, wiring at the bottom. Press the button lots &mdash; a different excuse (usually) every press.</p>',
+ 'A list of 4+ excuses, a pickExcuse function that returns a random one, and a click that shows it.',
+ '',
+ 'const excuses = [\'My dog ate it\', \'Aliens took it\', \'I overslept\', \'Gravity failed\'];\n\nfunction pickExcuse() {\n  const pick = Math.floor(Math.random() * excuses.length);\n  return excuses[pick];\n}\n\nbtn.onclick = function () {\n  screen.textContent = pickExcuse();\n};',
+ 'Three layers: the const list, the function with return, the btn.onclick that calls it.',
+ (c)=> hasRe(c,/=\s*\[\s*['"]/) && hasRe(c,/function\s+\w+[\s\S]*Math\.random[\s\S]*return/) && hasRe(c,/onclick[\s\S]*screen\.textContent\s*=\s*\w+\s*\(/)
+   ? {ok:true,msg:'It THINKS. Data, brain, wiring &mdash; three layers you will recognise in every app ever written.'}
+   : {ok:false,msg:'I need the list, a function using Math.random that returns an item, and a click showing the function’s result.'},
+ '<button id="btn">Give me an excuse</button>\n<p id="screen">press the button...</p>'),
+
+JL('No repeats &mdash; the polish',
+ '<p>Press enough and the machine repeats itself immediately &mdash; annoying. The pro fix: remember the LAST pick, and if the new pick matches, pick again.</p><pre>const excuses = [\'My dog ate it\', \'Aliens took it\', \'I overslept\', \'Gravity failed\'];\nlet last = -1;\n\nfunction pickExcuse() {\n  let pick = Math.floor(Math.random() * excuses.length);\n  while (pick === last) {\n    pick = Math.floor(Math.random() * excuses.length);\n  }\n  last = pick;\n  return excuses[pick];\n}\n\nbtn.onclick = function () {\n  screen.textContent = pickExcuse();\n};</pre><p>A while loop guarding against repeats &mdash; Grade 9 earning its keep. Note <code>let last</code>: it must survive BETWEEN clicks, so it lives outside the function.</p>',
+ 'Upgrade the machine so it never shows the same excuse twice in a row.',
+ 'const excuses = [\'My dog ate it\', \'Aliens took it\', \'I overslept\', \'Gravity failed\'];\n',
+ 'const excuses = [\'My dog ate it\', \'Aliens took it\', \'I overslept\', \'Gravity failed\'];\nlet last = -1;\n\nfunction pickExcuse() {\n  let pick = Math.floor(Math.random() * excuses.length);\n  while (pick === last) {\n    pick = Math.floor(Math.random() * excuses.length);\n  }\n  last = pick;\n  return excuses[pick];\n}\n\nbtn.onclick = function () {\n  screen.textContent = pickExcuse();\n};',
+ 'A let box remembering the last pick, and a while that re-rolls while the new pick equals it.',
+ (c)=> hasRe(c,/let\s+\w+\s*=/) && hasRe(c,/while\s*\([^)]*===?[^)]*\)/) && hasRe(c,/Math\.random/) && hasRe(c,/screen\.textContent\s*=/)
+   ? {ok:true,msg:'THE EXCUSE-O-MATIC IS COMPLETE. Grade 10 done &mdash; you designed, built, and polished a working machine. Everything past here is refinement of what you already are: a programmer.'}
+   : {ok:false,msg:'I need a remembering box (let), a while that re-picks on a repeat, and the click showing the result.'},
+ '<button id="btn">Give me an excuse</button>\n<p id="screen">press the button...</p>'),
+]);
+
+/* ============================ GRADE 11 (44-47) ============================ */
+grade('G11', [
+JL('A box with labels inside',
+ '<p>A list numbers its contents: 0, 1, 2. An <b>object</b> LABELS them instead &mdash; like a form with named blanks:</p><pre>const person = {\n  name: \'Josh\',\n  age: 40,\n  hobby: \'camping\'\n};\n\nscreen.textContent = person.name;</pre><p>Curly braces, <code>label: value</code> pairs, commas between. Read a value with a dot: <code>person.name</code> means “the name field of person.” You have been USING this all along &mdash; <code>screen.textContent</code> is exactly a dot reaching into an object.</p>',
+ 'Make an object with at least three labelled values and show one on screen with a dot.',
+ '',
+ 'const person = {\n  name: \'Josh\',\n  age: 40,\n  hobby: \'camping\'\n};\n\nscreen.textContent = person.name;',
+ 'Shape: <code>const thing = { label: value, label: value };</code> then <code>screen.textContent = thing.label;</code>',
+ (c)=> hasRe(c,/=\s*\{[\s\S]*\w+\s*:[\s\S]*,[\s\S]*\w+\s*:[\s\S]*\}/) && hasRe(c,/screen\.textContent\s*=\s*\w+\.\w+/)
+   ? {ok:true,msg:'Labels beat numbers when things HAVE names. person.age asks for exactly what you mean.'}
+   : {ok:false,msg:'I need an object with 3+ label: value pairs, and the screen showing one via thing.label.'}),
+
+JL('Reading several labels',
+ '<p>Glue object fields into sentences just like any other boxes:</p><pre>const person = {\n  name: \'Josh\',\n  age: 40\n};\n\nscreen.textContent = person.name + \' is \' + person.age + \' years old.\';</pre><p>Each dot fetches one field; <code>+</code> glues them into a sentence. This is how apps turn stored data into things humans read.</p>',
+ 'Show a sentence built from at least TWO fields of one object.',
+ 'const person = {\n  name: \'Josh\',\n  age: 40\n};\n',
+ 'const person = {\n  name: \'Josh\',\n  age: 40\n};\n\nscreen.textContent = person.name + \' is \' + person.age + \' years old.\';',
+ 'One screen line gluing person.name and person.age with quoted words between.',
+ (c)=>{ const m=c.match(/screen\.textContent\s*=([\s\S]*)/); const rhs=m?m[1]:'';
+   return (rhs.match(/\w+\.\w+/g)||[]).length>=2 && rhs.includes('+')
+     ? {ok:true,msg:'Data in, sentence out. Every profile page you have ever seen is this line wearing makeup.'}
+     : {ok:false,msg:'The screen line must glue at least two thing.label reads with + signs.'}; }),
+
+JL('A list of labelled boxes',
+ '<p>The shape underneath nearly every real app: a LIST of OBJECTS.</p><pre>const excuses = [\n  { text: \'My dog ate it\', danger: 2 },\n  { text: \'Aliens took it\', danger: 5 },\n  { text: \'I overslept\', danger: 1 }\n];\n\nscreen.textContent = excuses[1].text;</pre><p>Read <code>excuses[1].text</code> left to right like an address: the excuses list &rarr; item 1 &rarr; its text field. Your contacts app is a list of person objects; a playlist is a list of song objects.</p>',
+ 'Make a list of at least three objects and show one field of one of them.',
+ '',
+ 'const excuses = [\n  { text: \'My dog ate it\', danger: 2 },\n  { text: \'Aliens took it\', danger: 5 },\n  { text: \'I overslept\', danger: 1 }\n];\n\nscreen.textContent = excuses[1].text;',
+ 'Square brackets holding {label: value} objects with commas between, then list[number].label on the screen line.',
+ (c)=> hasRe(c,/\[\s*\{[\s\S]*\}\s*,\s*\{[\s\S]*\]/) && hasRe(c,/screen\.textContent\s*=\s*\w+\s*\[\s*\d+\s*\]\s*\.\w+/)
+   ? {ok:true,msg:'List of labelled boxes &mdash; the data shape of the entire software industry. You can now read the address chains in real code.'}
+   : {ok:false,msg:'I need a [ {..}, {..}, {..} ] list and the screen showing list[number].field.'}),
+
+JL('Changing what’s inside',
+ '<p>A <code>const</code> object’s LABEL can’t point elsewhere, but the contents behind its labels CAN change:</p><pre>const person = {\n  name: \'Josh\',\n  mood: \'sleepy\'\n};\n\nperson.mood = \'caffeinated\';\nscreen.textContent = person.name + \' is now \' + person.mood;</pre><p>Dot on the LEFT of <code>=</code> means “put into that field”; dot on the right means “read it.” Same rule as always: left of equals receives, right side supplies.</p>',
+ 'Make an object, CHANGE one of its fields, then show the new value in a sentence.',
+ '',
+ 'const person = {\n  name: \'Josh\',\n  mood: \'sleepy\'\n};\n\nperson.mood = \'caffeinated\';\nscreen.textContent = person.name + \' is now \' + person.mood;',
+ 'Three steps: build the object, assign thing.field = new value, show it glued into a sentence.',
+ (c)=> hasRe(c,/\w+\.\w+\s*=\s*['"].+['"]\s*;/) && hasRe(c,/screen\.textContent\s*=[\s\S]*\.\w+/)
+   ? {ok:true,msg:'Grade 11 complete. Objects hold state, and state can change &mdash; that is what makes apps feel alive between clicks.'}
+   : {ok:false,msg:'I need a line assigning a NEW quoted value into thing.field, and the screen showing the changed field.'}),
+]);
+
+/* ============================ GRADE 12 (48-51) ============================ */
+grade('G12', [
+JL('The detective’s notebook',
+ '<p>When code misbehaves, professionals don’t stare harder &mdash; they ask the program what it’s doing. <code>console.log()</code> writes notes to a hidden notebook (press F12 in a real browser &rarr; Console tab):</p><pre>const pick = Math.floor(Math.random() * 3);\nconsole.log(\'pick was:\', pick);\nscreen.textContent = \'Picked number \' + pick;</pre><p>The log is for YOU; the screen is for USERS. Sprinkle logs when confused, read them, delete them after. It is the single most-used debugging tool on Earth.</p>',
+ 'Use console.log to note a value, AND still show a proper message on screen.',
+ '',
+ 'const pick = Math.floor(Math.random() * 3);\nconsole.log(\'pick was:\', pick);\nscreen.textContent = \'Picked number \' + pick;',
+ 'Two outputs: <code>console.log(\'label\', box)</code> for you, screen.textContent for the user.',
+ (c)=> hasRe(c,/console\.log\s*\(/) && hasRe(c,/screen\.textContent\s*=/)
+   ? {ok:true,msg:'Notebook AND screen. Logging is not failure &mdash; it is how experts see inside a running program.'}
+   : {ok:false,msg:'I need both a console.log(...) line and a screen.textContent line.'}),
+
+JL('Reading an error message',
+ '<p>Below is BROKEN code &mdash; run your eyes over the red message this page gives you. Errors are not scolding; they are the computer saying “I got confused HERE, because of THIS.”</p><p>This one has an unfinished quote: the computer hit the end of the line while still inside the string. Fix it, watch the red turn green, and notice the feeling &mdash; errors are handrails, not walls.</p>',
+ 'Fix the broken line so the message shows properly.',
+ 'screen.textContent = \'I forgot to close this quote;',
+ 'screen.textContent = \'I closed the quote properly!\';',
+ 'The opening quote after = never gets a partner. Add the closing \' before the semicolon.',
+ (c)=> hasRe(c,/screen\.textContent\s*=\s*'[^']*'\s*;?\s*$/m)
+   ? {ok:true,msg:'Fixed by READING the error, not by guessing. That habit alone puts you ahead of most beginners forever.'}
+   : {ok:false,msg:'The quote still isn’t closed properly &mdash; every opening \' needs a closing \'.'}),
+
+JL('Asking a value “what are you?”',
+ '<p>Remember Grade 5: <code>\'4\'</code> and <code>4</code> are different species, and mixing them causes the Total: 43 bug. When unsure what species a box holds, ASK, with <code>typeof</code>:</p><pre>const mystery = \'4\';\nscreen.textContent = \'mystery is a \' + typeof mystery;</pre><p>It answers <code>string</code> (words), <code>number</code>, <code>boolean</code> (true/false), <code>object</code> (labelled boxes and lists), or <code>function</code>. Half of all confusing bugs dissolve the moment you check what type you actually have.</p>',
+ 'Use typeof to show what species a box holds.',
+ '',
+ 'const mystery = \'4\';\nscreen.textContent = \'mystery is a \' + typeof mystery;',
+ 'Glue a label with <code>typeof boxName</code> on the screen line.',
+ (c)=> hasRe(c,/typeof\s+\w+/) && hasRe(c,/screen\.textContent\s*=/)
+   ? {ok:true,msg:'“What ARE you?” &mdash; the debugging question. Words that look like numbers are still words.'}
+   : {ok:false,msg:'Use <code>typeof someBox</code> in the text you put on screen.'}),
+
+JL('Guarding the door',
+ '<p>Real programs receive bad input constantly: empty answers, wrong types, nonsense. Professionals GUARD before they use:</p><pre>const name = \'\';\n\nif (name === \'\') {\n  screen.textContent = \'No name given &mdash; try again!\';\n} else {\n  screen.textContent = \'Welcome, \' + name + \'!\';\n}</pre><p>Check first, act second. Flip the box between <code>\'\'</code> and a real name to see both doors. Every login form, every payment page, every search box does exactly this before trusting what it was given.</p>',
+ 'Write a guard: if a box is empty show a helpful complaint, else use it in a greeting.',
+ '',
+ 'const name = \'\';\n\nif (name === \'\') {\n  screen.textContent = \'No name given - try again!\';\n} else {\n  screen.textContent = \'Welcome, \' + name + \'!\';\n}',
+ 'The test is <code>name === \'\'</code> &mdash; three equals, two quotes with nothing between.',
+ (c)=> hasRe(c,/if\s*\(\s*\w+\s*===?\s*['"]\s*['"]\s*\)/) && hasRe(c,/else/) && (c.match(/screen\.textContent/g)||[]).length>=2
+   ? {ok:true,msg:'Grade 12 complete. Log it, read the error, check the type, guard the door &mdash; the four survival skills of working programmers.'}
+   : {ok:false,msg:'I need an if testing === against \'\' (empty quotes), with different screen messages in each branch.'}),
+]);
+
+/* ============================ COLLEGE (52-56) ============================ */
+grade('C', [
+JL('Names that tell the truth',
+ '<p>Welcome to College. Nothing here is new syntax &mdash; it is JUDGEMENT: the difference between code that works and code that works AND can be read next month.</p><p>First judgement call: names. Below, working code with terrible names. <code>x</code>? <code>doIt</code>? Six weeks from now they mean nothing. Rewrite it so every name says what the thing IS: the list should be <code>excuseList</code>, the function <code>pickRandom</code>.</p><pre>const x = [\'My dog ate it\', \'Aliens\', \'I overslept\'];\nfunction doIt() {\n  return x[Math.floor(Math.random() * x.length)];\n}\nscreen.textContent = doIt();</pre>',
+ 'Rewrite with honest names: excuseList and pickRandom. Same behaviour.',
+ 'const x = [\'My dog ate it\', \'Aliens\', \'I overslept\'];\nfunction doIt() {\n  return x[Math.floor(Math.random() * x.length)];\n}\nscreen.textContent = doIt();',
+ 'const excuseList = [\'My dog ate it\', \'Aliens\', \'I overslept\'];\nfunction pickRandom() {\n  return excuseList[Math.floor(Math.random() * excuseList.length)];\n}\nscreen.textContent = pickRandom();',
+ 'Rename x to excuseList (everywhere it appears!) and doIt to pickRandom (both places).',
+ (c)=> c.includes('excuseList') && c.includes('pickRandom') && !hasRe(c,/\bconst x\b|\bdoIt\b/) && hasRe(c,/screen\.textContent\s*=/)
+   ? {ok:true,msg:'Same machine, readable forever. Code is read ten times for every time it is written &mdash; name for the reader.'}
+   : {ok:false,msg:'Rename fully: excuseList and pickRandom everywhere, no x or doIt left behind.'}),
+
+JL('One job per trick',
+ '<p>Second judgement call: each function does ONE job. Below, choosing and showing are tangled into one blob. Untangle it: <code>pickExcuse()</code> only chooses (returns), <code>showExcuse()</code> only displays.</p><pre>function doEverything() {\n  const pick = Math.floor(Math.random() * excuseList.length);\n  screen.textContent = \'Your excuse: \' + excuseList[pick];\n}\ndoEverything();</pre><p>Why bother? Because next month you’ll want the same picker for a DIFFERENT display &mdash; and one-job functions recombine like LEGO, while blobs must be rewritten.</p>',
+ 'Split into pickExcuse (returns a choice) and showExcuse (displays it), then use both.',
+ 'const excuseList = [\'My dog ate it\', \'Aliens\', \'I overslept\'];\n\nfunction doEverything() {\n  const pick = Math.floor(Math.random() * excuseList.length);\n  screen.textContent = \'Your excuse: \' + excuseList[pick];\n}\ndoEverything();',
+ 'const excuseList = [\'My dog ate it\', \'Aliens\', \'I overslept\'];\n\nfunction pickExcuse() {\n  const pick = Math.floor(Math.random() * excuseList.length);\n  return excuseList[pick];\n}\n\nfunction showExcuse(excuse) {\n  screen.textContent = \'Your excuse: \' + excuse;\n}\n\nshowExcuse(pickExcuse());',
+ 'pickExcuse ends in return; showExcuse takes an ingredient and touches the screen; the last line feeds one into the other.',
+ (c)=> hasRe(c,/function\s+pickExcuse[\s\S]*return/) && hasRe(c,/function\s+showExcuse\s*\(\s*\w+\s*\)[\s\S]*screen\.textContent/) && hasRe(c,/showExcuse\s*\(\s*pickExcuse\s*\(\s*\)\s*\)/)
+   ? {ok:true,msg:'Untangled. Chooser and shower, snapped together on the last line. This is architecture &mdash; at five lines’ scale.'}
+   : {ok:false,msg:'I need pickExcuse returning a value, showExcuse(ingredient) displaying it, and showExcuse(pickExcuse()); wiring them.'}),
+
+JL('Don’t repeat yourself',
+ '<p>Third judgement call, famous enough to have initials (DRY): when you catch yourself copy-pasting a line with tiny changes, a loop or a function is begging to exist.</p><pre>let out = \'\';\nout = out + \'Day 1 done. \';\nout = out + \'Day 2 done. \';\nout = out + \'Day 3 done. \';\nout = out + \'Day 4 done. \';\nout = out + \'Day 5 done. \';\nscreen.textContent = out;</pre><p>Five near-identical lines. Replace them with a loop &mdash; and notice the bonus: to handle 100 days, the loop changes ONE number; the copy-paste version needs 95 more lines.</p>',
+ 'Replace the repeated lines with a for loop producing the same result.',
+ 'let out = \'\';\nout = out + \'Day 1 done. \';\nout = out + \'Day 2 done. \';\nout = out + \'Day 3 done. \';\nout = out + \'Day 4 done. \';\nout = out + \'Day 5 done. \';\nscreen.textContent = out;',
+ 'let out = \'\';\nfor (let day = 1; day <= 5; day = day + 1) {\n  out = out + \'Day \' + day + \' done. \';\n}\nscreen.textContent = out;',
+ 'A for from 1 to 5, gluing \'Day \' + day + \' done. \' each lap.',
+ (c)=> hasRe(c,/for\s*\(/) && hasRe(c,/screen\.textContent\s*=/) && (c.match(/Day/g)||[]).length<=2
+   ? {ok:true,msg:'Five lines became one pattern. Repetition is where bugs breed &mdash; each pasted copy is another place to forget a fix.'}
+   : {ok:false,msg:'Use ONE for loop &mdash; the words \'Day\' and \'done\' should each appear only once in your code.'}),
+
+JL('The final project: the Mood Machine',
+ '<p>Your graduation build &mdash; a smarter Excuse-O-Matic that everything in school has been preparing for. It reads the mood box and picks from the RIGHT list:</p><p>Data: TWO lists &mdash; work excuses and school excuses. A mood box holding <code>\'work\'</code> or <code>\'school\'</code>. Brain: a function that chooses the correct list (if/else), then random-picks from it and returns the pick. Wiring: the button shows the result. Guard: if the mood is neither word, show a complaint instead.</p><p>No worked example this time. You have every piece: lists, choices, random, functions, guards, wiring. Build it. Use “Give me a lead” if truly stuck &mdash; but try alone first. This is the exam.</p>',
+ 'Build the Mood Machine: two lists, a mood box, a choosing+picking function with a guard, and button wiring.',
+ 'const workExcuses = [\'My laptop died\', \'Traffic was biblical\', \'The meeting ran over\'];\nconst schoolExcuses = [\'My dog ate it\', \'Aliens took it\', \'I overslept\'];\nconst mood = \'work\';\n',
+ 'const workExcuses = [\'My laptop died\', \'Traffic was biblical\', \'The meeting ran over\'];\nconst schoolExcuses = [\'My dog ate it\', \'Aliens took it\', \'I overslept\'];\nconst mood = \'work\';\n\nfunction pickExcuse() {\n  let list;\n  if (mood === \'work\') {\n    list = workExcuses;\n  } else if (mood === \'school\') {\n    list = schoolExcuses;\n  } else {\n    return \'I have no excuse for that mood.\';\n  }\n  const pick = Math.floor(Math.random() * list.length);\n  return list[pick];\n}\n\nbtn.onclick = function () {\n  screen.textContent = pickExcuse();\n};',
+ 'Inside the function: an if/else if choosing which list goes in a let box, a guard else returning a complaint, then the random pick from the chosen list.',
+ (c)=> hasRe(c,/if\s*\([^)]*===?[^)]*\)/) && hasRe(c,/else/) && hasRe(c,/Math\.random/) && hasRe(c,/function\s+\w+[\s\S]*return/) && hasRe(c,/onclick|addEventListener/) && hasRe(c,/screen\.textContent\s*=/)
+   ? {ok:true,msg:'THE MOOD MACHINE LIVES. Designed from a description, no worked example. That is the whole job &mdash; and you just did it.'}
+   : {ok:false,msg:'Checklist: an if/else choosing by mood, Math.random picking, a function that returns, and the button showing the result.'},
+ '<button id="btn">Excuse me!</button>\n<p id="screen">press the button...</p>'),
+
+JL('Graduation',
+ '<p>Look back at lesson one: you typed your name and it appeared. Today you built a machine with data, decisions, randomness, functions, and guards &mdash; from a spec, alone.</p><p>What you know now: HTML structure, CSS styling, and real programming &mdash; variables, types, choices, loops, functions, objects, debugging, and the professional habits of naming, one-job functions, and DRY.</p><p>Where next: the <b>12-week Paper Plate course</b> in this same repository (course/README.md) &mdash; it takes you from here to servers, Git, deployment, AI APIs, and shipping real features to a real app. It was written expecting a Code School graduate. That’s you.</p><p>One last line for the road. Make it true.</p>',
+ 'Declare it, on screen.',
+ '',
+ 'screen.textContent = \'I am a programmer.\';',
+ 'You know exactly how to put words on that screen. You’ve known since Grade 4.',
+ (c)=> hasRe(c,/screen\.textContent\s*=\s*['"].{3,}['"]/)
+   ? {ok:true,msg:'🎓 Class dismissed. Go build things.'}
+   : {ok:false,msg:'One line: screen.textContent = your declaration.'}),
+]);
+
+/* ============================ QA BANK ============================ */
+const STOP = new Set(['the','a','an','is','are','was','do','does','i','my','me','it','to','of','in','on','and','or','what','how','why','when','can','cant','dont','this','that','you','your']);
+const QA = [
+ {k:'tag hug open close pointy bracket', a:'A tag is an instruction in pointy brackets. Most come in pairs: <code>&lt;p&gt;</code> opens, <code>&lt;/p&gt;</code> (with the slash) closes, and everything between is inside the hug. Every hug you open, you close.'},
+ {k:'class dot css name many', a:'A class is a reusable name tag: <code>class="fancy"</code> in HTML, <code>.fancy</code> (with a dot) in CSS. Many elements can share one class &mdash; one rule styles them all.'},
+ {k:'id hash one unique', a:'An id names exactly ONE element per page: <code>id="title"</code> in HTML, <code>#title</code> (with a hash) in CSS. JavaScript also uses ids to grab elements. Dot = class (many), hash = id (one).'},
+ {k:'semicolon end line', a:'In CSS and JavaScript, <code>;</code> ends an instruction, like a full stop ends a sentence. Forgetting one sometimes works and sometimes causes weird errors &mdash; just always type it.'},
+ {k:'quotes string word text species', a:'Quotes mean "these exact letters" &mdash; a string. No quotes means a NAME: a variable, a function, a keyword. <code>\'name\'</code> is the word name; <code>name</code> is whatever the box called name holds.'},
+ {k:'variable const box let difference change', a:'A variable is a labelled box. <code>const</code> boxes cannot be re-pointed after filling; <code>let</code> boxes can change. Use const normally, let when the value must change (like loop counters or a remembered last pick).'},
+ {k:'equals sign put into assignment', a:'One <code>=</code> means PUT INTO: the right side’s value goes into the left side’s box. It is an action, not a maths fact. Three <code>===</code> asks "are these exactly equal?" and answers true or false.'},
+ {k:'textcontent screen show display output working', a:'<code>screen.textContent = something;</code> puts something into the box on the page. Working a value out (with return or maths) does NOT show it &mdash; only textContent shows it. Every JS lesson here requires it for exactly that reason.'},
+ {k:'function trick teach call parentheses', a:'A function is a named trick: <code>function name() { instructions }</code> teaches it (nothing runs yet); <code>name();</code> performs it. Ingredients go in the round brackets.'},
+ {k:'return hand back give result', a:'<code>return</code> hands a value back to whoever called the function &mdash; the call gets replaced by the returned value. It does NOT show anything on screen; that is textContent’s job.'},
+ {k:'if else choice condition decide', a:'<code>if (test) { ... }</code> runs the braces only when the test is true. Add <code>else { ... }</code> for the other case, and <code>else if</code> for chains. The first true door wins; the rest are skipped.'},
+ {k:'loop for repeat again lap', a:'<code>for (let i = 1; i <= 5; i = i + 1) { ... }</code> repeats the braces: start, keep-going test, after-each-lap change. Use <code>for (const item of list)</code> to visit every list item by name.'},
+ {k:'while stop forever infinite frozen freeze', a:'<code>while (test) { ... }</code> repeats as long as the test stays true. Something INSIDE must push toward the exit or the loop never ends and the page freezes. If frozen: check what changes your condition.'},
+ {k:'list array square bracket zero item position', a:'A list holds many values: <code>[\'a\', \'b\', \'c\']</code>. Positions count from ZERO: list[0] is the first item, list[2] the third. list.length is how many items.'},
+ {k:'random math floor pick', a:'<code>Math.random()</code> gives a decimal between 0 and 1. <code>Math.floor(Math.random() * list.length)</code> turns it into a fair whole-number position for the list.'},
+ {k:'object label field dot curly', a:'An object is a box with LABELLED compartments: <code>{ name: \'Josh\', age: 40 }</code>. Read with a dot: <code>person.name</code>. Change with dot on the left: <code>person.mood = \'happy\';</code>'},
+ {k:'plus glue add join concatenate total 43', a:'<code>+</code> adds numbers but GLUES strings &mdash; and gluing wins when they mix. <code>\'Total: \' + 4 + 3</code> gives Total: 43. Force maths first with brackets: <code>\'Total: \' + (4 + 3)</code> gives Total: 7.'},
+ {k:'error red message broken syntax mean', a:'An error message says where the computer got confused and why. Read the LAST line first &mdash; it names the problem. Common ones: an unclosed quote, a missing bracket or brace, a misspelled name. Errors are handrails, not walls.'},
+ {k:'console log f12 debug notebook', a:'<code>console.log(\'note\', someBox)</code> writes to a hidden notebook (F12 &rarr; Console in a real browser). It is for YOU while debugging; the screen is for users. Sprinkle logs when confused, remove them after.'},
+ {k:'typeof type number string check species', a:'<code>typeof thing</code> answers what species a value is: string, number, boolean, object, or function. When maths or comparisons act weird, check the types first &mdash; \'4\' is a word, not a number.'},
+ {k:'color colour spelling american', a:'CSS uses American spellings: <code>color</code>, not colour, and <code>center</code>, not centre. If a style silently does nothing, spelling is suspect number one &mdash; CSS ignores what it doesn’t recognise.'},
+ {k:'padding margin border space box', a:'Every element is a box: content, then padding (space INSIDE the edge), then border (the line), then margin (space OUTSIDE, pushing neighbours away). Wrong spacing = one of these three.'},
+ {k:'button click onclick press wire', a:'<code>btn.onclick = function () { ... };</code> hands the button instructions for later &mdash; nothing runs until the click. The screen-changing line goes INSIDE the braces.'},
+ {k:'attribute href title extra note value', a:'Attributes are extra notes inside an opening tag: <code>name="value"</code>. Examples: href on links (where to go), title (hover note), class and id (name tags).'},
+ {k:'css rule selector brace property', a:'A CSS rule: <code>selector { property: value; }</code>. The selector picks WHO (p, .class, #id); each property line says WHAT. Missing brace or semicolon breaks everything after it.'},
+ {k:'nothing happens blank quiet screen empty', a:'Screen staying quiet? Checklist: 1) does your code end with a screen.textContent line that RUNS (not trapped inside an uncalled function)? 2) any red error below the editor? 3) if it’s a click lesson &mdash; did you press the button in the preview?'},
+ {k:'zero start counting first item one', a:'Computers count from 0: the first list item is list[0], the second list[1]. So the last item of a 3-item list is list[2], and list.length is 3. Off-by-one confusion bites everyone once &mdash; then never again.'},
+ {k:'save progress lose reset restart', a:'Your progress saves automatically in this browser (localStorage) after every completed lesson. The file also carries a seed of your history, so even a fresh browser starts you near where you left off.'},
+ {k:'dry repeat copy paste yourself', a:'DRY = Don’t Repeat Yourself. Copy-pasting a line with small changes is the signal to use a loop or a function instead: one place to fix, not five.'},
+ {k:'guard empty input check trust', a:'Guarding means checking a value BEFORE using it: <code>if (name === \'\') { complain } else { use it }</code>. Real programs never trust input &mdash; not from users, not from anywhere.'},
+ {k:'nan undefined weird result strange', a:'<code>NaN</code> means "not a number" &mdash; usually maths attempted on a word. <code>undefined</code> means a box that was never filled, or a label an object doesn’t have. Both are clues: check your spelling and your types.'},
+ {k:'braces bracket parenthesis kinds three', a:'Three bracket families: <code>( )</code> round &mdash; function calls, tests, grouping maths; <code>[ ]</code> square &mdash; lists and positions; <code>{ }</code> curly &mdash; code blocks and objects. Every opener needs its closer.'},
+];
+
+/* ============================ ENGINE ============================ */
+const $ = s => document.querySelector(s);
+const edEl=$('#ed'), teachEl=$('#teach'), goalEl=$('#goal'), statusEl=$('#status'),
+      outEl=$('#out'), navEl=$('#nav'), remindTxt=$('#remindTxt'), remindBox=$('#remind'),
+      btnNext=$('#btnNext');
+
+let idx = 0, done = new Set(), leadStep = 0, sandbox = false, checkTimer = null;
+
+function saveP(){ try{ localStorage.setItem('codeschool', JSON.stringify({done:[...done], idx})); }catch(e){} }
+function loadP(){
+  let p = null;
+  try{ p = JSON.parse(localStorage.getItem('codeschool')); }catch(e){}
+  if (!p || !Array.isArray(p.done)) p = CARRIED;
+  done = new Set(p.done.filter(n => n >= 0 && n < L.length));
+  idx = Math.min(Math.max(p.idx|0, 0), L.length - 1);
+}
+
+const REMIND = {
+  html: '<b>&lt;tag&gt;</b>opens · <b>&lt;/tag&gt;</b>closes · every hug needs its end',
+  css:  'selector { property: value; } · every line ends with ;',
+  js:   'screen.textContent = ...  · working it out is NOT showing it · quotes = words, no quotes = box name',
+};
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+function safeJs(s){ return s.replace(/<\/(scr)/gi, '<\\/$1'); }
+
+function buildDoc(les, code){
+  let body, css = les.css || '', js = '';
+  if (les.lang === 'html'){ body = code; js = les.js || ''; }
+  else if (les.lang === 'css'){ body = les.html; css = code; js = les.js || ''; }
+  else { body = les.html; js = 'const screen=document.getElementById("screen");const btn=document.getElementById("btn");\ntry{\n' + safeJs(code) + '\n}catch(e){}'; }
+  let doc = '<!DOCTYPE html><html><head><meta charset="utf-8"><style>' + css + '</style></head><body>' + body;
+  if (js) doc += '<scr'+'ipt>' + js + '<\/scr'+'ipt>';
+  return doc;
+}
+
+function jsSyntaxError(code){
+  try { new Function(code); return null; }
+  catch(e){ return e.message || 'syntax error'; }
+}
+function friendlySyntax(msg, code){
+  const t = code.trimEnd();
+  if (/[+\-*/=,({[.]$/.test(t) || /(&&|\|\|)\s*$/.test(t))
+    return 'It looks like a line isn’t finished &mdash; the code ends mid-thought (after a ' + t.slice(-1) + '). Complete that last line.';
+  const opens = (code.match(/\{/g)||[]).length, closes = (code.match(/\}/g)||[]).length;
+  if (opens > closes) return 'A curly brace { was opened but never closed. Count your { and } &mdash; you need one more }.';
+  if (closes > opens) return 'There is a closing brace } too many (or a { is missing). Count your { and }.';
+  if (/unterminated|Invalid or unexpected token/i.test(msg) && /'/.test(code))
+    return 'A quote was opened but never closed. Every opening \' needs a closing \' on the same line.';
+  if (/unexpected end/i.test(msg)) return 'The code stops before something was finished &mdash; usually a missing ) or }.';
+  return 'The computer got confused reading this: ' + esc(msg) + '. Check brackets, quotes, and spelling.';
+}
+
+function runCheck(){
+  if (sandbox) return;
+  const les = L[idx], code = edEl.value;
+  outEl.srcdoc = buildDoc(les, code);
+  let res;
+  if (!code.trim()){
+    res = {ok:false, msg:'Start typing &mdash; the goal is in the blue box on the left.'};
+  } else if (les.lang === 'js'){
+    const err = jsSyntaxError(code);
+    if (err) res = {ok:false, msg:friendlySyntax(err, code)};
+    else if (!/\.textContent\s*=/.test(code))
+      res = {ok:false, msg:'Nothing reaches the screen yet. Remember: working it out is not showing it &mdash; you need a <code>screen.textContent =</code> line.'};
+    else res = normRes(les, code);
+  } else {
+    res = normRes(les, code);
+  }
+  statusEl.className = res.ok ? 'ok' : '';
+  statusEl.innerHTML = (res.ok ? '✓ ' : '') + res.msg;
+  btnNext.style.display = res.ok ? 'inline-block' : 'none';
+  if (res.ok && !done.has(idx)){ done.add(idx); saveP(); renderNav(); }
+}
+function normRes(les, code){
+  let doc = null;
+  try { doc = new DOMParser().parseFromString(buildDoc(les, code), 'text/html'); } catch(e){}
+  const r = les.check(code, doc);
+  return (r && typeof r === 'object') ? r : (r ? {ok:true,msg:'Done!'} : {ok:false,msg:'Not quite yet &mdash; re-read the goal box.'});
+}
+
+function renderNav(){
+  navEl.innerHTML = '';
+  for (const g of GRADES){
+    const lessons = L.map((l,i)=>({l,i})).filter(x=>x.l.g===g.id);
+    const gdone = lessons.filter(x=>done.has(x.i)).length;
+    const head = document.createElement('div');
+    head.className='ghead';
+    head.innerHTML = '<span>'+g.name+'<span class="gsub">'+g.sub+'</span></span>';
+    if (gdone > 0){
+      const rb = document.createElement('button');
+      rb.className='ghreset'; rb.textContent='redo'; rb.title='Clear this grade’s ticks and start it again';
+      rb.onclick = (ev)=>{ ev.stopPropagation(); for (const x of lessons) done.delete(x.i); saveP(); loadLesson(lessons[0].i); };
+      head.appendChild(rb);
+    }
+    navEl.appendChild(head);
+    for (const x of lessons){
+      const b = document.createElement('button');
+      b.className = 'navitem' + (x.i===idx && !sandbox ? ' cur':'');
+      b.innerHTML = '<span class="tick">' + (done.has(x.i)?'✓':'') + '</span><span>' + x.l.title + '</span>';
+      b.onclick = ()=>loadLesson(x.i);
+      navEl.appendChild(b);
+    }
+  }
+  const total = L.length, nd = done.size;
+  $('#progTxt').textContent = nd + ' / ' + total;
+  $('#progFill').style.width = (100*nd/total) + '%';
+}
+
+function loadLesson(i){
+  sandbox = false; idx = i; leadStep = 0;
+  const les = L[i], g = GRADES.find(x=>x.id===les.g);
+  teachEl.dataset.lv = g.lv;
+  teachEl.innerHTML = '<h2>' + les.title + '</h2>' + les.teach;
+  goalEl.innerHTML = '<b>DO THIS:</b> ' + les.goal;
+  remindTxt.innerHTML = REMIND[les.lang];
+  remindBox.style.display = localStorage.getItem('remindHidden')==='1' ? 'none' : 'flex';
+  edEl.value = les.start;
+  saveP(); renderNav(); runCheck();
+  teachEl.scrollTop = 0; edEl.focus();
+}
+
+/* give me a lead: reveal the gap between start and sol in 4 word-snapped steps */
+function giveLead(){
+  const les = L[idx], start = les.start, sol = les.sol;
+  let p = 0;
+  while (p < start.length && p < sol.length && start[p] === sol[p]) p++;
+  let s = 0;
+  while (s < start.length - p && s < sol.length - p && start[start.length-1-s] === sol[sol.length-1-s]) s++;
+  const gap = sol.slice(p, sol.length - s);
+  leadStep = Math.min(leadStep + 1, 4);
+  let cut = Math.floor(gap.length * leadStep / 4);
+  while (cut < gap.length && !/\s/.test(gap[cut])) cut++;  /* snap forward to whitespace */
+  edEl.value = sol.slice(0, p) + gap.slice(0, cut) + (leadStep>=4 ? gap.slice(cut) : '') + sol.slice(sol.length - s);
+  if (leadStep>=4) edEl.value = sol;
+  statusEl.className=''; statusEl.innerHTML = 'Lead ' + leadStep + ' of 4 given &mdash; finish the thought yourself if you can.';
+  runCheck();
+}
+
+/* QA */
+function answer(q){
+  const words = q.toLowerCase().replace(/[^a-z0-9\s]/g,' ').split(/\s+/).filter(w=>w && !STOP.has(w));
+  let best=null, bestScore=0;
+  for (const e of QA){
+    const ks = e.k.split(' ');
+    let score = 0;
+    for (const w of words) if (ks.some(k=>k.startsWith(w)||w.startsWith(k))) score++;
+    if (score > bestScore){ bestScore=score; best=e; }
+  }
+  if (best && bestScore>0) return '<p>' + best.a + '</p>';
+  return '<p>I don’t know that one (I only know what this course teaches). Copy your question and paste it to Claude next time you’re online &mdash; then tell them to add it to my answer bank!</p>';
+}
+
+/* sandbox */
+const SANDBOX_START = '<h1>Free play<\/h1>\n<p>This page is all yours. No goals, no checks.<\/p>\n<button id="btn">A button<\/button>\n<p id="screen">a screen box<\/p>';
+function openSandbox(){
+  sandbox = true;
+  teachEl.dataset.lv = 2;
+  teachEl.innerHTML = '<h2>Free play<\/h2><p>No goal, no checker &mdash; just you and the machine. Write any HTML here (add &lt;style&gt; and script hugs if you like) and watch the preview. Your scratchpad saves itself in this browser.<\/p><p>Click any lesson in the sidebar to go back to school.<\/p>';
+  goalEl.innerHTML = '<b>PLAY.<\/b> Nothing you do here can break anything.';
+  remindBox.style.display='none';
+  btnNext.style.display='none';
+  statusEl.className='ok'; statusEl.innerHTML='Sandbox mode — everything is allowed.';
+  edEl.value = localStorage.getItem('sandboxCode') || SANDBOX_START;
+  outEl.srcdoc = edEl.value;
+  renderNav();
+}
+
+/* wiring */
+edEl.addEventListener('input', ()=>{
+  if (sandbox){ outEl.srcdoc = edEl.value; try{localStorage.setItem('sandboxCode', edEl.value);}catch(e){} return; }
+  clearTimeout(checkTimer); checkTimer = setTimeout(runCheck, 200);
+});
+edEl.addEventListener('keydown', (e)=>{
+  if (e.key === 'Tab'){ e.preventDefault();
+    const s = edEl.selectionStart;
+    edEl.value = edEl.value.slice(0,s) + '  ' + edEl.value.slice(edEl.selectionEnd);
+    edEl.selectionStart = edEl.selectionEnd = s+2;
+    edEl.dispatchEvent(new Event('input'));
+  }
+});
+$('#btnHelp').onclick = ()=>{ if(!sandbox){ statusEl.className=''; statusEl.innerHTML = '💡 ' + L[idx].hint; } };
+$('#btnLead').onclick = ()=>{ if(!sandbox) giveLead(); };
+$('#btnSol').onclick  = ()=>{ if(!sandbox){ edEl.value = L[idx].sol; runCheck(); } };
+$('#btnReDo').onclick = ()=>{ if(sandbox){ edEl.value = SANDBOX_START; outEl.srcdoc = edEl.value; } else { edEl.value = L[idx].start; leadStep=0; runCheck(); } };
+btnNext.onclick = ()=>{ if (idx < L.length-1) loadLesson(idx+1); };
+$('#remindHide').onclick = ()=>{ remindBox.style.display='none'; try{localStorage.setItem('remindHidden','1');}catch(e){} };
+$('#btnSandbox').onclick = openSandbox;
+$('#btnQA').onclick = ()=>$('#qaPanel').classList.toggle('open');
+$('#qaClose').onclick = ()=>$('#qaPanel').classList.remove('open');
+$('#qaIn').addEventListener('keydown', (e)=>{
+  if (e.key==='Enter' && e.target.value.trim()){
+    $('#qaOut').innerHTML = '<p><b>You asked:</b> ' + esc(e.target.value) + '</p>' + answer(e.target.value);
+    e.target.value='';
+  }
+});
+
+loadP();
+loadLesson(idx);
+</script>
+</body>
+</html>

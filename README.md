@@ -35,8 +35,8 @@ wins over the seed.
 - Per-grade redo buttons, REMEMBER strip per language, reading level that
   "ages up" with the grades.
 
-After College graduation, the next step is the [12-week Paper Plate course](../course/README.md)
-in this repo — servers, Git, deployment, AI APIs, and shipping real features.
+After College graduation, the next step is the [12-week Paper Plate course](https://github.com/joshuagrigson/paper-plate/tree/claude/coding-class-12-week-8xzphw/course)
+in the paper-plate repo — servers, Git, deployment, AI APIs, and shipping real features.
 
 ## For maintainers
 

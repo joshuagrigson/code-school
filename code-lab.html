@@ -45,9 +45,12 @@ nav{width:230px;flex:0 0 auto;overflow-y:auto;background:var(--panel);border-rig
 .right{flex:1;display:flex;flex-direction:column;min-width:0}
 .remind{flex:0 0 auto;background:#fbf6da;border-bottom:2px solid #e8dfae;padding:6px 12px;font-size:.8rem;font-family:Menlo,Consolas,monospace;display:flex;gap:8px;align-items:center}
 .remind button{margin-left:auto;border:none;background:none;cursor:pointer;font-size:.75rem;color:var(--soft)}
-#ed{flex:1;min-height:80px;resize:none;border:none;outline:none;padding:12px 14px;font-family:Menlo,Consolas,monospace;font-size:.95rem;line-height:1.55;background:#1e1e1e;color:#d4d4d4;caret-color:#aeafad;white-space:pre;tab-size:2}
-#ed::selection{background:#264f78;color:#fff}
-#ed::placeholder{color:#6a6a6a}
+.edwrap{position:relative;flex:1;min-height:80px;background:#1e1e1e}
+#ed,#hl{position:absolute;inset:0;margin:0;border:none;padding:12px 14px;font-family:Menlo,Consolas,monospace;font-size:.95rem;line-height:1.55;white-space:pre;tab-size:2;overflow:auto}
+#hl{color:#d4d4d4;background:#1e1e1e;pointer-events:none;overflow:hidden}
+#ed{resize:none;outline:none;background:transparent;color:transparent;caret-color:#e8e8e8;z-index:1}
+#ed::selection{background:rgba(38,79,120,.85);color:transparent}
+.t-k{color:#c586c0}.t-kw{color:#569cd6}.t-s{color:#ce9178}.t-n{color:#b5cea8}.t-c{color:#6a9955}.t-f{color:#dcdcaa}.t-t{color:#569cd6}.t-a{color:#9cdcfe}.t-p{color:#9cdcfe}.t-sel{color:#d7ba7d}
 .btnrow{flex:0 0 auto;display:flex;gap:8px;padding:8px 12px;background:var(--panel);border-top:2px solid var(--line);flex-wrap:wrap}
 .btnrow button, header .hbtn{font-family:inherit;font-size:.85rem;padding:6px 12px;border-radius:8px;border:2px solid var(--line);background:var(--panel);cursor:pointer}
 .btnrow button:hover, header .hbtn:hover{border-color:var(--accent)}
@@ -85,7 +88,7 @@ nav{width:230px;flex:0 0 auto;overflow-y:auto;background:var(--panel);border-rig
     </div>
     <div class="right">
       <div class="remind" id="remind"><span id="remindTxt"></span><button id="remindHide">hide</button></div>
-      <textarea id="ed" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea>
+      <div class="edwrap"><pre id="hl"></pre><textarea id="ed" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea></div>
       <div class="btnrow">
         <button id="btnHelp">Help me</button>
         <button id="btnLead">Give me a lead</button>
@@ -823,7 +826,56 @@ const QA = [
 
 /* ============================ ENGINE ============================ */
 const $ = s => document.querySelector(s);
-const edEl=$('#ed'), teachEl=$('#teach'), goalEl=$('#goal'), statusEl=$('#status'),
+
+/* ===== syntax highlighting (VS Code dark-ish) ===== */
+function hlEsc(x){ return x.replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+function hlJS(code){
+  const re=/(\/\/[^\n]*)|('(?:[^'\\\n]|\\.)*'?|"(?:[^"\\\n]|\\.)*"?|`(?:[^`\\]|\\.)*`?)|\b(\d+(?:\.\d+)?)\b|\b(const|let|var|function|return|new|typeof)\b|\b(if|else|for|of|in|while|break|continue|true|false|null|undefined)\b|([A-Za-z_$][\w$]*)(?=\s*\()|\.([A-Za-z_$][\w$]*)/g;
+  let out='',last=0,m;
+  while((m=re.exec(code))){
+    out+=hlEsc(code.slice(last,m.index));
+    if(m[1])out+='<span class="t-c">'+hlEsc(m[1])+'</span>';
+    else if(m[2])out+='<span class="t-s">'+hlEsc(m[2])+'</span>';
+    else if(m[3])out+='<span class="t-n">'+hlEsc(m[3])+'</span>';
+    else if(m[4])out+='<span class="t-kw">'+hlEsc(m[4])+'</span>';
+    else if(m[5])out+='<span class="t-k">'+hlEsc(m[5])+'</span>';
+    else if(m[6])out+='<span class="t-f">'+hlEsc(m[6])+'</span>';
+    else out+='.<span class="t-p">'+hlEsc(m[7])+'</span>';
+    last=re.lastIndex;
+  }
+  return out+hlEsc(code.slice(last));
+}
+function hlCSS(code){
+  const re=/([.#]?[A-Za-z][\w-]*)(\s*)\{|([A-Za-z-]+)(\s*:)([^;}]*)/g;
+  let out='',last=0,m;
+  while((m=re.exec(code))){
+    out+=hlEsc(code.slice(last,m.index));
+    if(m[1]!==undefined&&m[3]===undefined)out+='<span class="t-sel">'+hlEsc(m[1])+'</span>'+m[2]+'{';
+    else out+='<span class="t-a">'+hlEsc(m[3])+'</span>'+hlEsc(m[4])+'<span class="t-s">'+hlEsc(m[5])+'</span>';
+    last=re.lastIndex;
+  }
+  return out+hlEsc(code.slice(last));
+}
+function hlHTML(code){
+  const re=/<(\/?)([a-zA-Z][\w-]*)((?:[^>"']|"[^"]*"?|'[^']*'?)*)(>?)/g;
+  let out='',last=0,m;
+  while((m=re.exec(code))){
+    out+=hlEsc(code.slice(last,m.index));
+    let attrs=m[3].replace(/([A-Za-z-]+)(=)("[^"]*"?|'[^']*'?)/g,
+      (a,n,eq,v)=>'<span class="t-a">'+hlEsc(n)+'</span>'+eq+'<span class="t-s">'+hlEsc(v)+'</span>');
+    out+='&lt;'+m[1]+'<span class="t-t">'+hlEsc(m[2])+'</span>'+attrs+hlEsc(m[4]);
+    last=re.lastIndex;
+  }
+  return out+hlEsc(code.slice(last));
+}
+function syncHl(){
+  const lang = sandbox ? 'html' : L[idx].lang;
+  const code = edEl.value;
+  const fn = lang==='js' ? hlJS : lang==='css' ? hlCSS : hlHTML;
+  hlEl.innerHTML = fn(code) + '\n';
+  hlEl.scrollTop = edEl.scrollTop; hlEl.scrollLeft = edEl.scrollLeft;
+}
+const edEl=$('#ed'), hlEl=$('#hl'), teachEl=$('#teach'), goalEl=$('#goal'), statusEl=$('#status'),
       outEl=$('#out'), navEl=$('#nav'), remindTxt=$('#remindTxt'), remindBox=$('#remind'),
       btnNext=$('#btnNext');
 
@@ -875,6 +927,7 @@ function friendlySyntax(msg, code){
 }
 
 function runCheck(){
+  syncHl();
   if (sandbox) return;
   const les = L[idx], code = edEl.value;
   outEl.srcdoc = buildDoc(les, code);
@@ -985,15 +1038,17 @@ function openSandbox(){
   btnNext.style.display='none';
   statusEl.className='ok'; statusEl.innerHTML='Sandbox mode — everything is allowed.';
   edEl.value = localStorage.getItem('sandboxCode') || SANDBOX_START;
+  syncHl();
   outEl.srcdoc = edEl.value;
   renderNav();
 }
 
 /* wiring */
 edEl.addEventListener('input', ()=>{
-  if (sandbox){ outEl.srcdoc = edEl.value; try{localStorage.setItem('sandboxCode', edEl.value);}catch(e){} return; }
+  if (sandbox){ syncHl(); outEl.srcdoc = edEl.value; try{localStorage.setItem('sandboxCode', edEl.value);}catch(e){} return; }
   clearTimeout(checkTimer); checkTimer = setTimeout(runCheck, 200);
 });
+edEl.addEventListener('scroll', ()=>{ hlEl.scrollTop = edEl.scrollTop; hlEl.scrollLeft = edEl.scrollLeft; });
 edEl.addEventListener('keydown', (e)=>{
   if (e.key === 'Tab'){ e.preventDefault();
     const s = edEl.selectionStart;

@@ -328,7 +328,7 @@ CL('Background color',
  'body {\n\n}',
  'body {\n  background: lightyellow;\n}',
  '<code>background: somecolor;</code> inside the body rule.',
- (c)=> hasRe(c,/body\s*\{[^}]*background(-color)?\s*:\s*\w+/)
+ (c)=> hasRe(c,/body\s*\{[^}]*background(-color)?\s*:\s*[#a-zA-Z]\w*/)
    ? {ok:true,msg:'Whole page repainted with one line. This is why designers love CSS.'}
    : {ok:false,msg:'Inside the body braces: <code>background: lightyellow;</code> (or any color).'},
  G2HTML),
@@ -350,7 +350,7 @@ CL('Breathing room',
  'p {\n\n}',
  'p {\n  background: mintcream;\n  padding: 20px;\n}',
  'Two lines: a background color, and <code>padding: 20px;</code>.',
- (c)=> hasRe(c,/padding\s*:\s*\d+px/) && hasRe(c,/background(-color)?\s*:/)
+ (c)=> hasRe(c,/padding\s*:\s*\d+px/) && hasRe(c,/background(-color)?\s*:\s*[#a-zA-Z]\w*/)
    ? {ok:true,msg:'Room to breathe. Space is not wasted screen &mdash; it is what makes things readable.'}
    : {ok:false,msg:'I need both: a background, and padding of at least a few px.'},
  G2HTML),
@@ -386,7 +386,7 @@ CL('Many things, one name',
  '.fancy {\n\n}',
  '.fancy {\n  background: lavender;\n  padding: 10px;\n  border-radius: 8px;\n}',
  'One rule: <code>.fancy { background: ...; padding: ...px; }</code>',
- (c)=> hasRe(c,/\.fancy\s*\{[^}]*background/) && hasRe(c,/padding\s*:/)
+ (c)=> hasRe(c,/\.fancy\s*\{[^}]*background\s*:\s*[#a-zA-Z]/) && hasRe(c,/padding\s*:\s*\d/)
    ? {ok:true,msg:'Three styled with one rule. Write once, use everywhere &mdash; you will meet this idea again in every language.'}
    : {ok:false,msg:'The .fancy rule needs a background and a padding.'},
  '<p class="fancy">First fancy thing</p>\n<p>Plain thing</p>\n<p class="fancy">Second fancy thing</p>\n<p class="fancy">Third fancy thing</p>'),
@@ -987,6 +987,8 @@ function cssLint(code){
   const opens=(code.match(/\{/g)||[]).length, closes=(code.match(/\}/g)||[]).length;
   if(opens>closes) return 'A { was opened but never closed — every rule ends with }. Count your braces.';
   if(closes>opens) return 'There is a } too many (or a { is missing). Count your braces.';
+  const empty=code.match(/([a-zA-Z-]+)\s*:\s*(;|$|\n|\})/);
+  if(empty) return 'The line <code>'+empty[1]+':</code> has no value yet — the shape is <code>property: value;</code>. Tell it WHAT (a color name, a px number...) before the semicolon.';
   const bad=code.match(/\{[^}]*\}/g);
   if(bad) for(const rule of bad){
     const lines=rule.slice(1,-1).split('\n').map(l=>l.trim()).filter(l=>l);

@@ -126,7 +126,7 @@ const CARRIED = {done:[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,2
 const GRADES = [
   {id:'K',  name:'Kindergarten', sub:'Words on a screen',      lv:0},
   {id:'G1', name:'Grade 1',      sub:'Hugs have names',        lv:0},
-  {id:'G2', name:'Grade 2',      sub:'Colouring things in',    lv:0},
+  {id:'G2', name:'Grade 2',      sub:'Coloring things in',    lv:0},
   {id:'G3', name:'Grade 3',      sub:'Name tags',              lv:1},
   {id:'G4', name:'Grade 4',      sub:'Making things happen',   lv:1},
   {id:'G5', name:'Grade 5',      sub:'Words and numbers',      lv:1},
@@ -288,10 +288,10 @@ HL('An extra note on a hug',
    : {ok:false,msg:'Add title="some message" inside the opening &lt;p&gt; tag.'}; }),
 
 HL('A link you can click',
- '<p>The tag that makes the web a <b>web</b>: <code>&lt;a&gt;</code> (anchor). Its <code>href</code> attribute says where the link goes.</p><pre>&lt;a href="https://example.com"&gt;Visit my favourite site&lt;/a&gt;</pre>',
+ '<p>The tag that makes the web a <b>web</b>: <code>&lt;a&gt;</code> (anchor). Its <code>href</code> attribute says where the link goes.</p><pre>&lt;a href="https://example.com"&gt;Visit my favorite site&lt;/a&gt;</pre>',
  'Make a link with an href and your own link words.',
  '',
- '<a href="https://example.com">My favourite place on the internet</a>',
+ '<a href="https://example.com">My favorite place on the internet</a>',
  'An a hug with href="some address" in the opening tag.',
  (c,d)=>{ const a=d.querySelector('a[href]'); return a && a.textContent.trim()
    ? {ok:true,msg:'One tag plus one attribute connects every page on Earth to every other. That is the whole web.'}
@@ -311,9 +311,9 @@ HL('Boxes to group things',
 /* ============================ GRADE 2 (14-18) ============================ */
 const G2HTML = '<h1>My page</h1>\n<p>This paragraph is about to get some style.</p>';
 grade('G2', [
-CL('Your first colour',
- '<p>A second language! <b>CSS</b> describes how things <b>look</b>. You write rules with this shape:</p><pre>p {\n  color: red;\n}</pre><p>Read it aloud: “Find every <code>p</code>. Make its text colour red.” The part before the brace picks WHO; the lines inside say WHAT. Every line ends with a semicolon <code>;</code>.</p>',
- 'Make every p on the page have the colour red.',
+CL('Your first color',
+ '<p>A second language! <b>CSS</b> describes how things <b>look</b>. You write rules with this shape:</p><pre>p {\n  color: red;\n}</pre><p>That <code>p</code> is not the letter p — it means <b>every &lt;p&gt; paragraph tag</b> from Kindergarten. CSS talks about tags by their bare names, no pointy brackets: <code>p</code> = paragraphs, <code>h1</code> = big headlines, <code>body</code> = the whole page.</p><p>So read the rule aloud: “Find every paragraph. Make its text color red.” The part before the brace picks WHO; the lines inside say WHAT. Every line ends with a semicolon <code>;</code>.</p>',
+ 'Make every p (that is: every &lt;p&gt; paragraph) have the color red.',
  'p {\n\n}',
  'p {\n  color: red;\n}',
  'Inside the braces: <code>color: red;</code> &mdash; note the American spelling of color, and the semicolon.',
@@ -322,48 +322,48 @@ CL('Your first colour',
    : {ok:false,msg:'Put <code>color: red;</code> between the braces. Spelling: c-o-l-o-r.'},
  G2HTML),
 
-CL('Background colour',
- '<p>Text colour is <code>color</code>; the paint BEHIND the text is <code>background</code>.</p><pre>body {\n  background: lightyellow;\n}</pre><p><code>body</code> means the whole page. Try other colours: <code>lavender</code>, <code>mintcream</code>, <code>peachpuff</code> &mdash; CSS knows about 140 by name.</p>',
- 'Give the whole page (body) a background colour.',
+CL('Background color',
+ '<p>Text color is <code>color</code>; the paint BEHIND the text is <code>background</code>.</p><pre>body {\n  background: lightyellow;\n}</pre><p><code>body</code> means the whole page. Try other colors: <code>lavender</code>, <code>mintcream</code>, <code>peachpuff</code> &mdash; CSS knows about 140 by name.</p>',
+ 'Give the whole page (body) a background color.',
  'body {\n\n}',
  'body {\n  background: lightyellow;\n}',
- '<code>background: somecolour;</code> inside the body rule.',
+ '<code>background: somecolor;</code> inside the body rule.',
  (c)=> hasRe(c,/body\s*\{[^}]*background(-color)?\s*:\s*\w+/)
    ? {ok:true,msg:'Whole page repainted with one line. This is why designers love CSS.'}
-   : {ok:false,msg:'Inside the body braces: <code>background: lightyellow;</code> (or any colour).'},
+   : {ok:false,msg:'Inside the body braces: <code>background: lightyellow;</code> (or any color).'},
  G2HTML),
 
-CL('Size and centre',
+CL('Size and center',
  '<p>Two more properties for your collection:</p><pre>h1 {\n  font-size: 60px;\n  text-align: center;\n}</pre><p><code>px</code> means pixels &mdash; screen dots. And notice: one rule can hold MANY lines. Each one still ends with <code>;</code>.</p>',
- 'Make the h1 bigger with font-size AND centred with text-align.',
+ 'Make the h1 (the big headline) bigger with font-size AND centered with text-align.',
  'h1 {\n\n}',
  'h1 {\n  font-size: 60px;\n  text-align: center;\n}',
  'Two lines inside the braces: <code>font-size: 60px;</code> and <code>text-align: center;</code>.',
  (c)=> hasRe(c,/font-size\s*:\s*\d+px/) && hasRe(c,/text-align\s*:\s*center/)
-   ? {ok:true,msg:'Big and centred. You are stacking properties like a pro already.'}
+   ? {ok:true,msg:'Big and centered. You are stacking properties like a pro already.'}
    : {ok:false,msg:'I need both lines: font-size with a px number, and text-align: center.'},
  G2HTML),
 
 CL('Breathing room',
- '<p>Squashed text is hard to read. <code>padding</code> adds space INSIDE a box, between its edge and its contents &mdash; like the cardboard around a framed photo.</p><pre>p {\n  padding: 20px;\n  background: mintcream;\n}</pre><p>The background makes the padding visible &mdash; watch the coloured area grow around the words.</p>',
- 'Give the p a background colour and at least 20px of padding.',
+ '<p>Squashed text is hard to read. <code>padding</code> adds space INSIDE a box, between its edge and its contents &mdash; like the cardboard around a framed photo.</p><pre>p {\n  padding: 20px;\n  background: mintcream;\n}</pre><p>The background makes the padding visible &mdash; watch the colored area grow around the words.</p>',
+ 'Give the p (the paragraph) a background color and at least 20px of padding.',
  'p {\n\n}',
  'p {\n  background: mintcream;\n  padding: 20px;\n}',
- 'Two lines: a background colour, and <code>padding: 20px;</code>.',
+ 'Two lines: a background color, and <code>padding: 20px;</code>.',
  (c)=> hasRe(c,/padding\s*:\s*\d+px/) && hasRe(c,/background(-color)?\s*:/)
    ? {ok:true,msg:'Room to breathe. Space is not wasted screen &mdash; it is what makes things readable.'}
    : {ok:false,msg:'I need both: a background, and padding of at least a few px.'},
  G2HTML),
 
 CL('Lines and round corners',
- '<p>Boxes can wear an outline: <code>border</code>. It takes three values in one line &mdash; how thick, what style, what colour:</p><pre>p {\n  border: 3px solid darkgreen;\n  border-radius: 12px;\n}</pre><p><code>border-radius</code> rounds the corners. Together they turn plain text into a card.</p>',
- 'Give the p a border AND rounded corners.',
+ '<p>Boxes can wear an outline: <code>border</code>. It takes three values in one line &mdash; how thick, what style, what color:</p><pre>p {\n  border: 3px solid darkgreen;\n  border-radius: 12px;\n}</pre><p><code>border-radius</code> rounds the corners. Together they turn plain text into a card.</p>',
+ 'Give the p (the paragraph) a border AND rounded corners.',
  'p {\n\n}',
  'p {\n  border: 3px solid darkgreen;\n  border-radius: 12px;\n}',
- 'Two lines: <code>border: 3px solid somecolour;</code> and <code>border-radius: 12px;</code>.',
+ 'Two lines: <code>border: 3px solid somecolor;</code> and <code>border-radius: 12px;</code>.',
  (c)=> hasRe(c,/border\s*:\s*\d+px\s+\w+\s+\w+/) && hasRe(c,/border-radius\s*:\s*\d+px/)
-   ? {ok:true,msg:'A proper card! Grade 2 done: you can colour, size, space, and frame anything on a page.'}
-   : {ok:false,msg:'I need a full border (thickness, style, colour) plus a border-radius.'},
+   ? {ok:true,msg:'A proper card! Grade 2 done: you can color, size, space, and frame anything on a page.'}
+   : {ok:false,msg:'I need a full border (thickness, style, color) plus a border-radius.'},
  G2HTML),
 ]);
 
@@ -527,7 +527,7 @@ JL('Tricks using tricks',
    const inner = new RegExp('function\\s+'+fns[1]+'[\\s\\S]*?'+fns[0]+'\\s*\\(');
    const inner2 = new RegExp('function\\s+'+fns[0]+'[\\s\\S]*?'+fns[1]+'\\s*\\(');
    return (inner.test(c)||inner2.test(c)) && hasRe(c,/screen\.textContent\s*=/)
-     ? {ok:true,msg:'Tricks calling tricks &mdash; Grade 7 complete. You now organise code the way professionals do.'}
+     ? {ok:true,msg:'Tricks calling tricks &mdash; Grade 7 complete. You now organize code the way professionals do.'}
      : {ok:false,msg:'One of the functions must CALL the other by name inside its body, and the result must reach the screen.'}; }),
 ]);
 
@@ -544,10 +544,10 @@ JL('Making a choice',
    : {ok:false,msg:'I need an if with a comparison in (), and a screen.textContent line inside its braces.'}),
 
 JL('Otherwise...',
- '<p>An if alone stays silent when the test fails. <code>else</code> gives it a second path:</p><pre>const score = 3;\n\nif (score > 5) {\n  screen.textContent = \'Great score!\';\n} else {\n  screen.textContent = \'Keep practising.\';\n}</pre><p>Now EXACTLY one of the two branches always runs. Flip score between 3 and 8 and watch the screen switch sides.</p>',
+ '<p>An if alone stays silent when the test fails. <code>else</code> gives it a second path:</p><pre>const score = 3;\n\nif (score > 5) {\n  screen.textContent = \'Great score!\';\n} else {\n  screen.textContent = \'Keep practicing.\';\n}</pre><p>Now EXACTLY one of the two branches always runs. Flip score between 3 and 8 and watch the screen switch sides.</p>',
  'Write an if/else where each branch writes something different.',
  '',
- 'const score = 3;\n\nif (score > 5) {\n  screen.textContent = \'Great score!\';\n} else {\n  screen.textContent = \'Keep practising.\';\n}',
+ 'const score = 3;\n\nif (score > 5) {\n  screen.textContent = \'Great score!\';\n} else {\n  screen.textContent = \'Keep practicing.\';\n}',
  'After the if’s closing brace: <code>} else {</code> then the other screen line, then <code>}</code>.',
  (c)=> hasRe(c,/if\s*\([^)]+\)\s*\{[\s\S]*\}\s*else\s*\{[\s\S]*screen\.textContent[\s\S]*\}/) && (c.match(/screen\.textContent/g)||[]).length>=2
    ? {ok:true,msg:'Two roads, one always taken. That certainty &mdash; SOMETHING always happens &mdash; is what makes programs feel dependable.'}
@@ -637,7 +637,7 @@ JL('The machine’s brain',
  'const excuses = [\'My dog ate it\', \'Aliens took it\', \'I overslept\', \'Gravity failed\'];\n\nfunction pickExcuse() {\n  const pick = Math.floor(Math.random() * excuses.length);\n  return excuses[pick];\n}\n\nbtn.onclick = function () {\n  screen.textContent = pickExcuse();\n};',
  'Three layers: the const list, the function with return, the btn.onclick that calls it.',
  (c)=> hasRe(c,/=\s*\[\s*['"]/) && hasRe(c,/function\s+\w+[\s\S]*Math\.random[\s\S]*return/) && hasRe(c,/onclick[\s\S]*screen\.textContent\s*=\s*\w+\s*\(/)
-   ? {ok:true,msg:'It THINKS. Data, brain, wiring &mdash; three layers you will recognise in every app ever written.'}
+   ? {ok:true,msg:'It THINKS. Data, brain, wiring &mdash; three layers you will recognize in every app ever written.'}
    : {ok:false,msg:'I need the list, a function using Math.random that returns an item, and a click showing the function’s result.'},
  '<button id="btn">Give me an excuse</button>\n<p id="screen">press the button...</p>'),
 
@@ -744,7 +744,7 @@ JL('Guarding the door',
 grade('C', [
 JL('Names that tell the truth',
  '<p>Welcome to College. Nothing here is new syntax &mdash; it is JUDGEMENT: the difference between code that works and code that works AND can be read next month.</p><p>First judgement call: names. Below, working code with terrible names. <code>x</code>? <code>doIt</code>? Six weeks from now they mean nothing. Rewrite it so every name says what the thing IS: the list should be <code>excuseList</code>, the function <code>pickRandom</code>.</p><pre>const x = [\'My dog ate it\', \'Aliens\', \'I overslept\'];\nfunction doIt() {\n  return x[Math.floor(Math.random() * x.length)];\n}\nscreen.textContent = doIt();</pre>',
- 'Rewrite with honest names: excuseList and pickRandom. Same behaviour.',
+ 'Rewrite with honest names: excuseList and pickRandom. Same behavior.',
  'const x = [\'My dog ate it\', \'Aliens\', \'I overslept\'];\nfunction doIt() {\n  return x[Math.floor(Math.random() * x.length)];\n}\nscreen.textContent = doIt();',
  'const excuseList = [\'My dog ate it\', \'Aliens\', \'I overslept\'];\nfunction pickRandom() {\n  return excuseList[Math.floor(Math.random() * excuseList.length)];\n}\nscreen.textContent = pickRandom();',
  'Rename x to excuseList (everywhere it appears!) and doIt to pickRandom (both places).',
@@ -817,7 +817,7 @@ const QA = [
  {k:'error red message broken syntax mean', a:'An error message says where the computer got confused and why. Read the LAST line first &mdash; it names the problem. Common ones: an unclosed quote, a missing bracket or brace, a misspelled name. Errors are handrails, not walls.'},
  {k:'console log f12 debug notebook', a:'<code>console.log(\'note\', someBox)</code> writes to a hidden notebook (F12 &rarr; Console in a real browser). It is for YOU while debugging; the screen is for users. Sprinkle logs when confused, remove them after.'},
  {k:'typeof type number string check species', a:'<code>typeof thing</code> answers what species a value is: string, number, boolean, object, or function. When maths or comparisons act weird, check the types first &mdash; \'4\' is a word, not a number.'},
- {k:'color colour spelling american', a:'CSS uses American spellings: <code>color</code>, not colour, and <code>center</code>, not centre. If a style silently does nothing, spelling is suspect number one &mdash; CSS ignores what it doesn’t recognise.'},
+ {k:'color color spelling american', a:'CSS uses American spellings: <code>color</code> (not the British colour) and <code>center</code> (not centre). If a style silently does nothing, spelling is suspect number one &mdash; CSS ignores what it doesn’t recognize.'},
  {k:'padding margin border space box', a:'Every element is a box: content, then padding (space INSIDE the edge), then border (the line), then margin (space OUTSIDE, pushing neighbours away). Wrong spacing = one of these three.'},
  {k:'button click onclick press wire', a:'<code>btn.onclick = function () { ... };</code> hands the button instructions for later &mdash; nothing runs until the click. The screen-changing line goes INSIDE the braces.'},
  {k:'attribute href title extra note value', a:'Attributes are extra notes inside an opening tag: <code>name="value"</code>. Examples: href on links (where to go), title (hover note), class and id (name tags).'},

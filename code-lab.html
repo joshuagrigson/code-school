@@ -45,6 +45,9 @@ nav{width:205px;flex:0 0 auto;overflow-y:auto;background:var(--panel);border-rig
 .morebox table{border-collapse:collapse;margin:6px 0 10px;width:100%}
 .morebox td{border:1px solid var(--line);padding:4px 8px;font-size:.95rem}
 .morebox td:first-child{font-family:Menlo,Consolas,monospace;background:var(--code);white-space:nowrap}
+.scaffold{flex:0 0 auto;background:#161616;border-bottom:2px solid #333;max-height:150px;overflow:auto;display:none}
+.scaffold .sclabel{position:sticky;top:0;font-size:.65rem;text-transform:uppercase;letter-spacing:1px;color:#8a8a8a;background:#161616;padding:5px 14px 2px}
+.scaffold pre{margin:0;padding:4px 14px 10px;font-family:Menlo,Consolas,monospace;font-size:.85rem;line-height:1.5;color:#d4d4d4;white-space:pre}
 .tryit{border-top:1px dashed var(--line);padding-top:8px;margin-top:8px}
 .tryit>b{color:var(--accent)}
 .gradbtn{display:inline-block;background:var(--accent);color:#fff;padding:10px 18px;border-radius:10px;text-decoration:none;font-size:1.05rem;margin:4px 0}
@@ -95,6 +98,7 @@ nav{width:205px;flex:0 0 auto;overflow-y:auto;background:var(--panel);border-rig
     </div>
     <div class="right">
       <div class="remind" id="remind"><span id="remindTxt"></span><button id="remindHide">hide</button></div>
+      <div class="scaffold" id="scaffold"><div class="sclabel" id="scLabel"></div><pre id="scPre"></pre></div>
       <div class="edwrap"><pre id="hl"></pre><textarea id="ed" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea></div>
       <div class="btnrow">
         <button id="btnHelp">Help me</button>
@@ -1064,6 +1068,12 @@ function loadLesson(i){
   goalEl.innerHTML = '<b>DO THIS:</b> ' + les.goal;
   remindTxt.innerHTML = REMIND[les.lang];
   remindBox.style.display = localStorage.getItem('remindHidden')==='1' ? 'none' : 'flex';
+  const sc=$('#scaffold');
+  if (les.lang!=='html' && les.html){
+    sc.style.display='block';
+    $('#scLabel').textContent = les.lang==='css' ? 'The page you are styling (already on the page — you write only the CSS)' : 'The page your JavaScript controls (already on the page)';
+    $('#scPre').innerHTML = hlHTML(les.html);
+  } else { sc.style.display='none'; }
   edEl.value = les.start;
   saveP(); renderNav(); runCheck();
   teachEl.scrollTop = 0; edEl.focus();
@@ -1108,6 +1118,7 @@ function openSandbox(){
   teachEl.innerHTML = '<h2>Free play<\/h2><p>No goal, no checker &mdash; just you and the machine. Write any HTML here (add &lt;style&gt; and script hugs if you like) and watch the preview. Your scratchpad saves itself in this browser.<\/p><p>Click any lesson in the sidebar to go back to school.<\/p>';
   goalEl.innerHTML = '<b>PLAY.<\/b> Nothing you do here can break anything.';
   remindBox.style.display='none';
+  $('#scaffold').style.display='none';
   btnNext.style.display='none';
   statusEl.className='ok'; statusEl.innerHTML='Sandbox mode — everything is allowed.';
   edEl.value = localStorage.getItem('sandboxCode') || SANDBOX_START;

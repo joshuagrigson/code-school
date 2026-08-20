@@ -914,7 +914,7 @@ function saveP(){ try{ localStorage.setItem('codeschool', JSON.stringify({done:[
 function loadP(){
   let p = null;
   try{ p = JSON.parse(localStorage.getItem('codeschool')); }catch(e){}
-  if (!p || !Array.isArray(p.done)) p = CARRIED;
+  if (!p || !Array.isArray(p.done)) p = (location.protocol === 'file:') ? CARRIED : {done:[], idx:0};
   done = new Set(p.done.filter(n => n >= 0 && n < L.length));
   idx = Math.min(Math.max(p.idx|0, 0), L.length - 1);
 }

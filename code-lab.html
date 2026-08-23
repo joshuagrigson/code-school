@@ -109,6 +109,32 @@ details.ft p{margin:6px 0 0;line-height:1.5}
 #qaOut{padding:10px 12px;overflow-y:auto;font-size:.88rem;line-height:1.5}
 #qaOut p{margin-bottom:8px}
 .hint-on #status{background:#eef;border-color:#ccd}
+body.dark{--bg:#221e1b;--panel:#2b2622;--ink:#ece5dc;--soft:#b0a698;--line:#4a423a;--code:#38322c;--good:#2d4436;--goodline:#3f6b52;--bad:#4a332c;--badline:#6b4a3f}
+body.dark .goalbox{background:#2c3a47;border-color:#5b8cb8}
+body.dark .goalbox b{color:#8fc1e8}
+body.dark #status.wait{background:#332e29;color:var(--soft)}
+body.dark #status.coach{background:#453a22;border-color:#6b5a32}
+body.dark .remind{background:#3d3826;border-color:#5a5232}
+body.dark .morebox{background:#332e28}
+body.dark .realname{background:#28332c;border-color:#3a4f40}
+body.dark #out{background:#fff}
+body.dark .wcard{background:var(--panel)}
+.navitem,.btnrow button,header .hbtn,.ghead{transition:background .12s,border-color .12s,color .12s}
+.tick.pop{animation:tickpop .45s ease}
+@keyframes tickpop{40%{transform:scale(1.7)}}
+.xpfloat{position:fixed;font-family:Menlo,Consolas,monospace;font-weight:bold;color:var(--accent);z-index:120;pointer-events:none;animation:xprise 1.2s ease forwards}
+@keyframes xprise{to{transform:translateY(-42px);opacity:0}}
+#status{transition:background .25s,color .25s}
+button:focus-visible,.navitem:focus-visible,#ed:focus-visible,input:focus-visible{outline:3px solid var(--accent2);outline-offset:1px}
+#navSearch{width:calc(100% - 16px);margin:6px 8px;padding:6px 10px;border:2px solid var(--line);border-radius:8px;font-family:inherit;font-size:.85rem;background:var(--panel);color:var(--ink)}
+.ghead{cursor:pointer;user-select:none}
+.ghead .garrow{font-size:.6rem;margin-right:2px;transition:transform .15s;display:inline-block}
+.ghead.closed .garrow{transform:rotate(-90deg)}
+.navitem.ghidden{display:none}
+.crumb{display:flex;align-items:center;gap:8px;font-size:.75rem;text-transform:uppercase;letter-spacing:1px;color:var(--soft);margin-bottom:8px}
+.crumb button{border:1px solid var(--line);background:none;border-radius:6px;cursor:pointer;font-size:.8rem;padding:1px 8px;color:var(--soft)}
+.crumb button:hover{border-color:var(--accent);color:var(--ink)}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 @media (max-width:900px){nav{width:170px}.work{flex-direction:column}.left{border-right:none;border-bottom:2px solid var(--line)}}
 </style>
 </head>
@@ -118,12 +144,13 @@ details.ft p{margin:6px 0 0;line-height:1.5}
   <div id="progBar"><div id="progFill"></div></div>
   <span id="progTxt">0 / 0</span>
   <span id="xpTxt"></span>
+  <button class="hbtn" id="btnDark" title="Toggle dark mode" aria-label="Toggle dark mode">🌙</button>
   <button class="hbtn" id="btnReplay" style="display:none">🏆 Do it all again</button>
   <button class="hbtn" id="btnSandbox">Free play</button>
   <button class="hbtn" id="btnQA">Ask a question</button>
 </header>
 <div class="main">
-  <nav id="nav"></nav>
+  <nav id="nav"><input id="navSearch" placeholder="Find a lesson…" aria-label="Search lessons"><div id="navList"></div></nav>
   <div class="work">
     <div class="left">
       <div class="teach" id="teach"></div>
@@ -138,7 +165,7 @@ details.ft p{margin:6px 0 0;line-height:1.5}
         <button id="btnLead" title="Reveals the answer in 4 steps - you finish the thought">🪜 Give me a lead</button>
         <button id="btnSol" title="Shows the full answer">👀 Show me</button>
         <button id="btnReDo" title="Back to the starting code">↺ Start over</button>
-        <button id="btnNext">Next lesson &rarr;</button>
+        <button id="btnNext" title="Ctrl+Enter also works">Next lesson &rarr;</button>
       </div>
       <div id="status">Start typing in the box above.</div>
       <div class="prevwrap">
@@ -161,7 +188,7 @@ details.ft p{margin:6px 0 0;line-height:1.5}
   <button id="wStart">Start Kindergarten &rarr;</button>
 </div></div>
 <div id="qaPanel">
-  <div class="qhead"><b>Ask a question</b><button id="qaClose">&times;</button></div>
+  <div class="qhead"><b>Ask a question</b><button id="qaClose" aria-label="Close">&times;</button></div>
   <input id="qaIn" placeholder="Type your question and press Enter">
   <div id="qaOut"><p>Ask me anything about what you have learned so far. I live inside this file, so I work with no internet at all.</p></div>
 </div>
@@ -1587,6 +1614,12 @@ function runCheck(){
     if (done.size===L.length){ confetti(160); gradeToast('', true); }
     else if (gComplete){ confetti(90); gradeToast(GRADES.find(x=>x.id===g).name, false); }
     else confetti(22);
+    const curNav = $('#navList') && $('#navList').querySelector('.navitem.cur .tick');
+    if (curNav) curNav.classList.add('pop');
+    const xr = $('#xpTxt').getBoundingClientRect();
+    const fl = document.createElement('div'); fl.className='xpfloat'; fl.textContent='+10 XP';
+    fl.style.left = xr.left+'px'; fl.style.top = (xr.top-4)+'px';
+    document.body.appendChild(fl); setTimeout(()=>fl.remove(), 1300);
   }
 }
 function normRes(les, code){
@@ -1621,8 +1654,12 @@ function gradeToast(gname, allDone){
 }
 function xpFor(){ let xp = done.size*10; for (const g of GRADES){ const ls=L.map((l,i)=>({l,i})).filter(x=>x.l.g===g.id); if (ls.length && ls.every(x=>done.has(x.i))) xp+=25; } return xp; }
 
+let openGrades = new Set();
 function renderNav(){
-  navEl.innerHTML = '';
+  const listEl = $('#navList');
+  const q = ($('#navSearch').value||'').trim().toLowerCase();
+  listEl.innerHTML = '';
+  const curG = sandbox ? null : L[idx].g;
   for (const g of GRADES){
     const lessons = L.map((l,i)=>({l,i})).filter(x=>x.l.g===g.id);
     const gdone = lessons.filter(x=>done.has(x.i)).length;
@@ -1632,17 +1669,23 @@ function renderNav(){
     head.innerHTML = '<span>'+(gComplete?'🏅 ':'')+g.name+'<span class="gsub">'+g.sub+'</span></span><span class="gcount">'+(tested.has(g.id)?'⚡ ':'')+gdone+'/'+lessons.length+'</span>';
     if (gdone > 0){
       const rb = document.createElement('button');
-      rb.className='ghreset'; rb.textContent='redo'; rb.title='Clear this grade’s ticks and start it again';
+      rb.className='ghreset'; rb.textContent='redo'; rb.setAttribute('aria-label','Redo this grade'); rb.title='Clear this grade’s ticks and start it again';
       rb.onclick = (ev)=>{ ev.stopPropagation(); for (const x of lessons) done.delete(x.i); saveP(); loadLesson(lessons[0].i); };
       head.appendChild(rb);
     }
-    navEl.appendChild(head);
+    listEl.appendChild(head);
+    const isOpen = q ? true : (g.id===curG || openGrades.has(g.id));
+    head.classList.toggle('closed', !isOpen);
+    head.insertAdjacentHTML('afterbegin','<span class="garrow">▼</span>');
+    head.onclick = (ev)=>{ if (ev.target.classList.contains('ghreset')) return;
+      if (openGrades.has(g.id)) openGrades.delete(g.id); else openGrades.add(g.id); renderNav(); };
     for (const x of lessons){
+      if (q && !x.l.title.toLowerCase().includes(q)) continue;
       const b = document.createElement('button');
-      b.className = 'navitem' + (x.i===idx && !sandbox ? ' cur':'');
+      b.className = 'navitem' + (x.i===idx && !sandbox ? ' cur':'') + (isOpen ? '' : ' ghidden');
       b.innerHTML = '<span class="tick">' + (done.has(x.i)?'✓':'') + '</span><span>' + x.l.title + '</span>';
       b.onclick = ()=>loadLesson(x.i);
-      navEl.appendChild(b);
+      listEl.appendChild(b);
     }
   }
   const total = L.length, nd = done.size;
@@ -1656,7 +1699,11 @@ function loadLesson(i){
   sandbox = false; idx = i; leadStep = 0;
   const les = L[i], g = GRADES.find(x=>x.id===les.g);
   teachEl.dataset.lv = g.lv;
-  teachEl.innerHTML = '<h2>' + les.title + '</h2>' + les.teach + (RN[i] ? '<div class="realname"><b>Real name</b>' + RN[i] + '</div>' : '') + (MORE[i] ? '<div class="morebox"><b>More to chew on</b>' + MORE[i] + '</div>' : '');
+  const gl = L.map((l,n)=>({l,n})).filter(x=>x.l.g===les.g);
+  const pos = gl.findIndex(x=>x.n===i);
+  const op = ORDER.indexOf(i);
+  const crumb = '<div class="crumb"><button id="crPrev" title="Previous lesson" aria-label="Previous lesson"'+(op<=0?' disabled':'')+'>&larr;</button><span>' + g.name + ' · ' + g.sub + ' — lesson ' + (pos+1) + ' of ' + gl.length + '</span><button id="crNext" title="Next lesson" aria-label="Next lesson"'+(op>=ORDER.length-1?' disabled':'')+'>&rarr;</button></div>';
+  teachEl.innerHTML = crumb + '<h2>' + les.title + '</h2>' + les.teach + (RN[i] ? '<div class="realname"><b>Real name</b>' + RN[i] + '</div>' : '') + (MORE[i] ? '<div class="morebox"><b>More to chew on</b>' + MORE[i] + '</div>' : '');
   goalEl.innerHTML = '<b>DO THIS:</b> ' + les.goal;
   remindTxt.innerHTML = REMIND[les.lang];
   remindBox.style.display = localStorage.getItem('remindHidden')==='1' ? 'none' : 'flex';
@@ -1671,6 +1718,9 @@ function loadLesson(i){
     : 'Type your JavaScript here - remember: screen.textContent = shows things';
   edEl.value = les.start;
   saveP(); renderNav(); runCheck();
+  const cp=$('#crPrev'), cn=$('#crNext');
+  if (cp) cp.onclick=()=>{ const o=ORDER.indexOf(idx); if (o>0) loadLesson(ORDER[o-1]); };
+  if (cn) cn.onclick=()=>{ const o=ORDER.indexOf(idx); if (o<ORDER.length-1) loadLesson(ORDER[o+1]); };
   teachEl.scrollTop = 0; edEl.focus();
   const cur=navEl.querySelector('.navitem.cur'); if (cur) cur.scrollIntoView({block:'nearest'});
 }
@@ -1750,6 +1800,18 @@ $('#btnReplay').onclick = ()=>{
   if (!confirm('Victory lap! This clears your ticks so you can run the whole school again with fresh eyes. Your graduation still happened - this is a flex, not a reset of who you are. Go again?')) return;
   done = new Set(); idx = 0; saveP(); loadLesson(0);
 };
+$('#btnDark').onclick = ()=>{
+  document.body.classList.toggle('dark');
+  const on = document.body.classList.contains('dark');
+  $('#btnDark').textContent = on ? '☀️' : '🌙';
+  try{ localStorage.setItem('darkmode', on?'1':'0'); }catch(e){}
+};
+try{ if (localStorage.getItem('darkmode')==='1'){ document.body.classList.add('dark'); $('#btnDark').textContent='☀️'; } }catch(e){}
+$('#navSearch').addEventListener('input', renderNav);
+document.addEventListener('keydown', (e)=>{
+  if (e.key==='Escape'){ $('#qaPanel').classList.remove('open'); const w=$('#welcome'); if (w.classList.contains('open')){ w.classList.remove('open'); try{localStorage.setItem('welcomed','1');}catch(x){} } }
+  if ((e.ctrlKey||e.metaKey) && e.key==='Enter' && btnNext.style.display!=='none' && !sandbox){ e.preventDefault(); btnNext.click(); }
+});
 $('#btnSandbox').onclick = openSandbox;
 $('#btnQA').onclick = ()=>$('#qaPanel').classList.toggle('open');
 $('#qaClose').onclick = ()=>$('#qaPanel').classList.remove('open');

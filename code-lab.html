@@ -74,6 +74,7 @@ nav{width:205px;flex:0 0 auto;overflow-y:auto;background:var(--panel);border-rig
 #btnNext{background:var(--accent);color:#fff;border-color:var(--accent);display:none}
 #status{flex:0 0 auto;padding:9px 14px;font-size:.92rem;border-top:2px solid var(--line);background:var(--bad);border-color:var(--badline)}
 #status.ok{background:var(--good)}
+#status .wild{display:block;margin-top:5px;font-size:.85rem;color:var(--soft);border-top:1px dashed var(--goodline);padding-top:5px}
 .prevwrap{flex:0 0 46%;display:flex;flex-direction:column;border-top:2px solid var(--line)}
 .prevlabel{flex:0 0 auto;font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--soft);padding:4px 12px;background:var(--panel)}
 #out{flex:1;border:none;background:#fff;width:100%}
@@ -1091,6 +1092,71 @@ const MORE={
 13:'<p>div is deliberately boring: no look, no meaning, just grouping. In Grade 2 you will paint one box and everything inside inherits the paint job — THAT is why grouping matters.</p><p>A semantic tip for later: when a box has a clear job there are nicer names — &lt;header&gt;, &lt;section&gt;, &lt;footer&gt;. They behave exactly like div but tell humans (and screen readers) what the group IS.</p>'
 };
 
+/* where each lesson's skill shows up in apps people use every day */
+const RW={
+0:'Every comment you have ever typed on Facebook or YouTube was exactly this: text handed to a computer, displayed back verbatim.',
+1:'Every tweet, text message, and product review is a typed sentence a computer shows to other people, word for word.',
+2:'The headline on every news site and the bold title atop every Amazon product page is an h1 doing exactly this.',
+3:'Right-click any website and choose View page source - the invisible stage directions you just learned are running every page on the internet.',
+4:'Broken layouts you have seen on glitchy websites are usually exactly this: a forgotten closing tag and a browser guessing wrong.',
+5:'The italic disclaimers under prices (\'*while supplies last\') and stressed words in articles are em hugs.',
+6:'The bold \'Total:\' at checkout and the bold usernames in your DMs are strong tags doing this exact job.',
+7:'Every restaurant homepage - name on top, hours underneath - is your sign with a payment processor attached.',
+8:'Google reads heading sizes to decide what a page is about - h1 for the topic, h2 for sections. Rankings hinge on your six-sizes lesson.',
+9:'Add to Cart, Like, Subscribe, Buy Now - the entire economy of the internet runs on this one tag waiting for Grade 4 wiring.',
+10:'Search results, your notification feed, every dropdown menu - structurally, all lists of li items.',
+11:'Hover over any product photo and a tooltip appears - a title attribute. The name="value" shape also carries every price and product ID on Amazon.',
+12:'The 34 blue links on a Google results page are 34 a tags with hrefs. The web IS this tag.',
+13:'Every card on Pinterest, every post box on Instagram, every tile on Netflix is a div grouping a photo, a title, and buttons.',
+14:'Brand colors - Facebook blue, Netflix red, Spotify green - are this exact property applied through one shared stylesheet.',
+15:'Dark mode on YouTube or your phone is mostly this: swapping background values across the whole page at once.',
+16:'Hero banners - the giant centered text when you land on Apple.com - are font-size plus text-align, exactly what you just wrote.',
+17:'Squint at any checkout page: the comfortable space inside every button and card is padding. Cramped sites feel untrustworthy, and designers know it.',
+18:'Rounded buttons and card corners on Instagram, Airbnb, and every modern app: border-radius. You now know their whole aesthetic.',
+19:'Sale prices in red next to normal prices: same tag, different class. Every \'highlight just this one\' on the web is a name tag.',
+20:'Every product card on an Amazon results page wears the same class - one rule dresses ten thousand cards. That is how sites stay consistent.',
+21:'The one search bar on Google\'s homepage, the one cart icon on every store - unique ids let code find THE one, exactly like #title.',
+22:'\'2 items in cart\', \'Sarah is typing...\', your like count going up - every live text change on every site is textContent being set.',
+23:'Your username shown in the corner after login is a stored value displayed by name - the site put you in a box at sign-in and reads it back on every page.',
+24:'Every Like button tap, every Add to Cart, every Send: an onclick function waiting exactly like yours. You now know what a tap actually does.',
+25:'\'Welcome back, Josh\' on your banking app: fixed words + your name box, glued with the same + you just used.',
+26:'Checkout totals (\'Subtotal: $43.97\') are label-plus-math exactly like this - and the Total: 43 bug has genuinely shipped on real stores.',
+27:'Your Instagram feed, Spotify queue, and Amazon order history are lists in boxes; showing item [0] first is literally what \'top of your feed\' means.',
+28:'Shuffle on Spotify, \'random video\' buttons, loot drops in games - Math.random picking a position in a list, exactly as you just wrote.',
+29:'When you tap Follow, the site runs its follow() trick - taught once, called millions of times a day. Every feature on every app is a named function.',
+30:'greet(\'Josh\') is how sites greet YOU: one function, your name as the ingredient. Password checkers, search - all tricks with ingredients.',
+31:'Shipping calculators, tax totals, password strength meters: functions that work a value out and return it for the page to show.',
+32:'Checkout is tricks using tricks: total() calls tax() calls round(). Every big feature you use is small functions stacked exactly like yours.',
+33:'\'Free shipping on orders over $35\' is an if on a total - Amazon runs your exact score-check shape on every single cart.',
+34:'Right password or wrong password, in-stock or sold-out: every login screen and product page is an if/else always taking exactly one door.',
+35:'Shipping tiers, price brackets, content ratings - else-if ladders. First open door wins on real sites too, and mis-ordered ladders are real bugs.',
+36:'\'Logged in AND item in stock\' before Buy works; \'card OR PayPal\' at payment - the && and || you just used gate every transaction online.',
+37:'Page 1-2-3-4-5 links under search results, \'1 of 24 photos\' - counting loops generate them all. Nobody types page numbers by hand.',
+38:'Instagram does for (const post of posts) to build your feed; Spotify does it over songs. You just wrote the loop that renders the modern internet.',
+39:'A loop with an if inside is your feed\'s filter: for each post, IF you follow the author, show it. You just wrote the skeleton of every feed algorithm.',
+40:'\'Retry until connected\', video buffering, games running until you lose - while loops keep going until a condition changes, exactly like your countdown.',
+41:'You wired a button to an action - the same skeleton-first build order real teams use: make it work ugly, then make it smart, then make it pretty.',
+42:'Data + brain + wiring is the architecture of TikTok: videos (data), recommendation function (brain), swipe handlers (wiring). Same three layers, bigger scale.',
+43:'Spotify shuffle famously had to be changed to avoid repeats - users swore true random was broken. Your no-repeat while loop is the actual fix they shipped.',
+44:'Every product on Amazon is an object: {name, price, rating, stock}. Every user on every site is one too. You just learned how the internet stores everything.',
+45:'\'Josh · 42 likes · 2 hours ago\' under a post is fields read with dots and glued into a sentence - your exact line, running billions of times a day.',
+46:'Your feed is a list of post objects; search results are a list of product objects. list[0].title is how the top result gets its headline.',
+47:'Marking a message read, updating your cart count, going online/offline - sites change object fields exactly like person.mood, then re-show them.',
+48:'Every app you use is full of console.log lines its developers read while building it. Press F12 on any site - some forgot to clean them up.',
+49:'Error messages pay rent: the checkout that says \'card number too short\' instead of failing silently keeps the sale. Reading errors is a paid skill.',
+50:'The Total: 43 class of bug - price arrives as text, math glues instead of adding - has cost real stores real money. typeof is the five-second check.',
+51:'Every signup form on Earth guards exactly like this: empty email? complain helpfully. Netflix, banks, DMVs - all running your if/else.',
+52:'Real codebases live for decades: the engineer reading excuseList in 2035 thanks the one who did not name it x. Naming is a hiring signal in code review.',
+53:'Pick-vs-show is why Netflix can use one recommendation engine on TV, phone, and web - the chooser is separate from the display. You just did their architecture.',
+54:'When a site adds a 6th product tier, loop-built pages update instantly; copy-paste pages need a developer. DRY is why some sites ship fast and others crawl.',
+55:'Mood-based picking IS recommendation: TikTok picks from different lists based on signals about you. You built the toy version of a billion-dollar machine.',
+56:'The \'I am a programmer\' moment is real: every developer at Google, and every indie making rent from an app, started with words on a screen. Same road, further along.',
+57:'Squarespace charges $200+/year and freelancers charge $500+ for what you just built. Headline-proof-button is the layout behind every \'Book a call\' page you have ever seen.',
+58:'\'Added to cart ✓\' with the button graying out - you just built the exact moment online stores fight to perfect. Double-click protection prevents real double-charges.',
+59:'Twitter\'s mobile site, Starbucks ordering, and this very Code Lab are PWAs - web pages acting as apps. The \'app\' on your home screen is often your three languages in a costume.',
+60:'The \'@\' check you wrote runs on every signup form on the internet - and the never-ship-secrets rule you learned is the one that, when broken, makes national news.'
+};
+
 /* ============================ ENGINE ============================ */
 const $ = s => document.querySelector(s);
 
@@ -1259,7 +1325,7 @@ function runCheck(){
     res = lint ? {ok:false, msg:'🧑‍🏫 '+lint} : normRes(les, code);
   }
   statusEl.className = res.ok ? 'ok' : '';
-  statusEl.innerHTML = (res.ok ? '✓ ' : '') + res.msg;
+  statusEl.innerHTML = (res.ok ? '✓ ' : '') + res.msg + (res.ok && RW[idx] ? '<span class="wild">🌍 <b>In the wild:</b> ' + RW[idx] + '</span>' : '');
   btnNext.style.display = res.ok ? 'inline-block' : 'none';
   if (res.ok && !done.has(idx)){
     done.add(idx); saveP(); renderNav();

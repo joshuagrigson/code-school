@@ -73,15 +73,19 @@ details.ft p{margin:6px 0 0;line-height:1.5}
 .remind{flex:0 0 auto;background:#fbf6da;border-bottom:2px solid #e8dfae;padding:6px 12px;font-size:.8rem;font-family:Menlo,Consolas,monospace;display:flex;gap:8px;align-items:center}
 .remind button{margin-left:auto;border:none;background:none;cursor:pointer;font-size:.75rem;color:var(--soft)}
 .edwrap{position:relative;flex:1;min-height:80px;background:#1e1e1e}
-#ed,#hl{position:absolute;inset:0;margin:0;border:none;padding:12px 14px;font-family:Menlo,Consolas,monospace;font-size:.95rem;line-height:1.55;white-space:pre;tab-size:2;overflow:auto}
+#ed,#hl,#errlay{position:absolute;inset:0;margin:0;border:none;padding:12px 14px;font-family:Menlo,Consolas,monospace;font-size:.95rem;line-height:1.55;white-space:pre;tab-size:2;overflow:auto}
+#errlay{color:transparent;background:transparent;pointer-events:none;overflow:hidden;z-index:1}
+#errlay .redpen{background:rgba(205,50,50,.22);border-radius:3px;text-decoration:underline wavy #d43c3c 2px;text-underline-offset:4px}
 #hl{color:#d4d4d4;background:#1e1e1e;pointer-events:none;overflow:hidden}
-#ed{resize:none;outline:none;background:transparent;color:transparent;caret-color:#e8e8e8;z-index:1}
+#ed{resize:none;outline:none;background:transparent;color:transparent;caret-color:#e8e8e8;z-index:2}
 #ed::placeholder{color:#7a7a7a}
 #ed::selection{background:rgba(38,79,120,.85);color:transparent}
 .t-k{color:#c586c0}.t-kw{color:#569cd6}.t-s{color:#ce9178}.t-n{color:#b5cea8}.t-c{color:#6a9955}.t-f{color:#dcdcaa}.t-t{color:#569cd6}.t-a{color:#9cdcfe}.t-p{color:#9cdcfe}.t-sel{color:#d7ba7d}
 .btnrow{flex:0 0 auto;display:flex;gap:8px;padding:8px 12px;background:var(--panel);border-top:2px solid var(--line);flex-wrap:wrap}
 .btnrow button, header .hbtn{font-family:inherit;font-size:.85rem;padding:6px 12px;border-radius:8px;border:2px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink)}
 .btnrow button:hover, header .hbtn:hover{border-color:var(--accent)}
+#btnRun{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700}
+#btnRun:hover{background:var(--accent2);border-color:var(--accent2)}
 #btnNext{background:var(--accent);color:#fff;border-color:var(--accent);display:none;animation:npulse .8s ease 2}
 @keyframes npulse{50%{transform:scale(1.08);box-shadow:0 0 0 6px rgba(47,125,92,.25)}}
 #status{flex:0 0 auto;padding:9px 14px;font-size:.92rem;border-top:2px solid var(--line);background:var(--bad);border-color:var(--badline)}
@@ -150,6 +154,8 @@ body.dark .navitem.chal{color:#d9a45e}
 body.sensei #btnHelp,body.sensei #btnLead,body.sensei #btnSol{display:none}
 body.sensei .edwrap{box-shadow:inset 0 0 0 3px #a52222}
 body.sensei #btnTheme{border-color:#8a1c1c}
+@keyframes lookglow{0%,100%{box-shadow:0 0 0 0 rgba(0,0,0,0)}25%,75%{box-shadow:0 0 14px 4px var(--accent);border-color:var(--accent)}50%{box-shadow:0 0 4px 1px var(--accent)}}
+#btnTheme.glow{animation:lookglow 1s ease-in-out 3}
 .kitrow{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
 .kitrow button{font-family:inherit;font-size:.85rem;padding:8px 12px;border:2px solid var(--line);border-radius:8px;background:var(--panel);cursor:pointer}
 .kitrow button:disabled{opacity:.5;cursor:not-allowed}
@@ -255,8 +261,9 @@ button:focus-visible,.navitem:focus-visible,#ed:focus-visible,input:focus-visibl
       <div class="goalbox" id="goal"></div>
       <div class="remind" id="remind"><span id="remindTxt"></span><button id="remindHide">hide</button></div>
       <div class="scaffold" id="scaffold"><div class="sclabel" id="scLabel"></div><pre id="scPre"></pre></div>
-      <div class="edwrap"><pre id="hl"></pre><textarea id="ed" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea></div>
+      <div class="edwrap"><pre id="hl"></pre><pre id="errlay"></pre><textarea id="ed" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea></div>
       <div class="btnrow">
+        <button id="btnRun" title="Run your code — the coach grades only when you press this (Ctrl+Enter works too)">▶ Run</button>
         <button id="btnHelp" title="A hint that points without telling">💡 Help me</button>
         <button id="btnLead" title="Reveals the answer in 4 steps - you finish the thought">🪜 Give me a lead</button>
         <button id="btnSol" title="Shows the full answer">👀 Show me</button>
@@ -284,7 +291,7 @@ button:focus-visible,.navitem:focus-visible,#ed:focus-visible,input:focus-visibl
   <ol>
     <li><b>Read</b> the lesson on the left.</li>
     <li><b>Type</b> in the dark box — the blue bar above it tells you exactly what to make.</li>
-    <li><b>Watch</b> your result appear below as you type. The bar under the buttons turns <b style="color:var(--accent)">green</b> when you nail it.</li>
+    <li><b>Watch</b> your result appear below as you type. When you are ready, press <b>▶ Run</b> to get graded &mdash; real programmers work in a loop: write &rarr; run &rarr; read &rarr; fix. The bar turns <b style="color:var(--accent)">green</b> when you nail it.</li>
   </ol>
   <p>Stuck? <b>Help me</b> gives a hint, and the built-in teacher explains any mistake in plain English. Most people finish a grade in one relaxed evening &mdash; there is no clock and no falling behind.</p>
   <p style="font-size:.85rem;color:#6b6058">Experienced developer? <a href="https://github.com/joshuagrigson/code-school#for-skeptics" target="_blank" rel="noopener">Read the pedagogy, then view-source and judge us.</a> Reviews double as test-out exams (⚡).</p>
@@ -308,7 +315,7 @@ const CARRIED = {done:[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,2
 
 const GRADES = [
   {id:'K',  name:'Kindergarten', sub:'Words on a screen',      lv:0},
-  {id:'G1', name:'Grade 1',      sub:'Hugs have names',        lv:0},
+  {id:'G1', name:'Grade 1',      sub:'Elements have names',        lv:0},
   {id:'G2', name:'Grade 2',      sub:'Coloring things in',    lv:0},
   {id:'G3', name:'Grade 3',      sub:'Name tags',              lv:1},
   {id:'G4', name:'Grade 4',      sub:'Making things happen',   lv:1},
@@ -435,7 +442,7 @@ HL('Six sizes of big',
  'Make three headings: an h1, an h3, and an h6, each with words in it.',
  '',
  '<h1>The Book</h1>\n<h3>Chapter One</h3>\n<h6>a tiny footnote heading</h6>',
- 'Three lines, three different hugs: h1, h3, h6.',
+ 'Three lines, three different heading elements: h1, h3, h6.',
  (c,d)=> txtOf(d,'h1') && txtOf(d,'h3') && txtOf(d,'h6')
    ? {ok:true,msg:'Big, middle, small. Pick sizes for meaning, not just looks &mdash; h1 says “this page is about THIS.”'}
    : {ok:false,msg:'I need all three: an h1, an h3, and an h6 with text inside each.'}),
@@ -445,13 +452,13 @@ HL('A real button',
  'Make a button with your own words on it.',
  '',
  '<button>Do not press this button</button>',
- 'Same hug pattern: &lt;button&gt;words&lt;/button&gt;.',
+ 'Same element pattern: &lt;button&gt;words&lt;/button&gt;.',
  (c,d)=>{ const b=d.querySelector('button'); return b && b.textContent.trim()
    ? {ok:true,msg:'A real, clickable button. Remember this moment in Grade 4, when you wire it up to actually do something.'}
    : {ok:false,msg:'Wrap some words in &lt;button&gt; and &lt;/button&gt;.'}; }),
 
 HL('A list',
- '<p>Lists take two tags working together: <code>&lt;ul&gt;</code> is the whole list (unordered list), and each <code>&lt;li&gt;</code> is one bullet (list item).</p><pre>&lt;ul&gt;\n  &lt;li&gt;milk&lt;/li&gt;\n  &lt;li&gt;bread&lt;/li&gt;\n&lt;/ul&gt;</pre><p>The li hugs live <b>inside</b> the ul hug.</p>',
+ '<p>Lists take two tags working together: <code>&lt;ul&gt;</code> is the whole list (unordered list), and each <code>&lt;li&gt;</code> is one bullet (list item).</p><pre>&lt;ul&gt;\n  &lt;li&gt;milk&lt;/li&gt;\n  &lt;li&gt;bread&lt;/li&gt;\n&lt;/ul&gt;</pre><p>The li elements are nested <b>inside</b> the ul element &mdash; <i>nesting</i> is the real word for elements living inside elements.</p>',
  'Make a list of three things you like, using ul and li.',
  '<ul>\n\n</ul>',
  '<ul>\n  <li>tacos</li>\n  <li>camping</li>\n  <li>naps</li>\n</ul>',
@@ -460,7 +467,7 @@ HL('A list',
    ? {ok:true,msg:'Bullets appear on their own &mdash; the tags did it. Teams of tags build structures.'}
    : {ok:false,msg:'I need at least three &lt;li&gt; items inside the &lt;ul&gt;.'}),
 
-HL('An extra note on a hug',
+HL('An extra note on an element',
  '<p>Tags can carry extra notes called <b>attributes</b>. They go inside the opening tag: <code>name="value"</code>.</p><pre>&lt;p title="a secret note"&gt;Hover over me&lt;/p&gt;</pre><p>Try it, then hover your mouse over the sentence in the preview and hold still &mdash; the note pops up.</p>',
  'Give a p tag a title attribute with a message in it.',
  '<p>Hover over me and wait</p>',
@@ -475,7 +482,7 @@ HL('A link you can click',
  'Make a link with an href and your own link words.',
  '',
  '<a href="https://example.com">My favorite place on the internet</a>',
- 'An a hug with href="some address" in the opening tag.',
+ 'An a element with href="some address" in the opening tag.',
  (c,d)=>{ const a=d.querySelector('a[href]'); return a && a.textContent.trim()
    ? {ok:true,msg:'One tag plus one attribute connects every page on Earth to every other. That is the whole web.'}
    : {ok:false,msg:'I need an &lt;a&gt; tag with an href attribute and words inside.'}; }),
@@ -1006,7 +1013,7 @@ HL('Your app on their phone',
  'Build an app screen: a div containing an h2 title, a p for output, and a button.',
  '',
  '<div class="app">\n  <h2>Tip Splitter</h2>\n  <p>Ready to split the bill.</p>\n  <button>Split it</button>\n</div>',
- 'One div hugging three things: h2 (the app name), p (its screen), button (its action).',
+ 'One div with three elements nested inside: h2 (the app name), p (its screen), button (its action).',
  (c,d)=>{ const dv=d.querySelector('div'); return dv && dv.querySelector('h2') && dv.querySelector('p') && dv.querySelector('button')
    ? {ok:true,msg:'That is an app skeleton. Grade 4 wiring makes it live, CSS makes it pretty, a URL makes it shippable &mdash; and you know all three.'}
    : {ok:false,msg:'The h2, p, and button must all live INSIDE one div &mdash; the app&rsquo;s frame.'}; }),
@@ -1033,13 +1040,13 @@ function REV(gid, lang, teach, goal, start, sol, hint, check, pageHtml){
 const REV_INTRO = '<p><b>Checkpoint — no rush, no shame.</b> Before moving up, let&rsquo;s make sure this grade actually stuck. Below is everything you just learned, in one breath, then ONE task that uses it all together. If any line feels shaky, click back to that lesson first — that is what the sidebar is for, and re-reading is what professionals do daily.</p><p><b>Already know this material?</b> Passing this review ticks the whole grade for you (marked ⚡) &mdash; the fast lane for experienced folks. Beginners: ignore this, the normal road is the good road.</p>';
 
 REV('K','html',
- REV_INTRO+'<p>Kindergarten in one breath:</p><ul><li>The computer shows exactly what you type.</li><li>Tags are invisible instructions: <code>&lt;h1&gt;</code> big headline, <code>&lt;p&gt;</code> paragraph.</li><li>Every hug you open, you close — the closer wears the slash.</li><li>Small hugs go INSIDE paragraphs: <code>&lt;em&gt;</code> lean, <code>&lt;strong&gt;</code> bold.</li></ul>',
+ REV_INTRO+'<p>Kindergarten in one breath:</p><ul><li>The computer shows exactly what you type.</li><li>Tags are invisible instructions: <code>&lt;h1&gt;</code> big headline, <code>&lt;p&gt;</code> paragraph.</li><li>Every hug you open, you close — the closer wears the slash.</li><li>Small hugs go INSIDE paragraphs: <code>&lt;em&gt;</code> lean, <code>&lt;strong&gt;</code> bold.</li></ul><p><b>One more thing before Grade 1:</b> &ldquo;hug&rdquo; was training wheels. Programmers call the whole thing an <b>element</b> and the pointy-bracket parts <b>tags</b> (opening tag, closing tag). From here on this school talks like programmers do &mdash; because you are becoming one.</p>',
  'One page using EVERYTHING: an h1, then a p that contains one em word AND one strong word.',
  '',
  '<h1>My Checkpoint Page</h1>\n<p>I <em>really</em> did learn <strong>all</strong> of this.</p>',
  'Two lines: the h1 sign, then a p sentence with one word in em hugs and another in strong hugs.',
  (c,d)=> txtOf(d,'h1') && d.querySelector('p em') && d.querySelector('p strong')
-   ? {ok:true,msg:'Kindergarten is truly yours: structure, hugs, and inline styling in one page. Move up with confidence.'}
+   ? {ok:true,msg:'Kindergarten is truly yours: structure, elements, and inline styling in one page. Move up with confidence.'}
    : {ok:false,msg:'I need all three: an h1, an em word inside the p, and a strong word inside the p.'});
 
 REV('G1','html',
@@ -1350,13 +1357,13 @@ PROJ('G3','html','The Taco Truck Job','Maria, your first client',
  [
   {t:'An h1 with the truck&rsquo;s name (must include the word Taco)', h:'Kindergarten skill: <code>&lt;h1&gt;La Perla Taco Truck&lt;/h1&gt;</code> at the top.',
    c:(code,doc)=>{const h=doc&&doc.querySelector('h1');return h&&/taco/i.test(h.textContent);}},
-  {t:'A tagline paragraph with ONE strong word in it', h:'A p hug with a &lt;strong&gt; word inside — your Make one word bold lesson.',
+  {t:'A tagline paragraph with ONE strong word in it', h:'A p element with a &lt;strong&gt; word nested inside — your Make one word bold lesson.',
    c:(code,doc)=>{const el=doc&&doc.querySelector('p strong');return el&&el.textContent.trim().length>0;}},
-  {t:'A menu list (ul) with at least 3 items', h:'ul wrapping three or more li hugs — Grade 1&rsquo;s A list.',
+  {t:'A menu list (ul) with at least 3 items', h:'A ul element wrapping three or more li elements — Grade 1&rsquo;s A list.',
    c:(code,doc)=>doc&&doc.querySelectorAll('ul li').length>=3},
   {t:'One menu item wears class="special" (watch it light up!)', h:'Grade 3 name tags: <code>&lt;li class="special"&gt;</code> — the highlight style is already waiting for it.',
    c:(code,doc)=>!!(doc&&doc.querySelector('li.special'))},
-  {t:'A Find us link with an href', h:'An &lt;a href="..."&gt; hug with words inside — A link you can click.',
+  {t:'A Find us link with an href', h:'An &lt;a href="..."&gt; element with words inside — A link you can click.',
    c:(code,doc)=>{const a=doc&&doc.querySelector('a[href]');return a&&a.textContent.trim().length>0;}},
   {t:'A button that says something about coming or ordering', h:'A plain &lt;button&gt; for now — you will wire it up after Grade 4, exactly like the nephew said.',
    c:(code,doc)=>{const b=doc&&doc.querySelector('button');return b&&b.textContent.trim().length>=3;}},
@@ -1445,7 +1452,7 @@ for (const g of GRADES) for (let i=0;i<L.length;i++) if (L[i].g===g.id && !L[i].
 /* ============================ QA BANK ============================ */
 const STOP = new Set(['the','a','an','is','are','was','do','does','i','my','me','it','to','of','in','on','and','or','what','how','why','when','can','cant','dont','this','that','you','your']);
 const QA = [
- {k:'tag hug open close pointy bracket', a:'A tag is an instruction in pointy brackets. Most come in pairs: <code>&lt;p&gt;</code> opens, <code>&lt;/p&gt;</code> (with the slash) closes, and everything between is inside the hug. Every hug you open, you close.'},
+ {k:'tag hug open close pointy bracket', a:'A tag is an instruction in pointy brackets. Most come in pairs: <code>&lt;p&gt;</code> opens, <code>&lt;/p&gt;</code> (with the slash) closes, and everything between is the element&rsquo;s content (what we called the hug in Kindergarten). Every tag you open, you close.'},
  {k:'class dot css name many', a:'A class is a reusable name tag: <code>class="fancy"</code> in HTML, <code>.fancy</code> (with a dot) in CSS. Many elements can share one class &mdash; one rule styles them all.'},
  {k:'id hash one unique', a:'An id names exactly ONE element per page: <code>id="title"</code> in HTML, <code>#title</code> (with a hash) in CSS. JavaScript also uses ids to grab elements. Dot = class (many), hash = id (one).'},
  {k:'semicolon end line', a:'In CSS and JavaScript, <code>;</code> ends an instruction, like a full stop ends a sentence. Forgetting one sometimes works and sometimes causes weird errors &mdash; just always type it.'},
@@ -1478,22 +1485,22 @@ const QA = [
  {k:'nan undefined weird result strange', a:'<code>NaN</code> means "not a number" &mdash; usually maths attempted on a word. <code>undefined</code> means a box that was never filled, or a label an object doesn’t have. Both are clues: check your spelling and your types.'},
  {k:'braces bracket parenthesis kinds three', a:'Three bracket families: <code>( )</code> round &mdash; function calls, tests, grouping maths; <code>[ ]</code> square &mdash; lists and positions; <code>{ }</code> curly &mdash; code blocks and objects. Every opener needs its closer.'},
  {k:'block inline inside paragraph heading nested', a:'Big BLOCK tags (h1-h6, p, div, ul) sit NEXT TO each other. Only small inline tags (em, strong, a, span, code) may live INSIDE a paragraph. A heading inside a p makes the browser secretly end the paragraph early.'},
- {k:'h2 inside p allowed why not', a:'A heading is a block; a paragraph may only hug inline things. Put the &lt;h2&gt; on its own line AFTER the &lt;/p&gt;, or use &lt;strong&gt; if you just wanted one big-feeling word.'},
+ {k:'h2 inside p allowed why not', a:'A heading is a block; a paragraph may only contain inline elements. Put the &lt;h2&gt; on its own line AFTER the &lt;/p&gt;, or use &lt;strong&gt; if you just wanted one big-feeling word.'},
  {k:'browser guess repair fix broken html silently', a:'Browsers never stop on broken HTML &mdash; they guess what you meant and render something. Kind to readers, brutal to coders: your mistake hides instead of announcing itself. That is why the coach messages exist.'},
- {k:'forgot closing tag what happens', a:'The hug swallows everything after it until the browser guesses an ending. Layout goes weird far from the actual mistake. Rule: every hug you open, you close.'},
+ {k:'forgot closing tag what happens', a:'The unclosed element swallows everything after it until the browser guesses an ending. Layout goes weird far from the actual mistake. Rule: every tag you open, you close.'},
  {k:'closing tag slash which side order', a:'The slash goes right after the pointy bracket: &lt;/p&gt;. Writing &lt;p&gt; again OPENS a second paragraph instead of closing the first.'},
- {k:'close order inside out nested first last', a:'Close hugs inside-out: last opened, first closed. &lt;p&gt;&lt;strong&gt;word&lt;/strong&gt;&lt;/p&gt; is right; crossing them is wrong.'},
+ {k:'close order inside out nested first last', a:'Close nested elements inside-out: last opened, first closed. &lt;p&gt;&lt;strong&gt;word&lt;/strong&gt;&lt;/p&gt; is right; crossing them is wrong.'},
  {k:'empty paragraph accidental second open gap', a:'An unclosed opener like a stray &lt;p&gt; at the end of a line quietly starts a SECOND empty paragraph. If your page has mystery gaps, hunt for openers that should have been closers.'},
  {k:'span what small generic inline', a:'span is the inline cousin of div: a meaningless little wrapper for a few words, useful when you want to style part of a sentence and no meaningful tag (em, strong) fits.'},
  {k:'void self closing img br no closer', a:'A few tags hold no content so they need no closer: img, br, hr, input. Everything else closes. If in doubt, close it.'},
  {k:'br line break new line tag', a:'&lt;br&gt; forces a line break inside a block. Use it sparingly &mdash; usually a second &lt;p&gt; is the honest structure.'},
  {k:'multiple h1 allowed one page', a:'Technically allowed, but use ONE h1 per page &mdash; it is the page title. Search engines and screen readers treat it as the headline of the whole page.'},
- {k:'indent nesting readable spaces html', a:'Indentation is for humans &mdash; the browser ignores it. Indent one level for each hug you are inside and mismatched tags become visible at a glance.'},
+ {k:'indent nesting readable spaces html', a:'Indentation is for humans &mdash; the browser ignores it. Indent one level for each element you are nested inside and mismatched tags become visible at a glance.'},
  {k:'div vs p difference when', a:'p is for a paragraph of text and may only hold inline things. div is a plain box for GROUPING other blocks. Words go in p; structure goes in div.'},
  {k:'ul li outside allowed direct children', a:'A ul may only directly contain li items. Text or other tags floating directly inside a ul (outside any li) is invalid and renders unpredictably.'},
  {k:'uppercase tags matter case html', a:'HTML tag names are not case-sensitive &mdash; &lt;P&gt; works &mdash; but the universal convention is lowercase. Write lowercase and your code matches everyone else on Earth.'},
  {k:'text outside any tag okay body bare', a:'Allowed &mdash; bare text renders. But wrapping text in p gives you spacing, styling hooks, and structure. Bare text is a note scribbled in a margin.'},
- {k:'heading swallowed rest page everything big', a:'Almost always an unclosed heading hug: without &lt;/h1&gt;, everything after joins the heading. Find where the headline should END and put the closer there.'},
+ {k:'heading swallowed rest page everything big', a:'Almost always an unclosed heading element: without &lt;/h1&gt;, everything after joins the heading. Find where the headline should END and put the closer there.'},
  {k:'nesting depth how deep boxes', a:'No hard limit &mdash; real sites nest forty deep. The rule never changes: whatever opens inside a box closes inside it.'},
  {k:'tags how many exist full list', a:'Around 110 exist; roughly 20 do almost all the work: headings, p, div, span, ul/ol/li, a, img, button, input, em, strong, header, footer, section. You already know most of the important ones.'},
  {k:'strong vs em vs b i difference', a:'em = leaning emphasis (how you would stress it aloud); strong = bold importance. Older b and i tags exist but carry no meaning &mdash; prefer em and strong; meaning helps screen readers too.'},
@@ -1563,7 +1570,7 @@ const QA = [
  {k:'screen btn exist already magic', a:'The lab pre-introduces them: the page has a p with id screen and a button with id btn, and JavaScript knows them by those names. Real sites do the same introduction with getElementById.'},
  {k:'lessons build order skip ahead', a:'Every grade uses the ones before it: classes (G3) become JavaScript handles (G4), lists (G6) meet loops (G9), everything lands in the Excuse-O-Matic. You can peek ahead, but gaps compound.'},
  {k:'green check grades what do this', a:'The tick grades ONLY the DO THIS goal. Bonus experiments are for after &mdash; playing past the goal never counts against you, but only the goal counts for you.'},
- {k:'coach message teacher explain red', a:'Coach lines (the teacher emoji) fire when your code has a structural problem &mdash; unclosed hug, empty value, block-inside-p &mdash; and explain the fix. They block the tick because the browser would otherwise silently guess.'},
+ {k:'coach message teacher explain red', a:'Coach lines (the teacher emoji) fire when your code has a structural problem &mdash; unclosed element, empty value, block-inside-p &mdash; and explain the fix. They block the tick because the browser would otherwise silently guess.'},
  {k:'preview below live every keystroke', a:'The preview is a real mini-browser rendering your code on every keystroke. Type, see, adjust &mdash; the tightest feedback loop in learning.'},
  {k:'progress saved where reset lose', a:'In this browser&rsquo;s storage, per device. Same browser = progress persists. Clearing site data erases it. Any lesson is one sidebar click away, so recovery is quick regardless.'},
  {k:'free play sandbox rules', a:'Free play is an uncheckable scratch page: write any HTML/CSS/JS, nothing graded, nothing breakable. It saves itself in your browser.'},
@@ -1733,7 +1740,7 @@ const MORE={
 /* the professional vocabulary behind our kid-friendly words */
 const RN={
 2:'What we call a <i>hug</i>, programmers call an <b>element</b>; the pointy-bracket parts are <b>tags</b>. So h1 is &ldquo;a heading element, written with an opening and closing tag.&rdquo;',
-3:'The p element. From here on you will hear both: hug (ours) and element/tag (the world&rsquo;s). By graduation you will only need the real ones.',
+3:'The p element. From here on you will hear both, and starting in Grade 1 this school switches to the real words for good: element and tag.',
 5:'Nesting: an element placed <b>inside</b> another. em and strong are <b>inline elements</b>; p and h1 are <b>block elements</b>.',
 11:'These extra notes are officially called <b>attributes</b> &mdash; that IS the real term. name=&quot;value&quot; pairs inside the opening tag.',
 14:'A whole line like <code>color: red;</code> is a <b>declaration</b>: a <b>property</b>, a colon, and a <b>value</b>. The chooser before the braces is a <b>selector</b>.',
@@ -1803,7 +1810,7 @@ const RW={
 2:'The headline on every news site and the bold title atop every Amazon product page is an h1 doing exactly this.',
 3:'Right-click any website and choose View page source - the invisible stage directions you just learned are running every page on the internet.',
 4:'Broken layouts you have seen on glitchy websites are usually exactly this: a forgotten closing tag and a browser guessing wrong.',
-5:'The italic disclaimers under prices (\'*while supplies last\') and stressed words in articles are em hugs.',
+5:'The italic disclaimers under prices (\'*while supplies last\') and stressed words in articles are em elements.',
 6:'The bold \'Total:\' at checkout and the bold usernames in your DMs are strong tags doing this exact job.',
 7:'Every restaurant homepage - name on top, hours underneath - is your sign with a payment processor attached.',
 8:'Google reads heading sizes to decide what a page is about - h1 for the topic, h2 for sections. Rankings hinge on your six-sizes lesson.',
@@ -1939,7 +1946,7 @@ function loadP(){
 }
 
 const REMIND = {
-  html: '<b>&lt;tag&gt;</b>opens · <b>&lt;/tag&gt;</b>closes · every hug needs its end',
+  html: '<b>&lt;tag&gt;</b>opens · <b>&lt;/tag&gt;</b>closes · every element needs its closing tag',
   css:  'selector { property: value; } · every line ends with ;',
   js:   'screen.textContent = ...  · working it out is NOT showing it · quotes = words, no quotes = box name',
 };
@@ -1962,9 +1969,12 @@ function jsSyntaxError(code){
   catch(e){ return e.message || 'syntax error'; }
 }
 function friendlySyntax(msg, code){
+  lintRange = null;
   const t = code.trimEnd();
-  if (/[+\-*/=,({[.]$/.test(t) || /(&&|\|\|)\s*$/.test(t))
+  if (/[+\-*/=,({[.]$/.test(t) || /(&&|\|\|)\s*$/.test(t)){
+    lintRange = {a:t.length-1, b:t.length};
     return 'It looks like a line isn’t finished &mdash; the code ends mid-thought (after a ' + t.slice(-1) + '). Complete that last line.';
+  }
   const opens = (code.match(/\{/g)||[]).length, closes = (code.match(/\}/g)||[]).length;
   if (opens > closes) return 'A curly brace { was opened but never closed. Count your { and } &mdash; you need one more }.';
   if (closes > opens) return 'There is a closing brace } too many (or a { is missing). Count your { and }.';
@@ -1975,63 +1985,120 @@ function friendlySyntax(msg, code){
 }
 
 /* ===== the coach: universal structure checks that explain, not just fail ===== */
+const KNOWN_TAGS=new Set(['html','head','body','title','meta','style','script','link','h1','h2','h3','h4','h5','h6','p','div','span','ul','ol','li','a','img','button','input','form','em','strong','i','b','u','small','br','hr','table','thead','tbody','tr','td','th','header','footer','section','article','nav','main','aside','blockquote','code','pre','label','select','option','textarea','video','audio','source','canvas','svg','figure','figcaption','mark','sub','sup','kbd','details','summary','iframe']);
+let lintRange = null;
+function nearTag(name){
+  let best=null, bestD=3;
+  for (const t of KNOWN_TAGS){
+    if (Math.abs(t.length-name.length)>2) continue;
+    let d=0, i=0, j=0;
+    while(i<name.length&&j<t.length){ if(name[i]===t[j]){i++;j++;} else {d++; if(name.length>t.length)i++; else if(t.length>name.length)j++; else {i++;j++;} } }
+    d += (name.length-i)+(t.length-j);
+    if (d<bestD){ bestD=d; best=t; }
+  }
+  return best;
+}
 const VOID_TAGS=new Set(['img','br','hr','input','meta','link','source','wbr','area','base','col','embed','track']);
 const BLOCK_TAGS=new Set(['h1','h2','h3','h4','h5','h6','p','div','ul','ol','section','article','header','footer','blockquote','table']);
 const INLINE_HINT={h1:'strong',h2:'strong',h3:'strong',h4:'strong',h5:'strong',h6:'strong'};
 function htmlLint(code){
+  lintRange = null;
   const re=/<(\/?)([a-zA-Z][\w-]*)([^>]*)>/g;
   const stack=[]; let m;
   while((m=re.exec(code))){
     const closing=m[1]==='/', name=m[2].toLowerCase(), attrs=m[3];
-    if(!closing && /^\s*\//.test(attrs))
+    const here={a:m.index, b:m.index+m[0].length};
+    if (!KNOWN_TAGS.has(name)){
+      lintRange = here;
+      const numbered = name.match(/^([a-z]+)(\d+)$/);
+      if (numbered && KNOWN_TAGS.has(numbered[1]) && numbered[1]!=='h')
+        return '<code>&lt;'+name+'&gt;</code> is not a real tag — <code>&lt;'+numbered[1]+'&gt;</code> does not come in numbered sizes. Only headings are numbered (h1–h6); everything else changes size with CSS.';
+      if (/^h\d+$/.test(name))
+        return '<code>&lt;'+name+'&gt;</code> does not exist — headings stop at <code>&lt;h6&gt;</code>. The full set is h1 through h6.';
+      const near = nearTag(name);
+      return '<code>&lt;'+name+'&gt;</code> is not a real HTML tag'+(near ? ' — did you mean <code>&lt;'+near+'&gt;</code>?' : '.')+' (Browsers silently shrug at made-up tags, which is exactly why the coach does not.)';
+    }
+    if(!closing && /^\s*\//.test(attrs)){
+      lintRange = here;
       return 'That <code>'+hlEsc('<'+name+attrs.trim()+'>')+'</code> tag looks jumbled — a closing tag puts the slash right after the pointy bracket, like <code>'+hlEsc('</'+name+'>')+'</code>. The shape is: <code>&lt;tag&gt;</code> opens, <code>&lt;/tag&gt;</code> closes.';
+    }
     if(closing){
-      if(!stack.length)
-        return 'You closed <code>'+hlEsc('</'+name+'>')+'</code> but there is no open <code>'+hlEsc('<'+name+'>')+'</code> hug waiting for it. Did you close something twice, or forget to open it?';
-      const top=stack[stack.length-1];
-      if(top!==name)
-        return 'Hugs must close inside-out: right now the innermost open hug is <code>'+hlEsc('<'+top+'>')+'</code>, but you closed <code>'+hlEsc('</'+name+'>')+'</code>. Close <code>'+hlEsc('</'+top+'>')+'</code> first (or check for a typo).';
+      if(!stack.length){
+        lintRange = here;
+        return 'You closed <code>'+hlEsc('</'+name+'>')+'</code> but there is no open <code>'+hlEsc('<'+name+'>')+'</code> element waiting for it. Did you close something twice, or forget to open it?';
+      }
+      const top=stack[stack.length-1].n;
+      if(top!==name){
+        lintRange = here;
+        return 'Nested elements close inside-out: right now the innermost open element is <code>'+hlEsc('<'+top+'>')+'</code>, but you closed <code>'+hlEsc('</'+name+'>')+'</code>. Close <code>'+hlEsc('</'+top+'>')+'</code> first (or check for a typo).';
+      }
       stack.pop();
     } else if(!VOID_TAGS.has(name)){
-      if(stack.includes('p') && BLOCK_TAGS.has(name)){
+      if(stack.some(x=>x.n==='p') && BLOCK_TAGS.has(name)){
+        lintRange = here;
         const fix=INLINE_HINT[name];
-        return 'A <code>'+hlEsc('<'+name+'>')+'</code> is a big BLOCK and is not allowed inside a <code>&lt;p&gt;</code> — paragraphs can only hug small inline things. The browser will secretly end your paragraph early and the layout will jump. '+(fix?'Want one bold/big word inside the sentence? Use <code>'+hlEsc('<'+fix+'>')+'</code> instead. Want a real heading? Close the <code>&lt;/p&gt;</code> first, then put the <code>'+hlEsc('<'+name+'>')+'</code> on its own line.':'Close the <code>&lt;/p&gt;</code> first, then open the <code>'+hlEsc('<'+name+'>')+'</code> as its own block.');
+        return 'A <code>'+hlEsc('<'+name+'>')+'</code> is a big BLOCK and is not allowed inside a <code>&lt;p&gt;</code> — paragraphs can only contain small inline elements. The browser will secretly end your paragraph early and the layout will jump. '+(fix?'Want one bold/big word inside the sentence? Use <code>'+hlEsc('<'+fix+'>')+'</code> instead. Want a real heading? Close the <code>&lt;/p&gt;</code> first, then put the <code>'+hlEsc('<'+name+'>')+'</code> on its own line.':'Close the <code>&lt;/p&gt;</code> first, then open the <code>'+hlEsc('<'+name+'>')+'</code> as its own block.');
       }
-      stack.push(name);
+      stack.push({n:name, a:here.a, b:here.b});
     }
   }
   if(stack.length){
-    const name=stack[stack.length-1];
-    return 'You opened <code>'+hlEsc('<'+name+'>')+'</code> but never closed it — every hug needs its end. Add <code>'+hlEsc('</'+name+'>')+'</code> where the hug should stop. (Watch out: typing <code>'+hlEsc('<'+name+'>')+'</code> again OPENS a second one; the closer needs the slash.)';
+    const top=stack[stack.length-1], name=top.n;
+    lintRange = {a:top.a, b:top.b};
+    return 'You opened <code>'+hlEsc('<'+name+'>')+'</code> but never closed it — every element needs its closing tag. Add <code>'+hlEsc('</'+name+'>')+'</code> where the element should end. (Watch out: typing <code>'+hlEsc('<'+name+'>')+'</code> again OPENS a second one; the closer needs the slash.)';
   }
   return null;
 }
 function cssLint(code){
+  lintRange = null;
   const opens=(code.match(/\{/g)||[]).length, closes=(code.match(/\}/g)||[]).length;
   if(opens>closes) return 'A { was opened but never closed — every rule ends with }. Count your braces.';
   if(closes>opens) return 'There is a } too many (or a { is missing). Count your braces.';
-  const empty=code.match(/([a-zA-Z-]+)\s*:\s*(;|$|\n|\})/);
-  if(empty) return 'The line <code>'+empty[1]+':</code> has no value yet — the shape is <code>property: value;</code>. Tell it WHAT (a color name, a px number...) before the semicolon.';
+  const emptyRe=/([a-zA-Z-]+)\s*:\s*(;|$|\n|\})/;
+  const empty=emptyRe.exec(code);
+  if(empty){ lintRange={a:empty.index, b:empty.index+empty[1].length+1};
+    return 'The line <code>'+empty[1]+':</code> has no value yet — the shape is <code>property: value;</code>. Tell it WHAT (a color name, a px number...) before the semicolon.'; }
   const bad=code.match(/\{[^}]*\}/g);
   if(bad) for(const rule of bad){
     const lines=rule.slice(1,-1).split('\n').map(l=>l.trim()).filter(l=>l);
-    for(const l of lines) if(/^[a-zA-Z-]+\s*:[^;]*$/.test(l) && lines.length>1 && l!==lines[lines.length-1])
+    for(const l of lines) if(/^[a-zA-Z-]+\s*:[^;]*$/.test(l) && lines.length>1 && l!==lines[lines.length-1]){
+      const at=code.indexOf(l); if(at>-1) lintRange={a:at, b:at+l.length};
       return 'The line "'+l+'" is missing its semicolon ; — without it, CSS silently ignores the NEXT line too. Every property line ends with ;.';
+    }
   }
   return null;
 }
 
+const errEl = document.getElementById('errlay');
+function markErr(range){
+  if (!range || sandbox){ errEl.innerHTML=''; return; }
+  const code = edEl.value;
+  const a=Math.max(0,Math.min(range.a,code.length)), b=Math.max(a,Math.min(range.b,code.length));
+  errEl.innerHTML = hlEsc(code.slice(0,a)) + '<span class="redpen">' + hlEsc(code.slice(a,b)) + '</span>' + hlEsc(code.slice(b)) + '\n';
+  errEl.scrollTop = edEl.scrollTop; errEl.scrollLeft = edEl.scrollLeft;
+}
+let graded = false;
+function previewOnly(){
+  syncHl(); errEl.innerHTML=''; graded = false;
+  if (sandbox){ outEl.srcdoc = edEl.value; return; }
+  outEl.srcdoc = buildDoc(L[idx], edEl.value);
+  statusEl.className='wait';
+  statusEl.innerHTML='✍️ The page below updates as you type. Press <b>▶ Run</b> (or Ctrl+Enter) when you want the coach to grade it.';
+  btnNext.style.display='none';
+}
 function runCheck(){
   syncHl();
   if (sandbox) return;
+  graded = true;
   const les = L[idx], code = edEl.value;
   outEl.srcdoc = buildDoc(les, code);
   if (les.proj){
-    let coachMsg=null;
+    let coachMsg=null; lintRange=null;
     if (code.trim()){
       if (les.lang==='js'){ const err=jsSyntaxError(code); if(err) coachMsg=friendlySyntax(err,code); }
       else { coachMsg = htmlLint(code); }
     }
+    markErr(coachMsg ? lintRange : null);
     let doc=null; try{ doc = new DOMParser().parseFromString(buildDoc(les, code), 'text/html'); }catch(e){}
     const results = les.stories.map(st=>{ let ok=false; try{ ok = !!st.c(code, doc); }catch(e){} return ok; });
     const k=results.filter(Boolean).length, N=results.length;
@@ -2066,6 +2133,8 @@ function runCheck(){
     const lint = les.lang==='html' ? htmlLint(code) : cssLint(code);
     res = lint ? {ok:false, cls:'coach', msg:'🧑‍🏫 '+lint} : normRes(les, code);
   }
+  markErr(res.cls==='coach' ? lintRange : null);
+  if (res.cls==='coach' && lintRange) res.msg += ' <b>Marked in red in your code.</b>';
   statusEl.className = res.ok ? 'ok' : (res.cls || '');
   statusEl.innerHTML = (res.ok ? '✓ ' : '') + res.msg + (res.ok && RW[idx] ? '<span class="wild">🌍 <b>In the wild:</b> ' + RW[idx] + '</span>' : '');
   btnNext.style.display = res.ok ? 'inline-block' : 'none';
@@ -2279,7 +2348,8 @@ function loadLesson(i){
     : les.lang==='css' ? 'Type your CSS rules here - the page below re-dresses as you type'
     : 'Type your JavaScript here - remember: screen.textContent = shows things';
   edEl.value = les.start;
-  saveP(); renderNav(); runCheck();
+  saveP(); renderNav();
+  if (done.has(idx)||chalDone.has(idx)||projDone.has(idx)||practDone.has(idx)) runCheck(); else previewOnly();
   const cp=$('#crPrev'), cn=$('#crNext');
   if (cp) cp.onclick=()=>{ const o=ORDER.indexOf(idx); if (o>0) loadLesson(ORDER[o-1]); };
   if (cn) cn.onclick=()=>{ const o=ORDER.indexOf(idx); if (o>=0 && o<ORDER.length-1) loadLesson(ORDER[o+1]); };
@@ -2341,7 +2411,7 @@ function openSandbox(){
     const ok = done.size>=k.min;
     return '<button data-kit="'+n+'"'+(ok?'':' disabled title="Unlocks at '+levelFor(k.min)+'"')+'>'+(ok?'':'🔒 ')+k.name+'</button>';
   }).join('');
-  teachEl.innerHTML = '<h2>Free play<\/h2><div class="kitrow">'+kitBtns+'</div><p><b>Want to see how this entire school works?</b> Right-click this page and choose View page source. Every lesson, checker, and trick lives in one file of the three languages you now read. Nothing was hidden from you &mdash; it was just waiting until you could read it.<\/p><p>No goal, no checker &mdash; just you and the machine. Write any HTML here (add &lt;style&gt; and script hugs if you like) and watch the preview. Your scratchpad saves itself in this browser.<\/p><p>Click any lesson in the sidebar to go back to school.<\/p>';
+  teachEl.innerHTML = '<h2>Free play<\/h2><div class="kitrow">'+kitBtns+'</div><p><b>Want to see how this entire school works?</b> Right-click this page and choose View page source. Every lesson, checker, and trick lives in one file of the three languages you now read. Nothing was hidden from you &mdash; it was just waiting until you could read it.<\/p><p>No goal, no checker &mdash; just you and the machine. Write any HTML here (add &lt;style&gt; and script elements if you like) and watch the preview. Your scratchpad saves itself in this browser.<\/p><p>Click any lesson in the sidebar to go back to school.<\/p>';
   goalEl.innerHTML = '<b>PLAY.<\/b> Nothing you do here can break anything.';
   remindBox.style.display='none';
   $('#scaffold').style.display='none';
@@ -2355,8 +2425,10 @@ function openSandbox(){
 
 /* wiring */
 edEl.addEventListener('input', ()=>{
-  if (sandbox){ syncHl(); outEl.srcdoc = edEl.value; try{localStorage.setItem('sandboxCode', edEl.value);}catch(e){} return; }
-  clearTimeout(checkTimer); checkTimer = setTimeout(runCheck, 200);
+  if (sandbox){ syncHl(); errEl.innerHTML=''; outEl.srcdoc = edEl.value; try{localStorage.setItem('sandboxCode', edEl.value);}catch(e){} return; }
+  syncHl(); errEl.innerHTML='';
+  outEl.srcdoc = buildDoc(L[idx], edEl.value);
+  if (graded) previewOnly();
 });
 statusEl.addEventListener('click', (e)=>{
   const b = e.target.closest('[data-hs]');
@@ -2372,8 +2444,9 @@ edEl.addEventListener('paste', (e)=>{
   statusEl.className='coach';
   statusEl.innerHTML='🧑‍🏫 Typing is the workout — paste is turned off in lessons so the code goes through your fingers, not your clipboard. (Free play allows pasting.)';
 });
-edEl.addEventListener('scroll', ()=>{ hlEl.scrollTop = edEl.scrollTop; hlEl.scrollLeft = edEl.scrollLeft; });
+edEl.addEventListener('scroll', ()=>{ hlEl.scrollTop = edEl.scrollTop; hlEl.scrollLeft = edEl.scrollLeft; errEl.scrollTop = edEl.scrollTop; errEl.scrollLeft = edEl.scrollLeft; });
 edEl.addEventListener('keydown', (e)=>{
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter'){ e.preventDefault(); $('#btnRun').click(); return; }
   if (e.key === 'Tab'){ e.preventDefault();
     const s = edEl.selectionStart;
     edEl.value = edEl.value.slice(0,s) + '  ' + edEl.value.slice(edEl.selectionEnd);
@@ -2381,6 +2454,7 @@ edEl.addEventListener('keydown', (e)=>{
     edEl.dispatchEvent(new Event('input'));
   }
 });
+$('#btnRun').onclick = ()=>{ if(sandbox){ syncHl(); outEl.srcdoc = edEl.value; } else runCheck(); };
 $('#btnHelp').onclick = ()=>{ if(!sandbox){ statusEl.className=''; statusEl.innerHTML = '💡 ' + L[idx].hint; } };
 $('#btnLead').onclick = ()=>{ if(!sandbox) giveLead(); };
 $('#btnSol').onclick  = ()=>{ if(!sandbox){ solShown = true; edEl.value = L[idx].sol; runCheck(); } };
@@ -2459,7 +2533,9 @@ function renderThemeTray(){
     document.body.appendChild(el); setTimeout(()=>el.remove(),2400);
   };
   document.querySelectorAll('#themeList .throw:not(.locked)').forEach(b=>{
-    b.onclick=()=>{ edTheme=b.dataset.th; saveP(); applyTheme(); renderThemeTray(); };
+    b.onclick=()=>{ edTheme=b.dataset.th; saveP(); applyTheme(); renderThemeTray();
+      const bt=$('#btnTheme'); bt.classList.remove('glow'); void bt.offsetWidth; bt.classList.add('glow');
+      setTimeout(()=>bt.classList.remove('glow'), 3200); };
   });
 }
 $('#btnTheme').onclick = ()=>{ renderThemeTray(); $('#themeOv').classList.add('open'); };

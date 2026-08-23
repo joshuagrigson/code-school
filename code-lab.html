@@ -806,6 +806,51 @@ JL('Graduation',
    : {ok:false,msg:'One line: screen.textContent = your declaration.'}),
 ]);
 
+/* ============================ HUSTLE (58-61) ============================ */
+GRADES.push({id:'M', name:'Hustle', sub:'Turning code into money', lv:2});
+grade('M', [
+HL('Your marketing page',
+ '<p>Welcome to the renegade track. Nobody here needs a diploma &mdash; they need a PORTFOLIO and a paying reason to code. Start with the single most-purchased piece of code on Earth: the <b>landing page</b>. Every business &mdash; the taco truck, the gym, your uncle&rsquo;s pressure-washing outfit &mdash; needs one page that says what they do and pushes one button. People charge real money ($100&ndash;$1,500 a page, all day long) for what you are about to build with Kindergarten tags.</p><p>The anatomy never changes: a headline that names the customer&rsquo;s problem, a sentence of proof, and ONE call-to-action button. That is it. Restraint IS the skill &mdash; every extra thing on a landing page steals attention from the button.</p>',
+ 'Build a landing page: an h1 pitch, a p with one proof sentence, and ONE button with action words on it.',
+ '',
+ '<h1>Never cook a boring dinner again</h1>\n<p>Paper Plate turns whatever is in your fridge into a chef-grade recipe in 10 seconds.</p>\n<button>Try it free</button>',
+ 'Three blocks: h1 (the promise), p (the proof), button (the ask). Sell something you actually like.',
+ (c,d)=> txtOf(d,'h1') && txtOf(d,'p') && d.querySelector('button') && d.querySelector('button').textContent.trim().length>=3
+   ? {ok:true,msg:'That is a sellable skill, built from week-one tags. Headline, proof, one ask &mdash; the thousand-dollar layout.'}
+   : {ok:false,msg:'I need all three blocks: an h1 promise, a p proof sentence, and a button with words on it.'}),
+
+JL('The call to action',
+ '<p>A pretty page that does nothing when clicked is a brochure. The moment the button RESPONDS, it becomes a product &mdash; and the response is where money changes hands: &ldquo;spot reserved,&rdquo; &ldquo;quote requested,&rdquo; &ldquo;added to waitlist.&rdquo;</p><p>Marketers call the percentage of visitors who click <b>conversion</b>, and they obsess over it because every click is a lead worth dollars. Your Grade 4 wiring is literally the mechanism of conversion:</p><pre>btn.onclick = function () {\n  screen.textContent = \'You are on the list! Check your email.\';\n  btn.disabled = true;\n};</pre><p>That <code>btn.disabled = true;</code> line is a pro touch: one click, one lead, no double-taps. Small details like that are why one freelancer charges triple what another does.</p>',
+ 'Wire the button: on click, confirm success on screen AND disable the button.',
+ '',
+ 'btn.onclick = function () {\n  screen.textContent = \'You are on the list! Check your email.\';\n  btn.disabled = true;\n};',
+ 'Grade 4 shape, plus one new line inside the function: <code>btn.disabled = true;</code>',
+ (c)=> hasRe(c,/btn\.onclick\s*=\s*function|btn\.addEventListener/) && hasRe(c,/screen\.textContent\s*=/) && hasRe(c,/btn\.disabled\s*=\s*true/)
+   ? {ok:true,msg:'Click &rarr; confirmation &rarr; button retires. You just built a conversion, which is the atom every online business is made of.'}
+   : {ok:false,msg:'Inside the click function I need both: the screen confirmation AND btn.disabled = true;'},
+ '<h1 style="margin:0 0 6px">Never cook a boring dinner again</h1>\n<button id="btn">Try it free</button>\n<p id="screen"></p>'),
+
+HL('Your app on their phone',
+ '<p>Here is the secret the app-store gold rush hides: <b>a phone app can just be a web page</b>. This very Code Lab is one file of HTML/CSS/JS &mdash; and it runs on an iPhone from a link, pins to the home screen with an icon, and opens full-screen like any app. That flavor is called a <b>PWA</b> (progressive web app), and it means the languages you already speak ARE app development. No gatekeepers, no $99 developer fee, no approval wait: build page &rarr; put it at a URL &rarr; customer taps Add to Home Screen.</p><p>The renegade path most indie developers actually take: <b>1)</b> build it as a web app and get real users free, <b>2)</b> only later, if it earns, wrap the same code for the app stores. Paper Plate &mdash; this course&rsquo;s sibling project &mdash; runs exactly this play: a web app AND an iOS app sharing one brain on a server.</p><p>An app is just a page shaped like a tool instead of a document. Prove it: build an app screen &mdash; a title bar, a screen area, and a big action button &mdash; using nothing but tags you know.</p>',
+ 'Build an app screen: a div containing an h2 title, a p for output, and a button.',
+ '',
+ '<div class="app">\n  <h2>Tip Splitter</h2>\n  <p>Ready to split the bill.</p>\n  <button>Split it</button>\n</div>',
+ 'One div hugging three things: h2 (the app name), p (its screen), button (its action).',
+ (c,d)=>{ const dv=d.querySelector('div'); return dv && dv.querySelector('h2') && dv.querySelector('p') && dv.querySelector('button')
+   ? {ok:true,msg:'That is an app skeleton. Grade 4 wiring makes it live, CSS makes it pretty, a URL makes it shippable &mdash; and you know all three.'}
+   : {ok:false,msg:'The h2, p, and button must all live INSIDE one div &mdash; the app&rsquo;s frame.'}; }),
+
+JL('Protect the bag',
+ '<p>The moment strangers use your page, you hold two treasures: their trust and your reputation. Lose either and the money stops. Three renegade security rules, all of which you already met in this course:</p><p><b>1) Guard every door.</b> Never trust what users type (Grade 12). A signup that accepts garbage fills your list with junk and your inbox with bounce-backs.</p><p><b>2) Never ship secrets.</b> Anything in your page&rsquo;s code &mdash; HTML, CSS, JS &mdash; is readable by anyone with right-click&rarr;Inspect. Passwords, API keys, and customer lists live on a server, never in the page. (Ask the question box about &ldquo;never trust client&rdquo; &mdash; it is the most expensive lesson in software, and you get it free.)</p><p><b>3) Collect only what you can protect.</b> Every piece of customer data you store is a liability with your name on it. The less you hold, the less can leak &mdash; and as a public builder, keep your OWN address and personal details out of your pages too (the doxing rules apply double to people with customers).</p><p>Practice rule 1: guard a signup so junk cannot get in.</p>',
+ 'Guard the signup: if the email box is empty OR has no @ sign, complain helpfully; otherwise confirm.',
+ 'const email = \'joshexample.com\';\n',
+ 'const email = \'joshexample.com\';\n\nif (email === \'\' || !email.includes(\'@\')) {\n  screen.textContent = \'That email looks wrong - check it and try again.\';\n} else {\n  screen.textContent = \'Welcome aboard, \' + email + \'!\';\n}',
+ 'Two tests joined by || : empty (=== \'\') or missing @ (!email.includes(\'@\')). Flip the box&rsquo;s value to test both doors.',
+ (c)=> hasRe(c,/if\s*\([^)]*(includes\s*\(\s*['"]@['"]\s*\)|===?\s*['"]\s*['"])[^)]*\)/) && hasRe(c,/else/) && (c.match(/screen\.textContent/g)||[]).length>=2
+   ? {ok:true,msg:'HUSTLE COMPLETE. You can pitch it, convert it, app it, and protect it &mdash; with a paper trail of green ticks proving it. Now go find your first customer; they are easier to find than you think.'}
+   : {ok:false,msg:'I need an if testing empty OR missing @ (use ||), an else, and a different screen message in each branch.'}),
+]);
+
 /* ============================ QA BANK ============================ */
 const STOP = new Set(['the','a','an','is','are','was','do','does','i','my','me','it','to','of','in','on','and','or','what','how','why','when','can','cant','dont','this','that','you','your']);
 const QA = [
@@ -1001,6 +1046,11 @@ const QA = [
  {k:'url address bar sensitive tokens', a:'Things in the address bar get logged, cached, and screenshotted. Never paste links containing tokens or reset codes; well-built sites keep secrets out of URLs.'},
  {k:'paper plate proxy security real example', a:'You have read production security already: the proxy&rsquo;s app-key check (bouncer), rate limiter (spam control), server-side API keys (secrets never ship to phones). The 12-week course has you build all three.'},
  {k:'hacked account what can do', a:'A stolen session or password IS you to the server: read DMs, message your friends (scams spread this way), reset other accounts via your email. Email + 2FA is the keystone.'},
+ {k:'money make coding freelance sell pages',a:'The shortest path: landing pages for local businesses ($100-$1500 each, built from tags you learned in week one), then small web apps. Portfolio beats diploma: three finished pages you can show ARE the resume.'},
+ {k:'app store phone publish pwa without',a:'A phone app can just be a web page (a PWA): host it at a URL and users Add to Home Screen - no store, no fees, no approval. If it earns, wrap the same code for the stores later. Build web-first; the languages are identical.'},
+ {k:'landing page what parts anatomy convert',a:'Headline naming the customer&rsquo;s problem, one sentence of proof, ONE call-to-action button. Everything else steals attention from the button. Restraint is the skill people pay for.'},
+ {k:'conversion lead cta call action meaning',a:'Conversion = the percentage of visitors who take the action (click, sign up). Every conversion is a lead worth money, which is why the button&rsquo;s wiring - your Grade 4 skill - is the atom of online business.'},
+ {k:'customer data collect store liability protect',a:'Collect only what you can protect: every stored email or address is a liability with your name on it. Guard inputs, keep secrets server-side, and keep your own personal details out of your public pages.'},
  {k:'doxing what is definition', a:'Doxing = gathering someone&rsquo;s identifying details (address, workplace, real name behind a username) and PUBLISHING them to enable harassment. The collecting is quiet; the weapon is the publishing.'},
  {k:'doxing hacking needed aggregation crumbs', a:'Usually no hacking at all &mdash; doxers assemble crumbs that were each individually public: a street sign in a photo, a race-results page, a reused username. Harmless alone; assembled, an address.'},
  {k:'username reuse connect accounts', a:'The number-one thread doxers pull: the same handle on five sites links those five lives together. Use different usernames for accounts you would hate to see connected.'},
@@ -1227,7 +1277,7 @@ function normRes(les, code){
   return (r && typeof r === 'object') ? r : (r ? {ok:true,msg:'Done!'} : {ok:false,msg:'Not quite yet &mdash; re-read the goal box.'});
 }
 
-const LEVELS=[[0,'Rookie'],[4,'Word Wrangler'],[8,'Tag Tamer'],[14,'Style Painter'],[19,'Name Tagger'],[22,'Button Whisperer'],[25,'Word Gluer'],[27,'List Keeper'],[29,'Trick Teacher'],[33,'Decision Maker'],[37,'Loop Rider'],[41,'Machine Builder'],[44,'Box Labeler'],[48,'Bug Detective'],[52,'Code Professional'],[57,'Graduate']];
+const LEVELS=[[0,'Rookie'],[4,'Word Wrangler'],[8,'Tag Tamer'],[14,'Style Painter'],[19,'Name Tagger'],[22,'Button Whisperer'],[25,'Word Gluer'],[27,'List Keeper'],[29,'Trick Teacher'],[33,'Decision Maker'],[37,'Loop Rider'],[41,'Machine Builder'],[44,'Box Labeler'],[48,'Bug Detective'],[52,'Code Professional'],[57,'Graduate'],[61,'Paid Renegade']];
 function levelFor(n){ let name=LEVELS[0][1]; for (const [min,t] of LEVELS) if (n>=min) name=t; return name; }
 const CCOLORS=['#2f7d5c','#1d5c8f','#d4a017','#b3542e','#7b5cb8','#c94f7c'];
 function confetti(count){

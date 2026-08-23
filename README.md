@@ -46,3 +46,39 @@ opener, or script open/close tags — they are built via string concatenation or
 escaped (`safeJs`, `'<scr'+'ipt>'`). Test with the recipe in the original
 HANDOFF: serve locally, click every lesson's "Show me" (all must pass) and
 "Start over" (none may pass), and verify stripped-output solutions fail.
+
+## For skeptics
+
+If you're a working developer looking at the kindergarten vocabulary and the
+confetti and thinking "these kids and their shortcuts" — this section is for you.
+
+**The pedagogy, straight:**
+
+- **Everything is typed by hand.** No copy-paste, no autocomplete, no AI at
+  runtime. The file makes zero network calls; a learner cannot outsource the
+  typing that builds the skill.
+- **Errors are the curriculum.** A syntax gate (`new Function` parse) blocks
+  green ticks on broken code; a structural linter explains unclosed tags,
+  blocks-inside-paragraphs, and empty CSS values in plain English instead of
+  letting browser error-recovery hide them. Learners are deliberately made to
+  cause and read errors.
+- **The kid-terms are scaffolding with a demolition date.** Every "hug/box/trick"
+  lesson carries a *Real name* panel (element/tag, variable, function, parameter,
+  return value, conditional, iteration, state, property). Graduates exit
+  speaking standard vocabulary.
+- **No magic survives to graduation.** The pre-wired `screen`/`btn` handles are
+  revealed as `document.getElementById` in Grade 12 — and learners write the
+  real version. The checker itself is disclosed as plain JavaScript. Free play
+  invites them to view-source the whole school.
+- **Simplifications are labeled.** Where the material simplifies (browser error
+  recovery, zero-indexing, pseudo-randomness), a collapsible "the full truth"
+  note says so and states the precise version.
+- **Reviews are placement exams.** Every grade ends with a cumulative review;
+  passing one *first* test-outs the whole grade (marked ⚡). Experienced learners
+  fast-forward to their actual gaps; beginners get consolidation checkpoints.
+- **Restraint on gamification.** XP and confetti celebrate; there are no streaks,
+  timers, lives, or leaderboards. Motivation without engagement-farming.
+
+**The audit invitation:** it's one dependency-free HTML file. Open it. Read the
+checker (`runCheck`), the linter (`htmlLint`), the highlighter, the lesson data.
+Then judge. Issues and pull requests welcome.

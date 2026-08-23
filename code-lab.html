@@ -49,6 +49,11 @@ nav{width:205px;flex:0 0 auto;overflow-y:auto;background:var(--panel);border-rig
 .teach pre{background:var(--code);padding:10px 12px;border-radius:8px;margin:0 0 10px;overflow-x:auto;font-family:Menlo,Consolas,monospace;font-size:.88rem;line-height:1.5}
 .goalbox{flex:0 0 auto;background:#dcebf9;border-bottom:3px solid var(--accent2);border-left:6px solid var(--accent2);padding:12px 16px;font-size:1.05rem;line-height:1.45}
 .goalbox b{color:var(--accent2);font-size:1.05em;letter-spacing:.5px}
+.realname{margin:14px 0 0;background:#eef3ee;border:1px solid #cfe0d4;border-left:5px solid var(--accent);border-radius:8px;padding:8px 14px;font-size:.92rem}
+details.ft{margin:10px 0;font-size:.9rem;color:var(--soft)}
+details.ft summary{cursor:pointer;font-size:.78rem;text-transform:uppercase;letter-spacing:1px;color:#a09488}
+details.ft p{margin:6px 0 0;line-height:1.5}
+.realname b{color:var(--accent);font-size:.7rem;text-transform:uppercase;letter-spacing:1px;margin-right:6px}
 .morebox{margin-top:18px;background:#f4f0e7;border:2px solid var(--line);border-radius:10px;padding:12px 16px}
 .morebox>b{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--soft);margin-bottom:8px}
 .morebox table{border-collapse:collapse;margin:6px 0 10px;width:100%}
@@ -152,6 +157,7 @@ nav{width:205px;flex:0 0 auto;overflow-y:auto;background:var(--panel);border-rig
     <li><b>Watch</b> your result appear below as you type. The bar under the buttons turns <b style="color:var(--accent)">green</b> when you nail it.</li>
   </ol>
   <p>Stuck? <b>Help me</b> gives a hint, and the built-in teacher explains any mistake in plain English.</p>
+  <p style="font-size:.85rem;color:#6b6058">Experienced developer? <a href="https://github.com/joshuagrigson/code-school#for-skeptics" target="_blank" rel="noopener">Read the pedagogy, then view-source and judge us.</a> Reviews double as test-out exams (⚡).</p>
   <button id="wStart">Start Kindergarten &rarr;</button>
 </div></div>
 <div id="qaPanel">
@@ -248,7 +254,7 @@ HL('Where did the pointy bits go?',
    : {ok:false,msg:'Wrap a sentence in &lt;p&gt; and &lt;/p&gt;.'}; }),
 
 HL('What happens if you forget the end',
- '<p>Every opening tag wants its closing partner &mdash; the one with the slash: <code>&lt;/h1&gt;</code>.</p><p>Below, someone forgot the closing hug. The browser tries to guess what you meant, and browser guesses cause weird bugs. Finish the hug properly.</p>',
+ '<p>Every opening tag wants its closing partner &mdash; the one with the slash: <code>&lt;/h1&gt;</code>.</p><p>Below, someone forgot the closing hug. The browser tries to guess what you meant, and browser guesses cause weird bugs. Finish the hug properly.</p><details class=\'ft\'><summary>The full truth</summary><p>We said browsers &ldquo;guess.&rdquo; Precisely: the HTML specification defines exact error-recovery rules every browser must follow, so broken pages break identically everywhere. It is deterministic repair, not guessing &mdash; but from where you sit, the effect is the same: your mistake gets silently papered over.</p></details>',
  'Add the missing closing tag.',
  '<h1>Hello there',
  '<h1>Hello there</h1>',
@@ -507,7 +513,7 @@ JL('Words and numbers are different',
 /* ============================ GRADE 6 (27-28) ============================ */
 grade('G6', [
 JL('A list in a box',
- '<p>A box can hold a whole LIST. Square brackets, items separated by commas:</p><pre>const excuses = [\'My dog ate it\', \'Aliens\', \'I overslept\'];</pre><p>Each item has a numbered position &mdash; and the computer counts from ZERO. So <code>excuses[0]</code> is the first item, <code>excuses[1]</code> the second. Yes, zero. Every programmer trips on this exactly once.</p>',
+ '<p>A box can hold a whole LIST. Square brackets, items separated by commas:</p><pre>const excuses = [\'My dog ate it\', \'Aliens\', \'I overslept\'];</pre><p>Each item has a numbered position &mdash; and the computer counts from ZERO. So <code>excuses[0]</code> is the first item, <code>excuses[1]</code> the second. Yes, zero. Every programmer trips on this exactly once.</p><details class=\'ft\'><summary>The full truth</summary><p>Zero-indexing is not arbitrary: an index is really &ldquo;how far from the start,&rdquo; and the first item is zero steps away. In older languages it was literally a memory offset. Once you see it as distance-from-start, it stops feeling weird.</p></details>',
  'Make a list box with at least three quoted items, then show item [0].',
  '',
  'const excuses = [\'My dog ate it\', \'Aliens took it\', \'I overslept\'];\nscreen.textContent = excuses[0];',
@@ -517,7 +523,7 @@ JL('A list in a box',
    : {ok:false,msg:'I need a list in square brackets AND a screen line showing an item by its [number].'}),
 
 JL('Picking at random',
- '<p>To pick a random item, two helpers team up:</p><pre>Math.random()</pre><p>gives a random decimal between 0 and 1 (like 0.63). Multiply by the list’s length and chop off the decimals with <code>Math.floor</code>, and you get a fair random position:</p><pre>const pick = Math.floor(Math.random() * excuses.length);\nscreen.textContent = excuses[pick];</pre><p>Press “Start over” and re-type it a few times &mdash; a different excuse (sometimes) each run. Randomness is what will make your Excuse-O-Matic feel alive.</p>',
+ '<p>To pick a random item, two helpers team up:</p><pre>Math.random()</pre><p>gives a random decimal between 0 and 1 (like 0.63). Multiply by the list’s length and chop off the decimals with <code>Math.floor</code>, and you get a fair random position:</p><pre>const pick = Math.floor(Math.random() * excuses.length);\nscreen.textContent = excuses[pick];</pre><p>Press “Start over” and re-type it a few times &mdash; a different excuse (sometimes) each run. Randomness is what will make your Excuse-O-Matic feel alive.</p><details class=\'ft\'><summary>The full truth</summary><p>Math.random() is <i>pseudo</i>-random &mdash; a deterministic formula that looks random. Perfect for games and shuffles; never acceptable for passwords or lottery draws, which use crypto-grade randomness. Naming that difference out loud is a very developer thing to do.</p></details>',
  'Pick a random item from your list and show it.',
  'const excuses = [\'My dog ate it\', \'Aliens took it\', \'I overslept\'];\n',
  'const excuses = [\'My dog ate it\', \'Aliens took it\', \'I overslept\'];\nconst pick = Math.floor(Math.random() * excuses.length);\nscreen.textContent = excuses[pick];',
@@ -890,7 +896,7 @@ function REV(gid, lang, teach, goal, start, sol, hint, check, pageHtml){
     : JL('📋 Review: put it together', teach, goal, start, sol, hint, check, pageHtml);
   les.g = gid; L.push(les);
 }
-const REV_INTRO = '<p><b>Checkpoint — no rush, no shame.</b> Before moving up, let&rsquo;s make sure this grade actually stuck. Below is everything you just learned, in one breath, then ONE task that uses it all together. If any line feels shaky, click back to that lesson first — that is what the sidebar is for, and re-reading is what professionals do daily.</p>';
+const REV_INTRO = '<p><b>Checkpoint — no rush, no shame.</b> Before moving up, let&rsquo;s make sure this grade actually stuck. Below is everything you just learned, in one breath, then ONE task that uses it all together. If any line feels shaky, click back to that lesson first — that is what the sidebar is for, and re-reading is what professionals do daily.</p><p><b>Already know this material?</b> Passing this review ticks the whole grade for you (marked ⚡) &mdash; the fast lane for experienced folks. Beginners: ignore this, the normal road is the good road.</p>';
 
 REV('K','html',
  REV_INTRO+'<p>Kindergarten in one breath:</p><ul><li>The computer shows exactly what you type.</li><li>Tags are invisible instructions: <code>&lt;h1&gt;</code> big headline, <code>&lt;p&gt;</code> paragraph.</li><li>Every hug you open, you close — the closer wears the slash.</li><li>Small hugs go INSIDE paragraphs: <code>&lt;em&gt;</code> lean, <code>&lt;strong&gt;</code> bold.</li></ul>',
@@ -1016,6 +1022,18 @@ REV('G11','js',
    ? {ok:true,msg:'A leaderboard from a list of objects — you just did what every scoreboard, feed, and results page does.'}
    : {ok:false,msg:'Loop with for...of, read BOTH fields with dots (p.name, p.points), build the text, show it after the loop.'});
 
+(function(){
+  const les = JL('The magic trick, revealed',
+ '<p>Time to confess. Since Grade 4 you have used <code>screen</code> and <code>btn</code> like they fell from the sky. They did not &mdash; before every lesson, this school quietly runs one line for you:</p><pre>const screen = document.getElementById(\'screen\');</pre><p><code>document</code> is the whole page as an object; <code>getElementById</code> hunts down the element wearing that id &mdash; the Grade 3 name tags, now being used by JavaScript exactly as promised. Every training wheel in this school is real code you could now write yourself.</p><p>Prove it: fetch the element yourself, under your own name, and use it. From this lesson on, there is no magic left in this building &mdash; only code you understand.</p>',
+ 'Grab the screen element yourself with document.getElementById, store it in your own const, and write to it.',
+ '',
+ 'const out = document.getElementById(\'screen\');\nout.textContent = \'No more magic. I know how everything works.\';',
+ 'Line 1: const yourName = document.getElementById(\'screen\'); Line 2: yourName.textContent = your message.',
+ (c)=> hasRe(c,/const\s+\w+\s*=\s*document\.getElementById\s*\(\s*['"]screen['"]\s*\)/) && hasRe(c,/\w+\.textContent\s*=\s*['"].+['"]/)
+   ? {ok:true,msg:'The last curtain pulled back. document.getElementById is the exact line running under every real website &mdash; and now under your fingers.'}
+   : {ok:false,msg:'Fetch it yourself: const something = document.getElementById(&#39;screen&#39;); then something.textContent = a message.'});
+  les.g='G12'; L.push(les);
+})();
 REV('G12','js',
  REV_INTRO+'<p>Grade 12 in one breath:</p><ul><li><code>console.log</code> is your detective notebook.</li><li>Errors are handrails — read the last line first.</li><li><code>typeof</code> asks a value what species it is.</li><li>Guard before you use: check, then act.</li></ul>',
  'Write a guard that logs the value AND its typeof, shows a complaint if the box is empty, otherwise shows a welcome.',
@@ -1027,7 +1045,7 @@ REV('G12','js',
    : {ok:false,msg:'I need the console.log with typeof, the === \'\' guard, an else, and a different screen message in each branch.'});
 
 REV('C','js',
- REV_INTRO+'<p>College in one breath:</p><ul><li>Names tell the truth.</li><li>One job per function; snap them together.</li><li>DRY: repetition is where bugs breed.</li><li>You built the Mood Machine from a spec, alone.</li></ul><p>Final checkpoint: a well-built mini app with professional habits showing.</p>',
+ REV_INTRO+'<p>College in one breath:</p><ul><li>Names tell the truth.</li><li>One job per function; snap them together.</li><li>DRY: repetition is where bugs breed.</li><li>You built the Mood Machine from a spec, alone.</li></ul><p>One more curtain: the checker grading you this whole time is just JavaScript &mdash; functions reading your code with the same string and if/else tools you now own. Nothing graded you that you could not now build.</p><p>Final checkpoint: a well-built mini app with professional habits showing.</p>',
  'Build cleanly named pickGreeting() (returns a random greeting) and showGreeting(text) (displays it), wired to the button.',
  'const greetings = [\'Hello!\', \'Welcome back!\', \'Good to see you!\'];\n',
  'const greetings = [\'Hello!\', \'Welcome back!\', \'Good to see you!\'];\n\nfunction pickGreeting() {\n  const pick = Math.floor(Math.random() * greetings.length);\n  return greetings[pick];\n}\n\nfunction showGreeting(text) {\n  screen.textContent = text;\n}\n\nbtn.onclick = function () {\n  showGreeting(pickGreeting());\n};',
@@ -1292,6 +1310,35 @@ const MORE={
 13:'<p>div is deliberately boring: no look, no meaning, just grouping. In Grade 2 you will paint one box and everything inside inherits the paint job — THAT is why grouping matters.</p><p>A semantic tip for later: when a box has a clear job there are nicer names — &lt;header&gt;, &lt;section&gt;, &lt;footer&gt;. They behave exactly like div but tell humans (and screen readers) what the group IS.</p>'
 };
 
+/* the professional vocabulary behind our kid-friendly words */
+const RN={
+2:'What we call a <i>hug</i>, programmers call an <b>element</b>; the pointy-bracket parts are <b>tags</b>. So h1 is &ldquo;a heading element, written with an opening and closing tag.&rdquo;',
+3:'The p element. From here on you will hear both: hug (ours) and element/tag (the world&rsquo;s). By graduation you will only need the real ones.',
+5:'Nesting: an element placed <b>inside</b> another. em and strong are <b>inline elements</b>; p and h1 are <b>block elements</b>.',
+11:'These extra notes are officially called <b>attributes</b> &mdash; that IS the real term. name=&quot;value&quot; pairs inside the opening tag.',
+14:'A whole line like <code>color: red;</code> is a <b>declaration</b>: a <b>property</b>, a colon, and a <b>value</b>. The chooser before the braces is a <b>selector</b>.',
+19:'The name tag is the <b>class attribute</b>; <code>.special</code> is a <b>class selector</b>. &ldquo;Add a class and target it with a class selector&rdquo; is how a developer says this whole lesson.',
+22:'Making something happen in the page is called <b>DOM manipulation</b> &mdash; the DOM is the browser&rsquo;s live copy of your HTML. screen.textContent changes the DOM.',
+23:'Our labeled box is a <b>variable</b>. Creating one is <b>declaring</b> it; putting a value in is <b>assignment</b>. const declares a constant variable.',
+24:'Waiting-for-a-click code is an <b>event handler</b>. The click is an <b>event</b>. Pros also write this as addEventListener(&#39;click&#39;, ...).',
+25:'Quoted words are <b>strings</b>. Gluing them is <b>concatenation</b>. &ldquo;Concatenate two strings&rdquo; = stick two bits of text together.',
+26:'Words vs numbers vs true/false are <b>types</b> (string, number, boolean). Type confusion is the official name of the Total: 43 bug.',
+27:'Our list is an <b>array</b>. A position number is an <b>index</b> (plural: indices). &ldquo;Zero-indexed&rdquo; means counting starts at 0.',
+29:'The trick is a <b>function</b>. Teaching it is <b>defining</b>; performing it is <b>calling</b> (or invoking) it.',
+30:'The ingredient is a <b>parameter</b> (in the definition) and an <b>argument</b> (the actual value you pass in the call). Yes, two words &mdash; pros mix them up too.',
+31:'Handing something back is the <b>return value</b>. A function that returns something is often called <b>pure</b> if it only computes and touches nothing else.',
+33:'A choice is a <b>conditional</b>. The test in the brackets is a <b>condition</b>, and its true/false answer is a <b>boolean</b>.',
+36:'&amp;&amp; and || are <b>logical operators</b> (AND, OR). ! is NOT &mdash; it flips true to false.',
+37:'One lap of a loop is an <b>iteration</b>. &ldquo;Iterate over the array&rdquo; = loop through the list. The i variable is a <b>counter</b>.',
+40:'A loop that never exits is an <b>infinite loop</b> &mdash; the official term for the frozen-page mistake, and every developer alive has written one.',
+43:'The remembering box that survives between clicks is <b>state</b>. &ldquo;This app has state&rdquo; = it remembers things between events.',
+44:'The labeled box is an <b>object</b>; each label is a <b>property</b> (or key), each content a <b>value</b>. person.name is &ldquo;accessing a property.&rdquo;',
+46:'A list of labeled boxes is an <b>array of objects</b> &mdash; say those four words in any interview and nod knowingly.',
+48:'Detective work is <b>debugging</b>. The hidden notebook is the <b>console</b>. You are now officially debugging with console logging.',
+51:'Checking before using is <b>input validation</b> (or guarding). &ldquo;Validate user input&rdquo; is on every professional checklist ever written.',
+57:'This whole page pattern is a <b>landing page</b>; the button is a <b>CTA</b> (call to action). Real marketing meetings use exactly these words.'
+};
+
 /* where each lesson's skill shows up in apps people use every day */
 const RW={
 0:'Every comment you have ever typed on Facebook or YouTube was exactly this: text handed to a computer, displayed back verbatim.',
@@ -1412,14 +1459,15 @@ const edEl=$('#ed'), hlEl=$('#hl'), teachEl=$('#teach'), goalEl=$('#goal'), stat
       outEl=$('#out'), navEl=$('#nav'), remindTxt=$('#remindTxt'), remindBox=$('#remind'),
       btnNext=$('#btnNext');
 
-let idx = 0, done = new Set(), leadStep = 0, sandbox = false, checkTimer = null;
+let idx = 0, done = new Set(), tested = new Set(), leadStep = 0, sandbox = false, checkTimer = null;
 
-function saveP(){ try{ localStorage.setItem('codeschool', JSON.stringify({done:[...done], idx})); }catch(e){} }
+function saveP(){ try{ localStorage.setItem('codeschool', JSON.stringify({done:[...done], idx, tested:[...tested]})); }catch(e){} }
 function loadP(){
   let p = null;
   try{ p = JSON.parse(localStorage.getItem('codeschool')); }catch(e){}
   if (!p || !Array.isArray(p.done)) p = (location.protocol === 'file:') ? CARRIED : {done:[], idx:0};
   done = new Set(p.done.filter(n => n >= 0 && n < L.length));
+  tested = new Set(p.tested || []);
   idx = Math.min(Math.max(p.idx|0, 0), L.length - 1);
 }
 
@@ -1528,8 +1576,13 @@ function runCheck(){
   statusEl.innerHTML = (res.ok ? '✓ ' : '') + res.msg + (res.ok && RW[idx] ? '<span class="wild">🌍 <b>In the wild:</b> ' + RW[idx] + '</span>' : '');
   btnNext.style.display = res.ok ? 'inline-block' : 'none';
   if (res.ok && !done.has(idx)){
-    done.add(idx); saveP(); renderNav();
+    done.add(idx);
     const g=L[idx].g, ls=L.map((l,i)=>({l,i})).filter(x=>x.l.g===g);
+    if (L[idx].title.includes('Review') && ls.some(x=>!done.has(x.i))){
+      for (const x of ls) done.add(x.i);
+      tested.add(g);
+    }
+    saveP(); renderNav();
     const gComplete = ls.every(x=>done.has(x.i));
     if (done.size===L.length){ confetti(160); gradeToast('', true); }
     else if (gComplete){ confetti(90); gradeToast(GRADES.find(x=>x.id===g).name, false); }
@@ -1576,7 +1629,7 @@ function renderNav(){
     const head = document.createElement('div');
     head.className='ghead';
     const gComplete = lessons.length>0 && gdone===lessons.length;
-    head.innerHTML = '<span>'+(gComplete?'🏅 ':'')+g.name+'<span class="gsub">'+g.sub+'</span></span><span class="gcount">'+gdone+'/'+lessons.length+'</span>';
+    head.innerHTML = '<span>'+(gComplete?'🏅 ':'')+g.name+'<span class="gsub">'+g.sub+'</span></span><span class="gcount">'+(tested.has(g.id)?'⚡ ':'')+gdone+'/'+lessons.length+'</span>';
     if (gdone > 0){
       const rb = document.createElement('button');
       rb.className='ghreset'; rb.textContent='redo'; rb.title='Clear this grade’s ticks and start it again';
@@ -1603,7 +1656,7 @@ function loadLesson(i){
   sandbox = false; idx = i; leadStep = 0;
   const les = L[i], g = GRADES.find(x=>x.id===les.g);
   teachEl.dataset.lv = g.lv;
-  teachEl.innerHTML = '<h2>' + les.title + '</h2>' + les.teach + (MORE[i] ? '<div class="morebox"><b>More to chew on</b>' + MORE[i] + '</div>' : '');
+  teachEl.innerHTML = '<h2>' + les.title + '</h2>' + les.teach + (RN[i] ? '<div class="realname"><b>Real name</b>' + RN[i] + '</div>' : '') + (MORE[i] ? '<div class="morebox"><b>More to chew on</b>' + MORE[i] + '</div>' : '');
   goalEl.innerHTML = '<b>DO THIS:</b> ' + les.goal;
   remindTxt.innerHTML = REMIND[les.lang];
   remindBox.style.display = localStorage.getItem('remindHidden')==='1' ? 'none' : 'flex';
@@ -1661,7 +1714,7 @@ const SANDBOX_START = '<h1>Free play<\/h1>\n<p>This page is all yours. No goals,
 function openSandbox(){
   sandbox = true;
   teachEl.dataset.lv = 2;
-  teachEl.innerHTML = '<h2>Free play<\/h2><p>No goal, no checker &mdash; just you and the machine. Write any HTML here (add &lt;style&gt; and script hugs if you like) and watch the preview. Your scratchpad saves itself in this browser.<\/p><p>Click any lesson in the sidebar to go back to school.<\/p>';
+  teachEl.innerHTML = '<h2>Free play<\/h2><p><b>Want to see how this entire school works?</b> Right-click this page and choose View page source. Every lesson, checker, and trick lives in one file of the three languages you now read. Nothing was hidden from you &mdash; it was just waiting until you could read it.<\/p><p>No goal, no checker &mdash; just you and the machine. Write any HTML here (add &lt;style&gt; and script hugs if you like) and watch the preview. Your scratchpad saves itself in this browser.<\/p><p>Click any lesson in the sidebar to go back to school.<\/p>';
   goalEl.innerHTML = '<b>PLAY.<\/b> Nothing you do here can break anything.';
   remindBox.style.display='none';
   $('#scaffold').style.display='none';

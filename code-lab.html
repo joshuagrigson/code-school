@@ -184,6 +184,8 @@ body.sensei #btnTheme{border-color:#8a1c1c}
 #qaPanel.open{display:flex}
 #qaPanel .qhead{padding:8px 12px;background:var(--code);display:flex;align-items:center}
 #qaPanel .qhead button{margin-left:auto;border:none;background:none;cursor:pointer;font-size:1rem}
+.qachip{display:block;width:100%;text-align:left;margin:6px 0;padding:8px 10px;font-family:inherit;font-size:.82rem;border:1px solid var(--line);border-radius:8px;background:var(--code);color:var(--ink);cursor:pointer;line-height:1.35}
+.qachip:hover{border-color:var(--accent)}
 #qaIn{border:none;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:8px 12px;font-family:inherit;font-size:.9rem;outline:none}
 #qaOut{padding:10px 12px;overflow-y:auto;font-size:.88rem;line-height:1.5}
 #qaOut p{margin-bottom:8px}
@@ -1450,7 +1452,7 @@ const ORDER = [];
 for (const g of GRADES) for (let i=0;i<L.length;i++) if (L[i].g===g.id && !L[i].chal && !L[i].proj && !L[i].pract) ORDER.push(i);
 
 /* ============================ QA BANK ============================ */
-const STOP = new Set(['the','a','an','is','are','was','do','does','i','my','me','it','to','of','in','on','and','or','what','how','why','when','can','cant','dont','this','that','you','your']);
+const STOP = new Set(['the','a','an','is','are','was','do','does','i','my','me','it','to','of','in','on','and','or','what','how','why','when','can','cant','dont','this','that','you','your','would','use','used','using','real','life','for','back','need','needs','about','there','will','take','much','get','got','put','thing','things','be','been','being','if','but','so','just','any','all','into','very','really','actually','should','could','did','has','have','had','am','were','who','which','whose','from','with','at','as','by','not','please','tell','explain','happens','happen','ever','even','still','also','than','then','them','they','their','our','us','we','one']);
 const QA = [
  {k:'tag hug open close pointy bracket', a:'A tag is an instruction in pointy brackets. Most come in pairs: <code>&lt;p&gt;</code> opens, <code>&lt;/p&gt;</code> (with the slash) closes, and everything between is the element&rsquo;s content (what we called the hug in Kindergarten). Every tag you open, you close.'},
  {k:'class dot css name many', a:'A class is a reusable name tag: <code>class="fancy"</code> in HTML, <code>.fancy</code> (with a dot) in CSS. Many elements can share one class &mdash; one rule styles them all.'},
@@ -1605,8 +1607,8 @@ const QA = [
  {k:'delete post really gone', a:'It vanishes from feeds when the server stops serving it. Backups may exist a while, and anyone who screenshotted it has a copy forever. Publish = lose the undo button.'},
  {k:'facebook source messy huge gibberish', a:'Big sites ship machine-crunched code: scrambled class names, one-line JavaScript, deep nesting. It is your HTML/CSS/JS after a wood chipper &mdash; same species, industrial scale.'},
  {k:'inspect what shows right click', a:'It opens DevTools on YOUR copy of the page: the live HTML skeleton (Elements), the CSS dressing each element (Styles), plus Console and Network tabs. X-ray vision for any site.'},
- {k:'devtools changes permanent refresh', a:'Never &mdash; you are editing your local copy only. Refresh re-fetches the real page and everything resets. It is a flight simulator: crash freely.'},
- {k:'edit website text bank balance fake', a:'You can change what YOUR screen displays &mdash; and only that. The server&rsquo;s truth is untouched, and nobody else sees your edit. Screenshots of edited pages are a classic scam.'},
+ {k:'devtools changes permanent refresh safe temporary', a:'Never &mdash; you are editing your local copy only. Refresh re-fetches the real page and everything resets. It is a flight simulator: crash freely.'},
+ {k:'edit website text bank balance fake safe local harmless', a:'You can change what YOUR screen displays &mdash; and only that. The server&rsquo;s truth is untouched, and nobody else sees your edit. Screenshots of edited pages are a classic scam.'},
  {k:'find element on page arrow picker', a:'Click the arrow-in-a-box icon (top-left of DevTools), then hover the page &mdash; elements highlight as you move, click to jump to their HTML.'},
  {k:'styles panel crossed out rule wins', a:'The Styles panel lists every rule matching the element, most specific first. Crossed-out lines LOST the cascade tiebreak &mdash; you can literally watch specificity work.'},
  {k:'box model diagram devtools colors', a:'The colored rectangle diagram shows content, padding, border, margin with live numbers. When spacing confuses you, this diagram is the answer sheet.'},
@@ -1669,6 +1671,20 @@ const QA = [
  {k:'vpn enough hide doxing', a:'A VPN hides your network address from sites &mdash; useful, but most doxing uses what you PUBLISHED, not your IP. A lock on one door of a house with open windows.'},
  {k:'reverse image search photo linked', a:'Anyone can drop your photo into a reverse-image search and find everywhere else it appears &mdash; linking profiles together. Unique photo per context is a quiet pro move.'},
  {k:'harassment report block support', a:'Block early, report with screenshots, do not feed the fire publicly. Platforms act faster on documented patterns. Loop in someone you trust &mdash; isolation is what harassers count on.'},
+ {k:'ul li ol abbreviation unordered ordered list item short stand stands', a:'<code>&lt;ul&gt;</code> = <b>u</b>nordered <b>l</b>ist (bullets), <code>&lt;ol&gt;</code> = <b>o</b>rdered <b>l</b>ist (numbers), <code>&lt;li&gt;</code> = <b>l</b>ist <b>i</b>tem, one per bullet. The li elements nest inside the ul or ol.'},
+ {k:'p h1 h6 abbreviation paragraph heading level short stand stands', a:'<code>&lt;p&gt;</code> = <b>p</b>aragraph. <code>&lt;h1&gt;</code>&ndash;<code>&lt;h6&gt;</code> = <b>h</b>eading, level 1 (biggest) through 6 (smallest). The number is importance, not just size.'},
+ {k:'em strong abbreviation emphasis short italic bold meaning stand stands', a:'<code>&lt;em&gt;</code> = <b>em</b>phasis (drawn italic), <code>&lt;strong&gt;</code> = strong importance (drawn bold). They describe MEANING; the look is just how browsers draw that meaning.'},
+ {k:'href src alt abbreviation hypertext reference source alternative short stand stands', a:'<code>href</code> = <b>h</b>ypertext <b>ref</b>erence (where a link goes), <code>src</code> = <b>s</b>ou<b>rc</b>e (which file an image loads), <code>alt</code> = <b>alt</b>ernative text (what the image says to a screen reader).'},
+ {k:'html css javascript abbreviation markup cascading sheets short initials stand stands', a:'<b>HTML</b> = HyperText Markup Language (structure), <b>CSS</b> = Cascading Style Sheets (looks), <b>JavaScript</b> = the language that makes pages act. Markup means plain text with instructions marked into it.'},
+ {k:'div span abbreviation division generic box short stand stands', a:'<code>&lt;div&gt;</code> = <b>div</b>ision, a plain block box for grouping. <code>&lt;span&gt;</code> is its inline twin for a few words mid-sentence. Neither means anything on its own &mdash; they are containers you name with classes.'},
+ {k:'html programming language markup argument counts coding', a:'Strictly: no. HTML is a <i>markup</i> language &mdash; it describes structure but makes no decisions and runs no loops. JavaScript is the programming language here. Do not let anyone belittle it though: every page on earth needs markup, and you now read all three languages.'},
+ {k:'center centre box div horizontally middle margin auto', a:'Two different jobs. To center TEXT inside a box: <code>text-align: center;</code>. To center the BOX itself: give it a width and <code>margin: 0 auto;</code> &mdash; auto splits the leftover space evenly on both sides.'},
+ {k:'nested list inside sublist outline indent nesting lists', a:'Yes &mdash; put a whole <code>&lt;ul&gt;</code> INSIDE an <code>&lt;li&gt;</code> (before that item closes) and you get indented sub-bullets, like an outline. A ul never sits directly inside another ul; it always rides inside a list item.'},
+ {k:'ul array difference confusing same word list javascript html', a:'Two different things sharing one word. An HTML <code>&lt;ul&gt;</code> is a bulleted list you SEE on a page. A JavaScript array is a list of values the computer HOLDS in memory. Later you loop an array and build a ul from it &mdash; that is exactly how every real feed works.'},
+ {k:'course length long weeks time finish pace hours schedule', a:'There is no clock. Most people finish a grade in one relaxed evening, so the 77 core lessons tend to land in a few weeks of casual evenings &mdash; faster if you binge, slower if life happens. Nothing expires and nobody falls behind.'},
+ {k:'learn coding point purpose worth bother benefit', a:'Three honest reasons: you stop being at the mercy of software other people built; you can make a thing exist out of nothing but typing; and it pays &mdash; landing pages, fixes, and small apps are real money. Bonus: the web stops looking like magic and starts looking like instructions.'},
+ {k:'progress restore device export import lost cleared browser', a:'Your ticks live in this browser. <b>Export save</b> gives you a code; <b>Import</b> pastes it back on any device or browser. If site data got cleared without an export the ticks are gone &mdash; but the knowledge is not, and Replay turns a second run into a victory lap.'},
+ {k:'closer slash direction opener second item typed twice', a:'The closer wears the slash: <code>&lt;li&gt;</code> opens, <code>&lt;/li&gt;</code> closes. Typing the opener a second time does NOT end the first one &mdash; it opens another. It is the most common beginner bug there is, which is why the coach marks it right where you typed it.'},
 ];
 
 /* extra reference material for lessons whose teach text is short */
@@ -1985,6 +2001,7 @@ function friendlySyntax(msg, code){
 }
 
 /* ===== the coach: universal structure checks that explain, not just fail ===== */
+const NO_SELF_NEST=new Set(['p','li','a','button','h1','h2','h3','h4','h5','h6','td','th','tr']);
 const KNOWN_TAGS=new Set(['html','head','body','title','meta','style','script','link','h1','h2','h3','h4','h5','h6','p','div','span','ul','ol','li','a','img','button','input','form','em','strong','i','b','u','small','br','hr','table','thead','tbody','tr','td','th','header','footer','section','article','nav','main','aside','blockquote','code','pre','label','select','option','textarea','video','audio','source','canvas','svg','figure','figcaption','mark','sub','sup','kbd','details','summary','iframe']);
 let lintRange = null;
 function nearTag(name){
@@ -2029,11 +2046,23 @@ function htmlLint(code){
       }
       const top=stack[stack.length-1].n;
       if(top!==name){
+        /* If this closer's partner IS open further down, the closer is innocent -
+           the real mistake is the element left hanging above it. Blame that. */
+        const owner = stack.map(x=>x.n).lastIndexOf(name);
+        if (owner > -1){
+          const hang = stack[stack.length-1];
+          lintRange = {a:hang.a, b:hang.b};
+          return 'You opened <code>'+hlEsc('<'+hang.n+'>')+'</code> here and never closed it, so <code>'+hlEsc('</'+name+'>')+'</code> cannot do its job yet. Add <code>'+hlEsc('</'+hang.n+'>')+'</code> where that '+hang.n+' should end &mdash; the closer wears the slash.';
+        }
         lintRange = here;
-        return 'Nested elements close inside-out: right now the innermost open element is <code>'+hlEsc('<'+top+'>')+'</code>, but you closed <code>'+hlEsc('</'+name+'>')+'</code>. Close <code>'+hlEsc('</'+top+'>')+'</code> first (or check for a typo).';
+        return 'You closed <code>'+hlEsc('</'+name+'>')+'</code>, but the innermost open element right now is <code>'+hlEsc('<'+top+'>')+'</code> and nothing <code>'+hlEsc('<'+name+'>')+'</code> is open. Check that closer for a typo.';
       }
       stack.pop();
     } else if(!VOID_TAGS.has(name)){
+      if(NO_SELF_NEST.has(name) && stack.length && stack[stack.length-1].n===name){
+        lintRange = here;
+        return 'You typed <code>'+hlEsc('<'+name+'>')+'</code> again, but the one before it is still open &mdash; a second <code>'+hlEsc('<'+name+'>')+'</code> OPENS another '+name+' instead of ending the first. You meant <code>'+hlEsc('</'+name+'>')+'</code>: the closer wears the slash.';
+      }
       if(stack.some(x=>x.n==='p') && BLOCK_TAGS.has(name)){
         lintRange = here;
         const fix=INLINE_HINT[name];
@@ -2380,20 +2409,79 @@ function giveLead(){
 }
 
 /* QA */
-function answer(q){
-  const words = q.toLowerCase().replace(/[^a-z0-9\s]/g,' ').split(/\s+/).filter(w=>w && !STOP.has(w));
-  let best=null, bestScore=0;
-  for (const e of QA){
-    const ks = e.k.split(' ');
-    let score = 0;
+/* ---- question matching ----
+   Scoring rules that keep the coach honest:
+   - rare words decide matches, common ones barely count (IDF)
+   - a single shared word is NOT enough unless it is a rare, decisive one
+   - the lesson you are on nudges ties (an HTML lesson prefers HTML answers)
+   - when unsure, offer choices instead of asserting the wrong thing        */
+const QDF = {};
+QA.forEach(e=>{ new Set(e.k.split(' ')).forEach(w=>{ QDF[w]=(QDF[w]||0)+1; }); });
+function widf(w){ return Math.log(QA.length / (1 + (QDF[w]||0))) + 0.2; }
+const LANGW = {
+  js:['javascript','function','return','let','const','variable','loop','array','object','textcontent','onclick','console','typeof','random','json','nan','undefined','parentheses','assignment'],
+  css:['css','selector','padding','margin','property','hover','specificity','rule','style','font','border','radius','shadow','units','px','cascade','inherit','shorthand','colon'],
+  html:['tag','tags','html','heading','paragraph','div','span','attribute','href','nesting','closing','element','ul','li','img','br','semantic','markup']
+};
+const QLANG = QA.map(e=>{
+  const ws=e.k.split(' '); let best=null, bs=0;
+  for (const g in LANGW){ const n=ws.filter(w=>LANGW[g].includes(w)).length; if(n>bs){bs=n;best=g;} }
+  return bs>=1 ? best : null;
+});
+const RWINT = /(real[- ]?(life|world|app|apps|site|website|project|example)|in the wild|actually used|really used|used in real|who uses|where would i use|practical)/i;
+const QVOCAB = new Set();
+QA.forEach(e=>e.k.split(' ').forEach(w=>QVOCAB.add(w)));
+function knownWord(w){
+  if (QVOCAB.has(w)) return true;
+  if (w.length>=4){ for (const v of QVOCAB){ if (v.length>=4 && (v.startsWith(w)||w.startsWith(v))) return true; } }
+  return false;
+}
+function plain(h){ return String(h).replace(/<[^>]*>/g,'').replace(/&[a-z]+;/g,' ').replace(/\s+/g,' ').trim(); }
+
+function rankQA(words, curLang){
+  const out=[];
+  QA.forEach((e,n)=>{
+    const ks=e.k.split(' ');
+    let score=0, hits=0, bestW=0;
     for (const w of words){
-      if (ks.includes(w)) score += 3;
-      else if (w.length>=4 && ks.some(k=>k.length>=4 && (k.startsWith(w)||w.startsWith(k)))) score += 1;
+      let gain=0;
+      if (ks.includes(w)) gain = widf(w);
+      else if (w.length>=4 && ks.some(k=>k.length>=4 && (k.startsWith(w)||w.startsWith(k)))) gain = widf(w)*0.35;
+      if (gain>0){ score+=gain; hits++; if(gain>bestW) bestW=gain;
+        const at=ks.indexOf(w); if (at>-1 && at<2) score += 0.6; }
     }
-    if (score > bestScore){ bestScore=score; best=e; }
+    if (curLang && QLANG[n]) score *= (QLANG[n]===curLang ? 1.25 : 0.75);
+    out.push({n, score, hits, bestW});
+  });
+  out.sort((a,b)=>b.score-a.score);
+  return out;
+}
+function qaHit(n){ return '<p>' + QA[n].a + '</p>'; }
+
+function answer(q){
+  const words = [...new Set(q.toLowerCase().replace(/[^a-z0-9\s]/g,' ').split(/\s+/).filter(w=>w && !STOP.has(w)))];
+  const les = (!sandbox && L[idx]) ? L[idx] : null;
+  const ranked = rankQA(words, les ? les.lang : null);
+  const top = ranked[0] || {n:-1, score:0, hits:0, bestW:0};
+  /* If most of the question is vocabulary this course has never heard of, it is
+     not our question - a rare word colliding on a different meaning ("the CAPITAL
+     of France" vs "CAPITAL letters") must not buy a confident answer. */
+  const inScope = words.length===0 || (words.filter(knownWord).length / words.length) > 0.5;
+  const confident = inScope && top.n>=0 && top.score >= 3.6 && (top.hits >= 2 || top.bestW >= 3.9);
+
+  /* "where is this used in real life" - answer from the lesson's own In-the-wild line */
+  if (RWINT.test(q) && les && RW[idx]){
+    return '<p>&#127758; <b>In the wild &mdash; ' + esc(les.title) + ':</b> ' + RW[idx] + '</p>'
+         + (confident ? qaHit(top.n) : '');
   }
-  if (best && bestScore>=3) return '<p>' + best.a + '</p>';
-  return '<p>I don&rsquo;t know that one yet (I only know what this course teaches).</p><p><button id="qaCopy" style="font-family:inherit;padding:6px 10px;border:1px solid var(--line);border-radius:6px;background:none;cursor:pointer;color:var(--ink)">📋 Copy my question</button> then paste it to any AI or search engine when online &mdash; and tell Josh so this answer bank grows.</p>';
+  if (confident) return qaHit(top.n);
+
+  const maybes = inScope ? ranked.filter(r=>r.score>0.9).slice(0,3) : [];
+  if (maybes.length){
+    return '<p>I am not certain which you mean &mdash; I would rather offer choices than answer the wrong question. Did you mean:</p>'
+      + maybes.map(r=>'<button class="qachip" data-qa="'+r.n+'">'+esc(plain(QA[r.n].a).slice(0,64))+'&hellip;</button>').join('');
+  }
+  return '<p>I don&rsquo;t know that one yet (I only know what this course teaches).</p><p><button id="qaCopy" style="font-family:inherit;padding:6px 10px;border:1px solid var(--line);border-radius:6px;background:none;cursor:pointer;color:var(--ink)">&#128203; Copy my question</button> then paste it to any AI or search engine when online &mdash; and tell Josh so this answer bank grows.</p>';
 }
 
 /* sandbox */
@@ -2593,6 +2681,10 @@ teachEl.addEventListener('click', (e)=>{
 });
 $('#btnQA').onclick = ()=>$('#qaPanel').classList.toggle('open');
 $('#qaClose').onclick = ()=>$('#qaPanel').classList.remove('open');
+$('#qaOut').addEventListener('click', (e)=>{
+  const b = e.target.closest('[data-qa]'); if(!b) return;
+  $('#qaOut').innerHTML = '<p><b>You picked:</b> ' + b.textContent + '</p>' + '<p>' + QA[+b.dataset.qa].a + '</p>';
+});
 $('#qaIn').addEventListener('keydown', (e)=>{
   if (e.key==='Enter' && e.target.value.trim()){
     const q = e.target.value;

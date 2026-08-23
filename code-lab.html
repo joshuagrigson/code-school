@@ -1532,7 +1532,7 @@ const RN={
 57:'This whole page pattern is a <b>landing page</b>; the button is a <b>CTA</b> (call to action). Real marketing meetings use exactly these words.'
 };
 
-/* old-school corner: the lineage behind each idea, for depth and for the elders */
+/* Lineage: the history behind each idea, for depth and for the elders */
 const OLDS={
 0:'The letters you type are secretly numbers: since 1963, ASCII has said capital A is 65, B is 66. Every keystroke you have ever made rode that half-century-old agreement. Computers never stored letters &mdash; only numbers wearing letter costumes.',
 2:'HTML was born in 1991 when Tim Berners-Lee, a physicist at CERN, needed scientists to share documents. His first version had about twenty tags &mdash; and h1 was already one of them. You are typing the originals.',
@@ -1970,7 +1970,7 @@ function loadLesson(i){
   const pos = gl.findIndex(x=>x.n===i);
   const op = ORDER.indexOf(i);
   const crumb = '<div class="crumb"><button id="crPrev" title="Previous lesson" aria-label="Previous lesson"'+(op<=0?' disabled':'')+'>&larr;</button><span>' + g.name + ' · ' + g.sub + ' — lesson ' + (pos+1) + ' of ' + gl.length + '</span><button id="crNext" title="Next lesson" aria-label="Next lesson"'+(op>=ORDER.length-1?' disabled':'')+'>&rarr;</button></div>';
-  teachEl.innerHTML = crumb + '<h2>' + les.title + '</h2>' + les.teach + (RN[i] ? '<div class="realname"><b>Real name</b>' + RN[i] + '</div>' : '') + (MORE[i] ? '<div class="morebox"><b>More to chew on</b>' + MORE[i] + '</div>' : '') + (OLDS[i] ? '<div class="elders"><b class="el">📜 Old-school corner</b>' + OLDS[i] + '</div>' : '');
+  teachEl.innerHTML = crumb + '<h2>' + les.title + '</h2>' + les.teach + (RN[i] ? '<div class="realname"><b>Real name</b>' + RN[i] + '</div>' : '') + (MORE[i] ? '<div class="morebox"><b>More to chew on</b>' + MORE[i] + '</div>' : '') + (OLDS[i] ? '<div class="elders"><b class="el">📜 Lineage</b>' + OLDS[i] + '</div>' : '');
   goalEl.innerHTML = '<b>DO THIS:</b> ' + les.goal;
   remindTxt.innerHTML = REMIND[les.lang];
   remindBox.style.display = localStorage.getItem('remindHidden')==='1' ? 'none' : 'flex';

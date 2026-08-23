@@ -136,14 +136,19 @@ body.sensei #btnHelp,body.sensei #btnLead,body.sensei #btnSol{display:none}
 .kitrow{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
 .kitrow button{font-family:inherit;font-size:.85rem;padding:8px 12px;border:2px solid var(--line);border-radius:8px;background:var(--panel);cursor:pointer}
 .kitrow button:disabled{opacity:.5;cursor:not-allowed}
-.edwrap.th-midnight #hl,.edwrap.th-midnight #ed{background:#0d1b2a}
+.edwrap.th-midnight,.edwrap.th-midnight #hl{background:#0d1b2a}
+.edwrap.th-midnight #ed{background:transparent}
 .edwrap.th-midnight #hl{color:#c8d8e8}.edwrap.th-midnight .t-s{color:#7fd1b9}.edwrap.th-midnight .t-kw,.edwrap.th-midnight .t-k{color:#6ab0f3}.edwrap.th-midnight .t-f{color:#e0c285}
-.edwrap.th-paper #hl,.edwrap.th-paper #ed{background:#faf8f2}
+.edwrap.th-paper,.edwrap.th-paper #hl{background:#faf8f2}
+.edwrap.th-paper #ed{background:transparent}
+.edwrap.th-paper #ed::selection{background:rgba(100,150,220,.35);color:transparent}
 .edwrap.th-paper #hl{color:#3a332c}.edwrap.th-paper .t-s{color:#a4571f}.edwrap.th-paper .t-kw,.edwrap.th-paper .t-k{color:#1d5c8f}.edwrap.th-paper .t-f{color:#7d5a9e}.edwrap.th-paper .t-n{color:#2f7d5c}
 .edwrap.th-paper #ed{caret-color:#3a332c}.edwrap.th-paper ~ * {}
-.edwrap.th-synth #hl,.edwrap.th-synth #ed{background:#241b2f}
+.edwrap.th-synth,.edwrap.th-synth #hl{background:#241b2f}
+.edwrap.th-synth #ed{background:transparent}
 .edwrap.th-synth #hl{color:#e8d7f0}.edwrap.th-synth .t-s{color:#ff8fa3}.edwrap.th-synth .t-kw,.edwrap.th-synth .t-k{color:#72e0d1}.edwrap.th-synth .t-f{color:#ffd166}.edwrap.th-synth .t-p{color:#c792ea}
-.edwrap.th-matrix #hl,.edwrap.th-matrix #ed{background:#0a0f0a}
+.edwrap.th-matrix,.edwrap.th-matrix #hl{background:#0a0f0a}
+.edwrap.th-matrix #ed{background:transparent}
 .edwrap.th-matrix #hl{color:#9fdc9f}.edwrap.th-matrix .t-s{color:#d8f7c0}.edwrap.th-matrix .t-kw,.edwrap.th-matrix .t-k{color:#4dc36b}.edwrap.th-matrix .t-f{color:#c6e88a}.edwrap.th-matrix .t-p{color:#7fbf8f}.edwrap.th-matrix .t-n{color:#e0ffe0}
 @media print{ body>*{display:none!important} #certOv{display:flex!important;position:static;background:#fff} #certOv .wcard{box-shadow:none;max-width:100%} #certBtns{display:none!important} }
 .wcard{background:var(--panel);max-width:520px;margin:16px;border-radius:16px;padding:26px 30px;box-shadow:0 20px 60px rgba(0,0,0,.35)}

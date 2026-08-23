@@ -108,6 +108,8 @@ details.ft p{margin:6px 0 0;line-height:1.5}
 .statrow .sname{width:110px;flex:0 0 auto}
 .statbar{flex:1;height:10px;background:var(--code);border-radius:5px;overflow:hidden}
 .statbar i{display:block;height:100%;background:var(--accent)}
+.navitem.pract{color:#7b5cb8}
+body.dark .navitem.pract{color:#b89fe0}
 .navitem.proj{color:#1d5c8f;font-weight:bold}
 body.dark .navitem.proj{color:#7db8e8}
 .brief{background:#f3ecdd;border:1px solid #ddd0b4;border-left:5px solid #b08d4a;border-radius:8px;padding:12px 16px;margin:12px 0}
@@ -1231,6 +1233,79 @@ CHAL('C','The bulletproof picker',
    ? {ok:true,msg:'A guard, a general-purpose parameter, and graceful failure. This function would pass code review at any company.'}
    : {ok:false,msg:'One function taking a list parameter, an empty guard (length === 0), a random pick otherwise — called on BOTH lists in one glued sentence.'});
 
+/* Practice reps: same skill, new context — optional drills that appear once a grade is started */
+function PRACT(gid, lang, title, teach, goal, start, sol, hint, check, pageHtml){
+  const les = lang==='css' ? CL('🏋 Rep: '+title, teach, goal, start, sol, hint, check, pageHtml)
+    : JL('🏋 Rep: '+title, teach, goal, start, sol, hint, check, pageHtml);
+  les.g=gid; les.pract=true; L.push(les);
+}
+PRACT('G2','css','dress a warning','<p>Same dials, new job: warnings need to LOOK like warnings.</p>','Give the h1 a color, a background, and at least 10px of padding.','h1 {\n\n}','h1 {\n  color: darkred;\n  background: mistyrose;\n  padding: 14px;\n}','Three declarations on the h1 selector.',
+ (c)=> hasRe(c,/h1\s*\{[^}]*color\s*:\s*[#a-zA-Z]/) && hasRe(c,/background(-color)?\s*:\s*[#a-zA-Z]/) && hasRe(c,/padding\s*:\s*\d+px/)
+   ? {ok:true,msg:'A warning that reads as one. Reps make the syntax automatic.'} : {ok:false,msg:'All three on h1: color, background, padding (10px+).'},
+ '<h1>Warning: fresh paint</h1>\n<p>Please do not touch the walls.</p>'),
+PRACT('G2','css','the pill button','<p>The classic look, from your own hands.</p>','Give the p a border, HUGE border-radius (99px+), padding, and a background.','p {\n\n}','p {\n  border: 2px solid seagreen;\n  border-radius: 999px;\n  padding: 10px 20px;\n  background: mintcream;\n}','Four lines. Radius bigger than 99px makes the pill.',
+ (c)=> hasRe(c,/border\s*:\s*\d+px\s+\w+\s+\w+/) && hasRe(c,/border-radius\s*:\s*(9[9]|[1-9]\d{2,})px/) && hasRe(c,/padding\s*:/) && hasRe(c,/background(-color)?\s*:/)
+   ? {ok:true,msg:'Pill achieved. That shape is on every app you own.'} : {ok:false,msg:'Border, border-radius of 99px or more, padding, and background.'},
+ '<p>Tap me (pretend)</p>'),
+PRACT('G3','css','aim at both','<p>One page, two different targets, two rules.</p>','Style #headline with a color AND .note with a background.','',
+ '#headline {\n  color: royalblue;\n}\n\n.note {\n  background: lemonchiffon;\n}','Hash rule for the one headline, dot rule for the notes.',
+ (c)=> hasRe(c,/#headline\s*\{[^}]*color\s*:/) && hasRe(c,/\.note\s*\{[^}]*background(-color)?\s*:/)
+   ? {ok:true,msg:'id and class, both aimed true.'} : {ok:false,msg:'Two rules: #headline { color... } and .note { background... }.'},
+ '<h1 id="headline">Community News</h1>\n<p class="note">Bake sale Friday.</p>\n<p>Regular paragraph.</p>\n<p class="note">Bring cookies.</p>'),
+PRACT('G4','js','two boxes, one line','<p>Reps on boxes and showing.</p>','Make TWO const boxes (a name and a city) and show them glued in one sentence.','',
+ 'const name = \'Josh\';\nconst city = \'Austin\';\nscreen.textContent = name + \' lives in \' + city;','Two consts, one screen line gluing both (no quotes on box names).',
+ (c)=> (c.match(/const\s+\w+\s*=\s*['"]/g)||[]).length>=2 && hasRe(c,/screen\.textContent\s*=\s*\w+\s*\+[^\n]*\+\s*\w+/)
+   ? {ok:true,msg:'Two boxes, one sentence. Smooth.'} : {ok:false,msg:'Two const boxes with quoted words, glued into one screen line.'}),
+PRACT('G4','js','the button talks back','<p>Elements can change each other AND themselves.</p>','On click: change the screen message AND the button&rsquo;s own text.','',
+ 'btn.onclick = function () {\n  screen.textContent = \'You woke me up!\';\n  btn.textContent = \'Again!\';\n};','Two lines inside the click: screen.textContent and btn.textContent.',
+ (c)=> hasRe(c,/btn\.onclick\s*=\s*function|addEventListener/) && hasRe(c,/screen\.textContent\s*=/) && hasRe(c,/btn\.textContent\s*=/)
+   ? {ok:true,msg:'The button renamed itself mid-click. Elements are all editable, all the time.'} : {ok:false,msg:'Inside the click: set screen.textContent AND btn.textContent.'},
+ '<button id="btn">Wake the machine</button>\n<p id="screen">sleeping...</p>'),
+PRACT('G5','js','mad libs','<p>Three boxes, one silly sentence.</p>','Three const boxes (a name, an animal, a food) glued into one sentence.','',
+ 'const name = \'Josh\';\nconst animal = \'raccoon\';\nconst food = \'tacos\';\nscreen.textContent = name + \' saw a \' + animal + \' eating \' + food + \'!\';','Three consts, then one long glue chain with quoted words between.',
+ (c)=> (c.match(/const\s+\w+\s*=\s*['"]/g)||[]).length>=3 && (c.match(/\+/g)||[]).length>=4
+   ? {ok:true,msg:'Mad libs, engineer edition. Glue chains hold as long as you need.'} : {ok:false,msg:'Three quoted const boxes, all glued into one screen sentence.'}),
+PRACT('G5','js','honest math','<p>The Total: 43 trap, drilled once more with feeling.</p>','Show \'Sum: \' followed by the CORRECT sum of 12 and 8.','screen.textContent = \'Sum: \' + 12 + 8;',
+ 'screen.textContent = \'Sum: \' + (12 + 8);','Brackets force the math first.',
+ (c)=> hasRe(c,/\(\s*12\s*\+\s*8\s*\)/)
+   ? {ok:true,msg:'Sum: 20. The trap will never catch you again.'} : {ok:false,msg:'Wrap the numbers: (12 + 8).'}),
+PRACT('G6','js','grab the last one','<p>Works no matter how long the list grows.</p>','Show the LAST item using list.length - 1 (not a hard-coded number).','const queue = [\'Ana\', \'Bo\', \'Cy\', \'Dee\'];\n',
+ 'const queue = [\'Ana\', \'Bo\', \'Cy\', \'Dee\'];\nscreen.textContent = \'Last in line: \' + queue[queue.length - 1];','The address of the end: queue[queue.length - 1].',
+ (c)=> hasRe(c,/\w+\s*\[\s*\w+\.length\s*-\s*1\s*\]/)
+   ? {ok:true,msg:'Add ten more names — same line still finds the end. Code that adapts beats code that counts.'} : {ok:false,msg:'Use queue[queue.length - 1], not a hard-coded position.'}),
+PRACT('G6','js','roll the dice','<p>The +1 shift, in your own hands.</p>','Show a die roll from 1 to 6, labeled.','',
+ 'const roll = Math.floor(Math.random() * 6) + 1;\nscreen.textContent = \'You rolled a \' + roll;','floor(random * 6) gives 0-5; the + 1 makes it 1-6.',
+ (c)=> hasRe(c,/Math\.floor\s*\(\s*Math\.random\s*\(\s*\)\s*\*\s*6\s*\)\s*\+\s*1/)
+   ? {ok:true,msg:'A fair die. That +1 shift shows up everywhere randomness meets humans.'} : {ok:false,msg:'The exact shape: Math.floor(Math.random() * 6) + 1.'}),
+PRACT('G7','js','one trick, two calls','<p>The whole point of functions: write once, use twice.</p>','A greet function with an ingredient, called TWICE for two people in one screen line.','',
+ 'function greet(person) {\n  return \'Hi \' + person + \'! \';\n}\n\nscreen.textContent = greet(\'Ana\') + greet(\'Bo\');','The screen line glues two calls: greet(\'Ana\') + greet(\'Bo\').',
+ (c)=> hasRe(c,/function\s+\w+\s*\(\s*\w+\s*\)[\s\S]*return/) && (c.match(/\w+\s*\(\s*['"][^'"]+['"]\s*\)/g)||[]).length>=2
+   ? {ok:true,msg:'One definition, two performances. DRY in one line.'} : {ok:false,msg:'A returning function with an ingredient, called twice with different names.'}),
+PRACT('G8','js','even or odd','<p>The % operator from the FizzBuzz challenge, in its simplest job.</p>','A function evenOrOdd(n) returning \'even\' or \'odd\' using % 2, shown with a call.','',
+ 'function evenOrOdd(n) {\n  if (n % 2 === 0) {\n    return \'even\';\n  } else {\n    return \'odd\';\n  }\n}\n\nscreen.textContent = 7 + \' is \' + evenOrOdd(7);','n % 2 === 0 means divisible by two - even.',
+ (c)=> hasRe(c,/%\s*2\s*===?\s*0/) && hasRe(c,/else/) && hasRe(c,/screen\.textContent\s*=[\s\S]*\w+\s*\(\s*\d+\s*\)/)
+   ? {ok:true,msg:'The parity check - a tiny tool you will reuse for stripes, turns, and alternating rows forever.'} : {ok:false,msg:'if (n % 2 === 0) return even, else odd; show a call with a number.'}),
+PRACT('G9','js','countdown','<p>Loops run backwards too.</p>','Build \'5 4 3 2 1 liftoff!\' with a loop counting DOWN.','',
+ 'let out = \'\';\nfor (let i = 5; i >= 1; i = i - 1) {\n  out = out + i + \' \';\n}\nscreen.textContent = out + \'liftoff!\';','Start at 5, keep going while i >= 1, step DOWN with i = i - 1.',
+ (c)=> hasRe(c,/for\s*\(\s*let\s+\w+\s*=\s*5\s*;[^;]*>=\s*1\s*;[^)]*-\s*1\s*\)/) && hasRe(c,/screen\.textContent\s*=/)
+   ? {ok:true,msg:'Liftoff. Reversing a loop means reversing all three parts - you just proved you understand each one.'} : {ok:false,msg:'for (let i = 5; i >= 1; i = i - 1), building the string each lap.'}),
+PRACT('G11','js','the pet card','<p>Objects, fresh context.</p>','A pet object with name, kind, and age - shown as one sentence reading all three.','',
+ 'const pet = {\n  name: \'Biscuit\',\n  kind: \'corgi\',\n  age: 3\n};\n\nscreen.textContent = pet.name + \' is a \' + pet.age + \' year old \' + pet.kind + \'.\';','Three fields in the object, three dot-reads in the sentence.',
+ (c)=>{const m=c.match(/\w+\.\w+/g)||[];return hasRe(c,/=\s*\{[\s\S]*:\s*[\s\S]*,[\s\S]*:/) && m.filter(x=>!/Math\.|screen\.|console\./.test(x)).length>=3
+   ? {ok:true,msg:'Biscuit is immortalized. Three reads, one sentence - profile pages everywhere.'} : {ok:false,msg:'An object with 3 fields and a sentence gluing all three dot-reads.'};}),
+PRACT('G11','js','team total','<p>Loop + objects + numeric accumulator - the trifecta.</p>','Total the points across the whole team and show it labeled.','const team = [\n  { name: \'Sam\', points: 12 },\n  { name: \'Alex\', points: 9 },\n  { name: \'Jo\', points: 15 }\n];\n',
+ 'const team = [\n  { name: \'Sam\', points: 12 },\n  { name: \'Alex\', points: 9 },\n  { name: \'Jo\', points: 15 }\n];\nlet total = 0;\nfor (const p of team) {\n  total = total + p.points;\n}\nscreen.textContent = \'Team total: \' + total;','Start total at 0; each lap add p.points; show after the loop.',
+ (c)=> hasRe(c,/let\s+\w+\s*=\s*0/) && hasRe(c,/for\s*\(\s*const\s+\w+\s+of\s+\w+\s*\)/) && hasRe(c,/\.points\b/) && hasRe(c,/screen\.textContent\s*=/)
+   ? {ok:true,msg:'36 points, totaled by machine. Every leaderboard sum is this exact loop.'} : {ok:false,msg:'Numeric accumulator + for...of + adding p.points each lap.'}),
+PRACT('G12','js','type detective','<p>typeof, drilled on a mixed bag.</p>','Show the typeof BOTH boxes, glued into one labeled sentence.','const a = \'42\';\nconst b = 42;\n',
+ 'const a = \'42\';\nconst b = 42;\nscreen.textContent = \'a is a \' + typeof a + \', b is a \' + typeof b;','Two typeof reads glued with labels - they will differ!',
+ (c)=> (c.match(/typeof\s+\w+/g)||[]).length>=2 && hasRe(c,/screen\.textContent\s*=/)
+   ? {ok:true,msg:'Same-looking values, different species - and now you can prove it on demand.'} : {ok:false,msg:'Use typeof on BOTH boxes in one glued sentence.'}),
+PRACT('C','js','rename rescue','<p>Someone left you a mess. Same behavior, honest names.</p>','Rewrite with truthful names: the list becomes menuList, the function becomes pickMeal. No x, no go.','const x = [\'ramen\', \'tacos\', \'curry\'];\nfunction go() {\n  return x[Math.floor(Math.random() * x.length)];\n}\nscreen.textContent = go();',
+ 'const menuList = [\'ramen\', \'tacos\', \'curry\'];\nfunction pickMeal() {\n  return menuList[Math.floor(Math.random() * menuList.length)];\n}\nscreen.textContent = pickMeal();','Rename in ALL the places each name appears - three for the list, two for the function.',
+ (c)=> c.includes('menuList') && c.includes('pickMeal') && !hasRe(c,/\bconst x\b|\bgo\s*\(/)
+   ? {ok:true,msg:'Readable forever, behavior untouched. Renaming without breaking is a core professional motion.'} : {ok:false,msg:'menuList and pickMeal everywhere - no x or go left anywhere.'});
+
 /* Portfolio: client projects judged by live acceptance checklists (fCC-style user stories) */
 GRADES.push({id:'P', name:'Portfolio', sub:'Client work', lv:2});
 function PROJ(gate, lang, title, client, briefHtml, value, goal, start, stories, pageHtml){
@@ -1343,7 +1418,7 @@ PROJ('M','js','The Full Client Job','Rosa, Sunrise Bakery',
 
 /* sidebar display order (grades in order, lessons + review within each) — drives Next */
 const ORDER = [];
-for (const g of GRADES) for (let i=0;i<L.length;i++) if (L[i].g===g.id && !L[i].chal && !L[i].proj) ORDER.push(i);
+for (const g of GRADES) for (let i=0;i<L.length;i++) if (L[i].g===g.id && !L[i].chal && !L[i].proj && !L[i].pract) ORDER.push(i);
 
 /* ============================ QA BANK ============================ */
 const STOP = new Set(['the','a','an','is','are','was','do','does','i','my','me','it','to','of','in','on','and','or','what','how','why','when','can','cant','dont','this','that','you','your']);
@@ -1820,18 +1895,19 @@ const edEl=$('#ed'), hlEl=$('#hl'), teachEl=$('#teach'), goalEl=$('#goal'), stat
       btnNext=$('#btnNext');
 
 let idx = 0, done = new Set(), tested = new Set(), leadStep = 0, sandbox = false, checkTimer = null, solShown = false;
-let chalDone = new Set(), projDone = new Set(), msSeen = new Set(), edTheme = '', sensei = false, certName = '';
+let chalDone = new Set(), projDone = new Set(), practDone = new Set(), msSeen = new Set(), edTheme = '', sensei = false, certName = '';
 let stk = {last:'', cur:0, best:0, xp:0};
 
-function saveP(){ try{ localStorage.setItem('codeschool', JSON.stringify({done:[...done], idx, tested:[...tested], chalDone:[...chalDone], projDone:[...projDone], ms:[...msSeen], edTheme, sensei, certName, stk})); }catch(e){} }
+function saveP(){ try{ localStorage.setItem('codeschool', JSON.stringify({done:[...done], idx, tested:[...tested], chalDone:[...chalDone], projDone:[...projDone], practDone:[...practDone], ms:[...msSeen], edTheme, sensei, certName, stk})); }catch(e){} }
 function loadP(){
   let p = null;
   try{ p = JSON.parse(localStorage.getItem('codeschool')); }catch(e){}
   if (!p || !Array.isArray(p.done)) p = (location.protocol === 'file:') ? CARRIED : {done:[], idx:0};
-  done = new Set(p.done.filter(n => n >= 0 && n < L.length && !L[n].chal && !L[n].proj));
+  done = new Set(p.done.filter(n => n >= 0 && n < L.length && !L[n].chal && !L[n].proj && !L[n].pract));
   tested = new Set(p.tested || []);
   chalDone = new Set((p.chalDone||[]).filter(n=>n>=0&&n<L.length));
   projDone = new Set((p.projDone||[]).filter(n=>n>=0&&n<L.length));
+  practDone = new Set((p.practDone||[]).filter(n=>n>=0&&n<L.length));
   msSeen = new Set(p.ms||[]);
   edTheme = p.edTheme||'';
   sensei = !!p.sensei;
@@ -1976,7 +2052,15 @@ function runCheck(){
     btnNext.style.display = 'none';
     return;
   }
-  if (res.ok && L[idx].chal && !chalDone.has(idx)){
+  if (res.ok && L[idx].pract && !practDone.has(idx)){
+    practDone.add(idx); bumpStreak(); saveP(); renderNav(); confetti(16);
+    const xr = $('#xpTxt').getBoundingClientRect();
+    const fl = document.createElement('div'); fl.className='xpfloat'; fl.textContent='+5 XP';
+    fl.style.left = xr.left+'px'; fl.style.top = (xr.top-4)+'px';
+    document.body.appendChild(fl); setTimeout(()=>fl.remove(), 1300);
+    checkMilestones();
+  }
+  else if (res.ok && L[idx].chal && !chalDone.has(idx)){
     chalDone.add(idx); bumpStreak(); saveP(); renderNav(); confetti(60);
     const el=document.createElement('div'); el.className='gbanner';
     el.innerHTML='⚔️ Challenge conquered!<small>+25 XP — no hints, all you.</small>';
@@ -2036,10 +2120,10 @@ function gradeToast(gname, allDone){
   document.body.appendChild(el);
   setTimeout(()=>el.remove(), 2700);
 }
-function coreOf(gid){ return L.map((l,i)=>({l,i})).filter(x=>x.l.g===gid && !x.l.chal && !x.l.proj); }
-function coreTotal(){ return L.filter(l=>!l.chal && !l.proj).length; }
+function coreOf(gid){ return L.map((l,i)=>({l,i})).filter(x=>x.l.g===gid && !x.l.chal && !x.l.proj && !x.l.pract); }
+function coreTotal(){ return L.filter(l=>!l.chal && !l.proj && !l.pract).length; }
 function gradeDone(gid){ const ls=coreOf(gid); return ls.length>0 && ls.every(x=>done.has(x.i)); }
-function xpFor(){ let xp = done.size*10 + chalDone.size*25 + projDone.size*50 + (stk.xp|0); for (const g of GRADES){ const ls=coreOf(g.id); if (ls.length && ls.every(x=>done.has(x.i))) xp+=25; } return xp; }
+function xpFor(){ let xp = done.size*10 + chalDone.size*25 + projDone.size*50 + practDone.size*5 + (stk.xp|0); for (const g of GRADES){ const ls=coreOf(g.id); if (ls.length && ls.every(x=>done.has(x.i))) xp+=25; } return xp; }
 function dayKey(d){ return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
 const STREAK_BONUS={3:15,7:35,14:75,30:150};
 function bumpStreak(){
@@ -2120,6 +2204,15 @@ function renderNav(){
       const b = document.createElement('button');
       b.className = 'navitem' + (x.i===idx && !sandbox ? ' cur':'') + (isOpen ? '' : ' ghidden');
       b.innerHTML = '<span class="tick">' + (done.has(x.i)?'✓':'') + '</span><span>' + x.l.title + '</span>';
+      b.onclick = ()=>loadLesson(x.i);
+      listEl.appendChild(b);
+    }
+    const practs = L.map((l,i)=>({l,i})).filter(x=>x.l.g===g.id && x.l.pract);
+    if (lessons.some(x=>done.has(x.i))) for (const x of practs){
+      if (q && !x.l.title.toLowerCase().includes(q)) continue;
+      const b = document.createElement('button');
+      b.className = 'navitem pract' + (x.i===idx && !sandbox ? ' cur':'') + (isOpen ? '' : ' ghidden');
+      b.innerHTML = '<span class="tick">' + (practDone.has(x.i)?'✓':'') + '</span><span>' + x.l.title + '</span>';
       b.onclick = ()=>loadLesson(x.i);
       listEl.appendChild(b);
     }
@@ -2291,7 +2384,7 @@ loadLesson = function(i){ _origLoad(i);
     document.body.classList.remove('tab-nav','tab-code','tab-result'); document.body.classList.add('tab-lesson'); }
 };
 $('#btnExport').onclick = ()=>{
-  const code = btoa(unescape(encodeURIComponent(JSON.stringify({done:[...done], idx, tested:[...tested], chalDone:[...chalDone], projDone:[...projDone], ms:[...msSeen], edTheme, certName, stk}))));
+  const code = btoa(unescape(encodeURIComponent(JSON.stringify({done:[...done], idx, tested:[...tested], chalDone:[...chalDone], projDone:[...projDone], practDone:[...practDone], ms:[...msSeen], edTheme, certName, stk}))));
   try{ navigator.clipboard.writeText(code); alert('Save code copied to clipboard! Paste it into Import on any other device or browser.'); }
   catch(e){ prompt('Copy this save code (Ctrl+C), then paste it into Import on the other device:', code); }
 };
@@ -2302,7 +2395,7 @@ $('#btnImport').onclick = ()=>{
     const p = JSON.parse(decodeURIComponent(escape(atob(code.trim()))));
     if (!Array.isArray(p.done)) throw 0;
     done = new Set(p.done.filter(n=>n>=0&&n<L.length)); tested = new Set(p.tested||[]);
-    chalDone = new Set((p.chalDone||[]).filter(n=>n>=0&&n<L.length)); projDone = new Set((p.projDone||[]).filter(n=>n>=0&&n<L.length)); msSeen = new Set(p.ms||[]);
+    chalDone = new Set((p.chalDone||[]).filter(n=>n>=0&&n<L.length)); projDone = new Set((p.projDone||[]).filter(n=>n>=0&&n<L.length)); practDone = new Set((p.practDone||[]).filter(n=>n>=0&&n<L.length)); msSeen = new Set(p.ms||[]);
     if (p.edTheme!==undefined) edTheme=p.edTheme; if (p.certName) certName=p.certName;
     if (p.stk && typeof p.stk==='object') stk={last:p.stk.last||'', cur:p.stk.cur|0, best:p.stk.best|0, xp:p.stk.xp|0};
     idx = Math.min(Math.max(p.idx|0,0),L.length-1); saveP(); loadLesson(idx);
@@ -2342,6 +2435,7 @@ $('#xpTxt').onclick = ()=>{
   const nextL = LEVELS.find(l=>l[0]>done.size);
   $('#statsBody').innerHTML = '<p><b>⭐ '+xpFor()+' XP</b> · Level: <b>'+levelFor(done.size)+'</b>'+(nextL?' · next: '+nextL[1]+' at '+nextL[0]+' lessons':'')+'</p>'
     + rows + '<p style="margin-top:10px;font-size:.85rem;color:var(--soft)">⚔️ Challenges conquered: '+chalDone.size+' · ⚡ = tested out</p>'
+    + '<p style="font-size:.85rem;color:var(--soft)">🏋 Practice reps done: '+practDone.size+' / '+L.filter(l=>l.pract).length+'</p>'
     + '<p style="font-size:.85rem;color:var(--soft)">🧾 Client projects delivered: '+projDone.size+' / '+L.filter(l=>l.proj).length+'</p>'
     + '<p style="font-size:.85rem;color:var(--soft)">🔥 Streak: '+stk.cur+' day'+(stk.cur===1?'':'s')+' (best: '+stk.best+') · a day counts when you earn at least one ✓ · streaks break quietly — no guilt, the best is remembered forever</p>';
   $('#statsOv').classList.add('open');

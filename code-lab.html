@@ -93,8 +93,34 @@ details.ft p{margin:6px 0 0;line-height:1.5}
 .dots i:nth-child(2){background:#e8d48a}
 .dots i:nth-child(3){background:#9fd4b8}
 #out{flex:1;border:none;background:#fff;width:100%}
-#welcome{position:fixed;inset:0;background:rgba(43,35,32,.55);z-index:200;display:none;align-items:center;justify-content:center}
-#welcome.open{display:flex}
+#welcome,#certOv,#statsOv{position:fixed;inset:0;background:rgba(43,35,32,.55);z-index:200;display:none;align-items:center;justify-content:center}
+#welcome.open,#certOv.open,#statsOv.open{display:flex}
+#certOv .wcard,#statsOv .wcard{max-height:86vh;overflow-y:auto}
+.cert{border:6px double var(--accent);border-radius:12px;padding:22px;text-align:center}
+.cert h1{font-size:1.6rem;margin-bottom:4px}
+.cert .cname{font-size:1.9rem;color:var(--accent2);margin:10px 0}
+.cert .cline{margin:6px 0;line-height:1.5}
+.cert .cmeds{font-size:.85rem;color:var(--soft);margin-top:10px;line-height:1.7}
+.statrow{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:.9rem}
+.statrow .sname{width:110px;flex:0 0 auto}
+.statbar{flex:1;height:10px;background:var(--code);border-radius:5px;overflow:hidden}
+.statbar i{display:block;height:100%;background:var(--accent)}
+.navitem.chal{color:#8a5a2e;font-weight:bold}
+body.dark .navitem.chal{color:#d9a45e}
+body.sensei #btnHelp,body.sensei #btnLead,body.sensei #btnSol{display:none}
+.kitrow{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.kitrow button{font-family:inherit;font-size:.85rem;padding:8px 12px;border:2px solid var(--line);border-radius:8px;background:var(--panel);cursor:pointer}
+.kitrow button:disabled{opacity:.5;cursor:not-allowed}
+.edwrap.th-midnight #hl,.edwrap.th-midnight #ed{background:#0d1b2a}
+.edwrap.th-midnight #hl{color:#c8d8e8}.edwrap.th-midnight .t-s{color:#7fd1b9}.edwrap.th-midnight .t-kw,.edwrap.th-midnight .t-k{color:#6ab0f3}.edwrap.th-midnight .t-f{color:#e0c285}
+.edwrap.th-paper #hl,.edwrap.th-paper #ed{background:#faf8f2}
+.edwrap.th-paper #hl{color:#3a332c}.edwrap.th-paper .t-s{color:#a4571f}.edwrap.th-paper .t-kw,.edwrap.th-paper .t-k{color:#1d5c8f}.edwrap.th-paper .t-f{color:#7d5a9e}.edwrap.th-paper .t-n{color:#2f7d5c}
+.edwrap.th-paper #ed{caret-color:#3a332c}.edwrap.th-paper ~ * {}
+.edwrap.th-synth #hl,.edwrap.th-synth #ed{background:#241b2f}
+.edwrap.th-synth #hl{color:#e8d7f0}.edwrap.th-synth .t-s{color:#ff8fa3}.edwrap.th-synth .t-kw,.edwrap.th-synth .t-k{color:#72e0d1}.edwrap.th-synth .t-f{color:#ffd166}.edwrap.th-synth .t-p{color:#c792ea}
+.edwrap.th-matrix #hl,.edwrap.th-matrix #ed{background:#0a0f0a}
+.edwrap.th-matrix #hl{color:#9fdc9f}.edwrap.th-matrix .t-s{color:#d8f7c0}.edwrap.th-matrix .t-kw,.edwrap.th-matrix .t-k{color:#4dc36b}.edwrap.th-matrix .t-f{color:#c6e88a}.edwrap.th-matrix .t-p{color:#7fbf8f}.edwrap.th-matrix .t-n{color:#e0ffe0}
+@media print{ body>*{display:none!important} #certOv{display:flex!important;position:static;background:#fff} #certOv .wcard{box-shadow:none;max-width:100%} #certBtns{display:none!important} }
 .wcard{background:var(--panel);max-width:520px;margin:16px;border-radius:16px;padding:26px 30px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
 .wcard h2{margin-bottom:12px}
 .wcard p{margin:0 0 10px;line-height:1.5}
@@ -166,6 +192,8 @@ button:focus-visible,.navitem:focus-visible,#ed:focus-visible,input:focus-visibl
   <div id="progBar"><div id="progFill"></div></div>
   <span id="progTxt">0 / 0</span>
   <span id="xpTxt"></span>
+  <button class="hbtn" id="btnSensei" style="display:none" title="Sensei mode: hides all hint buttons. Unlocked by finishing the school.">🥋</button>
+  <button class="hbtn" id="btnCert" style="display:none" title="Your graduation certificate">🎓 Certificate</button>
   <button class="hbtn" id="btnDark" title="Toggle dark mode" aria-label="Toggle dark mode">🌙</button>
   <button class="hbtn" id="btnReplay" style="display:none">🏆 Do it all again</button>
   <button class="hbtn" id="btnSandbox">Free play</button>
@@ -187,6 +215,7 @@ button:focus-visible,.navitem:focus-visible,#ed:focus-visible,input:focus-visibl
         <button id="btnLead" title="Reveals the answer in 4 steps - you finish the thought">🪜 Give me a lead</button>
         <button id="btnSol" title="Shows the full answer">👀 Show me</button>
         <button id="btnReDo" title="Back to the starting code">↺ Start over</button>
+        <button id="btnTheme" title="Editor theme — more unlock as you level up">🎨</button>
         <button id="btnNext" title="Ctrl+Enter also works">Next lesson &rarr;</button>
       </div>
       <div id="status">Start typing in the box above.</div>
@@ -215,6 +244,8 @@ button:focus-visible,.navitem:focus-visible,#ed:focus-visible,input:focus-visibl
   <p style="font-size:.85rem;color:#6b6058">Experienced developer? <a href="https://github.com/joshuagrigson/code-school#for-skeptics" target="_blank" rel="noopener">Read the pedagogy, then view-source and judge us.</a> Reviews double as test-out exams (⚡).</p>
   <button id="wStart">Start Kindergarten &rarr;</button>
 </div></div>
+<div id="certOv"><div class="wcard"><div class="cert" id="certBody"></div><div id="certBtns" style="display:flex;gap:8px;margin-top:14px"><button id="certPrint" style="flex:1;background:var(--accent);color:#fff;border:none;font-family:inherit;font-size:1rem;padding:10px;border-radius:8px;cursor:pointer">🖨 Print / save as PDF</button><button id="certClose" style="flex:0 0 auto;border:2px solid var(--line);background:none;border-radius:8px;padding:10px 14px;cursor:pointer;font-family:inherit">Close</button></div></div></div>
+<div id="statsOv"><div class="wcard"><h2>Your stats</h2><div id="statsBody"></div><button id="statsClose" style="width:100%;margin-top:12px;border:2px solid var(--line);background:none;border-radius:8px;padding:10px;cursor:pointer;font-family:inherit">Close</button></div></div>
 <div id="qaPanel">
   <div class="qhead"><b>Ask a question</b><button id="qaClose" aria-label="Close">&times;</button></div>
   <input id="qaIn" placeholder="Type your question and press Enter">
@@ -1122,9 +1153,64 @@ REV('M','js',
    : {ok:false,msg:'Checklist: click function, || guard with includes(&#64;), random pick from the list, both screen messages, and btn.disabled = true on success.'},
  '<button id="btn">Sign me up</button>\n<p id="screen">ready...</p>');
 
+/* optional hint-free challenges — appear once their grade is complete */
+function CHAL(gid, title, teach, goal, start, sol, check, pageHtml){
+  const les = JL('⚔️ '+title, teach + '<p><b>Challenge rules:</b> no Help, no Lead, no Show me. Just you, the goal, and the coach for structure. Worth +25 XP. You can leave and come back anytime.</p>', goal, start, sol, '', check, pageHtml);
+  les.g=gid; les.chal=true; L.push(les);
+}
+CHAL('G6','Pick and tell',
+ '<p>A random pick is good; a random pick that says WHERE it came from is better.</p>',
+ 'Pick a random item and show BOTH the position and the item, like: Pick #2: cookies',
+ 'const snacks = [\'chips\', \'fruit\', \'cookies\', \'jerky\'];\n',
+ 'const snacks = [\'chips\', \'fruit\', \'cookies\', \'jerky\'];\nconst pick = Math.floor(Math.random() * snacks.length);\nscreen.textContent = \'Pick #\' + pick + \': \' + snacks[pick];',
+ (c)=> hasRe(c,/Math\.floor\s*\(\s*Math\.random/) && hasRe(c,/screen\.textContent\s*=[^\n]*\+\s*\w+\s*\+[^\n]*\[\s*\w+\s*\]/)
+   ? {ok:true,msg:'Position AND value, one line. You used the same variable twice for two jobs — efficient thinking.'}
+   : {ok:false,msg:'Show the pick number AND snacks[pick] glued into one sentence, using the same random position for both.'}),
+CHAL('G7','The shouting trick',
+ '<p>New tool, no training wheels: every string carries <code>.toUpperCase()</code> — <code>\'hi\'.toUpperCase()</code> gives <code>\'HI\'</code>. That is all the help you get.</p>',
+ 'Teach shout(text) that RETURNS the text uppercased with \'!!!\' stuck on, and show a call.',
+ '',
+ 'function shout(text) {\n  return text.toUpperCase() + \'!!!\';\n}\n\nscreen.textContent = shout(\'this works\');',
+ (c)=> hasRe(c,/function\s+\w+\s*\(\s*\w+\s*\)[\s\S]*return[\s\S]*toUpperCase\s*\(\s*\)/) && hasRe(c,/screen\.textContent\s*=\s*\w+\s*\(/)
+   ? {ok:true,msg:'You just used a tool you were never taught, from a one-line description. That skill — reading a doc, applying it — IS the job.'}
+   : {ok:false,msg:'A function with an ingredient, returning ingredient.toUpperCase() + something, shown via a call.'}),
+CHAL('G8','FizzBuzz junior',
+ '<p>The most famous interview question in software, scaled to one number. New tool: <code>%</code> gives the REMAINDER — <code>9 % 3</code> is 0, so <code>n % 3 === 0</code> means &ldquo;divisible by 3.&rdquo;</p>',
+ 'Teach describe(n): return \'fizzbuzz\' if divisible by both 3 and 5, \'fizz\' if by 3, \'buzz\' if by 5, otherwise the number glued to \'\'. Show describe(15).',
+ '',
+ 'function describe(n) {\n  if (n % 3 === 0 && n % 5 === 0) {\n    return \'fizzbuzz\';\n  } else if (n % 3 === 0) {\n    return \'fizz\';\n  } else if (n % 5 === 0) {\n    return \'buzz\';\n  } else {\n    return \'\' + n;\n  }\n}\n\nscreen.textContent = describe(15);',
+ (c)=> hasRe(c,/%\s*3\s*===?\s*0/) && hasRe(c,/%\s*5\s*===?\s*0/) && hasRe(c,/&&/) && hasRe(c,/else\s+if/) && hasRe(c,/screen\.textContent\s*=\s*\w+\s*\(/)
+   ? {ok:true,msg:'You just solved the interview classic — and you put the && door FIRST, which is the exact trap most candidates fall into.'}
+   : {ok:false,msg:'Four doors, both-divisible FIRST (with &&), using % 3 === 0 and % 5 === 0. Test 15, 9, 10, and 7.'}),
+CHAL('G9','The accountant',
+ '<p>Numbers this time, not words. Accumulate a TOTAL.</p>',
+ 'Loop over the prices and show the total like: Total: 34',
+ 'const prices = [12, 5, 8, 9];\n',
+ 'const prices = [12, 5, 8, 9];\nlet total = 0;\nfor (const p of prices) {\n  total = total + p;\n}\nscreen.textContent = \'Total: \' + total;',
+ (c)=> hasRe(c,/let\s+\w+\s*=\s*0/) && hasRe(c,/for\s*\(\s*const\s+\w+\s+of\s+\w+\s*\)/) && hasRe(c,/screen\.textContent\s*=\s*['"][^'"]*['"]\s*\+\s*\w+/)
+   ? {ok:true,msg:'The numeric accumulator — this exact loop totals every shopping cart on the internet.'}
+   : {ok:false,msg:'Start a total at 0, add each price in a for...of, show it glued after a label AFTER the loop.'}),
+CHAL('G10','The counting machine',
+ '<p>Your machine, plus memory: it should COUNT how many excuses it has served.</p>',
+ 'Random excuse on click, numbered: \'Excuse #3: My dog ate it\' — the number grows every click.',
+ 'const excuses = [\'My dog ate it\', \'Aliens took it\', \'I overslept\'];\n',
+ 'const excuses = [\'My dog ate it\', \'Aliens took it\', \'I overslept\'];\nlet count = 0;\n\nbtn.onclick = function () {\n  count = count + 1;\n  const pick = Math.floor(Math.random() * excuses.length);\n  screen.textContent = \'Excuse #\' + count + \': \' + excuses[pick];\n};',
+ (c)=> hasRe(c,/let\s+\w+\s*=\s*0/) && hasRe(c,/onclick|addEventListener/) && hasRe(c,/Math\.random/) && hasRe(c,/screen\.textContent\s*=[^\n]*#[^\n]*\+/)
+   ? {ok:true,msg:'State that survives between clicks, growing every press. That counter is the seed of every score, cart, and like tally.'}
+   : {ok:false,msg:'A let counter starting at 0, +1 inside the click, and the message gluing #, the count, and a random excuse.'},
+ '<button id="btn">Excuse me!</button>\n<p id="screen">press the button...</p>'),
+CHAL('C','The bulletproof picker',
+ '<p>Professional-grade: a picker that cannot be crashed by bad data.</p>',
+ 'Teach pickFrom(list): if the list is empty return \'nothing to pick\', else a random item. Show it working on BOTH lists, glued with \' / \'.',
+ 'const full = [\'alpha\', \'beta\', \'gamma\'];\nconst empty = [];\n',
+ 'const full = [\'alpha\', \'beta\', \'gamma\'];\nconst empty = [];\n\nfunction pickFrom(list) {\n  if (list.length === 0) {\n    return \'nothing to pick\';\n  }\n  const pick = Math.floor(Math.random() * list.length);\n  return list[pick];\n}\n\nscreen.textContent = pickFrom(full) + \' / \' + pickFrom(empty);',
+ (c)=> hasRe(c,/function\s+\w+\s*\(\s*\w+\s*\)/) && hasRe(c,/\.length\s*===?\s*0/) && hasRe(c,/Math\.random/) && (c.match(/\w+\s*\(\s*\w+\s*\)/g)||[]).length>=2 && hasRe(c,/screen\.textContent\s*=/)
+   ? {ok:true,msg:'A guard, a general-purpose parameter, and graceful failure. This function would pass code review at any company.'}
+   : {ok:false,msg:'One function taking a list parameter, an empty guard (length === 0), a random pick otherwise — called on BOTH lists in one glued sentence.'});
+
 /* sidebar display order (grades in order, lessons + review within each) — drives Next */
 const ORDER = [];
-for (const g of GRADES) for (let i=0;i<L.length;i++) if (L[i].g===g.id) ORDER.push(i);
+for (const g of GRADES) for (let i=0;i<L.length;i++) if (L[i].g===g.id && !L[i].chal) ORDER.push(i);
 
 /* ============================ QA BANK ============================ */
 const STOP = new Set(['the','a','an','is','are','was','do','does','i','my','me','it','to','of','in','on','and','or','what','how','why','when','can','cant','dont','this','that','you','your']);
@@ -1564,14 +1650,20 @@ const edEl=$('#ed'), hlEl=$('#hl'), teachEl=$('#teach'), goalEl=$('#goal'), stat
       btnNext=$('#btnNext');
 
 let idx = 0, done = new Set(), tested = new Set(), leadStep = 0, sandbox = false, checkTimer = null, solShown = false;
+let chalDone = new Set(), msSeen = new Set(), edTheme = '', sensei = false, certName = '';
 
-function saveP(){ try{ localStorage.setItem('codeschool', JSON.stringify({done:[...done], idx, tested:[...tested]})); }catch(e){} }
+function saveP(){ try{ localStorage.setItem('codeschool', JSON.stringify({done:[...done], idx, tested:[...tested], chalDone:[...chalDone], ms:[...msSeen], edTheme, sensei, certName})); }catch(e){} }
 function loadP(){
   let p = null;
   try{ p = JSON.parse(localStorage.getItem('codeschool')); }catch(e){}
   if (!p || !Array.isArray(p.done)) p = (location.protocol === 'file:') ? CARRIED : {done:[], idx:0};
-  done = new Set(p.done.filter(n => n >= 0 && n < L.length));
+  done = new Set(p.done.filter(n => n >= 0 && n < L.length && !L[n].chal));
   tested = new Set(p.tested || []);
+  chalDone = new Set((p.chalDone||[]).filter(n=>n>=0&&n<L.length));
+  msSeen = new Set(p.ms||[]);
+  edTheme = p.edTheme||'';
+  sensei = !!p.sensei;
+  certName = p.certName||'';
   idx = Math.min(Math.max(p.idx|0, 0), L.length - 1);
 }
 
@@ -1684,18 +1776,26 @@ function runCheck(){
     btnNext.style.display = 'none';
     return;
   }
-  if (res.ok && !done.has(idx)){
+  if (res.ok && L[idx].chal && !chalDone.has(idx)){
+    chalDone.add(idx); saveP(); renderNav(); confetti(60);
+    const el=document.createElement('div'); el.className='gbanner';
+    el.innerHTML='⚔️ Challenge conquered!<small>+25 XP — no hints, all you.</small>';
+    document.body.appendChild(el); setTimeout(()=>el.remove(),2700);
+    checkMilestones();
+  }
+  else if (res.ok && !L[idx].chal && !done.has(idx)){
     done.add(idx);
-    const g=L[idx].g, ls=L.map((l,i)=>({l,i})).filter(x=>x.l.g===g);
+    const g=L[idx].g, ls=coreOf(g);
     if (L[idx].title.includes('Review') && ls.some(x=>!done.has(x.i))){
       for (const x of ls) done.add(x.i);
       tested.add(g);
     }
     saveP(); renderNav();
     const gComplete = ls.every(x=>done.has(x.i));
-    if (done.size===L.length){ confetti(160); gradeToast('', true); }
-    else if (gComplete){ confetti(90); gradeToast(GRADES.find(x=>x.id===g).name, false); }
-    else confetti(22);
+    if (done.size===coreTotal()){ confetti(160); gradeToast('', true); }
+    else if (gComplete){ confetti(done.size>=41?140:90); gradeToast(GRADES.find(x=>x.id===g).name, false); }
+    else confetti(done.size>=41?34:22);
+    checkMilestones();
     const curNav = $('#navList') && $('#navList').querySelector('.navitem.cur .tick');
     if (curNav) curNav.classList.add('pop');
     const xr = $('#xpTxt').getBoundingClientRect();
@@ -1719,7 +1819,9 @@ function confetti(count){
   for (let i=0;i<count;i++){
     const bit=document.createElement('i');
     bit.style.left=(Math.random()*100)+'vw';
-    bit.style.background=CCOLORS[i%CCOLORS.length];
+    const pal = done.size>=57 ? CCOLORS.concat(['#e8b923','#f5e6a8']) : done.size>=41 ? CCOLORS.concat(['#e05297']) : CCOLORS;
+    bit.style.background=pal[i%pal.length];
+    if (done.size>=41 && i%3===0) bit.style.borderRadius='50%';
     bit.style.animationDelay=(Math.random()*.35)+'s';
     bit.style.transform='rotate('+(Math.random()*360)+'deg)';
     holder.appendChild(bit);
@@ -1734,7 +1836,11 @@ function gradeToast(gname, allDone){
   document.body.appendChild(el);
   setTimeout(()=>el.remove(), 2700);
 }
-function xpFor(){ let xp = done.size*10; for (const g of GRADES){ const ls=L.map((l,i)=>({l,i})).filter(x=>x.l.g===g.id); if (ls.length && ls.every(x=>done.has(x.i))) xp+=25; } return xp; }
+function coreOf(gid){ return L.map((l,i)=>({l,i})).filter(x=>x.l.g===gid && !x.l.chal); }
+function coreTotal(){ return L.filter(l=>!l.chal).length; }
+function xpFor(){ let xp = done.size*10 + chalDone.size*25; for (const g of GRADES){ const ls=coreOf(g.id); if (ls.length && ls.every(x=>done.has(x.i))) xp+=25; } return xp; }
+const MILESTONES=[[100,'100 XP — you are officially writing two languages by hand.'],[250,'250 XP — you now read HTML, CSS, and JavaScript. Three languages.'],[420,'420 XP — you have built working machines. Most people never get here.'],[600,'600 XP — professional vocabulary, debugging habits, real architecture. Keep going.'],[800,'800 XP — you did not take a shortcut. You took the whole road.']];
+function checkMilestones(){ const xp=xpFor(); for (const [bar,msg] of MILESTONES){ if (xp>=bar && !msSeen.has(bar)){ msSeen.add(bar); saveP(); const el=document.createElement('div'); el.className='gbanner'; el.innerHTML='⭐ '+msg; document.body.appendChild(el); setTimeout(()=>el.remove(),2700); break; } } }
 
 let openGrades = new Set();
 function renderNav(){
@@ -1743,7 +1849,8 @@ function renderNav(){
   listEl.innerHTML = '';
   const curG = sandbox ? null : L[idx].g;
   for (const g of GRADES){
-    const lessons = L.map((l,i)=>({l,i})).filter(x=>x.l.g===g.id);
+    const lessons = coreOf(g.id);
+    const chals = L.map((l,i)=>({l,i})).filter(x=>x.l.g===g.id && x.l.chal);
     const gdone = lessons.filter(x=>done.has(x.i)).length;
     const head = document.createElement('div');
     head.className='ghead';
@@ -1769,11 +1876,23 @@ function renderNav(){
       b.onclick = ()=>loadLesson(x.i);
       listEl.appendChild(b);
     }
+    if (gComplete) for (const x of chals){
+      if (q && !x.l.title.toLowerCase().includes(q)) continue;
+      const b = document.createElement('button');
+      b.className = 'navitem chal' + (x.i===idx && !sandbox ? ' cur':'') + (isOpen ? '' : ' ghidden');
+      b.innerHTML = '<span class="tick">' + (chalDone.has(x.i)?'✓':'') + '</span><span>' + x.l.title + '</span>';
+      b.onclick = ()=>loadLesson(x.i);
+      listEl.appendChild(b);
+    }
   }
-  const total = L.length, nd = done.size;
+  const total = coreTotal(), nd = done.size;
   $('#progTxt').textContent = nd + ' / ' + total;
   $('#xpTxt').textContent = '⭐ ' + xpFor() + ' XP · ' + levelFor(nd);
-  $('#btnReplay').style.display = (nd===total && total>0) ? 'inline-block' : 'none';
+  const grad = (nd===total && total>0);
+  $('#btnReplay').style.display = grad ? 'inline-block' : 'none';
+  $('#btnCert').style.display = grad ? 'inline-block' : 'none';
+  $('#btnSensei').style.display = grad || sensei ? 'inline-block' : 'none';
+  $('#btnSensei').textContent = sensei ? '🥋 on' : '🥋';
   $('#progFill').style.width = (100*nd/total) + '%';
 }
 
@@ -1803,6 +1922,11 @@ function loadLesson(i){
   const cp=$('#crPrev'), cn=$('#crNext');
   if (cp) cp.onclick=()=>{ const o=ORDER.indexOf(idx); if (o>0) loadLesson(ORDER[o-1]); };
   if (cn) cn.onclick=()=>{ const o=ORDER.indexOf(idx); if (o<ORDER.length-1) loadLesson(ORDER[o+1]); };
+  const isChal = !!les.chal;
+  $('#btnHelp').style.display = isChal ? 'none' : '';
+  $('#btnLead').style.display = isChal ? 'none' : '';
+  $('#btnSol').style.display = isChal ? 'none' : '';
+  applyTheme();
   teachEl.scrollTop = 0; edEl.focus();
   const cur=navEl.querySelector('.navitem.cur'); if (cur) cur.scrollIntoView({block:'nearest'});
 }
@@ -1846,7 +1970,17 @@ const SANDBOX_START = '<h1>Free play<\/h1>\n<p>This page is all yours. No goals,
 function openSandbox(){
   sandbox = true;
   teachEl.dataset.lv = 2;
-  teachEl.innerHTML = '<h2>Free play<\/h2><p><b>Want to see how this entire school works?</b> Right-click this page and choose View page source. Every lesson, checker, and trick lives in one file of the three languages you now read. Nothing was hidden from you &mdash; it was just waiting until you could read it.<\/p><p>No goal, no checker &mdash; just you and the machine. Write any HTML here (add &lt;style&gt; and script hugs if you like) and watch the preview. Your scratchpad saves itself in this browser.<\/p><p>Click any lesson in the sidebar to go back to school.<\/p>';
+  const KITS=[
+ {name:'Blank page', min:0, code:'<h1>Free play<\/h1>\n<p>All yours.<\/p>'},
+ {name:'Personal site', min:14, code:'<style>\n  body { font-family: Georgia, serif; background: #faf7f2; padding: 30px; }\n  .card { background: white; padding: 20px; border-radius: 12px; max-width: 400px; }\n<\/style>\n<div class="card">\n  <h1>Your Name<\/h1>\n  <p>One sentence about you.<\/p>\n  <ul>\n    <li>a thing you like<\/li>\n    <li>another thing<\/li>\n  <\/ul>\n<\/div>'},
+ {name:'Quiz machine', min:33, code:'<h2 id="q">Capital of France?<\/h2>\n<button id="a">Paris<\/button>\n<button id="b">London<\/button>\n<p id="screen"><\/p>\n<scr'+'ipt>\nconst screen = document.getElementById("screen");\ndocument.getElementById("a").onclick = function () { screen.textContent = "Correct!"; };\ndocument.getElementById("b").onclick = function () { screen.textContent = "Nope - try again."; };\n<\/scr'+'ipt>'},
+ {name:'Mini game', min:41, code:'<h2>Click race - 10 clicks to win<\/h2>\n<button id="btn">CLICK<\/button>\n<p id="screen">0<\/p>\n<scr'+'ipt>\nconst screen = document.getElementById("screen");\nconst btn = document.getElementById("btn");\nlet count = 0;\nbtn.onclick = function () {\n  count = count + 1;\n  screen.textContent = count;\n  if (count >= 10) { screen.textContent = "YOU WIN!"; btn.disabled = true; }\n};\n<\/scr'+'ipt>'},
+];
+  const kitBtns = KITS.map((k,n)=>{
+    const ok = done.size>=k.min;
+    return '<button data-kit="'+n+'"'+(ok?'':' disabled title="Unlocks at '+levelFor(k.min)+'"')+'>'+(ok?'':'🔒 ')+k.name+'</button>';
+  }).join('');
+  teachEl.innerHTML = '<h2>Free play<\/h2><div class="kitrow">'+kitBtns+'</div><p><b>Want to see how this entire school works?</b> Right-click this page and choose View page source. Every lesson, checker, and trick lives in one file of the three languages you now read. Nothing was hidden from you &mdash; it was just waiting until you could read it.<\/p><p>No goal, no checker &mdash; just you and the machine. Write any HTML here (add &lt;style&gt; and script hugs if you like) and watch the preview. Your scratchpad saves itself in this browser.<\/p><p>Click any lesson in the sidebar to go back to school.<\/p>';
   goalEl.innerHTML = '<b>PLAY.<\/b> Nothing you do here can break anything.';
   remindBox.style.display='none';
   $('#scaffold').style.display='none';
@@ -1902,7 +2036,7 @@ loadLesson = function(i){ _origLoad(i);
     document.body.classList.remove('tab-nav','tab-code','tab-result'); document.body.classList.add('tab-lesson'); }
 };
 $('#btnExport').onclick = ()=>{
-  const code = btoa(unescape(encodeURIComponent(JSON.stringify({done:[...done], idx, tested:[...tested]}))));
+  const code = btoa(unescape(encodeURIComponent(JSON.stringify({done:[...done], idx, tested:[...tested], chalDone:[...chalDone], ms:[...msSeen], edTheme, certName}))));
   try{ navigator.clipboard.writeText(code); alert('Save code copied to clipboard! Paste it into Import on any other device or browser.'); }
   catch(e){ prompt('Copy this save code (Ctrl+C), then paste it into Import on the other device:', code); }
 };
@@ -1913,9 +2047,64 @@ $('#btnImport').onclick = ()=>{
     const p = JSON.parse(decodeURIComponent(escape(atob(code.trim()))));
     if (!Array.isArray(p.done)) throw 0;
     done = new Set(p.done.filter(n=>n>=0&&n<L.length)); tested = new Set(p.tested||[]);
+    chalDone = new Set((p.chalDone||[]).filter(n=>n>=0&&n<L.length)); msSeen = new Set(p.ms||[]);
+    if (p.edTheme!==undefined) edTheme=p.edTheme; if (p.certName) certName=p.certName;
     idx = Math.min(Math.max(p.idx|0,0),L.length-1); saveP(); loadLesson(idx);
     alert('Progress restored: ' + done.size + ' / ' + L.length + ' lessons.');
   }catch(e){ alert('That code did not work — make sure you pasted the whole thing.'); }
+};
+const THEMES=[
+ {id:'', name:'Classic Dark', min:0},
+ {id:'th-midnight', name:'Midnight', min:14},
+ {id:'th-paper', name:'Paper (light)', min:22},
+ {id:'th-synth', name:'Synthwave', min:41},
+ {id:'th-matrix', name:'Matrix', min:57},
+];
+function applyTheme(){
+  const w=document.querySelector('.edwrap');
+  for (const t of THEMES) if (t.id) w.classList.remove(t.id);
+  const t=THEMES.find(x=>x.id===edTheme);
+  if (t && t.id && done.size>=t.min) w.classList.add(t.id);
+}
+$('#btnTheme').onclick = ()=>{
+  const unlocked = THEMES.filter(t=>done.size>=t.min);
+  const curI = Math.max(0, unlocked.findIndex(t=>t.id===edTheme));
+  const next = unlocked[(curI+1)%unlocked.length];
+  edTheme = next.id; saveP(); applyTheme();
+  const locked = THEMES.filter(t=>done.size<t.min).map(t=>t.name+' (at '+levelFor(t.min)+')').join(', ');
+  statusEl.className='wait';
+  statusEl.innerHTML='🎨 Theme: <b>'+next.name+'</b>' + (locked ? ' — still locked: '+locked : ' — all themes unlocked!');
+};
+$('#xpTxt').style.cursor='pointer';
+$('#xpTxt').title='Click for your stats';
+$('#xpTxt').onclick = ()=>{
+  const rows = GRADES.map(g=>{
+    const ls=coreOf(g.id); const d=ls.filter(x=>done.has(x.i)).length;
+    const pct=ls.length?Math.round(100*d/ls.length):0;
+    return '<div class="statrow"><span class="sname">'+(tested.has(g.id)?'⚡ ':'')+g.name+'</span><span class="statbar"><i style="width:'+pct+'%"></i></span><span>'+d+'/'+ls.length+'</span></div>';
+  }).join('');
+  const nextL = LEVELS.find(l=>l[0]>done.size);
+  $('#statsBody').innerHTML = '<p><b>⭐ '+xpFor()+' XP</b> · Level: <b>'+levelFor(done.size)+'</b>'+(nextL?' · next: '+nextL[1]+' at '+nextL[0]+' lessons':'')+'</p>'
+    + rows + '<p style="margin-top:10px;font-size:.85rem;color:var(--soft)">⚔️ Challenges conquered: '+chalDone.size+' · ⚡ = tested out</p>';
+  $('#statsOv').classList.add('open');
+};
+$('#statsClose').onclick = ()=>$('#statsOv').classList.remove('open');
+$('#btnCert').onclick = ()=>{
+  if (!certName){ certName = (prompt('Name to print on your certificate:')||'').trim(); if(!certName) return; saveP(); }
+  const meds = GRADES.map(g=>'🏅 '+g.name).join(' · ');
+  $('#certBody').innerHTML = '<h1>Certificate of Completion</h1><p>Code Lab — Kindergarten through College</p>'
+    + '<div class="cname">'+esc(certName)+'</div>'
+    + '<p class="cline">completed all <b>'+coreTotal()+' lessons</b> — every checkmark typed by hand —<br>earning <b>'+xpFor()+' XP</b> at the rank of <b>'+levelFor(done.size)+'</b></p>'
+    + '<p class="cline">'+new Date().toLocaleDateString()+'</p>'
+    + '<div class="cmeds">'+meds+'</div>';
+  $('#certOv').classList.add('open');
+};
+$('#certClose').onclick = ()=>$('#certOv').classList.remove('open');
+$('#certPrint').onclick = ()=>window.print();
+$('#btnSensei').onclick = ()=>{
+  sensei = !sensei; saveP();
+  document.body.classList.toggle('sensei', sensei);
+  $('#btnSensei').textContent = sensei ? '🥋 on' : '🥋';
 };
 $('#btnDark').onclick = ()=>{
   document.body.classList.toggle('dark');
@@ -1930,6 +2119,13 @@ document.addEventListener('keydown', (e)=>{
   if ((e.ctrlKey||e.metaKey) && e.key==='Enter' && btnNext.style.display!=='none' && !sandbox){ e.preventDefault(); btnNext.click(); }
 });
 $('#btnSandbox').onclick = openSandbox;
+teachEl.addEventListener('click', (e)=>{
+  const kb = e.target.closest('[data-kit]');
+  if (!kb || !sandbox || kb.disabled) return;
+  edEl.value = KITS[+kb.dataset.kit].code;
+  syncHl(); outEl.srcdoc = edEl.value;
+  try{ localStorage.setItem('sandboxCode', edEl.value); }catch(x){}
+});
 $('#btnQA').onclick = ()=>$('#qaPanel').classList.toggle('open');
 $('#qaClose').onclick = ()=>$('#qaPanel').classList.remove('open');
 $('#qaIn').addEventListener('keydown', (e)=>{
@@ -1946,6 +2142,8 @@ try{ firstVisit = !localStorage.getItem('codeschool') && !localStorage.getItem('
 loadP();
 loadLesson(idx);
 if (firstVisit) $('#welcome').classList.add('open');
+document.body.classList.toggle('sensei', sensei);
+applyTheme();
 $('#wStart').onclick = ()=>{ $('#welcome').classList.remove('open'); try{localStorage.setItem('welcomed','1');}catch(e){} loadLesson(0); };
 </script>
 </body>

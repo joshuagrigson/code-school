@@ -113,6 +113,7 @@ nav{width:205px;flex:0 0 auto;overflow-y:auto;background:var(--panel);border-rig
   <div id="progBar"><div id="progFill"></div></div>
   <span id="progTxt">0 / 0</span>
   <span id="xpTxt"></span>
+  <button class="hbtn" id="btnReplay" style="display:none">🏆 Do it all again</button>
   <button class="hbtn" id="btnSandbox">Free play</button>
   <button class="hbtn" id="btnQA">Ask a question</button>
 </header>
@@ -881,6 +882,176 @@ JL('Protect the bag',
    : {ok:false,msg:'I need an if testing empty OR missing @ (use ||), an else, and a different screen message in each branch.'}),
 ]);
 
+
+/* ============================ GRADE REVIEWS (appended; sidebar groups them into their grades) ============================ */
+function REV(gid, lang, teach, goal, start, sol, hint, check, pageHtml){
+  const les = lang==='html' ? HL('📋 Review: put it together', teach, goal, start, sol, hint, check)
+    : lang==='css' ? CL('📋 Review: put it together', teach, goal, start, sol, hint, check, pageHtml)
+    : JL('📋 Review: put it together', teach, goal, start, sol, hint, check, pageHtml);
+  les.g = gid; L.push(les);
+}
+const REV_INTRO = '<p><b>Checkpoint — no rush, no shame.</b> Before moving up, let&rsquo;s make sure this grade actually stuck. Below is everything you just learned, in one breath, then ONE task that uses it all together. If any line feels shaky, click back to that lesson first — that is what the sidebar is for, and re-reading is what professionals do daily.</p>';
+
+REV('K','html',
+ REV_INTRO+'<p>Kindergarten in one breath:</p><ul><li>The computer shows exactly what you type.</li><li>Tags are invisible instructions: <code>&lt;h1&gt;</code> big headline, <code>&lt;p&gt;</code> paragraph.</li><li>Every hug you open, you close — the closer wears the slash.</li><li>Small hugs go INSIDE paragraphs: <code>&lt;em&gt;</code> lean, <code>&lt;strong&gt;</code> bold.</li></ul>',
+ 'One page using EVERYTHING: an h1, then a p that contains one em word AND one strong word.',
+ '',
+ '<h1>My Checkpoint Page</h1>\n<p>I <em>really</em> did learn <strong>all</strong> of this.</p>',
+ 'Two lines: the h1 sign, then a p sentence with one word in em hugs and another in strong hugs.',
+ (c,d)=> txtOf(d,'h1') && d.querySelector('p em') && d.querySelector('p strong')
+   ? {ok:true,msg:'Kindergarten is truly yours: structure, hugs, and inline styling in one page. Move up with confidence.'}
+   : {ok:false,msg:'I need all three: an h1, an em word inside the p, and a strong word inside the p.'});
+
+REV('G1','html',
+ REV_INTRO+'<p>Grade 1 in one breath:</p><ul><li>Headings come in six sizes (h1&ndash;h6).</li><li><code>&lt;button&gt;</code> makes something pressable.</li><li><code>&lt;ul&gt;</code> + <code>&lt;li&gt;</code> team up into lists.</li><li>Attributes are notes in the opening tag: <code>href</code> sends links somewhere.</li><li><code>&lt;div&gt;</code> is a plain box that groups things.</li></ul><p>And everything from Kindergarten still applies underneath.</p>',
+ 'Build a mini profile card: ONE div containing an h2, a ul with 3 li items, a link with an href, and a button.',
+ '<div>\n\n</div>',
+ '<div>\n  <h2>About Josh</h2>\n  <ul>\n    <li>learning to code</li>\n    <li>likes tacos</li>\n    <li>building an app</li>\n  </ul>\n  <a href="https://example.com">my favorite site</a>\n  <button>Say hi</button>\n</div>',
+ 'Everything lives INSIDE the div: h2 first, then the 3-item list, then the a with href, then the button.',
+ (c,d)=>{ const dv=d.querySelector('div'); return dv && dv.querySelector('h2') && dv.querySelectorAll('ul li').length>=3 && dv.querySelector('a[href]') && dv.querySelector('button')
+   ? {ok:true,msg:'A real profile card — the exact structure of every social media profile, built solo. Grade 1 locked in.'}
+   : {ok:false,msg:'Inside the ONE div I need: an h2, a ul with 3+ li, an a with an href, and a button.'}; });
+
+REV('G2','css',
+ REV_INTRO+'<p>Grade 2 in one breath:</p><ul><li>Rules are <code>selector { property: value; }</code> — every line ends with <code>;</code>.</li><li><code>color</code> = ink, <code>background</code> = paper.</li><li><code>font-size</code> in px sizes text; <code>text-align: center</code> centers it.</li><li><code>padding</code> = breathing room inside.</li><li><code>border</code> (thickness style color) + <code>border-radius</code> = frames and round corners.</li></ul>',
+ 'Dress the p with EVERYTHING: color, background, font-size, padding, and border-radius, all in one rule.',
+ 'p {\n\n}',
+ 'p {\n  color: darkgreen;\n  background: mintcream;\n  font-size: 20px;\n  padding: 16px;\n  border-radius: 10px;\n}',
+ 'Five lines inside the braces, one per property, each ending with a semicolon.',
+ (c)=> hasRe(c,/color\s*:\s*[#a-zA-Z]/) && hasRe(c,/background(-color)?\s*:\s*[#a-zA-Z]/) && hasRe(c,/font-size\s*:\s*\d+px/) && hasRe(c,/padding\s*:\s*\d+/) && hasRe(c,/border-radius\s*:\s*\d+/)
+   ? {ok:true,msg:'One rule, five dials, a fully dressed card. That is the whole Grade 2 toolkit working together.'}
+   : {ok:false,msg:'I need all five: color, background, font-size (px), padding, and border-radius.'},
+ '<h1>My page</h1>\n<p>Dress me with everything you know.</p>');
+
+REV('G3','css',
+ REV_INTRO+'<p>Grade 3 in one breath:</p><ul><li>Bare name (<code>p</code>) selects every tag of that kind.</li><li><code>.class</code> (dot) selects the elements WEARING that name tag — many allowed.</li><li><code>#id</code> (hash) selects the ONE element with that id.</li><li>Selectors read labels, never the words in the text.</li></ul>',
+ 'Write THREE rules: one for all p tags, one for .fancy, one for #title — each with at least a color.',
+ '',
+ 'p {\n  color: gray;\n}\n\n.fancy {\n  color: crimson;\n}\n\n#title {\n  color: royalblue;\n}',
+ 'Three separate rules: bare p, dot .fancy, hash #title. Watch each grab its own targets in the preview.',
+ (c)=> hasRe(c,/(^|\n)\s*p\s*\{[^}]*color\s*:/) && hasRe(c,/\.fancy\s*\{[^}]*color\s*:/) && hasRe(c,/#title\s*\{[^}]*color\s*:/)
+   ? {ok:true,msg:'Tag, class, and id — all three pointers, each hitting exactly its own targets. Watch the cascade: the .fancy paragraph obeys .fancy over p. You have the full aiming system.'}
+   : {ok:false,msg:'Three rules needed: p { }, .fancy { }, and #title { }, each with a color inside.'},
+ '<h1 id="title">The one title</h1>\n<p>An ordinary paragraph.</p>\n<p class="fancy">A fancy paragraph.</p>\n<p class="fancy">Another fancy one.</p>');
+
+REV('G4','js',
+ REV_INTRO+'<p>Grade 4 in one breath:</p><ul><li><code>screen.textContent = ...</code> puts things in the box — working it out is NOT showing it.</li><li><code>const name = \'value\';</code> makes a labeled box; quotes = words, no quotes = box name.</li><li><code>btn.onclick = function () { ... };</code> saves instructions for later — the click runs them.</li></ul>',
+ 'Wire it all: a const box holding your name, and a click that greets THAT BOX on screen.',
+ '',
+ 'const myName = \'Josh\';\n\nbtn.onclick = function () {\n  screen.textContent = myName;\n};',
+ 'The const line first; then the click function whose screen line uses the box name (no quotes).',
+ (c)=> hasRe(c,/const\s+\w+\s*=\s*['"].+['"]/) && hasRe(c,/btn\.onclick\s*=\s*function|addEventListener/) && hasRe(c,/\{[\s\S]*screen\.textContent\s*=\s*\w+[\s\S]*\}/) && !hasRe(c,/screen\.textContent\s*=\s*['"]/)
+   ? {ok:true,msg:'Box, wiring, and display working as one system — press the button and YOUR data appears. Grade 4 is yours.'}
+   : {ok:false,msg:'I need the const box, the btn.onclick function, and the screen showing the BOX (unquoted) inside the click.'},
+ '<button id="btn">Greet me</button>\n<p id="screen">press the button...</p>');
+
+REV('G5','js',
+ REV_INTRO+'<p>Grade 5 in one breath:</p><ul><li><code>+</code> glues words: <code>\'Hello \' + name</code>.</li><li>Words and numbers are different species — gluing wins when they mix.</li><li>Brackets force the math first: <code>\'Total: \' + (4 + 3)</code> gives 7, not 43.</li></ul><p>Plus everything before: boxes, quotes-vs-names, showing on screen.</p>',
+ 'One line combining it all: glue a name box + a label + a CORRECT bracketed sum onto the screen.',
+ 'const name = \'Josh\';\n',
+ 'const name = \'Josh\';\nscreen.textContent = name + \' scored \' + (10 + 7) + \' points\';',
+ 'Shape: box + quoted label + (number + number) + quoted label — brackets around the math.',
+ (c)=> hasRe(c,/const\s+\w+\s*=/) && hasRe(c,/screen\.textContent\s*=[^\n]*\w+[^\n]*\+[^\n]*\(\s*\d+\s*\+\s*\d+\s*\)/)
+   ? {ok:true,msg:'Boxes, glue, and honest math in a single sentence. The Total: 43 trap can never fool you again.'}
+   : {ok:false,msg:'The screen line must glue the name box AND a bracketed sum like (10 + 7) with + signs.'});
+
+REV('G6','js',
+ REV_INTRO+'<p>Grade 6 in one breath:</p><ul><li>Lists hold many values: <code>[\'a\', \'b\', \'c\']</code>, positions counted from ZERO.</li><li><code>Math.floor(Math.random() * list.length)</code> = a fair random position.</li></ul><p>Now combine with Grade 5: glue a label onto the random pick.</p>',
+ 'Make YOUR OWN list of 4+ items, pick one at random, and show it glued after a label like \'Tonight: \'.',
+ '',
+ 'const dinners = [\'tacos\', \'ramen\', \'pizza\', \'stir fry\'];\nconst pick = Math.floor(Math.random() * dinners.length);\nscreen.textContent = \'Tonight: \' + dinners[pick];',
+ 'Three lines: your list, the random-position line, and a screen line gluing a quoted label + list[pick].',
+ (c)=>{ const items=(c.match(/'[^']*'/g)||[]).length; return hasRe(c,/=\s*\[/) && items>=5 && hasRe(c,/Math\.floor\s*\(\s*Math\.random/) && hasRe(c,/screen\.textContent\s*=\s*['"][^'"]*['"]\s*\+\s*\w+\s*\[/)
+   ? {ok:true,msg:'Your own data, a fair random choice, and a labeled result — that is a tiny product, not an exercise.'}
+   : {ok:false,msg:'I need a list with 4+ quoted items, the Math.floor(Math.random()...) line, and a label glued to list[pick].'}; });
+
+REV('G7','js',
+ REV_INTRO+'<p>Grade 7 in one breath:</p><ul><li><code>function name() { }</code> teaches; <code>name();</code> performs.</li><li>Ingredients go in the round brackets and live only inside.</li><li><code>return</code> hands a value back — only textContent shows it.</li><li>Tricks call tricks: small pieces, stacked.</li></ul>',
+ 'Teach a trick that takes a list position, RETURNS that item glued after a label, and show the result of calling it.',
+ 'const snacks = [\'chips\', \'fruit\', \'cookies\'];\n',
+ 'const snacks = [\'chips\', \'fruit\', \'cookies\'];\n\nfunction describe(position) {\n  return \'Snack choice: \' + snacks[position];\n}\n\nscreen.textContent = describe(1);',
+ 'The function takes one ingredient, returns label + snacks[ingredient]; the screen line calls it with a number.',
+ (c)=> hasRe(c,/function\s+\w+\s*\(\s*\w+\s*\)\s*\{[\s\S]*return[\s\S]*\[\s*\w+\s*\][\s\S]*\}/) && hasRe(c,/screen\.textContent\s*=\s*\w+\s*\(\s*\d+\s*\)/)
+   ? {ok:true,msg:'A reusable trick with an ingredient, a return, and a real call — functions, lists, and gluing all shaking hands.'}
+   : {ok:false,msg:'The function needs (an ingredient), a return using the list[ingredient], and the screen must show a call like describe(1).'});
+
+REV('G8','js',
+ REV_INTRO+'<p>Grade 8 in one breath:</p><ul><li><code>if (test) { }</code> — first true door wins.</li><li><code>else</code> guarantees one branch always runs.</li><li><code>else if</code> chains more doors; order matters.</li><li><code>&amp;&amp;</code> both, <code>||</code> either.</li></ul><p>Combine with Grade 7: a function that DECIDES and returns.</p>',
+ 'Teach rateScore(score): returns \'gold\' above 8, \'silver\' above 5, otherwise \'keep practicing\'. Show one call.',
+ '',
+ 'function rateScore(score) {\n  if (score > 8) {\n    return \'gold\';\n  } else if (score > 5) {\n    return \'silver\';\n  } else {\n    return \'keep practicing\';\n  }\n}\n\nscreen.textContent = \'Result: \' + rateScore(7);',
+ 'An if / else if / else ladder inside the function, each branch returning; then show a call. Test 9, 7, and 3.',
+ (c)=> hasRe(c,/function\s+\w+\s*\(\s*\w+\s*\)/) && hasRe(c,/else\s+if\s*\(/) && hasRe(c,/\}\s*else\s*\{/) && (c.match(/return/g)||[]).length>=3 && hasRe(c,/screen\.textContent\s*=[\s\S]*\w+\s*\(\s*\d+\s*\)/)
+   ? {ok:true,msg:'A deciding function — the exact shape of grading, shipping tiers, and every rating system online. Doors mastered.'}
+   : {ok:false,msg:'I need the full ladder (if, else if, else) with a return in each branch, and the screen calling it with a number.'});
+
+REV('G9','js',
+ REV_INTRO+'<p>Grade 9 in one breath:</p><ul><li><code>for (let i = 1; i <= 5; ...)</code> — counted laps.</li><li><code>for (const item of list)</code> — visit every item.</li><li>The accumulator: start empty, add each lap, show at the end.</li><li><code>while</code> runs until a condition changes — something inside must push toward the exit.</li></ul>',
+ 'Loop over the scores list; add \'pass \' or \'fail \' to a result box for each (6+ passes); show the result after the loop.',
+ 'const scores = [4, 9, 7, 2, 8];\n',
+ 'const scores = [4, 9, 7, 2, 8];\nlet out = \'\';\nfor (const s of scores) {\n  if (s >= 6) {\n    out = out + s + \' pass. \';\n  } else {\n    out = out + s + \' fail. \';\n  }\n}\nscreen.textContent = out;',
+ 'Empty let box, for...of over scores, if/else inside adding to the box, screen line AFTER the loop.',
+ (c)=> hasRe(c,/let\s+\w+\s*=\s*['"]{2}/) && hasRe(c,/for\s*\(\s*const\s+\w+\s+of\s+\w+\s*\)/) && hasRe(c,/if\s*\([^)]*\)/) && hasRe(c,/else/) && hasRe(c,/screen\.textContent\s*=\s*\w+/)
+   ? {ok:true,msg:'Loop + choice + accumulator — the three-piece engine that renders feeds, grades tests, and totals carts everywhere.'}
+   : {ok:false,msg:'I need the empty let box, a for...of loop, an if/else inside adding to the box, and the screen showing it after.'});
+
+REV('G10','js',
+ REV_INTRO+'<p>Grade 10 in one breath:</p><ul><li>Build the skeleton first, brain second, polish third.</li><li>Data + brain + wiring is the architecture of every app.</li><li>A remembering box (let, outside the function) + a while guard kills repeats.</li></ul><p>This checkpoint IS the machine, rebuilt from memory. You have earned the muscle — trust it.</p>',
+ 'Rebuild the full Excuse-O-Matic: list, pickExcuse() with no-repeat guard, click wiring.',
+ 'const excuses = [\'My dog ate it\', \'Aliens took it\', \'I overslept\', \'Gravity failed\'];\n',
+ 'const excuses = [\'My dog ate it\', \'Aliens took it\', \'I overslept\', \'Gravity failed\'];\nlet last = -1;\n\nfunction pickExcuse() {\n  let pick = Math.floor(Math.random() * excuses.length);\n  while (pick === last) {\n    pick = Math.floor(Math.random() * excuses.length);\n  }\n  last = pick;\n  return excuses[pick];\n}\n\nbtn.onclick = function () {\n  screen.textContent = pickExcuse();\n};',
+ 'Three layers from memory: the remembering let, the function (random, while-guard, remember, return), the click. Peek at Grade 10 if needed — that is reviewing, not cheating.',
+ (c)=> hasRe(c,/let\s+\w+\s*=/) && hasRe(c,/function\s+\w+/) && hasRe(c,/while\s*\([^)]*===?[^)]*\)/) && hasRe(c,/Math\.random/) && hasRe(c,/return/) && hasRe(c,/onclick|addEventListener/) && hasRe(c,/screen\.textContent\s*=/)
+   ? {ok:true,msg:'You rebuilt the whole machine from memory. That is not review — that is ownership.'}
+   : {ok:false,msg:'All the pieces: remembering let, function with Math.random + while guard + return, and the click showing it.'},
+ '<button id="btn">Excuse me!</button>\n<p id="screen">press the button...</p>');
+
+REV('G11','js',
+ REV_INTRO+'<p>Grade 11 in one breath:</p><ul><li>Objects label their contents: <code>{ name: \'Josh\', age: 40 }</code>.</li><li>Dot reads a field; dot on the left of = changes it.</li><li>Lists of objects are the data shape of every real app.</li></ul><p>Combine with loops: walk a list of objects and build a report.</p>',
+ 'Loop over the players list and build one line per player like \'Sam: 12 points. \', then show it.',
+ 'const players = [\n  { name: \'Sam\', points: 12 },\n  { name: \'Alex\', points: 9 },\n  { name: \'Jo\', points: 15 }\n];\n',
+ 'const players = [\n  { name: \'Sam\', points: 12 },\n  { name: \'Alex\', points: 9 },\n  { name: \'Jo\', points: 15 }\n];\nlet out = \'\';\nfor (const p of players) {\n  out = out + p.name + \': \' + p.points + \' points. \';\n}\nscreen.textContent = out;',
+ 'Accumulator + for...of; inside, glue p.name and p.points with quoted bits between.',
+ (c)=> hasRe(c,/for\s*\(\s*const\s+\w+\s+of\s+\w+\s*\)/) && (c.match(/\w+\.\w+/g)||[]).filter(x=>!/Math\.|screen\.|console\./.test(x)).length>=2 && hasRe(c,/screen\.textContent\s*=\s*\w+/)
+   ? {ok:true,msg:'A leaderboard from a list of objects — you just did what every scoreboard, feed, and results page does.'}
+   : {ok:false,msg:'Loop with for...of, read BOTH fields with dots (p.name, p.points), build the text, show it after the loop.'});
+
+REV('G12','js',
+ REV_INTRO+'<p>Grade 12 in one breath:</p><ul><li><code>console.log</code> is your detective notebook.</li><li>Errors are handrails — read the last line first.</li><li><code>typeof</code> asks a value what species it is.</li><li>Guard before you use: check, then act.</li></ul>',
+ 'Write a guard that logs the value AND its typeof, shows a complaint if the box is empty, otherwise shows a welcome.',
+ 'const username = \'\';\n',
+ 'const username = \'\';\nconsole.log(\'username is:\', username, typeof username);\n\nif (username === \'\') {\n  screen.textContent = \'No username given - try again!\';\n} else {\n  screen.textContent = \'Welcome, \' + username + \'!\';\n}',
+ 'One console.log line using typeof, then the empty-string guard with different messages per branch. Flip the box value to test both doors.',
+ (c)=> hasRe(c,/console\.log\s*\(/) && hasRe(c,/typeof\s+\w+/) && hasRe(c,/if\s*\(\s*\w+\s*===?\s*['"]{2}\s*\)/) && hasRe(c,/else/) && (c.match(/screen\.textContent/g)||[]).length>=2
+   ? {ok:true,msg:'Logging, type-checking, and guarding in one flow — the complete debugging reflex, installed.'}
+   : {ok:false,msg:'I need the console.log with typeof, the === \'\' guard, an else, and a different screen message in each branch.'});
+
+REV('C','js',
+ REV_INTRO+'<p>College in one breath:</p><ul><li>Names tell the truth.</li><li>One job per function; snap them together.</li><li>DRY: repetition is where bugs breed.</li><li>You built the Mood Machine from a spec, alone.</li></ul><p>Final checkpoint: a well-built mini app with professional habits showing.</p>',
+ 'Build cleanly named pickGreeting() (returns a random greeting) and showGreeting(text) (displays it), wired to the button.',
+ 'const greetings = [\'Hello!\', \'Welcome back!\', \'Good to see you!\'];\n',
+ 'const greetings = [\'Hello!\', \'Welcome back!\', \'Good to see you!\'];\n\nfunction pickGreeting() {\n  const pick = Math.floor(Math.random() * greetings.length);\n  return greetings[pick];\n}\n\nfunction showGreeting(text) {\n  screen.textContent = text;\n}\n\nbtn.onclick = function () {\n  showGreeting(pickGreeting());\n};',
+ 'Two one-job functions with honest names, and the click line snapping them together: showGreeting(pickGreeting());',
+ (c)=> hasRe(c,/function\s+pickGreeting[\s\S]*return/) && hasRe(c,/function\s+showGreeting\s*\(\s*\w+\s*\)[\s\S]*screen\.textContent/) && hasRe(c,/showGreeting\s*\(\s*pickGreeting\s*\(\s*\)\s*\)/) && hasRe(c,/onclick|addEventListener/)
+   ? {ok:true,msg:'Clean names, one job each, snapped together on a click. This is code a professional would merge. College: complete.'}
+   : {ok:false,msg:'Exact names matter here: pickGreeting returning a random item, showGreeting(text) displaying, and showGreeting(pickGreeting()) inside the click.'},
+ '<button id="btn">Greet me</button>\n<p id="screen">press the button...</p>');
+
+REV('M','js',
+ REV_INTRO+'<p>Hustle in one breath:</p><ul><li>Landing page: promise, proof, ONE button.</li><li>The wired button IS the conversion.</li><li>Web skills are app skills (PWA) — no gatekeepers.</li><li>Guard inputs, never ship secrets, collect only what you can protect.</li></ul><p><b>The graduation build.</b> Everything from Kindergarten to here, in one machine. Take your time; use Give me a lead if stuck.</p>',
+ 'The full signup machine: on click, guard the email (empty or missing @); if bad, complain; if good, show a random welcome from the list AND disable the button.',
+ 'const welcomes = [\'You are in!\', \'Welcome aboard!\', \'Glad you joined!\'];\nconst email = \'josh@example.com\';\n',
+ 'const welcomes = [\'You are in!\', \'Welcome aboard!\', \'Glad you joined!\'];\nconst email = \'josh@example.com\';\n\nbtn.onclick = function () {\n  if (email === \'\' || !email.includes(\'@\')) {\n    screen.textContent = \'That email looks wrong - check it and try again.\';\n  } else {\n    const pick = Math.floor(Math.random() * welcomes.length);\n    screen.textContent = welcomes[pick] + \' (\' + email + \')\';\n    btn.disabled = true;\n  }\n};',
+ 'Inside the click: the || guard first; the else does the random pick, the glued message, and btn.disabled = true. Flip the email value to test both paths.',
+ (c)=> hasRe(c,/onclick|addEventListener/) && hasRe(c,/\|\|/) && hasRe(c,/includes\s*\(\s*['"]@['"]\s*\)/) && hasRe(c,/Math\.random/) && hasRe(c,/btn\.disabled\s*=\s*true/) && (c.match(/screen\.textContent/g)||[]).length>=2
+   ? {ok:true,msg:'Wiring, guarding, randomness, lists, gluing, and conversion polish — every grade of this school, alive in one machine. There is nothing here you did not build yourself.'}
+   : {ok:false,msg:'Checklist: click function, || guard with includes(&#64;), random pick from the list, both screen messages, and btn.disabled = true on success.'},
+ '<button id="btn">Sign me up</button>\n<p id="screen">ready...</p>');
+
+/* sidebar display order (grades in order, lessons + review within each) — drives Next */
+const ORDER = [];
+for (const g of GRADES) for (let i=0;i<L.length;i++) if (L[i].g===g.id) ORDER.push(i);
+
 /* ============================ QA BANK ============================ */
 const STOP = new Set(['the','a','an','is','are','was','do','does','i','my','me','it','to','of','in','on','and','or','what','how','why','when','can','cant','dont','this','that','you','your']);
 const QA = [
@@ -1372,7 +1543,7 @@ function normRes(les, code){
   return (r && typeof r === 'object') ? r : (r ? {ok:true,msg:'Done!'} : {ok:false,msg:'Not quite yet &mdash; re-read the goal box.'});
 }
 
-const LEVELS=[[0,'Rookie'],[4,'Word Wrangler'],[8,'Tag Tamer'],[14,'Style Painter'],[19,'Name Tagger'],[22,'Button Whisperer'],[25,'Word Gluer'],[27,'List Keeper'],[29,'Trick Teacher'],[33,'Decision Maker'],[37,'Loop Rider'],[41,'Machine Builder'],[44,'Box Labeler'],[48,'Bug Detective'],[52,'Code Professional'],[57,'Graduate'],[61,'Paid Renegade']];
+const LEVELS=[[0,'Rookie'],[4,'Word Wrangler'],[8,'Tag Tamer'],[14,'Style Painter'],[19,'Name Tagger'],[22,'Button Whisperer'],[25,'Word Gluer'],[27,'List Keeper'],[29,'Trick Teacher'],[33,'Decision Maker'],[37,'Loop Rider'],[41,'Machine Builder'],[44,'Box Labeler'],[48,'Bug Detective'],[52,'Code Professional'],[57,'Graduate'],[61,'Paid Renegade'],[75,'Legend']];
 function levelFor(n){ let name=LEVELS[0][1]; for (const [min,t] of LEVELS) if (n>=min) name=t; return name; }
 const CCOLORS=['#2f7d5c','#1d5c8f','#d4a017','#b3542e','#7b5cb8','#c94f7c'];
 function confetti(count){
@@ -1424,6 +1595,7 @@ function renderNav(){
   const total = L.length, nd = done.size;
   $('#progTxt').textContent = nd + ' / ' + total;
   $('#xpTxt').textContent = '⭐ ' + xpFor() + ' XP · ' + levelFor(nd);
+  $('#btnReplay').style.display = (nd===total && total>0) ? 'inline-block' : 'none';
   $('#progFill').style.width = (100*nd/total) + '%';
 }
 
@@ -1519,8 +1691,12 @@ $('#btnHelp').onclick = ()=>{ if(!sandbox){ statusEl.className=''; statusEl.inne
 $('#btnLead').onclick = ()=>{ if(!sandbox) giveLead(); };
 $('#btnSol').onclick  = ()=>{ if(!sandbox){ edEl.value = L[idx].sol; runCheck(); } };
 $('#btnReDo').onclick = ()=>{ if(sandbox){ edEl.value = SANDBOX_START; outEl.srcdoc = edEl.value; } else { edEl.value = L[idx].start; leadStep=0; runCheck(); } };
-btnNext.onclick = ()=>{ if (idx < L.length-1) loadLesson(idx+1); };
+btnNext.onclick = ()=>{ const p=ORDER.indexOf(idx); if (p>-1 && p<ORDER.length-1) loadLesson(ORDER[p+1]); };
 $('#remindHide').onclick = ()=>{ remindBox.style.display='none'; try{localStorage.setItem('remindHidden','1');}catch(e){} };
+$('#btnReplay').onclick = ()=>{
+  if (!confirm('Victory lap! This clears your ticks so you can run the whole school again with fresh eyes. Your graduation still happened - this is a flex, not a reset of who you are. Go again?')) return;
+  done = new Set(); idx = 0; saveP(); loadLesson(0);
+};
 $('#btnSandbox').onclick = openSandbox;
 $('#btnQA').onclick = ()=>$('#qaPanel').classList.toggle('open');
 $('#qaClose').onclick = ()=>$('#qaPanel').classList.remove('open');

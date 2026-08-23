@@ -21,7 +21,7 @@ header h1{font-size:1.1rem;letter-spacing:.5px}
 header .hbtn{margin-left:auto}
 #xpTxt{font-family:Menlo,Consolas,monospace;font-size:.85rem;color:var(--accent);white-space:nowrap}
 .confetti{position:fixed;inset:0;pointer-events:none;z-index:99;overflow:hidden}
-.confetti i{position:absolute;top:-18px;font-family:Menlo,Consolas,monospace;font-weight:700;line-height:1;white-space:pre;opacity:.95;text-shadow:0 1px 2px rgba(0,0,0,.30);animation:cfall 1.6s ease-in forwards}
+.confetti i{position:absolute;top:-18px;font-family:Menlo,Consolas,monospace;font-weight:700;line-height:1;white-space:pre;opacity:.95;text-shadow:0 1px 2px rgba(0,0,0,.30);animation:cfall 3s ease-in forwards}
 @keyframes cfall{to{transform:translate(var(--dx,0px),105vh) rotate(var(--rot,540deg));opacity:.45}}
 .gbanner{position:fixed;top:18%;left:50%;transform:translateX(-50%) scale(.8);background:var(--accent);color:#fff;padding:18px 34px;border-radius:16px;font-size:1.5rem;box-shadow:0 12px 40px rgba(0,0,0,.25);z-index:100;opacity:0;animation:gpop 2.6s ease forwards;text-align:center}
 .gbanner small{display:block;font-size:.85rem;opacity:.9;margin-top:4px}
@@ -2242,7 +2242,7 @@ function runCheck(){
     statusEl.innerHTML = html;
     btnNext.style.display = 'none';
     if (k===N && !coachMsg && !projDone.has(idx)){
-      projDone.add(idx); bumpStreak(); saveP(); renderNav(); confetti(120);
+      projDone.add(idx); bumpStreak(); saveP(); renderNav(); confetti(240);
       const el=document.createElement('div'); el.className='gbanner';
       el.innerHTML='🧾 Client signed off!<small>+50 XP — that is a portfolio piece with your name on it.</small>';
       document.body.appendChild(el); setTimeout(()=>el.remove(),2700);
@@ -2274,7 +2274,7 @@ function runCheck(){
     return;
   }
   if (res.ok && L[idx].pract && !practDone.has(idx)){
-    practDone.add(idx); bumpStreak(); saveP(); renderNav(); confetti(16);
+    practDone.add(idx); bumpStreak(); saveP(); renderNav(); confetti(32);
     const xr = $('#xpTxt').getBoundingClientRect();
     const fl = document.createElement('div'); fl.className='xpfloat'; fl.textContent='+5 XP';
     fl.style.left = xr.left+'px'; fl.style.top = (xr.top-4)+'px';
@@ -2282,7 +2282,7 @@ function runCheck(){
     checkMilestones();
   }
   else if (res.ok && L[idx].chal && !chalDone.has(idx)){
-    chalDone.add(idx); bumpStreak(); saveP(); renderNav(); confetti(60);
+    chalDone.add(idx); bumpStreak(); saveP(); renderNav(); confetti(120);
     const el=document.createElement('div'); el.className='gbanner';
     el.innerHTML='⚔️ Challenge conquered!<small>+25 XP — no hints, all you.</small>';
     document.body.appendChild(el); setTimeout(()=>el.remove(),2700);
@@ -2297,9 +2297,9 @@ function runCheck(){
     }
     saveP(); renderNav();
     const gComplete = ls.every(x=>done.has(x.i));
-    if (done.size===coreTotal()){ confetti(160); gradeToast('', true); }
-    else if (gComplete){ confetti(done.size>=41?140:90); gradeToast(GRADES.find(x=>x.id===g).name, false); }
-    else confetti(done.size>=41?34:22);
+    if (done.size===coreTotal()){ confetti(320); gradeToast('', true); }
+    else if (gComplete){ confetti(done.size>=41?280:180); gradeToast(GRADES.find(x=>x.id===g).name, false); }
+    else confetti(done.size>=41?70:45);
     checkMilestones();
     const curNav = $('#navList') && $('#navList').querySelector('.navitem.cur .tick');
     if (curNav) curNav.classList.add('pop');
@@ -2341,15 +2341,21 @@ function confetti(count){
     bit.textContent = dec.value;            /* textContent: a tag falls as text, never as markup */
     bit.style.left=(Math.random()*100)+'vw';
     bit.style.color=pal[i%pal.length];
-    bit.style.fontSize=(10+Math.random()*8).toFixed(1)+'px';
+    /* One roll drives speed, size and weight together: quick+big+solid reads as
+       near the viewer, slow+small+faint as far away. Uniform speed was what made
+       the old burst look like a single flat sheet dropping. */
+    const near = Math.random();
+    bit.style.animationDuration = (4.6 - near*2.8).toFixed(2)+'s';
+    bit.style.fontSize=(9+near*10).toFixed(1)+'px';
+    bit.style.opacity=(0.62+near*0.33).toFixed(2);
     bit.style.setProperty('--dx', ((Math.random()*2-1)*16).toFixed(1)+'vw');
     bit.style.setProperty('--rot', (((Math.random()*2-1)*540)|0)+'deg');
-    bit.style.animationDelay=(Math.random()*.35)+'s';
+    bit.style.animationDelay=(Math.random()*.9).toFixed(2)+'s';
     bit.style.transform='rotate('+((Math.random()*40-20)|0)+'deg)';
     holder.appendChild(bit);
   }
   document.body.appendChild(holder);
-  setTimeout(()=>holder.remove(), 2400);
+  setTimeout(()=>holder.remove(), 5900);
 }
 function gradeToast(gname, allDone){
   const el=document.createElement('div'); el.className='gbanner';

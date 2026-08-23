@@ -21,8 +21,8 @@ header h1{font-size:1.1rem;letter-spacing:.5px}
 header .hbtn{margin-left:auto}
 #xpTxt{font-family:Menlo,Consolas,monospace;font-size:.85rem;color:var(--accent);white-space:nowrap}
 .confetti{position:fixed;inset:0;pointer-events:none;z-index:99;overflow:hidden}
-.confetti i{position:absolute;top:-12px;width:9px;height:14px;opacity:.95;animation:cfall 1.4s ease-in forwards}
-@keyframes cfall{to{transform:translateY(105vh) rotate(540deg);opacity:.7}}
+.confetti i{position:absolute;top:-18px;font-family:Menlo,Consolas,monospace;font-weight:700;line-height:1;white-space:pre;opacity:.95;text-shadow:0 1px 2px rgba(0,0,0,.30);animation:cfall 1.6s ease-in forwards}
+@keyframes cfall{to{transform:translate(var(--dx,0px),105vh) rotate(var(--rot,540deg));opacity:.45}}
 .gbanner{position:fixed;top:18%;left:50%;transform:translateX(-50%) scale(.8);background:var(--accent);color:#fff;padding:18px 34px;border-radius:16px;font-size:1.5rem;box-shadow:0 12px 40px rgba(0,0,0,.25);z-index:100;opacity:0;animation:gpop 2.6s ease forwards;text-align:center}
 .gbanner small{display:block;font-size:.85rem;opacity:.9;margin-top:4px}
 @keyframes gpop{8%{opacity:1;transform:translateX(-50%) scale(1.04)}14%{transform:translateX(-50%) scale(1)}82%{opacity:1}100%{opacity:0;transform:translateX(-50%) scale(.95)}}
@@ -58,6 +58,12 @@ details.ft summary{cursor:pointer;font-size:.78rem;text-transform:uppercase;lett
 details.ft p{margin:6px 0 0;line-height:1.5}
 .realname b{color:var(--accent);font-size:.7rem;text-transform:uppercase;letter-spacing:1px;margin-right:6px}
 .morebox{margin-top:18px;background:#f4f0e7;border:2px solid var(--line);border-radius:10px;padding:12px 16px}
+.decoder{margin-top:18px;background:var(--panel);border:2px solid var(--line);border-left:5px solid var(--accent);border-radius:10px;padding:12px 16px}
+.decoder>b{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--soft);margin-bottom:8px}
+.decoder table{border-collapse:collapse;width:100%}
+.decoder td{padding:5px 8px;font-size:.92rem;vertical-align:top;border-top:1px solid var(--line)}
+.decoder tr:first-child td{border-top:none}
+.decoder td:first-child{font-family:Menlo,Consolas,monospace;background:var(--code);white-space:nowrap;width:1%;border-radius:4px;color:var(--ink)}
 .morebox>b{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--soft);margin-bottom:8px}
 .morebox table{border-collapse:collapse;margin:6px 0 10px;width:100%}
 .morebox td{border:1px solid var(--line);padding:4px 8px;font-size:.95rem}
@@ -480,7 +486,7 @@ HL('An extra note on an element',
    : {ok:false,msg:'Add title="some message" inside the opening &lt;p&gt; tag.'}; }),
 
 HL('A link you can click',
- '<p>The tag that makes the web a <b>web</b>: <code>&lt;a&gt;</code> (anchor). Its <code>href</code> attribute says where the link goes.</p><pre>&lt;a href="https://example.com"&gt;Visit my favorite site&lt;/a&gt;</pre>',
+ '<p>The tag that makes the web a <b>web</b>: <code>&lt;a&gt;</code>, short for <b>anchor</b> &mdash; it anchors this page to another one. Its <code>href</code> attribute is short for <b>h</b>yper<b>t</b>ext <b>ref</b>erence: <i>reference</i> as in &ldquo;points at,&rdquo; and <i>hypertext</i> is the old word for text you can jump through. So href means <b>the address this link points at</b>.</p><pre>&lt;a href="https://example.com"&gt;Visit my favorite site&lt;/a&gt;</pre>',
  'Make a link with an href and your own link words.',
  '',
  '<a href="https://example.com">My favorite place on the internet</a>',
@@ -490,7 +496,7 @@ HL('A link you can click',
    : {ok:false,msg:'I need an &lt;a&gt; tag with an href attribute and words inside.'}; }),
 
 HL('Boxes to group things',
- '<p>The <code>&lt;div&gt;</code> tag is a plain cardboard box: invisible on its own, but perfect for <b>grouping</b> things that belong together, so later you can style or move them as one unit.</p>',
+ '<p>The <code>&lt;div&gt;</code> tag &mdash; short for <b>division</b>, as in one division of the page &mdash; is a plain cardboard box: invisible on its own, but perfect for <b>grouping</b> things that belong together, so later you can style or move them as one unit.</p>',
  'Put an h2 and a p together inside one div.',
  '',
  '<div>\n  <h2>My corner</h2>\n  <p>Everything in this box belongs together.</p>\n</div>',
@@ -526,7 +532,7 @@ CL('Background color',
  G2HTML),
 
 CL('Size and center',
- '<p>Two more properties for your collection:</p><pre>h1 {\n  font-size: 60px;\n  text-align: center;\n}</pre><p><code>px</code> means pixels &mdash; screen dots. And notice: one rule can hold MANY lines. Each one still ends with <code>;</code>.</p>',
+ '<p>Two more properties for your collection:</p><pre>h1 {\n  font-size: 60px;\n  text-align: center;\n}</pre><p><code>font-size</code> is the size of the text and <code>text-align</code> is which way it lines up (left, center or right). <code>px</code> means <b>pixels</b> &mdash; single dots on your screen, so 60px tall is 60 dots tall. And notice: one rule can hold MANY lines. Each one still ends with <code>;</code>.</p>',
  'Make the h1 (the big headline) bigger with font-size AND centered with text-align.',
  'h1 {\n\n}',
  'h1 {\n  font-size: 60px;\n  text-align: center;\n}',
@@ -1167,7 +1173,7 @@ REV('G11','js',
 
 (function(){
   const les = JL('The magic trick, revealed',
- '<p>Time to confess. Since Grade 4 you have used <code>screen</code> and <code>btn</code> like they fell from the sky. They did not &mdash; before every lesson, this school quietly runs one line for you:</p><pre>const screen = document.getElementById(\'screen\');</pre><p><code>document</code> is the whole page as an object; <code>getElementById</code> hunts down the element wearing that id &mdash; the Grade 3 name tags, now being used by JavaScript exactly as promised. Every training wheel in this school is real code you could now write yourself.</p><p>Prove it: fetch the element yourself, under your own name, and use it. From this lesson on, there is no magic left in this building &mdash; only code you understand.</p>',
+ '<p>Time to confess. Since Grade 4 you have used <code>screen</code> and <code>btn</code> like they fell from the sky. They did not &mdash; before every lesson, this school quietly runs one line for you:</p><pre>const screen = document.getElementById(\'screen\');</pre><p><code>document</code> is the whole page as an object; <code>getElementById</code> is a whole sentence if you read it aloud &mdash; <i>get element by id</i> &mdash; and it hunts down the one element wearing that id &mdash; the Grade 3 name tags, now being used by JavaScript exactly as promised. Every training wheel in this school is real code you could now write yourself.</p><p>Prove it: fetch the element yourself, under your own name, and use it. From this lesson on, there is no magic left in this building &mdash; only code you understand.</p>',
  'Grab the screen element yourself with document.getElementById, store it in your own const, and write to it.',
  '',
  'const out = document.getElementById(\'screen\');\nout.textContent = \'No more magic. I know how everything works.\';',
@@ -1888,6 +1894,101 @@ const RW={
 const $ = s => document.querySelector(s);
 
 /* ===== syntax highlighting (VS Code dark-ish) ===== */
+/* ---- Every piece, decoded. Nothing in this course is left as a magic word:
+   whatever appears in a lesson's code gets its name spelled out and its job
+   explained, right under the lesson. Add a lesson, add its tokens here. ---- */
+const GLOSS = {
+ '<h1>':['heading, level 1','the biggest, most important headline on the page'],
+ '<h2>':['heading, level 2','a sub-headline - a section title under the h1'],
+ '<h3>':['heading, level 3','a smaller section title again'],
+ '<h6>':['heading, level 6','the smallest heading there is; the set stops at 6'],
+ '<p>':['paragraph','one block of ordinary sentence text'],
+ '<em>':['emphasis','a word you would lean on when reading aloud; drawn in italics'],
+ '<strong>':['strong importance','a word that matters; drawn in bold'],
+ '<ul>':['unordered list','a bulleted list - unordered means the order is not the point'],
+ '<ol>':['ordered list','a numbered list, where the order IS the point'],
+ '<li>':['list item','one bullet. They live inside a ul or ol'],
+ '<a>':['anchor','the tag that makes a link - it anchors one page to another'],
+ '<div>':['division','a plain block box that groups other things together'],
+ '<span>':['span','the inline twin of div, for a few words mid-sentence'],
+ '<button>':['button','something built to be clicked'],
+ '<img>':['image','puts a picture on the page'],
+ '<br>':['break','forces a line break; it has no closing tag'],
+ '<style>':['style','the box where CSS rules live inside an HTML page'],
+ 'href':['hypertext reference','the address this link points at'],
+ 'src':['source','which file an image should load'],
+ 'alt':['alternative text','what the image says out loud to someone who cannot see it'],
+ 'class':['class','a name tag you can put on MANY elements at once'],
+ 'id':['identifier','a name tag for exactly ONE element on the page'],
+ 'title':['title','the little tooltip that appears when you hover'],
+ 'style':['style','CSS written straight onto one element'],
+ 'color':['color','the colour of the TEXT itself - the ink'],
+ 'background':['background','the colour behind the text - the paper'],
+ 'padding':['padding','space INSIDE the box, between its edge and its contents'],
+ 'margin':['margin','space OUTSIDE the box, pushing other things away'],
+ 'border':['border','the line drawn around the edge of the box'],
+ 'border-radius':['border radius','how rounded the corners are; radius is a circle word'],
+ 'font-size':['font size','how big the text is'],
+ 'text-align':['text align','which way the text lines up: left, center or right'],
+ 'line-height':['line height','the gap between lines of text'],
+ 'px':['pixels','one dot on the screen - an absolute size'],
+ 'rem':['root em','a size relative to the page base, so everything scales together'],
+ '%':['percent','a size relative to whatever contains it'],
+ 'const':['constant','a named box whose contents never change'],
+ 'let':['let','a named box whose contents ARE allowed to change later'],
+ 'var':['variable','the older way to make a named box; you will see it in old code'],
+ 'function':['function','a named trick you teach once and call whenever you like'],
+ 'return':['return','hands a value back to whoever called the function'],
+ 'if':['if','do the next block only when the test is true'],
+ 'else':['else','what to do when the if test was false'],
+ 'for':['for','repeat a block a set number of times'],
+ 'while':['while','keep repeating for as long as the test stays true'],
+ 'true':['true','the yes value'],
+ 'false':['false','the no value'],
+ 'typeof':['type of','asks what species a value is: text, number, and so on'],
+ 'Math.random':['math random','a fresh number between 0 and 1 every time you ask'],
+ 'Math.floor':['math floor','rounds a number DOWN to a whole number - the floor below it'],
+ 'console.log':['console log','writes a note to the browser console for you to read'],
+ 'document.getElementById':['document, get element by id','reach into the page and hand me the one element wearing this id'],
+ '.textContent':['text content','the words inside an element - read it or replace it'],
+ '.length':['length','how many items are in the list, or letters in the text'],
+ '.disabled':['disabled','set it true and the button stops accepting clicks'],
+ '.includes':['includes','asks whether a list or some text already contains a thing'],
+ '.toUpperCase':['to upper case','hands back the same text in capitals'],
+ '</':['closing slash','the slash is what makes a tag a CLOSER rather than an opener'],
+ '=':['equals','in HTML it assigns a value; in JavaScript it puts a value into a box'],
+ '"':['quotation marks','they wrap text so the computer treats it as words, not code'],
+ '{}':['curly braces','they fence off a block that belongs together'],
+ ';':['semicolon','ends one instruction, the way a full stop ends a sentence'],
+ ':':['colon','separates a property from its value'],
+ '()':['parentheses','they hold what a function is being given'],
+ '[]':['square brackets','they hold a list of values'],
+ '.name':['dot','a dot in front of a name means class in CSS'],
+ '#name':['hash','a hash in front of a name means id in CSS'],
+ '+':['plus','adds numbers, or glues pieces of text together'],
+ '===':['strictly equals','asks whether two things are the same, type included'],
+ '=>':['arrow','a shorthand way of writing a function']
+};
+const GSYMS = [[/<\//,'</'],[/=/,'='],[/"/,'"'],[/\{/,'{}'],[/;/,';'],[/\(/,'()'],[/\[/,'[]'],[/\+/,'+'],[/===/,'==='],[/=>/,'=>']];
+function decoderFor(les){
+  const code = (les.sol||'') + '\n' + (les.html||'');
+  const seen = [];
+  const push = t => { if (GLOSS[t] && seen.indexOf(t)<0) seen.push(t); };
+  for (const m of code.matchAll(/<\/?([a-zA-Z][\w-]*)/g)) push('<'+m[1].toLowerCase()+'>');
+  for (const m of code.matchAll(/[\s(]([a-zA-Z-]+)=/g)) push(m[1]);
+  for (const m of code.matchAll(/([a-z-]+)\s*:\s*[^;{}\n]+;/g)) push(m[1]);
+  for (const m of code.matchAll(/\d+(px|rem|em|%)/g)) push(m[1]);
+  for (const m of code.matchAll(/\b(const|let|var|function|return|if|else|for|while|true|false|typeof)\b/g)) push(m[1]);
+  for (const m of code.matchAll(/(Math\.random|Math\.floor|console\.log|document\.getElementById)/g)) push(m[1]);
+  for (const m of code.matchAll(/\.(textContent|length|disabled|includes|toUpperCase)\b/g)) push('.'+m[1]);
+  if (/^\s*\.[a-zA-Z]/m.test(code)) push('.name');
+  if (/^\s*#[a-zA-Z]/m.test(code)) push('#name');
+  if (/[a-z-]+\s*:/.test(code) && les.lang==='css') push(':');
+  for (const [re,t] of GSYMS){ if (re.test(code)) push(t); }
+  if (!seen.length) return '';
+  return '<div class="decoder"><b>What every piece means</b><table>' + seen.map(t=>
+    '<tr><td>'+hlEsc(t)+'</td><td><b>'+GLOSS[t][0]+'</b> &mdash; '+GLOSS[t][1]+'</td></tr>').join('') + '</table></div>';
+}
 function hlEsc(x){ return x.replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
 function hlJS(code){
   const re=/(\/\/[^\n]*)|('(?:[^'\\\n]|\\.)*'?|"(?:[^"\\\n]|\\.)*"?|`(?:[^`\\]|\\.)*`?)|\b(\d+(?:\.\d+)?)\b|\b(const|let|var|function|return|new|typeof)\b|\b(if|else|for|of|in|while|break|continue|true|false|null|undefined)\b|([A-Za-z_$][\w$]*)(?=\s*\()|\.([A-Za-z_$][\w$]*)/g;
@@ -2218,20 +2319,37 @@ function normRes(les, code){
 const LEVELS=[[0,'Rookie'],[4,'Word Wrangler'],[8,'Tag Tamer'],[14,'Style Painter'],[19,'Name Tagger'],[22,'Button Whisperer'],[25,'Word Gluer'],[27,'List Keeper'],[29,'Trick Teacher'],[33,'Decision Maker'],[37,'Loop Rider'],[41,'Machine Builder'],[44,'Box Labeler'],[48,'Bug Detective'],[52,'Code Professional'],[57,'Graduate'],[61,'Paid Renegade'],[75,'Legend']];
 function levelFor(n){ let name=LEVELS[0][1]; for (const [min,t] of LEVELS) if (n>=min) name=t; return name; }
 const CCOLORS=['#2f7d5c','#1d5c8f','#d4a017','#b3542e','#7b5cb8','#c94f7c'];
+/* Celebration confetti is made of the code you actually type. Saturated hues in
+   the spirit of the editor's syntax colors - thin glyph strokes need more punch
+   than solid squares did, and multicolour Latin tokens read as confetti, not rain. */
+const CODEHUES=['#6ab0f3','#4dc36b','#e0a94a','#d4574e','#a97bd4','#e05297','#4ec9c9'];
+const CODE_TOKENS={
+  base:['{','}',';','( )','[ ]','=>','==','=',':',',','< >','/','&&','||','0','1','#id','.class','&lt;p&gt;','&lt;/p&gt;'],
+  html:['&lt;h1&gt;','&lt;li&gt;','&lt;/ul&gt;','&lt;div&gt;','&lt;/div&gt;','&lt;em&gt;','href','alt','&lt;a&gt;','&lt;/li&gt;'],
+  css :['px','rem','#fff','margin','padding',':hover','color','2px','.card','}'],
+  js  :['let','const','return','()=>','if','else','true','false','.length','+']
+};
 function confetti(count){
   const holder=document.createElement('div'); holder.className='confetti';
+  const lang = (!sandbox && L[idx] && CODE_TOKENS[L[idx].lang]) ? L[idx].lang : 'html';
+  const toks = CODE_TOKENS.base.concat(CODE_TOKENS[lang]);
+  const pal = done.size>=57 ? CODEHUES.concat(['#e8b923','#f5e6a8']) : done.size>=41 ? CODEHUES.concat(['#ffd166']) : CODEHUES;
+  const dec = document.createElement('textarea');
   for (let i=0;i<count;i++){
     const bit=document.createElement('i');
+    dec.innerHTML = toks[(Math.random()*toks.length)|0];
+    bit.textContent = dec.value;            /* textContent: a tag falls as text, never as markup */
     bit.style.left=(Math.random()*100)+'vw';
-    const pal = done.size>=57 ? CCOLORS.concat(['#e8b923','#f5e6a8']) : done.size>=41 ? CCOLORS.concat(['#e05297']) : CCOLORS;
-    bit.style.background=pal[i%pal.length];
-    if (done.size>=41 && i%3===0) bit.style.borderRadius='50%';
+    bit.style.color=pal[i%pal.length];
+    bit.style.fontSize=(10+Math.random()*8).toFixed(1)+'px';
+    bit.style.setProperty('--dx', ((Math.random()*2-1)*16).toFixed(1)+'vw');
+    bit.style.setProperty('--rot', (((Math.random()*2-1)*540)|0)+'deg');
     bit.style.animationDelay=(Math.random()*.35)+'s';
-    bit.style.transform='rotate('+(Math.random()*360)+'deg)';
+    bit.style.transform='rotate('+((Math.random()*40-20)|0)+'deg)';
     holder.appendChild(bit);
   }
   document.body.appendChild(holder);
-  setTimeout(()=>holder.remove(), 2100);
+  setTimeout(()=>holder.remove(), 2400);
 }
 function gradeToast(gname, allDone){
   const el=document.createElement('div'); el.className='gbanner';
@@ -2363,7 +2481,7 @@ function loadLesson(i){
   const pos = gl.findIndex(x=>x.n===i);
   const op = ORDER.indexOf(i);
   const crumb = '<div class="crumb"><button id="crPrev" title="Previous lesson" aria-label="Previous lesson"'+(op<=0?' disabled':'')+'>&larr;</button><span>' + g.name + ' · ' + g.sub + ' — lesson ' + (pos+1) + ' of ' + gl.length + '</span><button id="crNext" title="Next lesson" aria-label="Next lesson"'+(op>=ORDER.length-1?' disabled':'')+'>&rarr;</button></div>';
-  teachEl.innerHTML = crumb + '<h2>' + les.title + '</h2>' + les.teach + (RN[i] ? '<div class="realname"><b>Real name</b>' + RN[i] + '</div>' : '') + (MORE[i] ? '<div class="morebox"><b>More to chew on</b>' + MORE[i] + '</div>' : '') + (OLDS[i] ? '<div class="elders"><b class="el">📜 Lineage</b>' + OLDS[i] + '</div>' : '');
+  teachEl.innerHTML = crumb + '<h2>' + les.title + '</h2>' + les.teach + decoderFor(les) + (RN[i] ? '<div class="realname"><b>Real name</b>' + RN[i] + '</div>' : '') + (MORE[i] ? '<div class="morebox"><b>More to chew on</b>' + MORE[i] + '</div>' : '') + (OLDS[i] ? '<div class="elders"><b class="el">📜 Lineage</b>' + OLDS[i] + '</div>' : '');
   goalEl.innerHTML = '<b>DO THIS:</b> ' + les.goal;
   remindTxt.innerHTML = REMIND[les.lang];
   remindBox.style.display = localStorage.getItem('remindHidden')==='1' ? 'none' : 'flex';

@@ -1651,8 +1651,9 @@ const edEl=$('#ed'), hlEl=$('#hl'), teachEl=$('#teach'), goalEl=$('#goal'), stat
 
 let idx = 0, done = new Set(), tested = new Set(), leadStep = 0, sandbox = false, checkTimer = null, solShown = false;
 let chalDone = new Set(), msSeen = new Set(), edTheme = '', sensei = false, certName = '';
+let stk = {last:'', cur:0, best:0, xp:0};
 
-function saveP(){ try{ localStorage.setItem('codeschool', JSON.stringify({done:[...done], idx, tested:[...tested], chalDone:[...chalDone], ms:[...msSeen], edTheme, sensei, certName})); }catch(e){} }
+function saveP(){ try{ localStorage.setItem('codeschool', JSON.stringify({done:[...done], idx, tested:[...tested], chalDone:[...chalDone], ms:[...msSeen], edTheme, sensei, certName, stk})); }catch(e){} }
 function loadP(){
   let p = null;
   try{ p = JSON.parse(localStorage.getItem('codeschool')); }catch(e){}
@@ -1664,6 +1665,7 @@ function loadP(){
   edTheme = p.edTheme||'';
   sensei = !!p.sensei;
   certName = p.certName||'';
+  stk = (p.stk && typeof p.stk==='object') ? {last:p.stk.last||'', cur:p.stk.cur|0, best:p.stk.best|0, xp:p.stk.xp|0} : {last:'', cur:0, best:0, xp:0};
   idx = Math.min(Math.max(p.idx|0, 0), L.length - 1);
 }
 
@@ -1777,14 +1779,14 @@ function runCheck(){
     return;
   }
   if (res.ok && L[idx].chal && !chalDone.has(idx)){
-    chalDone.add(idx); saveP(); renderNav(); confetti(60);
+    chalDone.add(idx); bumpStreak(); saveP(); renderNav(); confetti(60);
     const el=document.createElement('div'); el.className='gbanner';
     el.innerHTML='⚔️ Challenge conquered!<small>+25 XP — no hints, all you.</small>';
     document.body.appendChild(el); setTimeout(()=>el.remove(),2700);
     checkMilestones();
   }
   else if (res.ok && !L[idx].chal && !done.has(idx)){
-    done.add(idx);
+    done.add(idx); bumpStreak();
     const g=L[idx].g, ls=coreOf(g);
     if (L[idx].title.includes('Review') && ls.some(x=>!done.has(x.i))){
       for (const x of ls) done.add(x.i);
@@ -1838,7 +1840,31 @@ function gradeToast(gname, allDone){
 }
 function coreOf(gid){ return L.map((l,i)=>({l,i})).filter(x=>x.l.g===gid && !x.l.chal); }
 function coreTotal(){ return L.filter(l=>!l.chal).length; }
-function xpFor(){ let xp = done.size*10 + chalDone.size*25; for (const g of GRADES){ const ls=coreOf(g.id); if (ls.length && ls.every(x=>done.has(x.i))) xp+=25; } return xp; }
+function xpFor(){ let xp = done.size*10 + chalDone.size*25 + (stk.xp|0); for (const g of GRADES){ const ls=coreOf(g.id); if (ls.length && ls.every(x=>done.has(x.i))) xp+=25; } return xp; }
+function dayKey(d){ return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
+const STREAK_BONUS={3:15,7:35,14:75,30:150};
+function bumpStreak(){
+  const today = dayKey(new Date());
+  if (stk.last === today) return;
+  const y = new Date(); y.setDate(y.getDate()-1);
+  stk.cur = (stk.last === dayKey(y)) ? stk.cur + 1 : 1;
+  stk.last = today;
+  if (stk.cur > stk.best) stk.best = stk.cur;
+  const bonus = STREAK_BONUS[stk.cur];
+  if (bonus){
+    stk.xp += bonus;
+    const el=document.createElement('div'); el.className='gbanner';
+    el.innerHTML='🔥 '+stk.cur+'-day streak!<small>+'+bonus+' bonus XP — showing up is the skill under all the skills.</small>';
+    document.body.appendChild(el); setTimeout(()=>el.remove(),2700);
+  }
+  saveP();
+}
+function streakTxt(){
+  if (stk.cur < 2) return '';
+  const today = dayKey(new Date());
+  const y = new Date(); y.setDate(y.getDate()-1);
+  return (stk.last===today || stk.last===dayKey(y)) ? ' · 🔥 ' + stk.cur : '';
+}
 const MILESTONES=[[100,'100 XP — you are officially writing two languages by hand.'],[250,'250 XP — you now read HTML, CSS, and JavaScript. Three languages.'],[420,'420 XP — you have built working machines. Most people never get here.'],[600,'600 XP — professional vocabulary, debugging habits, real architecture. Keep going.'],[800,'800 XP — you did not take a shortcut. You took the whole road.']];
 function checkMilestones(){ const xp=xpFor(); for (const [bar,msg] of MILESTONES){ if (xp>=bar && !msSeen.has(bar)){ msSeen.add(bar); saveP(); const el=document.createElement('div'); el.className='gbanner'; el.innerHTML='⭐ '+msg; document.body.appendChild(el); setTimeout(()=>el.remove(),2700); break; } } }
 
@@ -1887,7 +1913,7 @@ function renderNav(){
   }
   const total = coreTotal(), nd = done.size;
   $('#progTxt').textContent = nd + ' / ' + total;
-  $('#xpTxt').textContent = '⭐ ' + xpFor() + ' XP · ' + levelFor(nd);
+  $('#xpTxt').textContent = '⭐ ' + xpFor() + ' XP · ' + levelFor(nd) + streakTxt();
   const grad = (nd===total && total>0);
   $('#btnReplay').style.display = grad ? 'inline-block' : 'none';
   $('#btnCert').style.display = grad ? 'inline-block' : 'none';
@@ -2036,7 +2062,7 @@ loadLesson = function(i){ _origLoad(i);
     document.body.classList.remove('tab-nav','tab-code','tab-result'); document.body.classList.add('tab-lesson'); }
 };
 $('#btnExport').onclick = ()=>{
-  const code = btoa(unescape(encodeURIComponent(JSON.stringify({done:[...done], idx, tested:[...tested], chalDone:[...chalDone], ms:[...msSeen], edTheme, certName}))));
+  const code = btoa(unescape(encodeURIComponent(JSON.stringify({done:[...done], idx, tested:[...tested], chalDone:[...chalDone], ms:[...msSeen], edTheme, certName, stk}))));
   try{ navigator.clipboard.writeText(code); alert('Save code copied to clipboard! Paste it into Import on any other device or browser.'); }
   catch(e){ prompt('Copy this save code (Ctrl+C), then paste it into Import on the other device:', code); }
 };
@@ -2049,6 +2075,7 @@ $('#btnImport').onclick = ()=>{
     done = new Set(p.done.filter(n=>n>=0&&n<L.length)); tested = new Set(p.tested||[]);
     chalDone = new Set((p.chalDone||[]).filter(n=>n>=0&&n<L.length)); msSeen = new Set(p.ms||[]);
     if (p.edTheme!==undefined) edTheme=p.edTheme; if (p.certName) certName=p.certName;
+    if (p.stk && typeof p.stk==='object') stk={last:p.stk.last||'', cur:p.stk.cur|0, best:p.stk.best|0, xp:p.stk.xp|0};
     idx = Math.min(Math.max(p.idx|0,0),L.length-1); saveP(); loadLesson(idx);
     alert('Progress restored: ' + done.size + ' / ' + L.length + ' lessons.');
   }catch(e){ alert('That code did not work — make sure you pasted the whole thing.'); }
@@ -2085,7 +2112,8 @@ $('#xpTxt').onclick = ()=>{
   }).join('');
   const nextL = LEVELS.find(l=>l[0]>done.size);
   $('#statsBody').innerHTML = '<p><b>⭐ '+xpFor()+' XP</b> · Level: <b>'+levelFor(done.size)+'</b>'+(nextL?' · next: '+nextL[1]+' at '+nextL[0]+' lessons':'')+'</p>'
-    + rows + '<p style="margin-top:10px;font-size:.85rem;color:var(--soft)">⚔️ Challenges conquered: '+chalDone.size+' · ⚡ = tested out</p>';
+    + rows + '<p style="margin-top:10px;font-size:.85rem;color:var(--soft)">⚔️ Challenges conquered: '+chalDone.size+' · ⚡ = tested out</p>'
+    + '<p style="font-size:.85rem;color:var(--soft)">🔥 Streak: '+stk.cur+' day'+(stk.cur===1?'':'s')+' (best: '+stk.best+') · a day counts when you earn at least one ✓ · streaks break quietly — no guilt, the best is remembered forever</p>';
   $('#statsOv').classList.add('open');
 };
 $('#statsClose').onclick = ()=>$('#statsOv').classList.remove('open');

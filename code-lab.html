@@ -108,6 +108,26 @@ details.ft p{margin:6px 0 0;line-height:1.5}
 .statrow .sname{width:110px;flex:0 0 auto}
 .statbar{flex:1;height:10px;background:var(--code);border-radius:5px;overflow:hidden}
 .statbar i{display:block;height:100%;background:var(--accent)}
+.navitem.proj{color:#1d5c8f;font-weight:bold}
+body.dark .navitem.proj{color:#7db8e8}
+.brief{background:#f3ecdd;border:1px solid #ddd0b4;border-left:5px solid #b08d4a;border-radius:8px;padding:12px 16px;margin:12px 0}
+.brief>b{font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:#8a6d33;display:block;margin-bottom:6px}
+body.dark .brief{background:#332d22;border-color:#544829}
+.pay{background:#eef3ee;border:1px solid #cfe0d4;border-left:5px solid var(--accent);border-radius:8px;padding:10px 14px;margin:12px 0;font-size:.92rem}
+body.dark .pay{background:#28332c;border-color:#3a4f40}
+#status.projlist{padding:10px 14px;max-height:34vh;overflow-y:auto}
+#status.projlist .hd{display:flex;align-items:center;font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--soft);margin-bottom:8px}
+#status.projlist .pct{margin-left:auto;font-family:Menlo,Consolas,monospace;color:var(--accent);font-weight:bold}
+#status.projlist .bar{height:8px;background:var(--code);border-radius:4px;overflow:hidden;margin-bottom:8px}
+#status.projlist .bar i{display:block;height:100%;background:var(--accent);transition:width .3s}
+#status.projlist .story{display:flex;gap:10px;align-items:flex-start;padding:4px 0;font-size:.92rem;border-bottom:1px dashed var(--line)}
+#status.projlist .story:last-child{border-bottom:none}
+#status.projlist .story .ic{width:18px;flex:0 0 auto;text-align:center;font-weight:bold}
+#status.projlist .pass .ic{color:var(--accent)}
+#status.projlist .fail .ic{color:#b3542e}
+#status.projlist .fail .stx{color:var(--soft)}
+#status.projlist .hintb{margin-left:auto;border:1px solid var(--line);background:none;border-radius:6px;font-size:.7rem;padding:1px 8px;color:var(--soft);cursor:pointer;font-family:inherit;flex:0 0 auto}
+#status.projlist .coachline{background:#fdf3d7;border:1px solid #e8d48a;border-radius:6px;padding:6px 10px;margin-bottom:8px;font-size:.88rem}
 .navitem.chal{color:#8a5a2e;font-weight:bold}
 body.dark .navitem.chal{color:#d9a45e}
 body.sensei #btnHelp,body.sensei #btnLead,body.sensei #btnSol{display:none}
@@ -1211,9 +1231,119 @@ CHAL('C','The bulletproof picker',
    ? {ok:true,msg:'A guard, a general-purpose parameter, and graceful failure. This function would pass code review at any company.'}
    : {ok:false,msg:'One function taking a list parameter, an empty guard (length === 0), a random pick otherwise — called on BOTH lists in one glued sentence.'});
 
+/* Portfolio: client projects judged by live acceptance checklists (fCC-style user stories) */
+GRADES.push({id:'P', name:'Portfolio', sub:'Client work', lv:2});
+function PROJ(gate, lang, title, client, briefHtml, value, goal, start, stories, pageHtml){
+  const teach = '<p><b>This is a project, not a lesson.</b> No single answer exists and there is no Show me — just a client, a brief, and requirements that check themselves live below the editor as you build. This is how professional work is judged: not &ldquo;is it the answer?&rdquo; but &ldquo;does it meet every requirement?&rdquo;</p>'
+    + '<div class="brief"><b>📋 Client brief</b><p style="margin-bottom:6px"><i>&ldquo;'+briefHtml+'&rdquo;</i></p><p style="margin:0;font-size:.85rem;color:#8a6d33">— '+client+'</p></div>'
+    + '<div class="pay">💵 <b>Real-world value:</b> '+value+'</div>'
+    + '<p style="font-size:.9rem;color:var(--soft)">Stuck on a requirement? Its 💡 hint points without solving. Requirements can be built in any order.</p>';
+  const les = lang==='html'
+    ? {lang:'html', title:'🧾 '+title, teach, goal, start, sol:start, hint:'', check:()=>({ok:false,msg:''}), css:NICE_CSS+' .special{background:#ffe08a;font-weight:bold;border-radius:6px;padding:2px 6px}', js:'', html:''}
+    : {lang:'js', title:'🧾 '+title, teach, goal, start, sol:start, hint:'', check:()=>({ok:false,msg:''}), html:(pageHtml||JS_HTML), css:NICE_CSS, js:''};
+  les.g='P'; les.proj=true; les.gate=gate; les.stories=stories;
+  L.push(les);
+}
+
+PROJ('G3','html','The Taco Truck Job','Maria, your first client',
+ 'I run La Perla Taco Truck. I need a one-page site: my name big at the top, a tagline, tonight&rsquo;s menu, and a link so people can find us. Make the special of the day stand out — and put a button on there for later, my nephew says we can make it do things soon.',
+ 'this exact one-pager is a $150&ndash;$400 freelance job on any gig board — and your first portfolio piece.',
+ 'Meet all 6 of Maria&rsquo;s requirements. Green checklist = the client signs off.',
+ '',
+ [
+  {t:'An h1 with the truck&rsquo;s name (must include the word Taco)', h:'Kindergarten skill: <code>&lt;h1&gt;La Perla Taco Truck&lt;/h1&gt;</code> at the top.',
+   c:(code,doc)=>{const h=doc&&doc.querySelector('h1');return h&&/taco/i.test(h.textContent);}},
+  {t:'A tagline paragraph with ONE strong word in it', h:'A p hug with a &lt;strong&gt; word inside — your Make one word bold lesson.',
+   c:(code,doc)=>{const el=doc&&doc.querySelector('p strong');return el&&el.textContent.trim().length>0;}},
+  {t:'A menu list (ul) with at least 3 items', h:'ul wrapping three or more li hugs — Grade 1&rsquo;s A list.',
+   c:(code,doc)=>doc&&doc.querySelectorAll('ul li').length>=3},
+  {t:'One menu item wears class="special" (watch it light up!)', h:'Grade 3 name tags: <code>&lt;li class="special"&gt;</code> — the highlight style is already waiting for it.',
+   c:(code,doc)=>!!(doc&&doc.querySelector('li.special'))},
+  {t:'A Find us link with an href', h:'An &lt;a href="..."&gt; hug with words inside — A link you can click.',
+   c:(code,doc)=>{const a=doc&&doc.querySelector('a[href]');return a&&a.textContent.trim().length>0;}},
+  {t:'A button that says something about coming or ordering', h:'A plain &lt;button&gt; for now — you will wire it up after Grade 4, exactly like the nephew said.',
+   c:(code,doc)=>{const b=doc&&doc.querySelector('button');return b&&b.textContent.trim().length>=3;}},
+ ]),
+PROJ('G7','js','The Tip Splitter','Dre, restaurant crew chief',
+ 'My crew fights over splitting the bill every single shift. I want a thing: total goes in, number of people goes in, out comes what each person pays. And it better not blow up when somebody types zero people, because somebody will.',
+ 'utility calculators like this are the bread-and-butter of junior freelance work — and the zero-guard is what separates paid work from homework.',
+ 'Meet all 5 requirements: a splitBill function with a guard, shown with a label.',
+ '',
+ [
+  {t:'A function named splitBill taking TWO parameters', h:'<code>function splitBill(total, people) { ... }</code> — Grade 7, ingredients lesson.',
+   c:(code)=>/function\s+splitBill\s*\(\s*\w+\s*,\s*\w+\s*\)/.test(code)},
+  {t:'Guards against zero people (=== 0) with a friendly message', h:'First line inside: <code>if (people === 0) { return \'...\'; }</code> — bail out early.',
+   c:(code)=>/if\s*\(\s*\w+\s*===\s*0\s*\)[\s\S]*?return\s*['"]/.test(code)},
+  {t:'Otherwise RETURNS total divided by people', h:'<code>return total / people;</code> — return hands the share back.',
+   c:(code)=>/return\s+\w+\s*\/\s*\w+/.test(code)},
+  {t:'Calls splitBill with two real numbers', h:'Like <code>splitBill(60, 4)</code> — numbers, not words.',
+   c:(code)=>/splitBill\s*\(\s*\d+\s*,\s*\d+\s*\)/.test(code)},
+  {t:'Shows the result on screen glued after a label', h:'<code>screen.textContent = \'Each pays: \' + splitBill(60, 4);</code>',
+   c:(code)=>/screen\.textContent\s*=\s*['"][^'"]+['"]\s*\+\s*splitBill\s*\(/.test(code)},
+ ]),
+PROJ('G9','js','The Quiz Machine','Ms. Alvarez, 7th-grade teacher',
+ 'I want a study sheet my students can glance at: every question with its answer right there, built from a list I can add to without touching anything else. And tell me how many questions it loaded so I know none went missing.',
+ 'data-driven pages — content in a list, display built by a loop — are the core of every CMS gig out there.',
+ 'Meet all 6 requirements: an array of question objects, loop-built output, a count.',
+ '',
+ [
+  {t:'An array of at least 3 objects, each with q and a fields', h:'Grade 11 shape: <code>[ { q: \'...\', a: \'...\' }, ... ]</code> with three or more.',
+   c:(code)=>{const m=code.match(/q\s*:\s*['"]/g);const n=code.match(/a\s*:\s*['"]/g);return /\[\s*\{/.test(code)&&m&&m.length>=3&&n&&n.length>=3;}},
+  {t:'An empty text box (let ... = \'\') started before the loop', h:'The accumulator: <code>let out = \'\';</code>',
+   c:(code)=>/let\s+\w+\s*=\s*['"]{2}/.test(code)},
+  {t:'A score/count box started at 0', h:'<code>let count = 0;</code> — a second accumulator, numeric this time.',
+   c:(code)=>/let\s+\w+\s*=\s*0/.test(code)},
+  {t:'A for...of loop over the question list', h:'<code>for (const item of quiz) { ... }</code>',
+   c:(code)=>/for\s*\(\s*const\s+\w+\s+of\s+\w+\s*\)/.test(code)},
+  {t:'Inside the loop: builds text using BOTH .q and .a', h:'Glue <code>item.q</code> and <code>item.a</code> into the text box each lap.',
+   c:(code)=>/\.q\b/.test(code)&&/\.a\b/.test(code)},
+  {t:'Shows everything plus how many questions loaded', h:'After the loop: <code>screen.textContent = out + count + \' questions loaded.\';</code>',
+   c:(code)=>/screen\.textContent\s*=[\s\S]*\+/.test(code)},
+ ]),
+PROJ('G12','js','The Bouncer Form','Tank, gym owner',
+ 'People sign up with garbage emails and my list is a graveyard. I want a signup that checks the email is real-looking BEFORE it says welcome — and logs every attempt so I can see what garbage people tried. One click, one signup, no doubles.',
+ 'input validation is on every professional checklist ever written — this is the exact feature businesses pay to have fixed.',
+ 'Meet all 6 requirements: a click-guarded signup with an audit log.',
+ 'const email = \'sam@gym.com\';\n',
+ [
+  {t:'Everything happens on the button click', h:'Grade 4 wiring: <code>btn.onclick = function () { ... };</code> around the whole flow.',
+   c:(code)=>/btn\.onclick\s*=\s*function|addEventListener/.test(code)},
+  {t:'Logs the attempt with console.log (include typeof)', h:'The audit line: <code>console.log(\'attempt:\', email, typeof email);</code>',
+   c:(code)=>/console\.log\s*\(/.test(code)&&/typeof\s+\w+/.test(code)},
+  {t:'Rejects empty (use .trim())', h:'<code>email.trim() === \'\'</code> catches empty AND all-spaces — the Grade 12 refinement.',
+   c:(code)=>/\.trim\s*\(\s*\)\s*===?\s*['"]{2}/.test(code)},
+  {t:'Rejects missing @ using || alongside the empty check', h:'<code>|| !email.includes(\'@\')</code> in the same if.',
+   c:(code)=>/\|\|/.test(code)&&/includes\s*\(\s*['"]@['"]\s*\)/.test(code)},
+  {t:'Welcomes by name/email on success (different message per branch)', h:'The else glues the email into the welcome.',
+   c:(code)=>{const m=code.match(/screen\.textContent/g);return m&&m.length>=2&&/else/.test(code);}},
+  {t:'Disables the button after a successful signup', h:'<code>btn.disabled = true;</code> in the success branch only — one click, one signup.',
+   c:(code)=>/btn\.disabled\s*=\s*true/.test(code)},
+ ],'<button id="btn">Join the gym</button>\n<p id="screen">ready...</p>'),
+PROJ('M','js','The Full Client Job','Rosa, Sunrise Bakery',
+ 'The works: my bakery&rsquo;s name up top, my treats in a list with prices, and a button that picks a surprise daily special for the customer — with their name in the thank-you. If there&rsquo;s no name on the order, don&rsquo;t sell them anything. One order per press.',
+ 'this is a complete micro-app — the kind of build that closes a $500+ freelance deal and anchors a portfolio.',
+ 'Meet all 7 requirements. This is everything, working together.',
+ 'const orderName = \'Josh\';\n',
+ [
+  {t:'The treats: an array of 3+ objects with name and price fields', h:'<code>[ { name: \'Cinnamon roll\', price: 4 }, ... ]</code>',
+   c:(code)=>{const m=code.match(/name\s*:\s*['"]/g);const n=code.match(/price\s*:\s*\d/g);return m&&m.length>=3&&n&&n.length>=3;}},
+  {t:'Everything runs on the button click', h:'<code>btn.onclick = function () { ... };</code> wraps the whole order flow.',
+   c:(code)=>/btn\.onclick\s*=\s*function|addEventListener/.test(code)},
+  {t:'Refuses an empty order name (trim + guard)', h:'<code>if (orderName.trim() === \'\') { complain; }</code> before anything else.',
+   c:(code)=>/\.trim\s*\(\s*\)\s*===?\s*['"]{2}/.test(code)},
+  {t:'Picks a random treat fairly', h:'The formula: <code>Math.floor(Math.random() * treats.length)</code>',
+   c:(code)=>/Math\.floor\s*\(\s*Math\.random\s*\(\s*\)\s*\*/.test(code)},
+  {t:'The message reads BOTH the treat&rsquo;s .name and .price', h:'Grab the pick into a box, then glue <code>t.name</code> and <code>t.price</code>.',
+   c:(code)=>/\.name\b/.test(code)&&/\.price\b/.test(code)},
+  {t:'Thanks the customer BY NAME in the message', h:'Glue <code>orderName</code> (unquoted — it is a box!) into the thank-you.',
+   c:(code)=>/screen\.textContent\s*=[\s\S]*\+\s*orderName|orderName\s*\+/.test(code)},
+  {t:'Disables the button after a successful order', h:'<code>btn.disabled = true;</code> — one order per press, like Rosa said.',
+   c:(code)=>/btn\.disabled\s*=\s*true/.test(code)},
+ ],'<button id="btn">Order the daily special</button>\n<p id="screen">ready...</p>');
+
 /* sidebar display order (grades in order, lessons + review within each) — drives Next */
 const ORDER = [];
-for (const g of GRADES) for (let i=0;i<L.length;i++) if (L[i].g===g.id && !L[i].chal) ORDER.push(i);
+for (const g of GRADES) for (let i=0;i<L.length;i++) if (L[i].g===g.id && !L[i].chal && !L[i].proj) ORDER.push(i);
 
 /* ============================ QA BANK ============================ */
 const STOP = new Set(['the','a','an','is','are','was','do','does','i','my','me','it','to','of','in','on','and','or','what','how','why','when','can','cant','dont','this','that','you','your']);
@@ -1690,17 +1820,18 @@ const edEl=$('#ed'), hlEl=$('#hl'), teachEl=$('#teach'), goalEl=$('#goal'), stat
       btnNext=$('#btnNext');
 
 let idx = 0, done = new Set(), tested = new Set(), leadStep = 0, sandbox = false, checkTimer = null, solShown = false;
-let chalDone = new Set(), msSeen = new Set(), edTheme = '', sensei = false, certName = '';
+let chalDone = new Set(), projDone = new Set(), msSeen = new Set(), edTheme = '', sensei = false, certName = '';
 let stk = {last:'', cur:0, best:0, xp:0};
 
-function saveP(){ try{ localStorage.setItem('codeschool', JSON.stringify({done:[...done], idx, tested:[...tested], chalDone:[...chalDone], ms:[...msSeen], edTheme, sensei, certName, stk})); }catch(e){} }
+function saveP(){ try{ localStorage.setItem('codeschool', JSON.stringify({done:[...done], idx, tested:[...tested], chalDone:[...chalDone], projDone:[...projDone], ms:[...msSeen], edTheme, sensei, certName, stk})); }catch(e){} }
 function loadP(){
   let p = null;
   try{ p = JSON.parse(localStorage.getItem('codeschool')); }catch(e){}
   if (!p || !Array.isArray(p.done)) p = (location.protocol === 'file:') ? CARRIED : {done:[], idx:0};
-  done = new Set(p.done.filter(n => n >= 0 && n < L.length && !L[n].chal));
+  done = new Set(p.done.filter(n => n >= 0 && n < L.length && !L[n].chal && !L[n].proj));
   tested = new Set(p.tested || []);
   chalDone = new Set((p.chalDone||[]).filter(n=>n>=0&&n<L.length));
+  projDone = new Set((p.projDone||[]).filter(n=>n>=0&&n<L.length));
   msSeen = new Set(p.ms||[]);
   edTheme = p.edTheme||'';
   sensei = !!p.sensei;
@@ -1797,6 +1928,33 @@ function runCheck(){
   if (sandbox) return;
   const les = L[idx], code = edEl.value;
   outEl.srcdoc = buildDoc(les, code);
+  if (les.proj){
+    let coachMsg=null;
+    if (code.trim()){
+      if (les.lang==='js'){ const err=jsSyntaxError(code); if(err) coachMsg=friendlySyntax(err,code); }
+      else { coachMsg = htmlLint(code); }
+    }
+    let doc=null; try{ doc = new DOMParser().parseFromString(buildDoc(les, code), 'text/html'); }catch(e){}
+    const results = les.stories.map(st=>{ let ok=false; try{ ok = !!st.c(code, doc); }catch(e){} return ok; });
+    const k=results.filter(Boolean).length, N=results.length;
+    let html='';
+    if (coachMsg) html += '<div class="coachline">🧑‍🏫 '+coachMsg+'</div>';
+    html += '<div class="hd">✅ Client sign-off checklist <span class="pct">'+k+' / '+N+'</span></div><div class="bar"><i style="width:'+Math.round(100*k/N)+'%"></i></div>';
+    les.stories.forEach((st,n)=>{
+      html += '<div class="story '+(results[n]?'pass':'fail')+'"><span class="ic">'+(results[n]?'✓':'✗')+'</span><span class="stx" id="stx'+n+'">'+st.t+'</span>'+(results[n]?'':'<button class="hintb" data-hs="'+n+'" aria-label="Hint">💡 hint</button>')+'</div>';
+    });
+    statusEl.className = (k===N && !coachMsg) ? 'ok projlist' : 'wait projlist';
+    statusEl.innerHTML = html;
+    btnNext.style.display = 'none';
+    if (k===N && !coachMsg && !projDone.has(idx)){
+      projDone.add(idx); bumpStreak(); saveP(); renderNav(); confetti(120);
+      const el=document.createElement('div'); el.className='gbanner';
+      el.innerHTML='🧾 Client signed off!<small>+50 XP — that is a portfolio piece with your name on it.</small>';
+      document.body.appendChild(el); setTimeout(()=>el.remove(),2700);
+      checkMilestones();
+    }
+    return;
+  }
   let res;
   if (!code.trim()){
     res = {ok:false, cls:'wait', msg:'Start typing whenever you are ready &mdash; the goal is in the blue bar above.'};
@@ -1878,9 +2036,10 @@ function gradeToast(gname, allDone){
   document.body.appendChild(el);
   setTimeout(()=>el.remove(), 2700);
 }
-function coreOf(gid){ return L.map((l,i)=>({l,i})).filter(x=>x.l.g===gid && !x.l.chal); }
-function coreTotal(){ return L.filter(l=>!l.chal).length; }
-function xpFor(){ let xp = done.size*10 + chalDone.size*25 + (stk.xp|0); for (const g of GRADES){ const ls=coreOf(g.id); if (ls.length && ls.every(x=>done.has(x.i))) xp+=25; } return xp; }
+function coreOf(gid){ return L.map((l,i)=>({l,i})).filter(x=>x.l.g===gid && !x.l.chal && !x.l.proj); }
+function coreTotal(){ return L.filter(l=>!l.chal && !l.proj).length; }
+function gradeDone(gid){ const ls=coreOf(gid); return ls.length>0 && ls.every(x=>done.has(x.i)); }
+function xpFor(){ let xp = done.size*10 + chalDone.size*25 + projDone.size*50 + (stk.xp|0); for (const g of GRADES){ const ls=coreOf(g.id); if (ls.length && ls.every(x=>done.has(x.i))) xp+=25; } return xp; }
 function dayKey(d){ return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
 const STREAK_BONUS={3:15,7:35,14:75,30:150};
 function bumpStreak(){
@@ -1915,6 +2074,28 @@ function renderNav(){
   listEl.innerHTML = '';
   const curG = sandbox ? null : L[idx].g;
   for (const g of GRADES){
+    if (g.id==='P'){
+      const projs = L.map((l,i)=>({l,i})).filter(x=>x.l.g==='P');
+      const vis = projs.filter(x=> gradeDone(x.l.gate));
+      if (!vis.length) continue;
+      const head = document.createElement('div');
+      head.className='ghead';
+      const pdone = vis.filter(x=>projDone.has(x.i)).length;
+      head.innerHTML = '<span class="garrow">▼</span><span>'+(pdone===projs.length&&projs.length===vis.length?'🏅 ':'')+g.name+'<span class="gsub">'+g.sub+'</span></span><span class="gcount">'+pdone+'/'+vis.length+'</span>';
+      const isOpenP = q ? true : (g.id===curG || openGrades.has(g.id));
+      head.classList.toggle('closed', !isOpenP);
+      head.onclick = ()=>{ if (openGrades.has(g.id)) openGrades.delete(g.id); else openGrades.add(g.id); renderNav(); };
+      listEl.appendChild(head);
+      for (const x of vis){
+        if (q && !x.l.title.toLowerCase().includes(q)) continue;
+        const b = document.createElement('button');
+        b.className = 'navitem proj' + (x.i===idx && !sandbox ? ' cur':'') + (isOpenP ? '' : ' ghidden');
+        b.innerHTML = '<span class="tick">' + (projDone.has(x.i)?'✓':'') + '</span><span>' + x.l.title + '</span>';
+        b.onclick = ()=>loadLesson(x.i);
+        listEl.appendChild(b);
+      }
+      continue;
+    }
     const lessons = coreOf(g.id);
     const chals = L.map((l,i)=>({l,i})).filter(x=>x.l.g===g.id && x.l.chal);
     const gdone = lessons.filter(x=>done.has(x.i)).length;
@@ -1987,8 +2168,8 @@ function loadLesson(i){
   saveP(); renderNav(); runCheck();
   const cp=$('#crPrev'), cn=$('#crNext');
   if (cp) cp.onclick=()=>{ const o=ORDER.indexOf(idx); if (o>0) loadLesson(ORDER[o-1]); };
-  if (cn) cn.onclick=()=>{ const o=ORDER.indexOf(idx); if (o<ORDER.length-1) loadLesson(ORDER[o+1]); };
-  const isChal = !!les.chal;
+  if (cn) cn.onclick=()=>{ const o=ORDER.indexOf(idx); if (o>=0 && o<ORDER.length-1) loadLesson(ORDER[o+1]); };
+  const isChal = !!les.chal || !!les.proj;
   $('#btnHelp').style.display = isChal ? 'none' : '';
   $('#btnLead').style.display = isChal ? 'none' : '';
   $('#btnSol').style.display = isChal ? 'none' : '';
@@ -2063,6 +2244,14 @@ edEl.addEventListener('input', ()=>{
   if (sandbox){ syncHl(); outEl.srcdoc = edEl.value; try{localStorage.setItem('sandboxCode', edEl.value);}catch(e){} return; }
   clearTimeout(checkTimer); checkTimer = setTimeout(runCheck, 200);
 });
+statusEl.addEventListener('click', (e)=>{
+  const b = e.target.closest('[data-hs]');
+  if (!b || sandbox || !L[idx].proj) return;
+  const n = +b.dataset.hs;
+  const el = document.getElementById('stx'+n);
+  if (el) el.innerHTML = '💡 ' + L[idx].stories[n].h;
+  b.remove();
+});
 edEl.addEventListener('paste', (e)=>{
   if (sandbox) return;
   e.preventDefault();
@@ -2102,7 +2291,7 @@ loadLesson = function(i){ _origLoad(i);
     document.body.classList.remove('tab-nav','tab-code','tab-result'); document.body.classList.add('tab-lesson'); }
 };
 $('#btnExport').onclick = ()=>{
-  const code = btoa(unescape(encodeURIComponent(JSON.stringify({done:[...done], idx, tested:[...tested], chalDone:[...chalDone], ms:[...msSeen], edTheme, certName, stk}))));
+  const code = btoa(unescape(encodeURIComponent(JSON.stringify({done:[...done], idx, tested:[...tested], chalDone:[...chalDone], projDone:[...projDone], ms:[...msSeen], edTheme, certName, stk}))));
   try{ navigator.clipboard.writeText(code); alert('Save code copied to clipboard! Paste it into Import on any other device or browser.'); }
   catch(e){ prompt('Copy this save code (Ctrl+C), then paste it into Import on the other device:', code); }
 };
@@ -2113,7 +2302,7 @@ $('#btnImport').onclick = ()=>{
     const p = JSON.parse(decodeURIComponent(escape(atob(code.trim()))));
     if (!Array.isArray(p.done)) throw 0;
     done = new Set(p.done.filter(n=>n>=0&&n<L.length)); tested = new Set(p.tested||[]);
-    chalDone = new Set((p.chalDone||[]).filter(n=>n>=0&&n<L.length)); msSeen = new Set(p.ms||[]);
+    chalDone = new Set((p.chalDone||[]).filter(n=>n>=0&&n<L.length)); projDone = new Set((p.projDone||[]).filter(n=>n>=0&&n<L.length)); msSeen = new Set(p.ms||[]);
     if (p.edTheme!==undefined) edTheme=p.edTheme; if (p.certName) certName=p.certName;
     if (p.stk && typeof p.stk==='object') stk={last:p.stk.last||'', cur:p.stk.cur|0, best:p.stk.best|0, xp:p.stk.xp|0};
     idx = Math.min(Math.max(p.idx|0,0),L.length-1); saveP(); loadLesson(idx);
@@ -2153,6 +2342,7 @@ $('#xpTxt').onclick = ()=>{
   const nextL = LEVELS.find(l=>l[0]>done.size);
   $('#statsBody').innerHTML = '<p><b>⭐ '+xpFor()+' XP</b> · Level: <b>'+levelFor(done.size)+'</b>'+(nextL?' · next: '+nextL[1]+' at '+nextL[0]+' lessons':'')+'</p>'
     + rows + '<p style="margin-top:10px;font-size:.85rem;color:var(--soft)">⚔️ Challenges conquered: '+chalDone.size+' · ⚡ = tested out</p>'
+    + '<p style="font-size:.85rem;color:var(--soft)">🧾 Client projects delivered: '+projDone.size+' / '+L.filter(l=>l.proj).length+'</p>'
     + '<p style="font-size:.85rem;color:var(--soft)">🔥 Streak: '+stk.cur+' day'+(stk.cur===1?'':'s')+' (best: '+stk.best+') · a day counts when you earn at least one ✓ · streaks break quietly — no guilt, the best is remembered forever</p>';
   $('#statsOv').classList.add('open');
 };
@@ -2163,6 +2353,7 @@ $('#btnCert').onclick = ()=>{
   $('#certBody').innerHTML = '<h1>Certificate of Completion</h1><p>Code Lab — Kindergarten through College</p>'
     + '<div class="cname">'+esc(certName)+'</div>'
     + '<p class="cline">completed all <b>'+coreTotal()+' lessons</b> — every checkmark typed by hand —<br>earning <b>'+xpFor()+' XP</b> at the rank of <b>'+levelFor(done.size)+'</b></p>'
+    + (projDone.size ? '<p class="cline">Portfolio: <b>'+projDone.size+' client project'+(projDone.size===1?'':'s')+' delivered</b> to spec</p>' : '')
     + '<p class="cline">'+new Date().toLocaleDateString()+'</p>'
     + '<div class="cmeds">'+meds+'</div>';
   $('#certOv').classList.add('open');

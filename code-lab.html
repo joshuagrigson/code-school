@@ -19,6 +19,13 @@ header h1{font-size:1.1rem;letter-spacing:.5px}
 #progBar{flex:1;max-width:260px;height:10px;background:var(--code);border-radius:5px;overflow:hidden}
 #progFill{height:100%;width:0;background:var(--accent);transition:width .3s}
 header .hbtn{margin-left:auto}
+#xpTxt{font-family:Menlo,Consolas,monospace;font-size:.85rem;color:var(--accent);white-space:nowrap}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:99;overflow:hidden}
+.confetti i{position:absolute;top:-12px;width:9px;height:14px;opacity:.95;animation:cfall 1.4s ease-in forwards}
+@keyframes cfall{to{transform:translateY(105vh) rotate(540deg);opacity:.7}}
+.gbanner{position:fixed;top:18%;left:50%;transform:translateX(-50%) scale(.8);background:var(--accent);color:#fff;padding:18px 34px;border-radius:16px;font-size:1.5rem;box-shadow:0 12px 40px rgba(0,0,0,.25);z-index:100;opacity:0;animation:gpop 2.6s ease forwards;text-align:center}
+.gbanner small{display:block;font-size:.85rem;opacity:.9;margin-top:4px}
+@keyframes gpop{8%{opacity:1;transform:translateX(-50%) scale(1.04)}14%{transform:translateX(-50%) scale(1)}82%{opacity:1}100%{opacity:0;transform:translateX(-50%) scale(.95)}}
 .main{flex:1;display:flex;min-height:0}
 nav{width:205px;flex:0 0 auto;overflow-y:auto;background:var(--panel);border-right:2px solid var(--line);padding:8px 0}
 .ghead{display:flex;align-items:center;gap:6px;padding:8px 12px 4px;font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--soft)}
@@ -86,6 +93,7 @@ nav{width:205px;flex:0 0 auto;overflow-y:auto;background:var(--panel);border-rig
   <h1>Code Lab</h1>
   <div id="progBar"><div id="progFill"></div></div>
   <span id="progTxt">0 / 0</span>
+  <span id="xpTxt"></span>
   <button class="hbtn" id="btnSandbox">Free play</button>
   <button class="hbtn" id="btnQA">Ask a question</button>
 </header>
@@ -833,6 +841,186 @@ const QA = [
  {k:'guard empty input check trust', a:'Guarding means checking a value BEFORE using it: <code>if (name === \'\') { complain } else { use it }</code>. Real programs never trust input &mdash; not from users, not from anywhere.'},
  {k:'nan undefined weird result strange', a:'<code>NaN</code> means "not a number" &mdash; usually maths attempted on a word. <code>undefined</code> means a box that was never filled, or a label an object doesn’t have. Both are clues: check your spelling and your types.'},
  {k:'braces bracket parenthesis kinds three', a:'Three bracket families: <code>( )</code> round &mdash; function calls, tests, grouping maths; <code>[ ]</code> square &mdash; lists and positions; <code>{ }</code> curly &mdash; code blocks and objects. Every opener needs its closer.'},
+ {k:'block inline inside paragraph heading nested', a:'Big BLOCK tags (h1-h6, p, div, ul) sit NEXT TO each other. Only small inline tags (em, strong, a, span, code) may live INSIDE a paragraph. A heading inside a p makes the browser secretly end the paragraph early.'},
+ {k:'h2 inside p allowed why not', a:'A heading is a block; a paragraph may only hug inline things. Put the &lt;h2&gt; on its own line AFTER the &lt;/p&gt;, or use &lt;strong&gt; if you just wanted one big-feeling word.'},
+ {k:'browser guess repair fix broken html silently', a:'Browsers never stop on broken HTML &mdash; they guess what you meant and render something. Kind to readers, brutal to coders: your mistake hides instead of announcing itself. That is why the coach messages exist.'},
+ {k:'forgot closing tag what happens', a:'The hug swallows everything after it until the browser guesses an ending. Layout goes weird far from the actual mistake. Rule: every hug you open, you close.'},
+ {k:'closing tag slash which side order', a:'The slash goes right after the pointy bracket: &lt;/p&gt;. Writing &lt;p&gt; again OPENS a second paragraph instead of closing the first.'},
+ {k:'close order inside out nested first last', a:'Close hugs inside-out: last opened, first closed. &lt;p&gt;&lt;strong&gt;word&lt;/strong&gt;&lt;/p&gt; is right; crossing them is wrong.'},
+ {k:'empty paragraph accidental second open gap', a:'An unclosed opener like a stray &lt;p&gt; at the end of a line quietly starts a SECOND empty paragraph. If your page has mystery gaps, hunt for openers that should have been closers.'},
+ {k:'span what small generic inline', a:'span is the inline cousin of div: a meaningless little wrapper for a few words, useful when you want to style part of a sentence and no meaningful tag (em, strong) fits.'},
+ {k:'void self closing img br no closer', a:'A few tags hold no content so they need no closer: img, br, hr, input. Everything else closes. If in doubt, close it.'},
+ {k:'br line break new line tag', a:'&lt;br&gt; forces a line break inside a block. Use it sparingly &mdash; usually a second &lt;p&gt; is the honest structure.'},
+ {k:'multiple h1 allowed one page', a:'Technically allowed, but use ONE h1 per page &mdash; it is the page title. Search engines and screen readers treat it as the headline of the whole page.'},
+ {k:'indent nesting readable spaces html', a:'Indentation is for humans &mdash; the browser ignores it. Indent one level for each hug you are inside and mismatched tags become visible at a glance.'},
+ {k:'div vs p difference when', a:'p is for a paragraph of text and may only hold inline things. div is a plain box for GROUPING other blocks. Words go in p; structure goes in div.'},
+ {k:'ul li outside allowed direct children', a:'A ul may only directly contain li items. Text or other tags floating directly inside a ul (outside any li) is invalid and renders unpredictably.'},
+ {k:'uppercase tags matter case html', a:'HTML tag names are not case-sensitive &mdash; &lt;P&gt; works &mdash; but the universal convention is lowercase. Write lowercase and your code matches everyone else on Earth.'},
+ {k:'text outside any tag okay body bare', a:'Allowed &mdash; bare text renders. But wrapping text in p gives you spacing, styling hooks, and structure. Bare text is a note scribbled in a margin.'},
+ {k:'heading swallowed rest page everything big', a:'Almost always an unclosed heading hug: without &lt;/h1&gt;, everything after joins the heading. Find where the headline should END and put the closer there.'},
+ {k:'nesting depth how deep boxes', a:'No hard limit &mdash; real sites nest forty deep. The rule never changes: whatever opens inside a box closes inside it.'},
+ {k:'tags how many exist full list', a:'Around 110 exist; roughly 20 do almost all the work: headings, p, div, span, ul/ol/li, a, img, button, input, em, strong, header, footer, section. You already know most of the important ones.'},
+ {k:'strong vs em vs b i difference', a:'em = leaning emphasis (how you would stress it aloud); strong = bold importance. Older b and i tags exist but carry no meaning &mdash; prefer em and strong; meaning helps screen readers too.'},
+ {k:'selector p letter meaning css bare', a:'In CSS, p does not mean the letter p &mdash; it means every &lt;p&gt; paragraph tag. CSS names tags with no pointy brackets: p = paragraphs, h1 = big headlines, body = whole page.'},
+ {k:'css target words text letters one word', a:'CSS selectors cannot pick words INSIDE text &mdash; they pick ELEMENTS. To color one word, wrap it in an inline tag (span or strong) in the HTML, then style that tag.'},
+ {k:'selector kinds three tag class id', a:'The big three: bare name (p) hits every tag of that kind; .name (dot) hits everything with that class; #name (hash) hits the ONE element with that id.'},
+ {k:'body selector whole page everything', a:'body selects the whole visible page. Set page-wide font, background, and text color there once instead of repeating them on every element.'},
+ {k:'rule hits too many elements narrow', a:'A tag selector hits ALL matching tags. To style only some, give the special ones a class in the HTML and select .thatclass instead.'},
+ {k:'two rules conflict wins cascade', a:'When two rules disagree, the more SPECIFIC selector wins: id beats class beats bare tag. On a tie, the rule written later wins. This tiebreak system is the cascade &mdash; the C in CSS.'},
+ {k:'specificity meaning strength selector', a:'Specificity is the precision score of a selector. #id (one exact thing) outranks .class (a chosen group), which outranks p (a whole species).'},
+ {k:'select multiple tags one rule comma', a:'List selectors with commas: h1, h2, h3 { color: navy; } styles all three with one rule.'},
+ {k:'selector inside another descendant space', a:'A space means inside: div p { } styles only paragraphs that live inside a div. Read it right to left: p, inside div.'},
+ {k:'hover style mouse over effect', a:'Add :hover to a selector: button:hover { background: gold; } applies only while the mouse is over it. Your first taste of CSS reacting to the user.'},
+ {k:'nothing happened rule silent css debug', a:'CSS never errors &mdash; a wrong selector or misspelled property just does nothing. Checklist: property spelled right (color, not colour)? Does anything actually match your selector? Semicolon there?'},
+ {k:'class selector needs dot forgot', a:'Without the dot, .special becomes special &mdash; a search for a &lt;special&gt; TAG, which does not exist. Dot for classes, hash for ids, bare for tags.'},
+ {k:'case sensitive class names', a:'Yes &mdash; class names are case-sensitive. class=&quot;Fancy&quot; in HTML will not match .fancy in CSS. Pick lowercase and stay consistent.'},
+ {k:'select everything star universal', a:'The * selector matches every element. Powerful and rarely what a beginner wants &mdash; prefer body for page-wide looks.'},
+ {k:'selector matches nothing typo silent', a:'A selector that matches nothing styles nothing, silently. When a rule seems dead, first check that something on the page actually wears the name you selected.'},
+ {k:'style attribute inline vs rule', a:'You can write style=&quot;color:red&quot; directly on a tag, but a stylesheet rule is almost always better: one rule dresses many elements, and looks stay separate from structure.'},
+ {k:'where css lives style file head', a:'In this lab, your CSS pane becomes the page stylesheet. In real sites, CSS lives in a style block in the head or a separate .css file linked in &mdash; same rules either way.'},
+ {k:'link styling a anchor color', a:'a is the selector for links: a { color: seagreen; }. Links also answer to :hover like buttons.'},
+ {k:'style group section only part page', a:'Wrap that group in a div with a class, then select .thatclass p &mdash; paragraphs inside the named box. Grouping in HTML plus a descendant selector in CSS is the standard move.'},
+ {k:'rename class both places match', a:'A class must match EXACTLY in both places: class=&quot;fancy&quot; in HTML and .fancy in CSS. Change one, change both &mdash; half the dead rules in the world are a renamed class.'},
+ {k:'property value shape colon line', a:'Every style line is property: value; &mdash; name of the dial, colon, the setting, semicolon. color: red; sets the color dial to red.'},
+ {k:'empty value nothing after colon background color property', a:'background: with nothing after the colon sets no value &mdash; the line does nothing (and the coach flags it). Always tell it WHAT: a color name, a px number, a keyword.'},
+ {k:'missing semicolon breaks next line', a:'Without the ; CSS thinks your line continues into the NEXT one and misreads both. One missing semicolon can silently kill two lines.'},
+ {k:'colon vs semicolon which where', a:'Colon separates a property from its value (color: red). Semicolon ENDS the line. Property, colon, value, semicolon &mdash; the four-beat rhythm of every CSS line.'},
+ {k:'units px rem percent mean', a:'px is screen dots (fixed). % is share of the parent box. rem scales with the page base size. Start with px; fancier units matter once layouts get responsive.'},
+ {k:'number needs unit px forgot size ignored', a:'Most size values need a unit: font-size: 40 does nothing; font-size: 40px works. If a size is ignored, check for a missing px.'},
+ {k:'color names hex codes formats', a:'Three common ways: names (crimson, teal &mdash; about 140 exist), hex codes (#ff6600), and rgb(255,102,0). Names are friendliest; hex is what pros copy from design tools.'},
+ {k:'background vs color ink paper', a:'color paints the TEXT; background paints the area BEHIND it. Remember: color = ink, background = paper.'},
+ {k:'padding vs margin inside outside', a:'padding = space INSIDE the edge (pushes the wall away from the content). margin = space OUTSIDE (pushes neighbors away). Wrong spacing is almost always confusing these two.'},
+ {k:'border three values thickness style', a:'border wants three settings in one line: thickness, style, color &mdash; border: 3px solid darkgreen;. Miss the style word (solid, dashed, dotted) and no border appears.'},
+ {k:'font size text bigger smaller', a:'font-size: 24px; &mdash; bigger number, bigger letters. For whole-page reading size, set it once on body.'},
+ {k:'center text align middle box', a:'text-align: center; centers the TEXT inside its box. Centering the BOX itself is a different trick (margin auto) you will meet later.'},
+ {k:'round corners radius circle', a:'border-radius: 12px; rounds the corners. Bigger number, rounder corner; go huge on a square box and you get a circle.'},
+ {k:'shadow drop box float', a:'box-shadow: 0 2px 8px gray; adds a soft shadow (right-offset, down-offset, blur, color). Instant your-box-floats effect.'},
+ {k:'many properties one rule limit', a:'As many lines as you want between the braces &mdash; each on its own line, each ending with ;. One selector, a whole outfit.'},
+ {k:'order lines inside rule matter', a:'Almost never &mdash; properties are independent dials. Only when you set the SAME property twice does order matter: the later one wins.'},
+ {k:'capital letters properties lowercase dashes', a:'Properties are lowercase with dashes: font-size, border-radius, text-align. FontSize does nothing. When a line is dead, spelling and case are suspects one and two.'},
+ {k:'comments css note skip slash star', a:'CSS notes go between /* and */ &mdash; the browser skips them. Handy for labeling sections of a big stylesheet.'},
+ {k:'inherit children parent styles automatic', a:'Text properties (color, font-size, font-family) flow down into children automatically &mdash; set them on body and everything inherits. Box properties (border, padding, background) do NOT flow down.'},
+ {k:'shorthand padding four values clockwise', a:'padding: 10px 20px; means 10 top-and-bottom, 20 left-and-right. Four values go clockwise: top right bottom left. Same pattern for margin.'},
+ {k:'class not working text word match ordinary', a:'A dot-selector matches the class ATTRIBUTE in the HTML, never the words in the text. A paragraph that SAYS ordinary but wears no class=&quot;ordinary&quot; is invisible to .ordinary { }.'},
+ {k:'text says word selector finds nothing labeled', a:'Text is what an element SAYS; a class is what it is LABELED. Selectors read labels only. To target something, make sure it wears the name &mdash; class=&quot;thename&quot; &mdash; in its opening tag.'},
+ {k:'add class existing element how', a:'Inside the opening tag: &lt;p class=&quot;special&quot;&gt;. Attribute name class, equals, quoted value. Closers never carry attributes.'},
+ {k:'two classes one element space', a:'One element can wear several name tags: class=&quot;card featured&quot; (space-separated). Both .card and .featured rules apply to it.'},
+ {k:'same class many elements share', a:'That is the whole point of classes: label five elements class=&quot;fancy&quot; and one .fancy rule dresses all five. Define once, wear everywhere.'},
+ {k:'id vs class when use', a:'class = a reusable label for MANY (styling groups). id = a unique name for exactly ONE per page (and JavaScript&rsquo;s favorite handle). Mostly you want class for styling.'},
+ {k:'duplicate id two elements', a:'Never give two elements the same id. CSS may seem to cope, but JavaScript&rsquo;s getElementById finds only the FIRST &mdash; a classic time-bomb bug.'},
+ {k:'class name rules spaces naming', a:'No spaces in a single class name (a space SEPARATES two classes). Use dashes: class=&quot;big-warning&quot;. Pick names that say what the thing IS.'},
+ {k:'style everything ids why not', a:'ids cannot be reused, so styling with them means one rule per element &mdash; repetitive and rigid. Classes share; ids identify.'},
+ {k:'rule dead checklist class html', a:'When a rule is dead: 1) does anything wear that exact class/id? 2) spelled identically both sides? 3) dot for class, hash for id? Nine times out of ten it is one of those three.'},
+ {k:'javascript change class later live', a:'Yes &mdash; on real sites JavaScript adds/removes classes to restyle things live (classList). CSS defines the outfits; JS changes who is wearing them.'},
+ {k:'semantic class names meaning looks', a:'Name classes for MEANING, not looks: .warning beats .red-text &mdash; because when the design changes to orange, .red-text becomes a lie in your code.'},
+ {k:'hide element display none show', a:'display: none; makes an element vanish (still in the HTML, not rendered). Pair it with a class like .hidden and you have the standard show/hide switch.'},
+ {k:'style only first item one special', a:'Give that one item a class (or id) in the HTML and select it. Fancy selectors like :first-child exist, but the labeled-name approach is clearer while learning.'},
+ {k:'class on div group inside', a:'Put the class on a div and use descendant selectors: .sidebar p { } styles paragraphs inside that box only. Group label + inside-selector is how real layouts are styled.'},
+ {k:'id javascript grab element handle', a:'JavaScript grabs elements by id: getElementById(&quot;screen&quot;). That is exactly how this lab&rsquo;s screen and btn work &mdash; ids are the handles machines hold.'},
+ {k:'quotes around class value needed', a:'Use them: class=&quot;special&quot;. HTML forgives missing quotes for single words, but quotes always work and never surprise you.'},
+ {k:'wear name tag metaphor meaning', a:'Wearing a name tag = having that class in your opening tag. The element carries the label; CSS finds label-wearers. No tag worn, no rule applied.'},
+ {k:'style paragraph without class tag hits all', a:'With a bare tag selector: p { } hits it (and every other paragraph). Then more-specific class rules on special ones override &mdash; that combination IS the cascade doing its job.'},
+ {k:'find element classes inspect devtools', a:'Right-click it, Inspect: the Elements panel shows the tag with its class list, and the Styles panel shows every rule applying. The fastest answer to why does it look like that.'},
+ {k:'page working on scaffold strip above editor', a:'The dark strip above the editor shows the HTML already on the page &mdash; what your CSS or JavaScript is aimed at. You write ONE language per lesson; the lab supplies the rest.'},
+ {k:'three languages jobs skeleton skin muscles', a:'HTML = what exists (skeleton). CSS = how it looks (skin). JavaScript = what it does (muscles). Every website ever is these three in a trench coat.'},
+ {k:'css lesson html fixed where from', a:'In CSS lessons the page HTML is fixed (see the strip above the editor) &mdash; the lesson is aiming rules at it. In real life you write both sides yourself.'},
+ {k:'screen btn exist already magic', a:'The lab pre-introduces them: the page has a p with id screen and a button with id btn, and JavaScript knows them by those names. Real sites do the same introduction with getElementById.'},
+ {k:'lessons build order skip ahead', a:'Every grade uses the ones before it: classes (G3) become JavaScript handles (G4), lists (G6) meet loops (G9), everything lands in the Excuse-O-Matic. You can peek ahead, but gaps compound.'},
+ {k:'green check grades what do this', a:'The tick grades ONLY the DO THIS goal. Bonus experiments are for after &mdash; playing past the goal never counts against you, but only the goal counts for you.'},
+ {k:'coach message teacher explain red', a:'Coach lines (the teacher emoji) fire when your code has a structural problem &mdash; unclosed hug, empty value, block-inside-p &mdash; and explain the fix. They block the tick because the browser would otherwise silently guess.'},
+ {k:'preview below live every keystroke', a:'The preview is a real mini-browser rendering your code on every keystroke. Type, see, adjust &mdash; the tightest feedback loop in learning.'},
+ {k:'progress saved where reset lose', a:'In this browser&rsquo;s storage, per device. Same browser = progress persists. Clearing site data erases it. Any lesson is one sidebar click away, so recovery is quick regardless.'},
+ {k:'free play sandbox rules', a:'Free play is an uncheckable scratch page: write any HTML/CSS/JS, nothing graded, nothing breakable. It saves itself in your browser.'},
+ {k:'give me a lead vs show me', a:'Show me hands you the finished answer. Give me a lead reveals it in four steps so YOU finish the thought &mdash; struggle with hints is where learning sticks. Prefer the lead.'},
+ {k:'why type by hand no paste', a:'Typing builds the finger-memory and error-experience that reading never does. You cannot debug what your hands have never produced.'},
+ {k:'skip lesson too easy hard jump', a:'Click any lesson in the sidebar anytime. Redo buttons per grade reset ticks for a clean re-run. The order is a recommendation with reasons, not a lock.'},
+ {k:'after college graduate next course', a:'The 12-week Paper Plate course: servers, HTTP, Git, deployment, AI APIs &mdash; using a real shipped app as the textbook. The Graduation lesson has the button.'},
+ {k:'mistakes penalty score count', a:'No. Nothing tracks failures &mdash; the coach exists to make errors cheap. Every error you cause on purpose here is one that will not scare you in real work.'},
+ {k:'editor colors meaning syntax highlight', a:'The editor colors parts by JOB: blue/purple keywords, orange strings, yellow function names. When a color runs away (everything orange), you likely left a quote open &mdash; the colors are debuggers.'},
+ {k:'ask question offline bank how works', a:'This box searches a built-in answer bank by keywords &mdash; fully offline, no AI calls. If it comes up empty, copy your question and paste it to Claude when online.'},
+ {k:'bonus broke tick undo swap back', a:'Bonuses can take your code past what the checker wants. Play freely, then Start over or retype the goal answer &mdash; ticks re-earn in seconds.'},
+ {k:'excuse o matic what goal machine', a:'The Grade 10 build: a button that generates random excuses &mdash; data (a list), brain (a random-pick function), wiring (a click). Every lesson before it is secretly a part for it.'},
+ {k:'phone typing hard brackets keyboard', a:'Phones fight you on braces, pointy brackets and semicolons. Reading lessons on the phone works great; do the heavy typing on a real keyboard when you can.'},
+ {k:'social media feed how built posts', a:'A feed is a LIST of post objects &mdash; author, text, likes &mdash; fetched from a server, then a loop builds one card per post. List + loop + textContent: you learn every piece in this course.'},
+ {k:'server what is computer warehouse', a:'A program on a computer in a data center whose job is answering requests: give me the newest posts, save this like. Your device asks; it answers. That is the whole client-server relationship.'},
+ {k:'like button tap heart happens', a:'Three things: an onclick runs, the number on screen updates, and a message goes to the server (user liked post 847) so the like exists for everyone, not just on your screen.'},
+ {k:'posts stored where database', a:'On the platform&rsquo;s servers, in a database &mdash; a giant organized filing cabinet of lists. Your phone holds only a fetched COPY of the slice you are looking at.'},
+ {k:'why need server share devices', a:'Browser storage lives on ONE device (your PC ticks do not appear on your phone). For two people to see the same post, the data must live in a shared home: the server.'},
+ {k:'algorithm feed order decides', a:'At heart, a function: score every candidate post with if-rules (you like this account? +50), sort by score, return the top slice. Billion-dollar tuning, Grade 7-shaped machine.'},
+ {k:'json what data format', a:'The text format apps and servers talk in &mdash; and it looks almost exactly like your Grade 11 objects with quotes on the labels. Learn objects and you have basically learned JSON.'},
+ {k:'upload photo where goes', a:'Your device sends the image to the server, which stores it and adds a post object pointing at it. Everyone else&rsquo;s feed then fetches that object and shows the image from the server&rsquo;s copy.'},
+ {k:'app vs website difference same', a:'Mostly packaging. The phone app and the website are two different FRONT ends talking to the SAME servers with the same requests. Learn the web version and you understand both.'},
+ {k:'infinite scroll never ends how', a:'As you near the bottom, JavaScript quietly asks the server for the next page of the list and loops the new posts onto the end. It is fetch + loop on a trigger.'},
+ {k:'notifications badge know liked', a:'The server keeps an events list per user. Your app checks in and shows what is new. The red badge number is a count from a server list.'},
+ {k:'chat messages instant real time', a:'Chat keeps a connection OPEN so the server can push messages the moment they arrive, instead of your app asking repeatedly. Same client-server idea, faster pipe.'},
+ {k:'login remember me cookie session', a:'Logging in earns your browser a signed ticket (cookie). Every later request carries it, so the server knows who is asking without re-asking your password. Log out = tear up the ticket.'},
+ {k:'build social network myself', a:'The embryo, yes: the 12-week course has you build a server, store data, and fetch it into a page &mdash; a two-user network is a capstone-sized project. The hard part at scale is millions of users, not the concept.'},
+ {k:'free apps money ads data', a:'You are shown ads chosen using data about what you view and like. The feed-scoring machine and the ad-choosing machine are cousins. Free means paid differently.'},
+ {k:'verified badge blue check technically', a:'Just a true/false field on the account object that the front end renders as a badge. The hard part is the human process deciding who gets the flag set.'},
+ {k:'follow friend request data changes', a:'It writes a row in a relationships list on the server: follower 123 follows account 456. Your feed function then includes their posts. Social graphs are lists of ID pairs.'},
+ {k:'trending computed counts topics', a:'Counting at scale: the server tallies mentions per topic per hour, ranks them, serves the top slice. A giant accumulator-pattern loop, like your grocery-total exercise.'},
+ {k:'delete post really gone', a:'It vanishes from feeds when the server stops serving it. Backups may exist a while, and anyone who screenshotted it has a copy forever. Publish = lose the undo button.'},
+ {k:'facebook source messy huge gibberish', a:'Big sites ship machine-crunched code: scrambled class names, one-line JavaScript, deep nesting. It is your HTML/CSS/JS after a wood chipper &mdash; same species, industrial scale.'},
+ {k:'inspect what shows right click', a:'It opens DevTools on YOUR copy of the page: the live HTML skeleton (Elements), the CSS dressing each element (Styles), plus Console and Network tabs. X-ray vision for any site.'},
+ {k:'devtools changes permanent refresh', a:'Never &mdash; you are editing your local copy only. Refresh re-fetches the real page and everything resets. It is a flight simulator: crash freely.'},
+ {k:'edit website text bank balance fake', a:'You can change what YOUR screen displays &mdash; and only that. The server&rsquo;s truth is untouched, and nobody else sees your edit. Screenshots of edited pages are a classic scam.'},
+ {k:'find element on page arrow picker', a:'Click the arrow-in-a-box icon (top-left of DevTools), then hover the page &mdash; elements highlight as you move, click to jump to their HTML.'},
+ {k:'styles panel crossed out rule wins', a:'The Styles panel lists every rule matching the element, most specific first. Crossed-out lines LOST the cascade tiebreak &mdash; you can literally watch specificity work.'},
+ {k:'box model diagram devtools colors', a:'The colored rectangle diagram shows content, padding, border, margin with live numbers. When spacing confuses you, this diagram is the answer sheet.'},
+ {k:'console tab typing what for', a:'A JavaScript playground pointed at the current page &mdash; type 2+2 and see answers instantly. It is also where console.log notes and error messages appear.'},
+ {k:'console paste warning scam stop', a:'Never paste code you did not write into the console. It runs AS YOU &mdash; the paste-this-to-see-who-viewed-your-profile scam steals accounts precisely this way.'},
+ {k:'network tab requests watch fetch', a:'The Network tab lists every request the page makes &mdash; you can watch a site fetch its JSON lists in real time. Week 5 of the 12-week course makes this tab feel like home.'},
+ {k:'minified gibberish class names crunched', a:'Build tools crunch human-written code into tiny scrambled names so pages download faster. The mechanism underneath is exactly your .class rules. Inspect Wikipedia for the readable version.'},
+ {k:'devtools shortcut open f12', a:'F12, or Ctrl+Shift+I, or right-click then Inspect. Closing: F12 again or the X in its corner.'},
+ {k:'inspect see private data others', a:'No. DevTools shows only what the server sent to YOUR browser for YOUR session. Other people&rsquo;s private data never arrived on your machine, so no tool on your machine can reveal it.'},
+ {k:'deleted element page broke fix', a:'You only broke your local copy &mdash; refresh and the page returns whole. This is the safest vandalism on Earth.'},
+ {k:'phone view test responsive toolbar', a:'The little phone/tablet icon simulates phone screens &mdash; how developers test mobile layouts without ten devices on the desk.'},
+ {k:'view source vs inspect difference', a:'View source shows the HTML as originally SHIPPED; Inspect shows the LIVE structure after JavaScript has built things. On app-like sites they differ wildly &mdash; Inspect is the truth.'},
+ {k:'copy css from site learn steal', a:'Inspect it, read its Styles panel, try the properties yourself. Reading real sites&rsquo; CSS is a time-honored way to learn &mdash; recipes are copyable; give credit for whole designs.'},
+ {k:'red errors console big sites', a:'Red console lines are JavaScript errors from that page &mdash; same species as the lab&rsquo;s error messages. Even big sites ship a few. You can now read what most visitors never see.'},
+ {k:'localstorage application tab save file', a:'Application tab &rarr; Local Storage shows what a site saved in this browser &mdash; including this lab&rsquo;s codeschool progress entry. Look, but edit carefully: that IS your save file.'},
+ {k:'change color live styles drill', a:'Click an element, find the rule in Styles, click a value, type a new one &mdash; the page updates instantly. Zero risk, refresh resets. The best CSS learning drill there is.'},
+ {k:'inspect on phone mobile possible', a:'Phones do not ship DevTools in the browser. It is possible by cabling the phone to a computer, but honestly: inspect on the laptop, browse on the phone.'},
+ {k:'email private inspect safe strangers', a:'Inspect shows only what the server SENT to that viewer. If your email is private, it simply is not in the HTML strangers receive &mdash; the protection happened on the server before anything shipped.'},
+ {k:'server decides who sees what', a:'Every request carries a signed ticket saying who is asking. The server checks permissions FIRST, then builds a response containing only what that person may see. Same URL, different viewer, different HTML.'},
+ {k:'cookie session ticket wristband', a:'A cookie is the wristband: earned at login, carried with every request, checked by the bouncer each time. That is how sites remember you without re-asking your password.'},
+ {k:'never trust client rule security', a:'The most important rule in software security: anything sent to a user&rsquo;s device is theirs to inspect and modify &mdash; so privacy checks and permissions must live on the SERVER.'},
+ {k:'hide with css fake security', a:'Shipping secret data and hiding it with CSS or JavaScript is fake security &mdash; Inspect defeats it in five seconds. If the browser received it, the user has it. Real hiding = never send it.'},
+ {k:'password stored safe hashed', a:'Good sites never store your actual password &mdash; they store a one-way scrambled fingerprint (hash) and compare fingerprints at login. A site that can email you your old password is doing it wrong.'},
+ {k:'https padlock protects what', a:'HTTPS encrypts the conversation BETWEEN you and the server, so public wifi cannot read it. It says the pipe is private &mdash; not that the site itself is trustworthy.'},
+ {k:'phishing fake login trick', a:'A fake copy of a real login page that mails your password to a thief. Defense: check the address bar domain before typing a password, and be suspicious of urgency.'},
+ {k:'two factor authentication 2fa worth', a:'Yes, everywhere it is offered. A stolen password alone then is not enough &mdash; the thief also needs your phone. The single highest-value security habit.'},
+ {k:'public profile visible copyable', a:'Whatever your page shows strangers IS in the HTML strangers receive &mdash; copyable, screenshotable, archivable. Privacy settings control what ships; nothing controls what happens after.'},
+ {k:'login again sensitive change annoying', a:'For high-stakes actions (change email, payout), servers re-check it is really you in case someone borrowed your logged-in device. Annoyance by design.'},
+ {k:'website read my files computer', a:'No &mdash; browsers sandbox pages hard. A site sees only what you explicitly give it (files you upload, permissions you grant). The lab&rsquo;s preview is sandboxed the same way.'},
+ {k:'incognito private mode actually', a:'It gives a temporary browser that forgets cookies and history when closed &mdash; on YOUR device. Sites and your network still see the traffic. Private from your history, not from the internet.'},
+ {k:'data breach password reuse', a:'Breaches leak password lists, and thieves try them everywhere else. One site falls, everything falls. Use a password manager; unique password everywhere.'},
+ {k:'app permissions camera location care', a:'Every permission is data that can leave your device. Grant what the feature genuinely needs and be suspicious of flashlight apps wanting your contacts.'},
+ {k:'dms private staff read encrypted', a:'DMs live on the platform&rsquo;s servers, so the platform can technically access them unless end-to-end encrypted. Treat DMs as private-ish, not vault-grade.'},
+ {k:'logout all devices stolen session', a:'The server can cancel wristbands: log-out-all-sessions invalidates every ticket, kicking out anyone using a stolen one. First move if an account acts weird, right after changing the password.'},
+ {k:'url address bar sensitive tokens', a:'Things in the address bar get logged, cached, and screenshotted. Never paste links containing tokens or reset codes; well-built sites keep secrets out of URLs.'},
+ {k:'paper plate proxy security real example', a:'You have read production security already: the proxy&rsquo;s app-key check (bouncer), rate limiter (spam control), server-side API keys (secrets never ship to phones). The 12-week course has you build all three.'},
+ {k:'hacked account what can do', a:'A stolen session or password IS you to the server: read DMs, message your friends (scams spread this way), reset other accounts via your email. Email + 2FA is the keystone.'},
+ {k:'doxing what is definition', a:'Doxing = gathering someone&rsquo;s identifying details (address, workplace, real name behind a username) and PUBLISHING them to enable harassment. The collecting is quiet; the weapon is the publishing.'},
+ {k:'doxing hacking needed aggregation crumbs', a:'Usually no hacking at all &mdash; doxers assemble crumbs that were each individually public: a street sign in a photo, a race-results page, a reused username. Harmless alone; assembled, an address.'},
+ {k:'username reuse connect accounts', a:'The number-one thread doxers pull: the same handle on five sites links those five lives together. Use different usernames for accounts you would hate to see connected.'},
+ {k:'photo background leaks location', a:'Photos leak more than their subject: street signs, storefronts, school logos, reflections &mdash; even timing (on vacation = house empty). Scan backgrounds before posting.'},
+ {k:'search myself ego what strangers see', a:'Search your own name, usernames, and email in quotes and browse as a stranger. You cannot defend crumbs you do not know are public.'},
+ {k:'data broker people finder opt out', a:'People-finder sites compile public records into profiles; most have buried opt-out forms. Removing yourself from the big ones meaningfully raises the effort to dox you.'},
+ {k:'family posts leak tagging', a:'Your info escapes through other people&rsquo;s public posts &mdash; tags, family photos, congratulations naming your workplace. Tag-review settings and ask-before-posting plug this.'},
+ {k:'doxed what do steps help', a:'Document (screenshots, URLs), report to the platform, tighten locks (passwords, 2FA), tell people close to you, and if there are threats, involve police with your documentation. Do not engage the poster.'},
+ {k:'doxing illegal law', a:'Gray-to-illegal depending on place and intent: assembling public records may be legal, but publishing to threaten or incite harassment increasingly is not &mdash; and every platform bans it.'},
+ {k:'kids internet safety teach rules', a:'The framing that works: if a human can see it, a human can save it. Post as if everything public is permanent; keep names/school/address out; different usernames; tell an adult when anything feels off.'},
+ {k:'internet permanent copy machine delete', a:'The internet is a copy machine with no undo: caches, archives, screenshots. Deleting removes the official copy, not the copies. Decide BEFORE posting.'},
+ {k:'swatting what related', a:'An extreme doxing follow-on: faking an emergency call to send armed police to a victim&rsquo;s address. It has been lethal and is prosecuted hard. A leaked address is not a small leak.'},
+ {k:'anonymous account really found how', a:'Pseudonyms fail through crumbs: writing style, posting timezone, a reused image, one slip without a VPN, a linked recovery email. Assume your anonymity is thin.'},
+ {k:'harmless crumbs combined example', a:'First name + city + a gym check-in + a marathon results page = full name and neighborhood. Each crumb defensible; the combination is an address. Think in combinations.'},
+ {k:'never post list info', a:'Home address, phone, birthdate + hometown together, license plates, school schedules, travel dates while away, photos of keys or boarding passes (barcodes decode!).'},
+ {k:'privacy settings audit start where', a:'Per platform: posts friends-only, tag review on, look-up-by-phone/email off, old-post visibility limited. Fifteen minutes per platform, huge payoff.'},
+ {k:'old accounts forgotten risk', a:'Ancient accounts are crumb mines: old bios, old usernames, old photos. Delete or scrub what you no longer use &mdash; especially anything sharing today&rsquo;s username.'},
+ {k:'vpn enough hide doxing', a:'A VPN hides your network address from sites &mdash; useful, but most doxing uses what you PUBLISHED, not your IP. A lock on one door of a house with open windows.'},
+ {k:'reverse image search photo linked', a:'Anyone can drop your photo into a reverse-image search and find everywhere else it appears &mdash; linking profiles together. Unique photo per context is a quiet pro move.'},
+ {k:'harassment report block support', a:'Block early, report with screenshots, do not feed the fire publicly. Platforms act faster on documented patterns. Loop in someone you trust &mdash; isolation is what harassers count on.'},
 ];
 
 /* extra reference material for lessons whose teach text is short */
@@ -1023,7 +1211,14 @@ function runCheck(){
   statusEl.className = res.ok ? 'ok' : '';
   statusEl.innerHTML = (res.ok ? '✓ ' : '') + res.msg;
   btnNext.style.display = res.ok ? 'inline-block' : 'none';
-  if (res.ok && !done.has(idx)){ done.add(idx); saveP(); renderNav(); }
+  if (res.ok && !done.has(idx)){
+    done.add(idx); saveP(); renderNav();
+    const g=L[idx].g, ls=L.map((l,i)=>({l,i})).filter(x=>x.l.g===g);
+    const gComplete = ls.every(x=>done.has(x.i));
+    if (done.size===L.length){ confetti(160); gradeToast('', true); }
+    else if (gComplete){ confetti(90); gradeToast(GRADES.find(x=>x.id===g).name, false); }
+    else confetti(22);
+  }
 }
 function normRes(les, code){
   let doc = null;
@@ -1032,6 +1227,31 @@ function normRes(les, code){
   return (r && typeof r === 'object') ? r : (r ? {ok:true,msg:'Done!'} : {ok:false,msg:'Not quite yet &mdash; re-read the goal box.'});
 }
 
+const LEVELS=[[0,'Rookie'],[4,'Word Wrangler'],[8,'Tag Tamer'],[14,'Style Painter'],[19,'Name Tagger'],[22,'Button Whisperer'],[25,'Word Gluer'],[27,'List Keeper'],[29,'Trick Teacher'],[33,'Decision Maker'],[37,'Loop Rider'],[41,'Machine Builder'],[44,'Box Labeler'],[48,'Bug Detective'],[52,'Code Professional'],[57,'Graduate']];
+function levelFor(n){ let name=LEVELS[0][1]; for (const [min,t] of LEVELS) if (n>=min) name=t; return name; }
+const CCOLORS=['#2f7d5c','#1d5c8f','#d4a017','#b3542e','#7b5cb8','#c94f7c'];
+function confetti(count){
+  const holder=document.createElement('div'); holder.className='confetti';
+  for (let i=0;i<count;i++){
+    const bit=document.createElement('i');
+    bit.style.left=(Math.random()*100)+'vw';
+    bit.style.background=CCOLORS[i%CCOLORS.length];
+    bit.style.animationDelay=(Math.random()*.35)+'s';
+    bit.style.transform='rotate('+(Math.random()*360)+'deg)';
+    holder.appendChild(bit);
+  }
+  document.body.appendChild(holder);
+  setTimeout(()=>holder.remove(), 2100);
+}
+function gradeToast(gname, allDone){
+  const el=document.createElement('div'); el.className='gbanner';
+  el.innerHTML = allDone ? '🎓 CODE SCHOOL COMPLETE!<small>You are a programmer. Go build things.</small>'
+    : '🏅 ' + gname + ' complete!<small>+25 bonus XP · Level: ' + levelFor(done.size) + '</small>';
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(), 2700);
+}
+function xpFor(){ let xp = done.size*10; for (const g of GRADES){ const ls=L.map((l,i)=>({l,i})).filter(x=>x.l.g===g.id); if (ls.length && ls.every(x=>done.has(x.i))) xp+=25; } return xp; }
+
 function renderNav(){
   navEl.innerHTML = '';
   for (const g of GRADES){
@@ -1039,7 +1259,8 @@ function renderNav(){
     const gdone = lessons.filter(x=>done.has(x.i)).length;
     const head = document.createElement('div');
     head.className='ghead';
-    head.innerHTML = '<span>'+g.name+'<span class="gsub">'+g.sub+'</span></span>';
+    const gComplete = lessons.length>0 && gdone===lessons.length;
+    head.innerHTML = '<span>'+(gComplete?'🏅 ':'')+g.name+'<span class="gsub">'+g.sub+'</span></span>';
     if (gdone > 0){
       const rb = document.createElement('button');
       rb.className='ghreset'; rb.textContent='redo'; rb.title='Clear this grade’s ticks and start it again';
@@ -1057,6 +1278,7 @@ function renderNav(){
   }
   const total = L.length, nd = done.size;
   $('#progTxt').textContent = nd + ' / ' + total;
+  $('#xpTxt').textContent = '⭐ ' + xpFor() + ' XP · ' + levelFor(nd);
   $('#progFill').style.width = (100*nd/total) + '%';
 }
 
@@ -1103,10 +1325,13 @@ function answer(q){
   for (const e of QA){
     const ks = e.k.split(' ');
     let score = 0;
-    for (const w of words) if (ks.some(k=>k.startsWith(w)||w.startsWith(k))) score++;
+    for (const w of words){
+      if (ks.includes(w)) score += 3;
+      else if (w.length>=4 && ks.some(k=>k.length>=4 && (k.startsWith(w)||w.startsWith(k)))) score += 1;
+    }
     if (score > bestScore){ bestScore=score; best=e; }
   }
-  if (best && bestScore>0) return '<p>' + best.a + '</p>';
+  if (best && bestScore>=3) return '<p>' + best.a + '</p>';
   return '<p>I don’t know that one (I only know what this course teaches). Copy your question and paste it to Claude next time you’re online &mdash; then tell them to add it to my answer bank!</p>';
 }
 

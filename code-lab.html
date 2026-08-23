@@ -80,7 +80,7 @@ details.ft p{margin:6px 0 0;line-height:1.5}
 #ed::selection{background:rgba(38,79,120,.85);color:transparent}
 .t-k{color:#c586c0}.t-kw{color:#569cd6}.t-s{color:#ce9178}.t-n{color:#b5cea8}.t-c{color:#6a9955}.t-f{color:#dcdcaa}.t-t{color:#569cd6}.t-a{color:#9cdcfe}.t-p{color:#9cdcfe}.t-sel{color:#d7ba7d}
 .btnrow{flex:0 0 auto;display:flex;gap:8px;padding:8px 12px;background:var(--panel);border-top:2px solid var(--line);flex-wrap:wrap}
-.btnrow button, header .hbtn{font-family:inherit;font-size:.85rem;padding:6px 12px;border-radius:8px;border:2px solid var(--line);background:var(--panel);cursor:pointer}
+.btnrow button, header .hbtn{font-family:inherit;font-size:.85rem;padding:6px 12px;border-radius:8px;border:2px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink)}
 .btnrow button:hover, header .hbtn:hover{border-color:var(--accent)}
 #btnNext{background:var(--accent);color:#fff;border-color:var(--accent);display:none;animation:npulse .8s ease 2}
 @keyframes npulse{50%{transform:scale(1.08);box-shadow:0 0 0 6px rgba(47,125,92,.25)}}
@@ -96,14 +96,29 @@ details.ft p{margin:6px 0 0;line-height:1.5}
 .dots i:nth-child(2){background:#e8d48a}
 .dots i:nth-child(3){background:#9fd4b8}
 #out{flex:1;border:none;background:#fff;width:100%}
-#welcome,#certOv,#statsOv{position:fixed;inset:0;background:rgba(43,35,32,.55);z-index:200;display:none;align-items:center;justify-content:center}
-#welcome.open,#certOv.open,#statsOv.open{display:flex}
-#certOv .wcard,#statsOv .wcard{max-height:86vh;overflow-y:auto}
+#welcome,#certOv,#statsOv,#themeOv{position:fixed;inset:0;background:rgba(43,35,32,.55);z-index:200;display:none;align-items:center;justify-content:center}
+#welcome.open,#certOv.open,#statsOv.open,#themeOv.open{display:flex}
+#certOv .wcard,#statsOv .wcard,#themeOv .wcard{max-height:86vh;overflow-y:auto}
 .cert{border:6px double var(--accent);border-radius:12px;padding:22px;text-align:center}
 .cert h1{font-size:1.6rem;margin-bottom:4px}
 .cert .cname{font-size:1.9rem;color:var(--accent2);margin:10px 0}
 .cert .cline{margin:6px 0;line-height:1.5}
 .cert .cmeds{font-size:.85rem;color:var(--soft);margin-top:10px;line-height:1.7}
+.throw{display:flex;align-items:center;gap:12px;padding:9px 10px;border:2px solid var(--line);border-radius:10px;margin:8px 0;cursor:pointer;background:none;width:100%;font-family:inherit;font-size:.95rem;color:var(--ink);text-align:left}
+.throw:hover{border-color:var(--accent)}
+.throw.cur{border-color:var(--accent);background:var(--good)}
+.throw.locked{opacity:.55;cursor:not-allowed}
+.throw .sw{display:flex;gap:3px;flex:0 0 auto;background:#111;padding:5px 6px;border-radius:6px}
+.throw .sw i{width:12px;height:12px;border-radius:3px;display:block}
+.throw .tstat{margin-left:auto;font-size:.75rem;color:var(--soft)}
+#senseiRow{border-top:2px dashed var(--line);margin-top:14px;padding-top:12px}
+.senseitog{display:flex;align-items:center;gap:12px;width:100%;background:none;border:2px solid var(--line);border-radius:10px;padding:10px;cursor:pointer;font-family:inherit;font-size:.95rem;color:var(--ink);text-align:left}
+.senseitog:hover{border-color:#8a1c1c}
+.senseitog .knob{margin-left:auto;width:42px;height:22px;border-radius:11px;background:var(--code);position:relative;flex:0 0 auto;transition:background .15s}
+.senseitog .knob::after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:var(--panel);border:1px solid var(--line);transition:left .15s}
+.senseitog.on{border-color:#8a1c1c}
+.senseitog.on .knob{background:#8a1c1c}
+.senseitog.on .knob::after{left:22px}
 .statrow{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:.9rem}
 .statrow .sname{width:110px;flex:0 0 auto}
 .statbar{flex:1;height:10px;background:var(--code);border-radius:5px;overflow:hidden}
@@ -133,6 +148,8 @@ body.dark .pay{background:#28332c;border-color:#3a4f40}
 .navitem.chal{color:#8a5a2e;font-weight:bold}
 body.dark .navitem.chal{color:#d9a45e}
 body.sensei #btnHelp,body.sensei #btnLead,body.sensei #btnSol{display:none}
+body.sensei .edwrap{box-shadow:inset 0 0 0 3px #a52222}
+body.sensei #btnTheme{border-color:#8a1c1c}
 .kitrow{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
 .kitrow button{font-family:inherit;font-size:.85rem;padding:8px 12px;border:2px solid var(--line);border-radius:8px;background:var(--panel);cursor:pointer}
 .kitrow button:disabled{opacity:.5;cursor:not-allowed}
@@ -155,8 +172,8 @@ body.sensei #btnHelp,body.sensei #btnLead,body.sensei #btnSol{display:none}
 .wcard h2{margin-bottom:12px}
 .wcard p{margin:0 0 10px;line-height:1.5}
 .wcard ol{margin:0 0 12px 22px;line-height:1.7}
-.wcard button{background:var(--accent);color:#fff;border:none;font-family:inherit;font-size:1.05rem;padding:12px 22px;border-radius:10px;cursor:pointer;width:100%}
-.wcard button:hover{background:var(--accent2)}
+#welcome .wcard button{background:var(--accent);color:#fff;border:none;font-family:inherit;font-size:1.05rem;padding:12px 22px;border-radius:10px;cursor:pointer;width:100%}
+#welcome .wcard button:hover{background:var(--accent2)}
 #qaPanel{position:fixed;inset:auto 16px 16px auto;width:340px;max-height:70vh;background:var(--panel);border:2px solid var(--line);border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.15);display:none;flex-direction:column;overflow:hidden;z-index:50}
 #qaPanel.open{display:flex}
 #qaPanel .qhead{padding:8px 12px;background:var(--code);display:flex;align-items:center}
@@ -165,7 +182,7 @@ body.sensei #btnHelp,body.sensei #btnLead,body.sensei #btnSol{display:none}
 #qaOut{padding:10px 12px;overflow-y:auto;font-size:.88rem;line-height:1.5}
 #qaOut p{margin-bottom:8px}
 .hint-on #status{background:#eef;border-color:#ccd}
-body.dark{--bg:#221e1b;--panel:#2b2622;--ink:#ece5dc;--soft:#b0a698;--line:#4a423a;--code:#38322c;--good:#2d4436;--goodline:#3f6b52;--bad:#4a332c;--badline:#6b4a3f}
+body.dark{--bg:#161514;--panel:#1f1e1c;--ink:#e8e4dd;--soft:#a29b90;--line:#383530;--code:#2a2825;--good:#26382d;--goodline:#3a5c48;--bad:#3d2d27;--badline:#5c4238}
 body.dark .goalbox{background:#2c3a47;border-color:#5b8cb8}
 body.dark .goalbox b{color:#8fc1e8}
 body.dark #status.wait{background:#332e29;color:var(--soft)}
@@ -222,7 +239,6 @@ button:focus-visible,.navitem:focus-visible,#ed:focus-visible,input:focus-visibl
   <div id="progBar"><div id="progFill"></div></div>
   <span id="progTxt">0 / 0</span>
   <span id="xpTxt"></span>
-  <button class="hbtn" id="btnSensei" style="display:none" title="Sensei mode: hides all hint buttons. Unlocked by finishing the school.">🥋</button>
   <button class="hbtn" id="btnCert" style="display:none" title="Your graduation certificate">🎓 Certificate</button>
   <button class="hbtn" id="btnDark" title="Toggle dark mode" aria-label="Toggle dark mode">🌙</button>
   <button class="hbtn" id="btnReplay" style="display:none">🏆 Do it all again</button>
@@ -276,6 +292,7 @@ button:focus-visible,.navitem:focus-visible,#ed:focus-visible,input:focus-visibl
 </div></div>
 <div id="certOv"><div class="wcard"><div class="cert" id="certBody"></div><div id="certBtns" style="display:flex;gap:8px;margin-top:14px"><button id="certPrint" style="flex:1;background:var(--accent);color:#fff;border:none;font-family:inherit;font-size:1rem;padding:10px;border-radius:8px;cursor:pointer">🖨 Print / save as PDF</button><button id="certClose" style="flex:0 0 auto;border:2px solid var(--line);background:none;border-radius:8px;padding:10px 14px;cursor:pointer;font-family:inherit">Close</button></div></div></div>
 <div id="statsOv"><div class="wcard"><h2>Your stats</h2><div id="statsBody"></div><button id="statsClose" style="width:100%;margin-top:12px;border:2px solid var(--line);background:none;border-radius:8px;padding:10px;cursor:pointer;font-family:inherit">Close</button></div></div>
+<div id="themeOv"><div class="wcard"><h2>🎨 Looks</h2><div id="themeList"></div><div id="senseiRow"></div><button id="themeClose" style="width:100%;margin-top:12px;border:2px solid var(--line);background:none;border-radius:8px;padding:10px;cursor:pointer;font-family:inherit;color:var(--ink)">Close</button></div></div>
 <div id="qaPanel">
   <div class="qhead"><b>Ask a question</b><button id="qaClose" aria-label="Close">&times;</button></div>
   <input id="qaIn" placeholder="Type your question and press Enter">
@@ -2236,8 +2253,7 @@ function renderNav(){
   const grad = (nd===total && total>0);
   $('#btnReplay').style.display = grad ? 'inline-block' : 'none';
   $('#btnCert').style.display = grad ? 'inline-block' : 'none';
-  $('#btnSensei').style.display = grad || sensei ? 'inline-block' : 'none';
-  $('#btnSensei').textContent = sensei ? '🥋 on' : '🥋';
+
   $('#progFill').style.width = (100*nd/total) + '%';
 }
 
@@ -2420,15 +2436,34 @@ function applyTheme(){
   const t=THEMES.find(x=>x.id===edTheme);
   if (t && t.id && done.size>=t.min) w.classList.add(t.id);
 }
-$('#btnTheme').onclick = ()=>{
-  const unlocked = THEMES.filter(t=>done.size>=t.min);
-  const curI = Math.max(0, unlocked.findIndex(t=>t.id===edTheme));
-  const next = unlocked[(curI+1)%unlocked.length];
-  edTheme = next.id; saveP(); applyTheme();
-  const locked = THEMES.filter(t=>done.size<t.min).map(t=>t.name+' (at '+levelFor(t.min)+')').join(', ');
-  statusEl.className='wait';
-  statusEl.innerHTML='🎨 Theme: <b>'+next.name+'</b>' + (locked ? ' — still locked: '+locked : ' — all themes unlocked!');
-};
+const SWATCH={'':['#1e1e1e','#569cd6','#ce9178','#dcdcaa'],'th-midnight':['#0d1b2a','#6ab0f3','#7fd1b9','#e0c285'],'th-paper':['#faf8f2','#1d5c8f','#a4571f','#7d5a9e'],'th-synth':['#241b2f','#72e0d1','#ff8fa3','#ffd166'],'th-matrix':['#0a0f0a','#4dc36b','#d8f7c0','#c6e88a']};
+function renderThemeTray(){
+  $('#themeList').innerHTML = THEMES.map(t=>{
+    const unlocked = done.size>=t.min;
+    const sw = SWATCH[t.id].map(c=>'<i style="background:'+c+'"></i>').join('');
+    const stat = !unlocked ? '🔒 unlocks at '+levelFor(t.min) : (t.id===edTheme ? '✓ current' : 'tap to wear');
+    return '<button class="throw'+(t.id===edTheme?' cur':'')+(unlocked?'':' locked')+'" data-th="'+t.id+'"'+(unlocked?'':' disabled')+'><span class="sw">'+sw+'</span><span>'+t.name+'</span><span class="tstat">'+stat+'</span></button>';
+  }).join('');
+  const gradded = done.size>=coreTotal() && coreTotal()>0;
+  $('#senseiRow').innerHTML = gradded
+    ? '<button class="senseitog'+(sensei?' on':'')+'" id="senseiTog">🥋 <span><b>Sensei mode</b><br><span style="font-size:.78rem;color:var(--soft)">no hint buttons, any look — the graduate&rsquo;s vow</span></span><span class="knob"></span></button>'
+    : '<p style="font-size:.8rem;color:var(--soft);margin:0">🥋 Sensei mode joins this tray when you finish the school.</p>';
+  const tog=$('#senseiTog');
+  if (tog) tog.onclick=()=>{
+    sensei=!sensei; saveP();
+    document.body.classList.toggle('sensei', sensei);
+    renderThemeTray();
+    const el=document.createElement('div'); el.className='gbanner';
+    el.innerHTML = sensei ? '🥋 Sensei mode<small>Hint buttons removed. The coach remains. The red frame marks your vow.</small>'
+      : '🥋 Sensei mode off<small>The hints are back. No shame in it — tools are tools.</small>';
+    document.body.appendChild(el); setTimeout(()=>el.remove(),2400);
+  };
+  document.querySelectorAll('#themeList .throw:not(.locked)').forEach(b=>{
+    b.onclick=()=>{ edTheme=b.dataset.th; saveP(); applyTheme(); renderThemeTray(); };
+  });
+}
+$('#btnTheme').onclick = ()=>{ renderThemeTray(); $('#themeOv').classList.add('open'); };
+$('#themeClose').onclick = ()=>$('#themeOv').classList.remove('open');
 $('#xpTxt').style.cursor='pointer';
 $('#xpTxt').title='Click for your stats';
 $('#xpTxt').onclick = ()=>{
@@ -2459,11 +2494,7 @@ $('#btnCert').onclick = ()=>{
 };
 $('#certClose').onclick = ()=>$('#certOv').classList.remove('open');
 $('#certPrint').onclick = ()=>window.print();
-$('#btnSensei').onclick = ()=>{
-  sensei = !sensei; saveP();
-  document.body.classList.toggle('sensei', sensei);
-  $('#btnSensei').textContent = sensei ? '🥋 on' : '🥋';
-};
+
 $('#btnDark').onclick = ()=>{
   document.body.classList.toggle('dark');
   const on = document.body.classList.contains('dark');
@@ -2473,7 +2504,7 @@ $('#btnDark').onclick = ()=>{
 try{ if (localStorage.getItem('darkmode')==='1'){ document.body.classList.add('dark'); $('#btnDark').textContent='☀️'; } }catch(e){}
 $('#navSearch').addEventListener('input', renderNav);
 document.addEventListener('keydown', (e)=>{
-  if (e.key==='Escape'){ $('#qaPanel').classList.remove('open'); const w=$('#welcome'); if (w.classList.contains('open')){ w.classList.remove('open'); try{localStorage.setItem('welcomed','1');}catch(x){} } }
+  if (e.key==='Escape'){ $('#qaPanel').classList.remove('open'); $('#themeOv').classList.remove('open'); const w=$('#welcome'); if (w.classList.contains('open')){ w.classList.remove('open'); try{localStorage.setItem('welcomed','1');}catch(x){} } }
   if ((e.ctrlKey||e.metaKey) && e.key==='Enter' && btnNext.style.display!=='none' && !sandbox){ e.preventDefault(); btnNext.click(); }
 });
 $('#btnSandbox').onclick = openSandbox;

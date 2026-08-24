@@ -344,6 +344,14 @@ const JS_HTML  = '<p id="screen">nothing yet</p>';
 const JS_HTML_BTN = '<button id="btn">Press me</button>\n<p id="screen">nothing yet</p>';
 
 function hasRe(code, re){ return re.test(code); }
+/* Grade every requirement, not just up to the first failure, so the learner is
+   told exactly which piece is missing instead of being handed the whole goal
+   again. reqLog is read by runCheck to draw the checklist. */
+let reqLog = [];
+function all(code, pairs){
+  reqLog = pairs.map(p => ({t:p[1], ok: (p[0] instanceof RegExp) ? p[0].test(code) : !!p[0](code)}));
+  return reqLog.every(r=>r.ok);
+}
 function txtOf(doc, sel){ const el = doc.querySelector(sel); return el ? el.textContent.trim() : null; }
 
 /* small builders so every lesson object has the same shape */
@@ -537,7 +545,7 @@ CL('Size and center',
  'h1 {\n\n}',
  'h1 {\n  font-size: 60px;\n  text-align: center;\n}',
  'Two lines inside the braces: <code>font-size: 60px;</code> and <code>text-align: center;</code>.',
- (c)=> hasRe(c,/font-size\s*:\s*\d+px/) && hasRe(c,/text-align\s*:\s*center/)
+ (c)=> all(c,[[/font-size\s*:\s*\d+px/,'a <code>font-size:</code> with a number'], [/text-align\s*:\s*center/,'<code>text-align: center;</code>']])
    ? {ok:true,msg:'Big and centered. You are stacking properties like a pro already.'}
    : {ok:false,msg:'I need both lines: font-size with a px number, and text-align: center.'},
  G2HTML),
@@ -548,7 +556,7 @@ CL('Breathing room',
  'p {\n\n}',
  'p {\n  background: mintcream;\n  padding: 20px;\n}',
  'Two lines: a background color, and <code>padding: 20px;</code>.',
- (c)=> hasRe(c,/padding\s*:\s*\d+px/) && hasRe(c,/background(-color)?\s*:\s*[#a-zA-Z]\w*/)
+ (c)=> all(c,[[/padding\s*:\s*\d+px/,'a <code>padding:</code> with a number'], [/background(-color)?\s*:\s*[#a-zA-Z]\w*/,'a <code>background:</code> with a colour']])
    ? {ok:true,msg:'Room to breathe. Space is not wasted screen &mdash; it is what makes things readable.'}
    : {ok:false,msg:'I need both: a background, and padding of at least a few px.'},
  G2HTML),
@@ -559,9 +567,9 @@ CL('Lines and round corners',
  'p {\n\n}',
  'p {\n  border: 3px solid darkgreen;\n  border-radius: 12px;\n}',
  'Two lines: <code>border: 3px solid somecolor;</code> and <code>border-radius: 12px;</code>.',
- (c)=> hasRe(c,/border\s*:\s*\d+px\s+\w+\s+\w+/) && hasRe(c,/border-radius\s*:\s*\d+px/)
+ (c)=> all(c,[[/border\s*:\s*[^;}\n]*\S/,'a <code>border:</code> line'], [/border-radius\s*:\s*[^;}\n]*\d/,'a <code>border-radius:</code> with a number']])
    ? {ok:true,msg:'A proper card! Grade 2 done: you can color, size, space, and frame anything on a page.'}
-   : {ok:false,msg:'I need a full border (thickness, style, color) plus a border-radius.'},
+   : {ok:false,msg:'The p needs two lines: a <code>border</code> and a <code>border-radius</code>.'},
  G2HTML),
 ]);
 
@@ -584,7 +592,7 @@ CL('Many things, one name',
  '.fancy {\n\n}',
  '.fancy {\n  background: lavender;\n  padding: 10px;\n  border-radius: 8px;\n}',
  'One rule: <code>.fancy { background: ...; padding: ...px; }</code>',
- (c)=> hasRe(c,/\.fancy\s*\{[^}]*background\s*:\s*[#a-zA-Z]/) && hasRe(c,/padding\s*:\s*\d/)
+ (c)=> all(c,[[/\.fancy\s*\{[^}]*background\s*:\s*[#a-zA-Z]/,'a <code>.fancy { background: ... }</code> rule'], [/padding\s*:\s*\d/,'a <code>padding:</code> with a number']])
    ? {ok:true,msg:'Three styled with one rule. Write once, use everywhere &mdash; you will meet this idea again in every language.'}
    : {ok:false,msg:'The .fancy rule needs a background and a padding.'},
  '<p class="fancy">First fancy thing</p>\n<p>Plain thing</p>\n<p class="fancy">Second fancy thing</p>\n<p class="fancy">Third fancy thing</p>'),
@@ -1073,7 +1081,7 @@ REV('G2','css',
  'p {\n\n}',
  'p {\n  color: darkgreen;\n  background: mintcream;\n  font-size: 20px;\n  padding: 16px;\n  border-radius: 10px;\n}',
  'Five lines inside the braces, one per property, each ending with a semicolon.',
- (c)=> hasRe(c,/color\s*:\s*[#a-zA-Z]/) && hasRe(c,/background(-color)?\s*:\s*[#a-zA-Z]/) && hasRe(c,/font-size\s*:\s*\d+px/) && hasRe(c,/padding\s*:\s*\d+/) && hasRe(c,/border-radius\s*:\s*\d+/)
+ (c)=> all(c,[[/color\s*:\s*[#a-zA-Z]/,'a <code>color:</code> with a colour after it'], [/background(-color)?\s*:\s*[#a-zA-Z]/,'a <code>background:</code> with a colour'], [/font-size\s*:\s*[^;}\n]*\d/,'a <code>font-size:</code> with a number'], [/padding\s*:\s*[^;}\n]*\d/,'a <code>padding:</code> with a number'], [/border-radius\s*:\s*[^;}\n]*\d/,'a <code>border-radius:</code> with a number']])
    ? {ok:true,msg:'One rule, five dials, a fully dressed card. That is the whole Grade 2 toolkit working together.'}
    : {ok:false,msg:'I need all five: color, background, font-size (px), padding, and border-radius.'},
  '<h1>My page</h1>\n<p>Dress me with everything you know.</p>');
@@ -1084,7 +1092,7 @@ REV('G3','css',
  '',
  'p {\n  color: gray;\n}\n\n.fancy {\n  color: crimson;\n}\n\n#title {\n  color: royalblue;\n}',
  'Three separate rules: bare p, dot .fancy, hash #title. Watch each grab its own targets in the preview.',
- (c)=> hasRe(c,/(^|\n)\s*p\s*\{[^}]*color\s*:/) && hasRe(c,/\.fancy\s*\{[^}]*color\s*:/) && hasRe(c,/#title\s*\{[^}]*color\s*:/)
+ (c)=> all(c,[[/(^|\n)\s*p\s*\{[^}]*color\s*:/,'a <code>p { color: ... }</code> rule'], [/\.fancy\s*\{[^}]*color\s*:/,'a <code>.fancy { color: ... }</code> rule'], [/#title\s*\{[^}]*color\s*:/,'a <code>#title { color: ... }</code> rule']])
    ? {ok:true,msg:'Tag, class, and id — all three pointers, each hitting exactly its own targets. Watch the cascade: the .fancy paragraph obeys .fancy over p. You have the full aiming system.'}
    : {ok:false,msg:'Three rules needed: p { }, .fancy { }, and #title { }, each with a color inside.'},
  '<h1 id="title">The one title</h1>\n<p>An ordinary paragraph.</p>\n<p class="fancy">A fancy paragraph.</p>\n<p class="fancy">Another fancy one.</p>');
@@ -1277,16 +1285,16 @@ function PRACT(gid, lang, title, teach, goal, start, sol, hint, check, pageHtml)
   les.g=gid; les.pract=true; L.push(les);
 }
 PRACT('G2','css','dress a warning','<p>Same dials, new job: warnings need to LOOK like warnings.</p>','Give the h1 a color, a background, and at least 10px of padding.','h1 {\n\n}','h1 {\n  color: darkred;\n  background: mistyrose;\n  padding: 14px;\n}','Three declarations on the h1 selector.',
- (c)=> hasRe(c,/h1\s*\{[^}]*color\s*:\s*[#a-zA-Z]/) && hasRe(c,/background(-color)?\s*:\s*[#a-zA-Z]/) && hasRe(c,/padding\s*:\s*\d+px/)
+ (c)=> all(c,[[/h1\s*\{[^}]*color\s*:\s*[#a-zA-Z]/,'an <code>h1 { color: ... }</code> rule'], [/background(-color)?\s*:\s*[#a-zA-Z]/,'a <code>background:</code> with a colour'], [/padding\s*:\s*\d+px/,'a <code>padding:</code> with a number']])
    ? {ok:true,msg:'A warning that reads as one. Reps make the syntax automatic.'} : {ok:false,msg:'All three on h1: color, background, padding (10px+).'},
  '<h1>Warning: fresh paint</h1>\n<p>Please do not touch the walls.</p>'),
-PRACT('G2','css','the pill button','<p>The classic look, from your own hands.</p>','Give the p a border, HUGE border-radius (99px+), padding, and a background.','p {\n\n}','p {\n  border: 2px solid seagreen;\n  border-radius: 999px;\n  padding: 10px 20px;\n  background: mintcream;\n}','Four lines. Radius bigger than 99px makes the pill.',
- (c)=> hasRe(c,/border\s*:\s*\d+px\s+\w+\s+\w+/) && hasRe(c,/border-radius\s*:\s*(9[9]|[1-9]\d{2,})px/) && hasRe(c,/padding\s*:/) && hasRe(c,/background(-color)?\s*:/)
+PRACT('G2','css','the pill button','<p>The classic look, from your own hands.</p><p>One new trick you will see in the answer: <code>padding</code> can take <b>two</b> numbers &mdash; <code>padding: 10px 20px;</code> means 10 up-and-down, 20 left-and-right. That wider side padding is what makes a pill look like a pill. One number for all four sides still works fine.</p>','Give the p a border, HUGE border-radius (99px+), padding, and a background.','p {\n\n}','p {\n  border: 2px solid seagreen;\n  border-radius: 999px;\n  padding: 10px 20px;\n  background: mintcream;\n}','Four lines. Radius bigger than 99px makes the pill.',
+ (c)=> all(c,[[/border\s*:\s*[^;}\n]*\S/,'a <code>border:</code> line'], [/border-radius\s*:\s*(9[9]|[1-9]\d{2,})px/,'a <code>border-radius:</code> of 99px or more'], [/padding\s*:/,'a <code>padding:</code> line'], [/background(-color)?\s*:/,'a <code>background:</code> line']])
    ? {ok:true,msg:'Pill achieved. That shape is on every app you own.'} : {ok:false,msg:'Border, border-radius of 99px or more, padding, and background.'},
  '<p>Tap me (pretend)</p>'),
 PRACT('G3','css','aim at both','<p>One page, two different targets, two rules.</p>','Style #headline with a color AND .note with a background.','',
  '#headline {\n  color: royalblue;\n}\n\n.note {\n  background: lemonchiffon;\n}','Hash rule for the one headline, dot rule for the notes.',
- (c)=> hasRe(c,/#headline\s*\{[^}]*color\s*:/) && hasRe(c,/\.note\s*\{[^}]*background(-color)?\s*:/)
+ (c)=> all(c,[[/#headline\s*\{[^}]*color\s*:/,'a <code>#headline { color: ... }</code> rule'], [/\.note\s*\{[^}]*background(-color)?\s*:/,'a <code>.note { background: ... }</code> rule']])
    ? {ok:true,msg:'id and class, both aimed true.'} : {ok:false,msg:'Two rules: #headline { color... } and .note { background... }.'},
  '<h1 id="headline">Community News</h1>\n<p class="note">Bake sale Friday.</p>\n<p>Regular paragraph.</p>\n<p class="note">Bring cookies.</p>'),
 PRACT('G4','js','two boxes, one line','<p>Reps on boxes and showing.</p>','Make TWO const boxes (a name and a city) and show them glued in one sentence.','',
@@ -1967,7 +1975,9 @@ const GLOSS = {
  '#name':['hash','a hash in front of a name means id in CSS'],
  '+':['plus','adds numbers, or glues pieces of text together'],
  '===':['strictly equals','asks whether two things are the same, type included'],
- '=>':['arrow','a shorthand way of writing a function']
+ '=>':['arrow','a shorthand way of writing a function'],
+ 'padding: A B':['two numbers','the first is up-and-down, the second is left-and-right - so 10px 20px is a short pill shape'],
+ 'margin: A B':['two numbers','the first is up-and-down, the second is left-and-right']
 };
 const GSYMS = [[/<\//,'</'],[/=/,'='],[/"/,'"'],[/\{/,'{}'],[/;/,';'],[/\(/,'()'],[/\[/,'[]'],[/\+/,'+'],[/===/,'==='],[/=>/,'=>']];
 function decoderFor(les){
@@ -1981,6 +1991,7 @@ function decoderFor(les){
   for (const m of code.matchAll(/\b(const|let|var|function|return|if|else|for|while|true|false|typeof)\b/g)) push(m[1]);
   for (const m of code.matchAll(/(Math\.random|Math\.floor|console\.log|document\.getElementById)/g)) push(m[1]);
   for (const m of code.matchAll(/\.(textContent|length|disabled|includes|toUpperCase)\b/g)) push('.'+m[1]);
+  for (const m of code.matchAll(/(padding|margin)\s*:\s*[\d.]+[a-z%]*\s+[\d.]+/g)) push(m[1]+': A B');
   if (/^\s*\.[a-zA-Z]/m.test(code)) push('.name');
   if (/^\s*#[a-zA-Z]/m.test(code)) push('#name');
   if (/[a-z-]+\s*:/.test(code) && les.lang==='css') push(':');
@@ -2265,7 +2276,7 @@ function runCheck(){
   }
   markErr(res.cls==='coach' ? lintRange : null);
   if (res.cls==='coach' && lintRange) res.msg += ' <b>Marked in red in your code.</b>';
-  statusEl.className = res.ok ? 'ok' : (res.cls || '');
+  statusEl.className = (res.ok ? 'ok' : (res.cls || '')) + (!res.ok && /class="story /.test(res.msg) ? ' projlist' : '');
   statusEl.innerHTML = (res.ok ? '✓ ' : '') + res.msg + (res.ok && RW[idx] ? '<span class="wild">🌍 <b>In the wild:</b> ' + RW[idx] + '</span>' : '');
   btnNext.style.display = res.ok ? 'inline-block' : 'none';
   if (res.ok && !done.has(idx) && solShown && edEl.value === L[idx].sol){
@@ -2309,11 +2320,20 @@ function runCheck(){
     document.body.appendChild(fl); setTimeout(()=>fl.remove(), 1300);
   }
 }
+function reqList(reqs){
+  const k = reqs.filter(r=>r.ok).length;
+  return '<div class="hd">What the goal asks for <span class="pct">'+k+' / '+reqs.length+'</span></div>'
+    + reqs.map(r=>'<div class="story '+(r.ok?'pass':'fail')+'"><span class="ic">'+(r.ok?'\u2713':'\u2717')+'</span><span class="stx">'+r.t+'</span></div>').join('');
+}
 function normRes(les, code){
   let doc = null;
   try { doc = new DOMParser().parseFromString(buildDoc(les, code), 'text/html'); } catch(e){}
+  reqLog = [];
   const r = les.check(code, doc);
-  return (r && typeof r === 'object') ? r : (r ? {ok:true,msg:'Done!'} : {ok:false,msg:'Not quite yet &mdash; re-read the goal box.'});
+  const out = (r && typeof r === 'object') ? r : (r ? {ok:true,msg:'Done!'} : {ok:false,msg:'Not quite yet &mdash; re-read the goal box.'});
+  /* Multi-part goal that did not pass? Show WHICH part, not the whole goal again. */
+  if (!out.ok && reqLog.length >= 2) out.msg = reqList(reqLog);
+  return out;
 }
 
 const LEVELS=[[0,'Rookie'],[4,'Word Wrangler'],[8,'Tag Tamer'],[14,'Style Painter'],[19,'Name Tagger'],[22,'Button Whisperer'],[25,'Word Gluer'],[27,'List Keeper'],[29,'Trick Teacher'],[33,'Decision Maker'],[37,'Loop Rider'],[41,'Machine Builder'],[44,'Box Labeler'],[48,'Bug Detective'],[52,'Code Professional'],[57,'Graduate'],[61,'Paid Renegade'],[75,'Legend']];

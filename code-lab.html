@@ -656,7 +656,7 @@ JL('A third language',
    : {ok:false,msg:'The pattern is <code>screen.textContent = \'some words\';</code> &mdash; check the quotes.'}),
 
 JL('A box with a name on it',
- '<p>JavaScript can remember things in <b>named boxes</b> called variables. You make one with <code>const</code>:</p><pre>const myName = \'Josh\';</pre><p>That means: make a box labelled <code>myName</code>, put <code>\'Josh\'</code> inside. From then on, writing <code>myName</code> (no quotes!) means “whatever is in that box.”</p><pre>const myName = \'Josh\';\nscreen.textContent = myName;</pre>',
+ '<p>JavaScript can remember things in <b>named boxes</b> called variables. You make one with <code>const</code>:</p><pre>const myName = \'Josh\';</pre><p>That means: make a box named <code>myName</code>, put <code>\'Josh\'</code> inside. From then on, writing <code>myName</code> (no quotes!) means “whatever is in that box.”</p><pre>const myName = \'Josh\';\nscreen.textContent = myName;</pre>',
  'Make a const box holding some words, then show the BOX (not quoted words) on screen.',
  '',
  'const myName = \'Josh\';\nscreen.textContent = myName;',
@@ -690,8 +690,8 @@ JL('Sticking words together',
    : {ok:false,msg:'I want to see quoted words + an unquoted box name, glued with +, going to the screen.'}),
 
 JL('Words and numbers are different',
- '<p>To a computer, <code>\'4\'</code> (word) and <code>4</code> (number) are different species. <code>+</code> adds numbers but glues words &mdash; and when they mix, gluing wins. Watch this trap:</p><pre>screen.textContent = \'Total: \' + 4 + 3;</pre><p>Step 1: <code>\'Total: \' + 4</code> glues into <code>\'Total: 4\'</code>. Step 2: <code>\'Total: 4\' + 3</code> glues into <code>\'Total: 43\'</code>. Wrong!</p><p>Brackets fix it by forcing the maths first:</p><pre>screen.textContent = \'Total: \' + (4 + 3);</pre><p>Now step 1 is <code>(4 + 3)</code> &rarr; <code>7</code>, and you get <code>Total: 7</code>.</p>',
- 'Show a label plus a CORRECT sum, using brackets around the maths.',
+ '<p>To a computer, <code>\'4\'</code> (word) and <code>4</code> (number) are different species. <code>+</code> adds numbers but glues words &mdash; and when they mix, gluing wins. Watch this trap:</p><pre>screen.textContent = \'Total: \' + 4 + 3;</pre><p>Step 1: <code>\'Total: \' + 4</code> glues into <code>\'Total: 4\'</code>. Step 2: <code>\'Total: 4\' + 3</code> glues into <code>\'Total: 43\'</code>. Wrong!</p><p>Brackets fix it by forcing the maths first:</p><pre>screen.textContent = \'Total: \' + (4 + 3);</pre><p>Now step 1 is <code>(4 + 3)</code> &rarr; <code>7</code>, and you get <code>Total: 7</code>.</p><p>That <code>\'Total: \'</code> out front has a name in this course: a <b>label</b>. A label is a quoted piece of text you glue in front of a value so a human reading the screen knows what the value IS. <code>7</code> alone tells you nothing; <code>Total: 7</code> tells you everything.</p><p>The real lingo: a quoted piece of text is a <b>string literal</b> &mdash; <i>string</i> because it is a string of characters, <i>literal</i> because it means literally what it says, letter for letter. Say &ldquo;string literal&rdquo; once you are comfortable; think &ldquo;label&rdquo; while you are learning.</p>',
+ 'Show a label &mdash; a quoted piece of text like <code>\'Total: \'</code> &mdash; plus a CORRECT sum, using brackets around the maths.',
  'screen.textContent = \'Total: \' + 4 + 3;',
  'screen.textContent = \'Total: \' + (4 + 3);',
  'Wrap the maths in round brackets: <code>(4 + 3)</code>.',
@@ -895,7 +895,7 @@ JL('No repeats &mdash; the polish',
 /* ============================ GRADE 11 (44-47) ============================ */
 grade('G11', [
 JL('A box with labels inside',
- '<p>A list numbers its contents: 0, 1, 2. An <b>object</b> LABELS them instead &mdash; like a form with named blanks:</p><pre>const person = {\n  name: \'Josh\',\n  age: 40,\n  hobby: \'camping\'\n};\n\nscreen.textContent = person.name;</pre><p>Curly braces, <code>label: value</code> pairs, commas between. Read a value with a dot: <code>person.name</code> means “the name field of person.” You have been USING this all along &mdash; <code>screen.textContent</code> is exactly a dot reaching into an object.</p>',
+ '<p>A list numbers its contents: 0, 1, 2. An <b>object</b> LABELS them instead &mdash; like a form with named blanks:</p><pre>const person = {\n  name: \'Josh\',\n  age: 40,\n  hobby: \'camping\'\n};\n\nscreen.textContent = person.name;</pre><p>Careful &mdash; &ldquo;label&rdquo; is doing a second job here. In Grade 5 a label was quoted text you glued in FRONT of a value on screen. Here a label is the NAME of a compartment inside the object &mdash; its real lingo is a <b>key</b> (or a <b>field</b>). Same English word, two different jobs; when this course says <i>field label</i> it always means this second one.</p><p>Curly braces, <code>label: value</code> pairs, commas between. Read a value with a dot: <code>person.name</code> means “the name field of person.” You have been USING this all along &mdash; <code>screen.textContent</code> is exactly a dot reaching into an object.</p>',
  'Make an object with at least three labelled values and show one on screen with a dot.',
  '',
  'const person = {\n  name: \'Josh\',\n  age: 40,\n  hobby: \'camping\'\n};\n\nscreen.textContent = person.name;',
@@ -963,7 +963,7 @@ JL('Asking a value “what are you?”',
  'Use typeof to show what species a box holds.',
  '',
  'const mystery = \'4\';\nscreen.textContent = \'mystery is a \' + typeof mystery;',
- 'Glue a label with <code>typeof boxName</code> on the screen line.',
+ 'Glue a label &mdash; quoted text like <code>\'mystery is a \'</code> &mdash; onto <code>typeof boxName</code> on the screen line.',
  (c)=> hasRe(c,/typeof\s+\w+/) && hasRe(c,/screen\.textContent\s*=/)
    ? {ok:true,msg:'“What ARE you?” &mdash; the debugging question. Words that look like numbers are still words.'}
    : {ok:false,msg:'Use <code>typeof someBox</code> in the text you put on screen.'}),
@@ -1024,7 +1024,7 @@ JL('The final project: the Mood Machine',
 
 JL('Graduation',
  '<p>Look back at lesson one: you typed your name and it appeared. Today you built a machine with data, decisions, randomness, functions, and guards &mdash; from a spec, alone.</p><p>What you know now: HTML structure, CSS styling, and real programming &mdash; variables, types, choices, loops, functions, objects, debugging, and the professional habits of naming, one-job functions, and DRY.</p><p>Where next: the <b>12-week Paper Plate course</b> &mdash; it takes you from here to servers, Git, deployment, AI APIs, and shipping real features to a real app. It was written expecting a Code School graduate. That’s you.</p><p><a class="gradbtn" href="https://github.com/joshuagrigson/paper-plate/tree/claude/coding-class-12-week-8xzphw/course" target="_blank" rel="noopener">Start the 12-week course &rarr;</a></p><p>One last line for the road. Make it true.</p>',
- 'Declare it, on screen.',
+ 'Say it out loud, on screen &mdash; put a sentence about who you are into <code>screen.textContent</code>.',
  '',
  'screen.textContent = \'I am a programmer.\';',
  'You know exactly how to put words on that screen. You’ve known since Grade 4.',
@@ -1143,10 +1143,10 @@ REV('G4','js',
 
 REV('G5','js',
  REV_INTRO+'<p>Grade 5 in one breath:</p><ul><li><code>+</code> glues words: <code>\'Hello \' + name</code>.</li><li>Words and numbers are different species — gluing wins when they mix.</li><li>Brackets force the math first: <code>\'Total: \' + (4 + 3)</code> gives 7, not 43.</li></ul><p>Plus everything before: boxes, quotes-vs-names, showing on screen.</p>',
- 'One line combining it all: glue a name box + a label + a CORRECT bracketed sum onto the screen.',
+ 'One line combining it all: glue a name box + a label (a quoted piece of text, like <code>\' scored \'</code>) + a CORRECT bracketed sum onto the screen.',
  'const name = \'Josh\';\n',
  'const name = \'Josh\';\nscreen.textContent = name + \' scored \' + (10 + 7) + \' points\';',
- 'Shape: box + quoted label + (number + number) + quoted label — brackets around the math.',
+ 'Shape: box + quoted label + (number + number) + quoted label — a label is just text in quotes, like <code>\' scored \'</code>. Brackets around the math.',
  (c)=> hasRe(c,/const\s+\w+\s*=/) && hasRe(c,/screen\.textContent\s*=[^\n]*\w+[^\n]*\+[^\n]*\(\s*\d+\s*\+\s*\d+\s*\)/)
    ? {ok:true,msg:'Boxes, glue, and honest math in a single sentence. The Total: 43 trap can never fool you again.'}
    : {ok:false,msg:'The screen line must glue the name box AND a bracketed sum like (10 + 7) with + signs.'});
@@ -1163,10 +1163,10 @@ REV('G6','js',
 
 REV('G7','js',
  REV_INTRO+'<p>Grade 7 in one breath:</p><ul><li><code>function name() { }</code> teaches; <code>name();</code> performs.</li><li>Ingredients go in the round brackets and live only inside.</li><li><code>return</code> hands a value back — only textContent shows it.</li><li>Tricks call tricks: small pieces, stacked.</li></ul>',
- 'Teach a trick that takes a list position, RETURNS that item glued after a label, and show the result of calling it.',
+ 'Teach a trick that takes a list position, RETURNS that item glued after a label (quoted text, like <code>\'Snack choice: \'</code>), and show the result of calling it.',
  'const snacks = [\'chips\', \'fruit\', \'cookies\'];\n',
  'const snacks = [\'chips\', \'fruit\', \'cookies\'];\n\nfunction describe(position) {\n  return \'Snack choice: \' + snacks[position];\n}\n\nscreen.textContent = describe(1);',
- 'The function takes one ingredient, returns label + snacks[ingredient]; the screen line calls it with a number.',
+ 'The function takes one ingredient, returns a quoted label + snacks[ingredient]; the screen line calls it with a number.',
  (c)=> hasRe(c,/function\s+\w+\s*\(\s*\w+\s*\)\s*\{[\s\S]*return[\s\S]*\[\s*\w+\s*\][\s\S]*\}/) && hasRe(c,/screen\.textContent\s*=\s*\w+\s*\(\s*\d+\s*\)/)
    ? {ok:true,msg:'A reusable trick with an ingredient, a return, and a real call — functions, lists, and gluing all shaking hands.'}
    : {ok:false,msg:'The function needs (an ingredient), a return using the list[ingredient], and the screen must show a call like describe(1).'});
@@ -1351,7 +1351,7 @@ PRACT('G6','js','grab the last one','<p>Reaching the last item without knowing h
  'const queue = [\'Ana\', \'Bo\', \'Cy\', \'Dee\'];\nscreen.textContent = \'Last in line: \' + queue[queue.length - 1];','The address of the end: queue[queue.length - 1].',
  (c)=> hasRe(c,/\w+\s*\[\s*\w+\.length\s*-\s*1\s*\]/)
    ? {ok:true,msg:'Add ten more names — same line still finds the end. Code that adapts beats code that counts.'} : {ok:false,msg:'Use queue[queue.length - 1], not a hard-coded position.'}),
-PRACT('G6','js','roll the dice','<p>The random shift, in your own hands.</p><p><code>Math.random()</code> gives you a decimal below 1, and <code>Math.floor</code> chops it down to a whole number &mdash; which lands the range at zero. A die has no zero, so you add one at the end. That <code>+ 1</code> is the whole trick.</p><p><b>Done looks like:</b> a number from 1 to 6, never 0, never 7.</p>','Show a die roll from 1 to 6, labeled.','',
+PRACT('G6','js','roll the dice','<p>The random shift, in your own hands.</p><p><code>Math.random()</code> gives you a decimal below 1, and <code>Math.floor</code> chops it down to a whole number &mdash; which lands the range at zero. A die has no zero, so you add one at the end. That <code>+ 1</code> is the whole trick.</p><p><b>Done looks like:</b> a number from 1 to 6, never 0, never 7.</p>','Show a die roll from 1 to 6, with a quoted label like <code>\'You rolled: \'</code> in front of it.','',
  'const roll = Math.floor(Math.random() * 6) + 1;\nscreen.textContent = \'You rolled a \' + roll;','floor(random * 6) gives 0-5; the + 1 makes it 1-6.',
  (c)=> hasRe(c,/Math\.floor\s*\(\s*Math\.random\s*\(\s*\)\s*\*\s*6\s*\)\s*\+\s*1/)
    ? {ok:true,msg:'A fair die. That +1 shift shows up everywhere randomness meets humans.'} : {ok:false,msg:'The exact shape: Math.floor(Math.random() * 6) + 1.'}),
@@ -1371,11 +1371,11 @@ PRACT('G11','js','the pet card','<p>Objects again, in a fresh context, so the sh
  'const pet = {\n  name: \'Biscuit\',\n  kind: \'corgi\',\n  age: 3\n};\n\nscreen.textContent = pet.name + \' is a \' + pet.age + \' year old \' + pet.kind + \'.\';','Three fields in the object, three dot-reads in the sentence.',
  (c)=>{const m=c.match(/\w+\.\w+/g)||[];return hasRe(c,/=\s*\{[\s\S]*:\s*[\s\S]*,[\s\S]*:/) && m.filter(x=>!/Math\.|screen\.|console\./.test(x)).length>=3
    ? {ok:true,msg:'Biscuit is immortalized. Three reads, one sentence - profile pages everywhere.'} : {ok:false,msg:'An object with 3 fields and a sentence gluing all three dot-reads.'};}),
-PRACT('G11','js','team total','<p>Three skills in one rep: loop a list, reach into each object by label, and keep a running total.</p><p>The total lives in a <code>let</code> box outside the loop &mdash; declare it inside and it resets every lap, which is the classic way this goes wrong.</p><p><b>Done looks like:</b> one number on screen, the sum of every score.</p>','Total the points across the whole team and show it labeled.','const team = [\n  { name: \'Sam\', points: 12 },\n  { name: \'Alex\', points: 9 },\n  { name: \'Jo\', points: 15 }\n];\n',
+PRACT('G11','js','team total','<p>Three skills in one rep: loop a list, reach into each object by label, and keep a running total.</p><p>The total lives in a <code>let</code> box outside the loop &mdash; declare it inside and it resets every lap, which is the classic way this goes wrong.</p><p><b>Done looks like:</b> one number on screen, the sum of every score.</p>','Total the points across the whole team and show it after a quoted label like <code>\'Team total: \'</code>.','const team = [\n  { name: \'Sam\', points: 12 },\n  { name: \'Alex\', points: 9 },\n  { name: \'Jo\', points: 15 }\n];\n',
  'const team = [\n  { name: \'Sam\', points: 12 },\n  { name: \'Alex\', points: 9 },\n  { name: \'Jo\', points: 15 }\n];\nlet total = 0;\nfor (const p of team) {\n  total = total + p.points;\n}\nscreen.textContent = \'Team total: \' + total;','Start total at 0; each lap add p.points; show after the loop.',
  (c)=> hasRe(c,/let\s+\w+\s*=\s*0/) && hasRe(c,/for\s*\(\s*const\s+\w+\s+of\s+\w+\s*\)/) && hasRe(c,/\.points\b/) && hasRe(c,/screen\.textContent\s*=/)
    ? {ok:true,msg:'36 points, totaled by machine. Every leaderboard sum is this exact loop.'} : {ok:false,msg:'Numeric accumulator + for...of + adding p.points each lap.'}),
-PRACT('G12','js','type detective','<p><code>typeof</code>, drilled on a deliberately mixed bag.</p><p>Two values can look identical on screen and still be different species &mdash; quotes make text, and text will not do maths. Asking directly is how you settle it instead of guessing.</p><p><b>Done looks like:</b> both species named in one sentence, and they will not match.</p>','Show the typeof BOTH boxes, glued into one labeled sentence.','const a = \'42\';\nconst b = 42;\n',
+PRACT('G12','js','type detective','<p><code>typeof</code>, drilled on a deliberately mixed bag.</p><p>Two values can look identical on screen and still be different species &mdash; quotes make text, and text will not do maths. Asking directly is how you settle it instead of guessing.</p><p><b>Done looks like:</b> both species named in one sentence, and they will not match.</p>','Show the typeof BOTH boxes, glued into one sentence with quoted labels between them.','const a = \'42\';\nconst b = 42;\n',
  'const a = \'42\';\nconst b = 42;\nscreen.textContent = \'a is a \' + typeof a + \', b is a \' + typeof b;','Two typeof reads glued with labels - they will differ!',
  (c)=> (c.match(/typeof\s+\w+/g)||[]).length>=2 && hasRe(c,/screen\.textContent\s*=/)
    ? {ok:true,msg:'Same-looking values, different species - and now you can prove it on demand.'} : {ok:false,msg:'Use typeof on BOTH boxes in one glued sentence.'}),
@@ -1420,7 +1420,7 @@ PROJ('G3','html','The Taco Truck Job','Maria, your first client',
 PROJ('G7','js','The Tip Splitter','Dre, restaurant crew chief',
  'My crew fights over splitting the bill every single shift. I want a thing: total goes in, number of people goes in, out comes what each person pays. And it better not blow up when somebody types zero people, because somebody will.',
  'utility calculators like this are the bread-and-butter of junior freelance work — and the zero-guard is what separates paid work from homework.',
- 'Meet all 5 requirements: a splitBill function with a guard, shown with a label.',
+ 'Meet all 5 requirements: a splitBill function with a guard, shown with a label &mdash; quoted text like <code>\'Each pays: \'</code> in front of the answer.',
  '',
  [
   {t:'A function named splitBill taking TWO parameters', h:'<code>function splitBill(total, people) { ... }</code> — Grade 7, ingredients lesson.',
@@ -1661,7 +1661,7 @@ const QA = [
  {k:'while stop forever infinite frozen freeze', a:'<code>while (test) { ... }</code> repeats as long as the test stays true. Something INSIDE must push toward the exit or the loop never ends and the page freezes. If frozen: check what changes your condition.'},
  {k:'list array square bracket zero item position', a:'A list holds many values: <code>[\'a\', \'b\', \'c\']</code>. Positions count from ZERO: list[0] is the first item, list[2] the third. list.length is how many items.'},
  {k:'random math floor pick', a:'<code>Math.random()</code> gives a decimal between 0 and 1. <code>Math.floor(Math.random() * list.length)</code> turns it into a fair whole-number position for the list.'},
- {k:'object label field dot curly', a:'An object is a box with LABELLED compartments: <code>{ name: \'Josh\', age: 40 }</code>. Read with a dot: <code>person.name</code>. Change with dot on the left: <code>person.mood = \'happy\';</code>'},
+ {k:'object labelled field key dot curly', a:'An object is a box with LABELLED compartments: <code>{ name: \'Josh\', age: 40 }</code>. Read with a dot: <code>person.name</code>. Change with dot on the left: <code>person.mood = \'happy\';</code>'},
  {k:'plus glue add join concatenate total 43', a:'<code>+</code> adds numbers but GLUES strings &mdash; and gluing wins when they mix. <code>\'Total: \' + 4 + 3</code> gives Total: 43. Force maths first with brackets: <code>\'Total: \' + (4 + 3)</code> gives Total: 7.'},
  {k:'error red message broken syntax mean', a:'An error message says where the computer got confused and why. Read the LAST line first &mdash; it names the problem. Common ones: an unclosed quote, a missing bracket or brace, a misspelled name. Errors are handrails, not walls.'},
  {k:'console log f12 debug notebook', a:'<code>console.log(\'note\', someBox)</code> writes to a hidden notebook (F12 &rarr; Console in a real browser). It is for YOU while debugging; the screen is for users. Sprinkle logs when confused, remove them after.'},
@@ -1881,6 +1881,7 @@ const QA = [
  {k:'find my own bugs stuck debug myself without help', a:'Three moves, in order: 1) press 🦆 Duck and explain every line out loud &mdash; most bugs die right there; 2) read the coach&rsquo;s red-pen mark; 3) delete half the code and Run &mdash; if the bug is gone it lived in the half you removed. Narrowing beats staring.'},
  {k:'style polish clean code matter looks readable why', a:'Style notes (🧹) never touch your ✓ &mdash; correctness comes first. But code is read far more often than it is written, and messy-but-working code is where future bugs hide. Clean indentation and honest names are what make a vet trust your work at a glance. ✨ clean code pays +2 XP.'},
  {k:'indentation spaces two levels nesting readable', a:'Two spaces per level of nesting; closers step back out one level. The browser ignores it completely &mdash; indentation is a letter to the next human (usually future you), making the structure visible so mismatched tags and braces jump out.'},
+ {k:'label labeled prefix quoted glued front', a:'In this course a <b>label</b> is a quoted piece of text you glue in front of a value so a human knows what the value is: <code>screen.textContent = \'Total: \' + 7;</code> shows <code>Total: 7</code>. The real lingo is a <b>string literal</b>. Watch out &mdash; from Grade 11 on, \u201clabel\u201d also means the NAME of a compartment inside an object (<code>{ name: \'Josh\' }</code>); that one is really called a <b>key</b>.'},
 ];
 
 /* extra reference material for lessons whose teach text is short */
@@ -2168,7 +2169,9 @@ const GLOSS = {
  '.push':['push','adds one more item onto the end of a list'],
  '.join':['join','glues every item of a list into one piece of text, with your separator between them'],
  'padding: A B':['two numbers','the first is up-and-down, the second is left-and-right - so 10px 20px is a short pill shape'],
- 'margin: A B':['two numbers','the first is up-and-down, the second is left-and-right']
+ 'margin: A B':['two numbers','the first is up-and-down, the second is left-and-right'],
+ 'label':['label','quoted text you glue in front of a value so a human knows what it is - <code>\'Total: \' + 7</code> shows <code>Total: 7</code>. Real lingo: a string literal'],
+ 'label: value':['field label','the NAME of a compartment inside an object - <code>{ name: \'Josh\' }</code> has the field label <code>name</code>. Real lingo: a key. A different job from the label above']
 };
 const GSYMS = [[/<\//,'</'],[/=/,'='],[/"/,'"'],[/\{/,'{}'],[/;/,';'],[/\(/,'()'],[/\[/,'[]'],[/\+/,'+'],[/===/,'==='],[/=>/,'=>']];
 function decoderFor(les){
@@ -2184,6 +2187,8 @@ function decoderFor(les){
   for (const m of code.matchAll(/\.(textContent|length|disabled|includes|toUpperCase|push|join)\b/g)) push('.'+m[1]);
   for (const m of code.matchAll(/\b(step|showSteps|resetSteps|sortedNumbers|break)\b/g)) push(m[1]==='resetSteps'?'step':m[1]);
   for (const m of code.matchAll(/(padding|margin)\s*:\s*[\d.]+[a-z%]*\s+[\d.]+/g)) push(m[1]+': A B');
+  if (les.lang==='js' && /(['"])[^'"\n]*\1\s*\+|\+\s*(['"])[^'"\n]*\2/.test(code)) push('label');
+  if (les.lang==='js' && /\{[^{}]*[a-zA-Z_$][\w$]*\s*:\s*[^{}]+\}/.test(code)) push('label: value');
   if (/^\s*\.[a-zA-Z]/m.test(code)) push('.name');
   if (/^\s*#[a-zA-Z]/m.test(code)) push('#name');
   if (/[a-z-]+\s*:/.test(code) && les.lang==='css') push(':');

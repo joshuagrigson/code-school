@@ -1317,7 +1317,7 @@ function PRACT(gid, lang, title, teach, goal, start, sol, hint, check, pageHtml)
     : JL('🏋 Rep: '+title, teach, goal, start, sol, hint, check, pageHtml);
   les.g=gid; les.pract=true; L.push(les);
 }
-PRACT('G2','css','dress a warning','<p>Same dials, new job: warnings need to LOOK like warnings.</p>','Give the h1 a color, a background, and at least 10px of padding.','h1 {\n\n}','h1 {\n  color: darkred;\n  background: mistyrose;\n  padding: 14px;\n}','Three declarations on the h1 selector.',
+PRACT('G2','css','dress a warning','<p>Same three dials from Grade 2 &mdash; <code>color</code>, <code>background</code>, <code>padding</code> &mdash; pointed at a new job.</p><p>A warning has to read as a warning before anyone reads the words: alarming ink, a soft alarming paper behind it, and enough breathing room that it does not feel cramped.</p><p><b>Done looks like:</b> one rule on the h1 with all three properties set.</p>','Give the h1 a color, a background, and at least 10px of padding.','h1 {\n\n}','h1 {\n  color: darkred;\n  background: mistyrose;\n  padding: 14px;\n}','Three declarations on the h1 selector.',
  (c)=> all(c,[[/h1\s*\{[^}]*color\s*:\s*[#a-zA-Z]/,'an <code>h1 { color: ... }</code> rule'], [/background(-color)?\s*:\s*[#a-zA-Z]/,'a <code>background:</code> with a colour'], [/padding\s*:\s*\d+px/,'a <code>padding:</code> with a number']])
    ? {ok:true,msg:'A warning that reads as one. Reps make the syntax automatic.'} : {ok:false,msg:'All three on h1: color, background, padding (10px+).'},
  '<h1>Warning: fresh paint</h1>\n<p>Please do not touch the walls.</p>'),
@@ -1325,61 +1325,61 @@ PRACT('G2','css','the pill button','<p>The classic look, from your own hands.</p
  (c)=> all(c,[[/border\s*:\s*[^;}\n]*\S/,'a <code>border:</code> line'], [/border-radius\s*:\s*(9[9]|[1-9]\d{2,})px/,'a <code>border-radius:</code> of 99px or more'], [/padding\s*:/,'a <code>padding:</code> line'], [/background(-color)?\s*:/,'a <code>background:</code> line']])
    ? {ok:true,msg:'Pill achieved. That shape is on every app you own.'} : {ok:false,msg:'Border, border-radius of 99px or more, padding, and background.'},
  '<p>Tap me (pretend)</p>'),
-PRACT('G3','css','aim at both','<p>One page, two different targets, two rules.</p>','Style #headline with a color AND .note with a background.','',
+PRACT('G3','css','aim at both','<p>Grade 3 gave you two kinds of name tag. This drills choosing between them.</p><p><code>#id</code> aims at the ONE element wearing that id. <code>.class</code> aims at EVERY element wearing that class. Same page, two rules, two different reaches.</p><p><b>Done looks like:</b> a hash rule for the single headline and a dot rule for the notes.</p>','Style #headline with a color AND .note with a background.','',
  '#headline {\n  color: royalblue;\n}\n\n.note {\n  background: lemonchiffon;\n}','Hash rule for the one headline, dot rule for the notes.',
  (c)=> all(c,[[/#headline\s*\{[^}]*color\s*:/,'a <code>#headline { color: ... }</code> rule'], [/\.note\s*\{[^}]*background(-color)?\s*:/,'a <code>.note { background: ... }</code> rule']])
    ? {ok:true,msg:'id and class, both aimed true.'} : {ok:false,msg:'Two rules: #headline { color... } and .note { background... }.'},
  '<h1 id="headline">Community News</h1>\n<p class="note">Bake sale Friday.</p>\n<p>Regular paragraph.</p>\n<p class="note">Bring cookies.</p>'),
-PRACT('G4','js','two boxes, one line','<p>Reps on boxes and showing.</p>','Make TWO const boxes (a name and a city) and show them glued in one sentence.','',
- 'const name = \'Josh\';\nconst city = \'Austin\';\nscreen.textContent = name + \' lives in \' + city;','Two consts, one screen line gluing both (no quotes on box names).',
+PRACT('G4','js','two boxes, one line','<p>Drilling two Grade 4 habits at once: making a <b>box</b> with <code>const</code>, and <b>showing</b> it with <code>screen.textContent</code>.</p><p>The catch is the gluing. <code>+</code> joins pieces exactly as written and adds nothing of its own &mdash; so if your quoted middle piece is <code>&#39;lives in&#39;</code> the screen reads <i>Joshlives inAustin</i>. The spaces have to be inside your quotes: <code>&#39; lives in &#39;</code>.</p><p><b>Done looks like:</b> one readable sentence, both boxes in it, spaces where a human would put them.</p>','Make TWO const boxes (a name and a city), then glue them into ONE sentence that reads properly - spaces included.','',
+ 'const name = \'Josh\';\nconst city = \'Austin\';\nscreen.textContent = name + \' lives in \' + city;','Two consts, then one screen line gluing both. Put the spaces INSIDE the quoted middle piece: <code>&#39; lives in &#39;</code>, not <code>&#39;lives in&#39;</code>.',
  (c)=> (c.match(/const\s+\w+\s*=\s*['"]/g)||[]).length>=2 && hasRe(c,/screen\.textContent\s*=\s*\w+\s*\+[^\n]*\+\s*\w+/)
    ? {ok:true,msg:'Two boxes, one sentence. Smooth.'} : {ok:false,msg:'Two const boxes with quoted words, glued into one screen line.'}),
-PRACT('G4','js','the button talks back','<p>Elements can change each other AND themselves.</p>','On click: change the screen message AND the button&rsquo;s own text.','',
+PRACT('G4','js','the button talks back','<p>Until now a click changed something ELSE on the page. This drills the other half: a button can change <b>itself</b>.</p><p>Inside one <code>onclick</code>, write to the screen and to the button&rsquo;s own <code>textContent</code>. That is the pattern behind every button that turns into &ldquo;Sending&hellip;&rdquo; the moment you press it.</p><p><b>Done looks like:</b> one click, two things changed.</p>','On click: change the screen message AND the button&rsquo;s own text.','',
  'btn.onclick = function () {\n  screen.textContent = \'You woke me up!\';\n  btn.textContent = \'Again!\';\n};','Two lines inside the click: screen.textContent and btn.textContent.',
  (c)=> hasRe(c,/btn\.onclick\s*=\s*function|addEventListener/) && hasRe(c,/screen\.textContent\s*=/) && hasRe(c,/btn\.textContent\s*=/)
    ? {ok:true,msg:'The button renamed itself mid-click. Elements are all editable, all the time.'} : {ok:false,msg:'Inside the click: set screen.textContent AND btn.textContent.'},
  '<button id="btn">Wake the machine</button>\n<p id="screen">sleeping...</p>'),
-PRACT('G5','js','mad libs','<p>Three boxes, one silly sentence.</p>','Three const boxes (a name, an animal, a food) glued into one sentence.','',
+PRACT('G5','js','mad libs','<p>Same gluing skill as the greeting lesson, now with three boxes instead of one &mdash; because real sentences are built from several pieces, not two.</p><p>Watch every join: each quoted connector needs its own spaces, or the words weld together. Read your result out loud before you Run it.</p><p><b>Done looks like:</b> a sentence that reads properly, using all three boxes.</p>','Three const boxes (a name, an animal, a food) glued into one sentence.','',
  'const name = \'Josh\';\nconst animal = \'raccoon\';\nconst food = \'tacos\';\nscreen.textContent = name + \' saw a \' + animal + \' eating \' + food + \'!\';','Three consts, then one long glue chain with quoted words between.',
  (c)=> (c.match(/const\s+\w+\s*=\s*['"]/g)||[]).length>=3 && (c.match(/\+/g)||[]).length>=4
    ? {ok:true,msg:'Mad libs, engineer edition. Glue chains hold as long as you need.'} : {ok:false,msg:'Three quoted const boxes, all glued into one screen sentence.'}),
-PRACT('G5','js','honest math','<p>The Total: 43 trap, drilled once more with feeling.</p>','Show \'Sum: \' followed by the CORRECT sum of 12 and 8.','screen.textContent = \'Sum: \' + 12 + 8;',
+PRACT('G5','js','honest math','<p>The trap from Grade 5, once more with feeling. <code>+</code> means two different things depending on what sits either side: add the numbers, or glue the text.</p><p>Glue a label onto a sum and the sum turns into text before it is ever added &mdash; unless you wrap the maths in parentheses so it finishes first.</p><p><b>Done looks like:</b> a real total on screen, not two digits stuck together.</p>','Show \'Sum: \' followed by the CORRECT sum of 12 and 8.','screen.textContent = \'Sum: \' + 12 + 8;',
  'screen.textContent = \'Sum: \' + (12 + 8);','Brackets force the math first.',
  (c)=> hasRe(c,/\(\s*12\s*\+\s*8\s*\)/)
    ? {ok:true,msg:'Sum: 20. The trap will never catch you again.'} : {ok:false,msg:'Wrap the numbers: (12 + 8).'}),
-PRACT('G6','js','grab the last one','<p>Works no matter how long the list grows.</p>','Show the LAST item using list.length - 1 (not a hard-coded number).','const queue = [\'Ana\', \'Bo\', \'Cy\', \'Dee\'];\n',
+PRACT('G6','js','grab the last one','<p>Reaching the last item without knowing how many there are.</p><p>Counting starts at zero, so the last slot is always one less than the length. Hard-coding a number works today and breaks the moment the list changes; <code>list.length - 1</code> never does.</p><p><b>Done looks like:</b> the final item shown, with no fixed number typed anywhere.</p>','Show the LAST item using list.length - 1 (not a hard-coded number).','const queue = [\'Ana\', \'Bo\', \'Cy\', \'Dee\'];\n',
  'const queue = [\'Ana\', \'Bo\', \'Cy\', \'Dee\'];\nscreen.textContent = \'Last in line: \' + queue[queue.length - 1];','The address of the end: queue[queue.length - 1].',
  (c)=> hasRe(c,/\w+\s*\[\s*\w+\.length\s*-\s*1\s*\]/)
    ? {ok:true,msg:'Add ten more names — same line still finds the end. Code that adapts beats code that counts.'} : {ok:false,msg:'Use queue[queue.length - 1], not a hard-coded position.'}),
-PRACT('G6','js','roll the dice','<p>The +1 shift, in your own hands.</p>','Show a die roll from 1 to 6, labeled.','',
+PRACT('G6','js','roll the dice','<p>The random shift, in your own hands.</p><p><code>Math.random()</code> gives you a decimal below 1, and <code>Math.floor</code> chops it down to a whole number &mdash; which lands the range at zero. A die has no zero, so you add one at the end. That <code>+ 1</code> is the whole trick.</p><p><b>Done looks like:</b> a number from 1 to 6, never 0, never 7.</p>','Show a die roll from 1 to 6, labeled.','',
  'const roll = Math.floor(Math.random() * 6) + 1;\nscreen.textContent = \'You rolled a \' + roll;','floor(random * 6) gives 0-5; the + 1 makes it 1-6.',
  (c)=> hasRe(c,/Math\.floor\s*\(\s*Math\.random\s*\(\s*\)\s*\*\s*6\s*\)\s*\+\s*1/)
    ? {ok:true,msg:'A fair die. That +1 shift shows up everywhere randomness meets humans.'} : {ok:false,msg:'The exact shape: Math.floor(Math.random() * 6) + 1.'}),
-PRACT('G7','js','one trick, two calls','<p>The whole point of functions: write once, use twice.</p>','A greet function with an ingredient, called TWICE for two people in one screen line.','',
+PRACT('G7','js','one trick, two calls','<p>The whole point of teaching the computer a trick: write it once, use it as many times as you like.</p><p>Two calls to the same function, each with a different ingredient, each handing back its own answer. Nothing about the trick itself changes between calls.</p><p><b>Done looks like:</b> one function defined, called twice, both results on screen.</p>','A greet function with an ingredient, called TWICE for two people in one screen line.','',
  'function greet(person) {\n  return \'Hi \' + person + \'! \';\n}\n\nscreen.textContent = greet(\'Ana\') + greet(\'Bo\');','The screen line glues two calls: greet(\'Ana\') + greet(\'Bo\').',
  (c)=> hasRe(c,/function\s+\w+\s*\(\s*\w+\s*\)[\s\S]*return/) && (c.match(/\w+\s*\(\s*['"][^'"]+['"]\s*\)/g)||[]).length>=2
    ? {ok:true,msg:'One definition, two performances. DRY in one line.'} : {ok:false,msg:'A returning function with an ingredient, called twice with different names.'}),
-PRACT('G8','js','even or odd','<p>The % operator from the FizzBuzz challenge, in its simplest job.</p>','A function evenOrOdd(n) returning \'even\' or \'odd\' using % 2, shown with a call.','',
+PRACT('G8','js','even or odd','<p>The remainder operator from the FizzBuzz challenge, doing its simplest job.</p><p><code>%</code> hands back what is left over after dividing. Left over nothing means it divided cleanly &mdash; which is exactly what &ldquo;even&rdquo; means. Everything else is odd.</p><p><b>Done looks like:</b> a function that takes a number and hands back which one it is.</p>','A function evenOrOdd(n) returning \'even\' or \'odd\' using % 2, shown with a call.','',
  'function evenOrOdd(n) {\n  if (n % 2 === 0) {\n    return \'even\';\n  } else {\n    return \'odd\';\n  }\n}\n\nscreen.textContent = 7 + \' is \' + evenOrOdd(7);','n % 2 === 0 means divisible by two - even.',
  (c)=> hasRe(c,/%\s*2\s*===?\s*0/) && hasRe(c,/else/) && hasRe(c,/screen\.textContent\s*=[\s\S]*\w+\s*\(\s*\d+\s*\)/)
    ? {ok:true,msg:'The parity check - a tiny tool you will reuse for stripes, turns, and alternating rows forever.'} : {ok:false,msg:'if (n % 2 === 0) return even, else odd; show a call with a number.'}),
-PRACT('G9','js','countdown','<p>Loops run backwards too.</p>','Build \'5 4 3 2 1 liftoff!\' with a loop counting DOWN.','',
+PRACT('G9','js','countdown','<p>Loops are not stuck going up.</p><p>A loop has three parts: where it starts, when it stops, and what changes each lap. Start high, stop low, and subtract instead of adding &mdash; the same machine, run in reverse.</p><p><b>Done looks like:</b> the numbers counting down, then a finish line at the end.</p>','Build \'5 4 3 2 1 liftoff!\' with a loop counting DOWN.','',
  'let out = \'\';\nfor (let i = 5; i >= 1; i = i - 1) {\n  out = out + i + \' \';\n}\nscreen.textContent = out + \'liftoff!\';','Start at 5, keep going while i >= 1, step DOWN with i = i - 1.',
  (c)=> hasRe(c,/for\s*\(\s*let\s+\w+\s*=\s*5\s*;[^;]*>=\s*1\s*;[^)]*-\s*1\s*\)/) && hasRe(c,/screen\.textContent\s*=/)
    ? {ok:true,msg:'Liftoff. Reversing a loop means reversing all three parts - you just proved you understand each one.'} : {ok:false,msg:'for (let i = 5; i >= 1; i = i - 1), building the string each lap.'}),
-PRACT('G11','js','the pet card','<p>Objects, fresh context.</p>','A pet object with name, kind, and age - shown as one sentence reading all three.','',
+PRACT('G11','js','the pet card','<p>Objects again, in a fresh context, so the shape sticks rather than the example.</p><p>A list numbers its items; an object <b>labels</b> them. Reach in by name with a dot and pull out exactly the piece you want.</p><p><b>Done looks like:</b> one sentence built from several labelled pieces of the same object.</p>','A pet object with name, kind, and age - shown as one sentence reading all three.','',
  'const pet = {\n  name: \'Biscuit\',\n  kind: \'corgi\',\n  age: 3\n};\n\nscreen.textContent = pet.name + \' is a \' + pet.age + \' year old \' + pet.kind + \'.\';','Three fields in the object, three dot-reads in the sentence.',
  (c)=>{const m=c.match(/\w+\.\w+/g)||[];return hasRe(c,/=\s*\{[\s\S]*:\s*[\s\S]*,[\s\S]*:/) && m.filter(x=>!/Math\.|screen\.|console\./.test(x)).length>=3
    ? {ok:true,msg:'Biscuit is immortalized. Three reads, one sentence - profile pages everywhere.'} : {ok:false,msg:'An object with 3 fields and a sentence gluing all three dot-reads.'};}),
-PRACT('G11','js','team total','<p>Loop + objects + numeric accumulator - the trifecta.</p>','Total the points across the whole team and show it labeled.','const team = [\n  { name: \'Sam\', points: 12 },\n  { name: \'Alex\', points: 9 },\n  { name: \'Jo\', points: 15 }\n];\n',
+PRACT('G11','js','team total','<p>Three skills in one rep: loop a list, reach into each object by label, and keep a running total.</p><p>The total lives in a <code>let</code> box outside the loop &mdash; declare it inside and it resets every lap, which is the classic way this goes wrong.</p><p><b>Done looks like:</b> one number on screen, the sum of every score.</p>','Total the points across the whole team and show it labeled.','const team = [\n  { name: \'Sam\', points: 12 },\n  { name: \'Alex\', points: 9 },\n  { name: \'Jo\', points: 15 }\n];\n',
  'const team = [\n  { name: \'Sam\', points: 12 },\n  { name: \'Alex\', points: 9 },\n  { name: \'Jo\', points: 15 }\n];\nlet total = 0;\nfor (const p of team) {\n  total = total + p.points;\n}\nscreen.textContent = \'Team total: \' + total;','Start total at 0; each lap add p.points; show after the loop.',
  (c)=> hasRe(c,/let\s+\w+\s*=\s*0/) && hasRe(c,/for\s*\(\s*const\s+\w+\s+of\s+\w+\s*\)/) && hasRe(c,/\.points\b/) && hasRe(c,/screen\.textContent\s*=/)
    ? {ok:true,msg:'36 points, totaled by machine. Every leaderboard sum is this exact loop.'} : {ok:false,msg:'Numeric accumulator + for...of + adding p.points each lap.'}),
-PRACT('G12','js','type detective','<p>typeof, drilled on a mixed bag.</p>','Show the typeof BOTH boxes, glued into one labeled sentence.','const a = \'42\';\nconst b = 42;\n',
+PRACT('G12','js','type detective','<p><code>typeof</code>, drilled on a deliberately mixed bag.</p><p>Two values can look identical on screen and still be different species &mdash; quotes make text, and text will not do maths. Asking directly is how you settle it instead of guessing.</p><p><b>Done looks like:</b> both species named in one sentence, and they will not match.</p>','Show the typeof BOTH boxes, glued into one labeled sentence.','const a = \'42\';\nconst b = 42;\n',
  'const a = \'42\';\nconst b = 42;\nscreen.textContent = \'a is a \' + typeof a + \', b is a \' + typeof b;','Two typeof reads glued with labels - they will differ!',
  (c)=> (c.match(/typeof\s+\w+/g)||[]).length>=2 && hasRe(c,/screen\.textContent\s*=/)
    ? {ok:true,msg:'Same-looking values, different species - and now you can prove it on demand.'} : {ok:false,msg:'Use typeof on BOTH boxes in one glued sentence.'}),
-PRACT('C','js','rename rescue','<p>Someone left you a mess. Same behavior, honest names.</p>','Rewrite with truthful names: the list becomes menuList, the function becomes pickMeal. No x, no go.','const x = [\'ramen\', \'tacos\', \'curry\'];\nfunction go() {\n  return x[Math.floor(Math.random() * x.length)];\n}\nscreen.textContent = go();',
+PRACT('C','js','rename rescue','<p>Someone left you a mess. Same behaviour, honest names.</p><p>Renaming is not cosmetic: a name is the only clue the next person gets about what a box holds or what a trick does. And a rename has to land in <b>every</b> place the old name appears, or the code breaks.</p><p><b>Done looks like:</b> identical behaviour, no <code>x</code>, no <code>go</code>.</p>','Rewrite with truthful names: the list becomes menuList, the function becomes pickMeal. No x, no go.','const x = [\'ramen\', \'tacos\', \'curry\'];\nfunction go() {\n  return x[Math.floor(Math.random() * x.length)];\n}\nscreen.textContent = go();',
  'const menuList = [\'ramen\', \'tacos\', \'curry\'];\nfunction pickMeal() {\n  return menuList[Math.floor(Math.random() * menuList.length)];\n}\nscreen.textContent = pickMeal();','Rename in ALL the places each name appears - three for the list, two for the function.',
  (c)=> c.includes('menuList') && c.includes('pickMeal') && !hasRe(c,/\bconst x\b|\bgo\s*\(/)
    ? {ok:true,msg:'Readable forever, behavior untouched. Renaming without breaking is a core professional motion.'} : {ok:false,msg:'menuList and pickMeal everywhere - no x or go left anywhere.'});
@@ -1605,21 +1605,21 @@ REV('MR','js',
  (c)=> all(c,[[/for\s*\(\s*const\s+\w+\s+of\s+names\s*\)/,'a <code>for ... of</code> loop over <code>names</code>'],[/step\s*\(\s*\)/,'a <code>step()</code> inside the loop'],[/if\s*\([^)]*===[^)]*\)/,'an <code>if</code> comparing with <code>===</code>'],[/break/,'a <code>break</code> once it is found'],[/screen\.textContent\s*=[^\n]*steps/,'a <code>screen.textContent =</code> line that includes <code>steps</code>']])
    ? {ok:true,msg:'You can now measure work, name the shape of a problem, and pick the cheap road. That is computer science, and it is yours.'} : {ok:false,msg:'Loop with step() and break, then one screen line with the name and the step count.'});
 
-PRACT('MR','js','count the laps','<p>Reps on the counter itself.</p>','Loop the numbers list, step() each lap, and showSteps.',
+PRACT('MR','js','count the laps','<p>Reps on the counter itself, before it is used to prove anything.</p><p>One <code>step()</code> per lap is the habit &mdash; put it inside the braces so it runs every time round, not once beside them. The tally at the end is only as honest as where you called it.</p><p><b>Done looks like:</b> a step count equal to the number of items.</p>','Loop the numbers list, step() each lap, and showSteps.',
  'const scores = [12, 7, 9, 4];\n',
  'const scores = [12, 7, 9, 4];\nfor (const score of scores) {\n  step();\n}\nshowSteps(\'Read every score\');',
  'for...of over scores, step() inside, showSteps after.',
  (c)=> all(c,[[/for\s*\(\s*const\s+\w+\s+of\s+scores\s*\)/,'a <code>for ... of</code> over <code>scores</code>'],[/step\s*\(\s*\)/,'a <code>step()</code> inside the loop'],[/showSteps\s*\(/,'a <code>showSteps(...)</code> line']])
    ? {ok:true,msg:'Four scores, four steps.'} : {ok:false,msg:'Loop scores, step() each lap, showSteps.'});
 
-PRACT('MR','js','find it fast','<p>Same rep, cheaper road: you know the key.</p>','Look up the price of bread in one step and show it with the count.',
+PRACT('MR','js','find it fast','<p>The same lookup, down the cheaper road.</p><p>When you already know the label, searching is wasted work. An object goes straight to the value in about one step, no matter how many entries sit beside it &mdash; the coat-check ticket, not a walk down the rail.</p><p><b>Done looks like:</b> the price on screen, and a count of one.</p>','Look up the price of bread in one step and show it with the count.',
  'const prices = { milk: 3, bread: 2, eggs: 4 };\n',
  'const prices = { milk: 3, bread: 2, eggs: 4 };\nstep();\nconst price = prices[\'bread\'];\nscreen.textContent = \'Bread costs \' + price + \' — \' + steps + \' step\';',
  'One step(), one key lookup, one screen line.',
  (c)=> all(c,[[/step\s*\(\s*\)/,'a single <code>step()</code>'],[/prices\s*\[\s*[\x27"]bread[\x27"]\s*\]|prices\.bread/,'a direct lookup of <code>prices[\'bread\']</code>'],[/screen\.textContent\s*=/,'a <code>screen.textContent =</code> line']])
    ? {ok:true,msg:'One step. No rail of coats searched.'} : {ok:false,msg:'step() once, look up prices[\'bread\'], show it with the count.'});
 
-PRACT('MR','js','the price of pairs','<p>Feel the multiplication one more time.</p>','Nested loops over the four colors, step() in the inner loop, then showSteps.',
+PRACT('MR','js','the price of pairs','<p>Feeling the multiplication one more time, because this is the shape that quietly kills real apps.</p><p>A loop inside a loop does not add its laps, it multiplies them. Four items become sixteen steps; four hundred would become a hundred and sixty thousand.</p><p><b>Done looks like:</b> a step count equal to the list size times itself.</p>','Nested loops over the four colors, step() in the inner loop, then showSteps.',
  'const colors = [\'red\', \'blue\', \'green\', \'gold\'];\n',
  'const colors = [\'red\', \'blue\', \'green\', \'gold\'];\nfor (const first of colors) {\n  for (const second of colors) {\n    step();\n  }\n}\nshowSteps(\'Every color pair\');',
  'Two for...of loops over colors, step() in the inner braces.',
@@ -2466,7 +2466,19 @@ function runCheck(){
     if (err) res = {ok:false, cls:'coach', msg:'🧑‍🏫 '+friendlySyntax(err, code)};
     else if (!/\.textContent\s*=/.test(code) && !/showSteps\s*\(/.test(code))
       res = {ok:false, cls:'coach', msg:'🧑‍🏫 Nothing reaches the screen yet. Remember: working it out is not showing it &mdash; you need a <code>screen.textContent =</code> line.'};
-    else res = normRes(les, code);
+    else {
+      res = normRes(les, code);
+      if (res.ok){
+        const sq = squishedOutput(code);
+        if (sq){
+          if (sq.culprit){ const at=code.indexOf(sq.culprit); if (at>-1) lintRange={a:at,b:at+sq.culprit.length}; }
+          const seen = sq.out!=null
+            ? 'Your sentence lands on screen as <b>&ldquo;'+esc(sq.out)+'&rdquo;</b>'
+            : '<b>&ldquo;'+esc(sq.left)+'&rdquo;</b> and <b>&ldquo;'+esc(sq.right)+'&rdquo;</b> land with nothing between them';
+          res = {ok:false, cls:'coach', msg:'🧑‍🏫 The words run together. '+seen+' &mdash; where a quoted piece meets a box, one of them has to supply the space, like <code>&#39; lives in &#39;</code>. The computer only puts spaces where you type them.'};
+        }
+      }
+    }
   } else {
     const lint = les.lang==='html' ? htmlLint(code) : cssLint(code);
     res = lint ? {ok:false, cls:'coach', msg:'🧑‍🏫 '+lint} : normRes(les, code);
@@ -2529,6 +2541,35 @@ function runCheck(){
 /* ---- The Polish: style graded AFTER correctness, never blocking the tick.
    Correctness first, readability second - a green check that is also a mess
    gets a gentle note; a clean one gets applause (and once, +2 XP). ---- */
+/* ---- Squished output ----------------------------------------------------
+   Every checker is a regex over the CODE, so a sentence that renders as one
+   mashed word ("Joshlives inAustin") used to earn a green tick. This resolves
+   the simple string boxes, folds the screen line, and compares neighbouring
+   pieces. It refuses to guess: anything it cannot resolve returns no verdict
+   at all, so correct work is never rejected. ---------------------------- */
+function squishedOutput(code){
+  const vars={};
+  for (const m of code.matchAll(/\b(?:const|let)\s+(\w+)\s*=\s*(['"])([^'"]*)\2\s*;/g)) vars[m[1]]=m[3];
+  const line = code.match(/screen\.textContent\s*=\s*([^;\n]+);/);
+  if (!line) return null;
+  const parts = line[1].split('+').map(t=>t.trim());
+  const vals = parts.map(t=>{
+    const lit = t.match(/^(['"])([^'"]*)\1$/);
+    if (lit) return {v:lit[2], lit:true, raw:t};
+    if (/^\w+$/.test(t) && Object.prototype.hasOwnProperty.call(vars,t)) return {v:vars[t], lit:false, raw:t};
+    return null;                                  /* unresolvable - no verdict here */
+  });
+  for (let i=1;i<vals.length;i++){
+    const a=vals[i-1], b=vals[i];
+    if (!a || !b) continue;                       /* only judge junctions we fully know */
+    if (/[A-Za-z0-9]$/.test(a.v) && /^[A-Za-z0-9]/.test(b.v)){
+      const culprit = a.lit ? a : (b.lit ? b : null);
+      const out = vals.every(x=>x) ? vals.map(x=>x.v).join('') : null;
+      return {out, left:a.v, right:b.v, culprit: culprit ? culprit.raw : null};
+    }
+  }
+  return null;
+}
 function stylePass(code, lang, start){
   const notes = [];
   const lines = code.split('\n');

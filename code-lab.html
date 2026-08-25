@@ -28,6 +28,11 @@ header .hbtn{margin-left:auto}
 @keyframes gpop{8%{opacity:1;transform:translateX(-50%) scale(1.04)}14%{transform:translateX(-50%) scale(1)}82%{opacity:1}100%{opacity:0;transform:translateX(-50%) scale(.95)}}
 .main{flex:1;display:flex;min-height:0}
 nav{width:205px;flex:0 0 auto;overflow-y:auto;background:var(--panel);border-right:2px solid var(--line);padding:8px 0}
+body.navhid nav{display:none}
+body.navhid .right{flex:2.2}
+/* collapsed is a typing mode: the reference panes yield to the editor */
+body.navhid .prevwrap{flex:0 0 25%}
+body.navhid .scaffold{max-height:90px}
 .ghead{display:flex;align-items:center;gap:6px;padding:8px 12px 4px;font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--soft)}
 .ghead .gsub{display:block;font-size:.68rem;text-transform:none;letter-spacing:0;color:#a09488}
 .gcount{margin-left:auto;font-size:.65rem;color:#a09488;padding-left:6px}
@@ -47,7 +52,7 @@ nav{width:205px;flex:0 0 auto;overflow-y:auto;background:var(--panel);border-rig
 .teach[data-lv="2"] p{font-size:.97rem}
 .teach code, .goalbox code, #qaOut code{font-family:Menlo,Consolas,monospace;background:var(--code);padding:1px 5px;border-radius:4px;font-size:.9em}
 .teach pre{background:var(--code);padding:10px 12px;border-radius:8px;margin:0 0 10px;overflow-x:auto;font-family:Menlo,Consolas,monospace;font-size:.88rem;line-height:1.5}
-.goalbox{flex:0 0 auto;background:#dcebf9;border-bottom:3px solid var(--accent2);border-left:6px solid var(--accent2);padding:12px 16px;font-size:1.05rem;line-height:1.45}
+.goalbox{flex:0 0 auto;background:#dcebf9;border:2px solid var(--accent2);border-left:6px solid var(--accent2);border-radius:10px;padding:12px 16px;font-size:1.05rem;line-height:1.45}
 .goalbox b{color:var(--accent2);font-size:1.05em;letter-spacing:.5px}
 .elders{margin:14px 0 0;background:#f3ecdd;border:1px solid #ddd0b4;border-left:5px solid #b08d4a;border-radius:8px;padding:10px 14px;font-size:.92rem;line-height:1.55}
 .elders b.el{color:#8a6d33;font-size:.7rem;text-transform:uppercase;letter-spacing:1px;margin-right:6px}
@@ -68,17 +73,17 @@ details.ft p{margin:6px 0 0;line-height:1.5}
 .morebox table{border-collapse:collapse;margin:6px 0 10px;width:100%}
 .morebox td{border:1px solid var(--line);padding:4px 8px;font-size:.95rem}
 .morebox td:first-child{font-family:Menlo,Consolas,monospace;background:var(--code);white-space:nowrap}
-.scaffold{flex:0 0 auto;background:#161616;border-bottom:2px solid #333;max-height:150px;overflow:auto;display:none}
+.scaffold{flex:0 0 auto;background:#161616;border:2px solid #333;border-radius:10px;max-height:150px;overflow:auto;display:none}
 .scaffold .sclabel{position:sticky;top:0;font-size:.65rem;text-transform:uppercase;letter-spacing:1px;color:#8a8a8a;background:#161616;padding:5px 14px 2px}
 .scaffold pre{margin:0;padding:4px 14px 10px;font-family:Menlo,Consolas,monospace;font-size:.85rem;line-height:1.5;color:#d4d4d4;white-space:pre}
 .tryit{border-top:1px dashed var(--line);padding-top:8px;margin-top:8px}
 .tryit>b{color:var(--accent)}
 .gradbtn{display:inline-block;background:var(--accent);color:#fff;padding:10px 18px;border-radius:10px;text-decoration:none;font-size:1.05rem;margin:4px 0}
 .gradbtn:hover{background:var(--accent2)}
-.right{flex:1;display:flex;flex-direction:column;min-width:0}
-.remind{flex:0 0 auto;background:#fbf6da;border-bottom:2px solid #e8dfae;padding:6px 12px;font-size:.8rem;font-family:Menlo,Consolas,monospace;display:flex;gap:8px;align-items:center}
+.right{flex:1;display:flex;flex-direction:column;min-width:0;padding:10px;gap:8px}
+.remind{flex:0 0 auto;background:#fbf6da;border:2px solid #e8dfae;border-radius:10px;padding:6px 12px;font-size:.8rem;font-family:Menlo,Consolas,monospace;display:flex;gap:8px;align-items:center}
 .remind button{margin-left:auto;border:none;background:none;cursor:pointer;font-size:.75rem;color:var(--soft)}
-.edwrap{position:relative;flex:1;min-height:80px;background:#1e1e1e}
+.edwrap{position:relative;flex:1;min-height:180px;background:#1e1e1e;border:2px solid var(--line);border-radius:10px;overflow:hidden}
 #ed,#hl,#errlay{position:absolute;inset:0;margin:0;border:none;padding:12px 14px;font-family:Menlo,Consolas,monospace;font-size:.95rem;line-height:1.55;white-space:pre;tab-size:2;overflow:auto}
 #errlay{color:transparent;background:transparent;pointer-events:none;overflow:hidden;z-index:1}
 #errlay .redpen{background:rgba(205,50,50,.22);border-radius:3px;text-decoration:underline wavy #d43c3c 2px;text-underline-offset:4px}
@@ -87,12 +92,12 @@ details.ft p{margin:6px 0 0;line-height:1.5}
 #ed::placeholder{color:#7a7a7a}
 #ed::selection{background:rgba(38,79,120,.85);color:transparent}
 .t-k{color:#c586c0}.t-kw{color:#569cd6}.t-s{color:#ce9178}.t-n{color:#b5cea8}.t-c{color:#6a9955}.t-f{color:#dcdcaa}.t-t{color:#569cd6}.t-a{color:#9cdcfe}.t-p{color:#9cdcfe}.t-sel{color:#d7ba7d}
-.btnrow{flex:0 0 auto;display:flex;gap:8px;padding:8px 12px;background:var(--panel);border-top:2px solid var(--line);flex-wrap:wrap}
+.btnrow{flex:0 0 auto;display:flex;gap:8px;padding:8px 12px;background:var(--panel);border:2px solid var(--line);border-radius:10px;flex-wrap:wrap}
 .btnrow button, header .hbtn{font-family:inherit;font-size:.85rem;padding:6px 12px;border-radius:8px;border:2px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink)}
 .btnrow button:hover, header .hbtn:hover{border-color:var(--accent)}
 #btnRun{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700}
 #btnRun:hover{background:var(--accent2);border-color:var(--accent2)}
-#duckbar{display:none;align-items:center;gap:10px;padding:8px 12px;background:#f6edd2;border-top:2px solid var(--line);font-size:.88rem;line-height:1.4}
+#duckbar{display:none;align-items:center;gap:10px;padding:8px 12px;background:#f6edd2;border:2px solid var(--line);border-radius:10px;font-size:.88rem;line-height:1.4}
 body.dark #duckbar{background:#31302c;color:var(--ink)}
 #duckbar.on{display:flex}
 #duckbar .dk{font-size:1.3rem}
@@ -102,12 +107,12 @@ body.dark #duckbar{background:#31302c;color:var(--ink)}
 #errlay .duckhl{background:rgba(214,164,32,.28);border-radius:3px;outline:1px solid rgba(214,164,32,.55)}
 #btnNext{background:var(--accent);color:#fff;border-color:var(--accent);display:none;animation:npulse .8s ease 2}
 @keyframes npulse{50%{transform:scale(1.08);box-shadow:0 0 0 6px rgba(47,125,92,.25)}}
-#status{flex:0 0 auto;padding:9px 14px;font-size:.92rem;border-top:2px solid var(--line);background:var(--bad);border-color:var(--badline)}
+#status{flex:0 0 auto;padding:9px 14px;font-size:.92rem;border:2px solid var(--line);border-radius:10px;background:var(--bad);border-color:var(--badline)}
 #status.ok{background:var(--good)}
 #status.wait{background:#f1ede6;color:var(--soft)}
 #status.coach{background:#fdf3d7;border-color:#e8d48a}
 #status .wild{display:block;margin-top:5px;font-size:.85rem;color:var(--soft);border-top:1px dashed var(--goodline);padding-top:5px}
-.prevwrap{flex:0 0 46%;display:flex;flex-direction:column;border-top:2px solid var(--line)}
+.prevwrap{flex:0 0 33%;display:flex;flex-direction:column;border:2px solid var(--line);border-radius:10px;overflow:hidden}
 .prevlabel{flex:0 0 auto;font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--soft);padding:5px 12px;background:var(--code);display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--line)}
 .dots{display:inline-flex;gap:4px}
 .dots i{width:9px;height:9px;border-radius:50%;background:#e0b6ad}
@@ -239,6 +244,8 @@ button:focus-visible,.navitem:focus-visible,#ed:focus-visible,input:focus-visibl
   .main{flex-direction:column;padding-bottom:52px}
   nav,.left,.right,.prevwrap{display:none}
   body.tab-nav nav{display:block;width:100%;flex:1}
+  #btnNav{display:none}
+  body.navhid nav{display:block}
   body.tab-lesson .left{display:flex;border-right:none}
   body.tab-code .right{display:flex}
   body.tab-code .prevwrap{display:none}
@@ -246,6 +253,7 @@ button:focus-visible,.navitem:focus-visible,#ed:focus-visible,input:focus-visibl
   body.tab-result .goalbox,body.tab-result .remind,body.tab-result .scaffold,body.tab-result .edwrap,body.tab-result .btnrow{display:none}
   body.tab-result .prevwrap{display:flex;flex:1;border-top:none}
   body.tab-result #status{display:block}
+  .right{padding:8px;gap:8px}
   .edwrap{min-height:38vh}
   #tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;background:var(--panel);border-top:2px solid var(--line);z-index:60}
   #tabbar button{flex:1;border:none;background:none;font-family:inherit;font-size:.78rem;padding:8px 2px;cursor:pointer;color:var(--soft)}
@@ -262,6 +270,7 @@ button:focus-visible,.navitem:focus-visible,#ed:focus-visible,input:focus-visibl
   <span id="progTxt">0 / 0</span>
   <span id="xpTxt"></span>
   <button class="hbtn" id="btnCert" style="display:none" title="Your graduation certificate">🎓 Certificate</button>
+  <button class="hbtn" id="btnNav" title="Hide the lesson list for more typing room" aria-label="Hide the lesson list">☰</button>
   <button class="hbtn" id="btnDark" title="Toggle dark mode" aria-label="Toggle dark mode">🌙</button>
   <button class="hbtn" id="btnReplay" style="display:none">🏆 Do it all again</button>
   <button class="hbtn" id="btnSandbox">Free play</button>
@@ -3094,6 +3103,15 @@ $('#btnDark').onclick = ()=>{
   try{ localStorage.setItem('darkmode', on?'1':'0'); }catch(e){}
 };
 try{ if (localStorage.getItem('darkmode')==='1'){ document.body.classList.add('dark'); $('#btnDark').textContent='☀️'; } }catch(e){}
+function setNav(hidden){
+  document.body.classList.toggle('navhid', hidden);
+  const btn=$('#btnNav');
+  btn.textContent = hidden ? '☰ Lessons' : '☰';
+  btn.title = hidden ? 'Show the lesson list again' : 'Hide the lesson list for more typing room';
+  try{ localStorage.setItem('navhid', hidden?'1':'0'); }catch(e){}
+}
+$('#btnNav').onclick = ()=>setNav(!document.body.classList.contains('navhid'));
+try{ if (localStorage.getItem('navhid')==='1') setNav(true); }catch(e){}
 $('#navSearch').addEventListener('input', renderNav);
 document.addEventListener('keydown', (e)=>{
   if (e.key==='Escape'){ $('#qaPanel').classList.remove('open'); $('#themeOv').classList.remove('open'); const w=$('#welcome'); if (w.classList.contains('open')){ w.classList.remove('open'); try{localStorage.setItem('welcomed','1');}catch(x){} } }

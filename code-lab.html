@@ -351,6 +351,14 @@ const GRADES = [
 /* shared scaffolds for lessons that teach one language while we supply the rest */
 const NICE_CSS = 'body{font-family:Georgia,serif;padding:24px;font-size:1.1rem;color:#2b2320;background:#fffdf8}h1,h2,h3,h4,h5,h6{margin:0 0 10px}p{margin:0 0 10px}#screen{border:2px solid #2f7d5c;border-radius:10px;padding:14px;background:#f0f7f3;min-height:1.5em;font-size:1.15rem}button{font-size:1rem;padding:8px 14px;border-radius:8px;border:2px solid #999;cursor:pointer;margin-bottom:12px}';
 const JS_HTML  = '<p id="screen">nothing yet</p>';
+/* The Machine Room's one piece of scaffolding: a work counter. Every lesson in
+   that grade explains it, and the throw turns a runaway loop into a caught
+   error instead of a frozen page. sortedNumbers is 1..100 in order. */
+const MR_PRELUDE = 'let steps=0;'
+  + 'function step(){ steps++; if(steps>200000){ throw new Error("runaway loop"); } }'
+  + 'function resetSteps(){ steps=0; }'
+  + 'function showSteps(label){ screen.textContent = label + ": " + steps + (steps===1?" step":" steps"); }'
+  + 'const sortedNumbers=[]; for(let i=1;i<=100;i++){ sortedNumbers.push(i); }';
 const JS_HTML_BTN = '<button id="btn">Press me</button>\n<p id="screen">nothing yet</p>';
 
 function hasRe(code, re){ return re.test(code); }
@@ -1472,6 +1480,151 @@ PROJ('M','js','The Full Client Job','Rosa, Sunrise Bakery',
  ],'<button id="btn">Order the daily special</button>\n<p id="screen">ready...</p>');
 
 /* sidebar display order (grades in order, lessons + review within each) — drives Next */
+
+/* ============================ THE MACHINE ROOM ============================
+   Computer science, taught the way the rest of this school teaches: you do not
+   read about speed, you MEASURE it. Every lesson has a step() counter wired in
+   so the difference between a slow idea and a fast one is a number on screen,
+   not a claim. ======================================================= */
+GRADES.push({id:'MR', name:'Machine Room', sub:'Why one way beats another', lv:2});
+grade('MR', [
+
+JL('Counting the work',
+ '<p>Everything you have built so far <i>worked</i>. This grade asks a different question: how much WORK does it do? Professionals do not guess at that &mdash; they count.</p><p>This grade wires in one tool, the way Grade 4 wired in <code>screen</code>:</p><pre>step()               counts one piece of work\nshowSteps(\'label\')   prints the tally</pre><p>Nothing new to learn &mdash; <code>step()</code> is just a counter like the ones you built in Grade 9. What is new is the habit of measuring.</p>',
+ 'Loop through every name, call step() once per lap, then showSteps.',
+ 'const names = [\'Ana\', \'Ben\', \'Cara\', \'Dan\', \'Eve\'];\n',
+ 'const names = [\'Ana\', \'Ben\', \'Cara\', \'Dan\', \'Eve\'];\nfor (const name of names) {\n  step();\n}\nshowSteps(\'Checked every name\');',
+ 'A for...of loop over names, step() inside the braces, showSteps after the loop.',
+ (c)=> all(c,[[/for\s*\(\s*const\s+\w+\s+of\s+names\s*\)/,'a <code>for ... of</code> loop over <code>names</code>'],[/\{[\s\S]*step\s*\(\s*\)[\s\S]*\}/,'a <code>step()</code> call INSIDE the loop braces'],[/showSteps\s*\(\s*[\x27"]/,'a <code>showSteps(\'...\')</code> line after the loop']])
+   ? {ok:true,msg:'Five names, five steps. You just measured work instead of guessing at it.'} : {ok:false,msg:'Loop the names, step() each lap, showSteps at the end.'}),
+
+JL('One by one',
+ '<p>Now a real job: find <b>Eve</b> in the list. The obvious way is to check every name in order until you hit her &mdash; and to stop the moment you do.</p><p>Stopping needs a new word: <code>break</code>. It means <i>leave this loop right now, we are done here</i>. Without it your code keeps checking names it no longer cares about, which is wasted work &mdash; and now you can prove it is wasted, because you are counting.</p><p>This is called a <b>linear search</b>: linear because the work grows in a straight line with the size of the list.</p>',
+ 'Search the names for Eve: step() each check, and break the moment you find her.',
+ 'const names = [\'Ana\', \'Ben\', \'Cara\', \'Dan\', \'Eve\'];\n',
+ 'const names = [\'Ana\', \'Ben\', \'Cara\', \'Dan\', \'Eve\'];\nfor (const name of names) {\n  step();\n  if (name === \'Eve\') {\n    break;\n  }\n}\nshowSteps(\'Found Eve\');',
+ 'Inside the loop: step() first, then an if that compares name to Eve and breaks.',
+ (c)=> all(c,[[/for\s*\(\s*const\s+\w+\s+of\s+names\s*\)/,'a <code>for ... of</code> loop over <code>names</code>'],[/step\s*\(\s*\)/,'a <code>step()</code> call inside the loop'],[/if\s*\([^)]*===[^)]*\)/,'an <code>if</code> comparing the name with <code>===</code>'],[/break\s*;?/,'a <code>break</code> to stop as soon as it is found'],[/showSteps\s*\(/,'a <code>showSteps(...)</code> line']])
+   ? {ok:true,msg:'Five steps &mdash; Eve was last. Had she been first it would be one. Linear search costs whatever the list makes it cost.'} : {ok:false,msg:'Loop, step(), if name === Eve then break, then showSteps.'}),
+
+JL('The phone book trick',
+ '<p>Here is a list of the numbers <b>1 to 100</b>, in order, already loaded for you as <code>sortedNumbers</code>. (No magic: it is built with a loop you could write yourself &mdash; <code>for (let i = 1; i &lt;= 100; i++) sortedNumbers.push(i);</code>)</p><p>Find <b>73</b>. One by one would take 73 steps. But nobody opens a phone book at page one &mdash; you open the middle, see which half the name is in, and throw the other half away. Then you do it again.</p><p>That is <b>binary search</b>: <i>binary</i> because every step splits the problem in two. It only works on a <b>sorted</b> list &mdash; the order is what lets you throw half away with confidence.</p>',
+ 'Binary-search sortedNumbers for 73 using low, high and middle. step() each guess.',
+ 'let low = 0;\nlet high = sortedNumbers.length - 1;\n',
+ 'let low = 0;\nlet high = sortedNumbers.length - 1;\nwhile (low <= high) {\n  step();\n  const middle = Math.floor((low + high) / 2);\n  if (sortedNumbers[middle] === 73) {\n    break;\n  }\n  if (sortedNumbers[middle] < 73) {\n    low = middle + 1;\n  } else {\n    high = middle - 1;\n  }\n}\nshowSteps(\'Found 73\');',
+ 'while (low <= high): step, find the middle with Math.floor, compare it to 73, then move low up or high down.',
+ (c)=> all(c,[[/while\s*\(\s*low\s*<=\s*high\s*\)/,'a <code>while (low &lt;= high)</code> loop'],[/step\s*\(\s*\)/,'a <code>step()</code> call inside the loop'],[/Math\.floor\s*\(\s*\(\s*low\s*\+\s*high\s*\)\s*\/\s*2\s*\)/,'a middle found with <code>Math.floor((low + high) / 2)</code>'],[/low\s*=\s*middle\s*\+\s*1/,'<code>low = middle + 1</code> to throw away the bottom half'],[/high\s*=\s*middle\s*-\s*1/,'<code>high = middle - 1</code> to throw away the top half'],[/showSteps\s*\(/,'a <code>showSteps(...)</code> line']])
+   ? {ok:true,msg:'Six steps to find 73 out of a hundred. One by one would have taken seventy-three.'} : {ok:false,msg:'A while loop that halves the range each lap: middle, compare, move low or high.'}),
+
+JL('Why halving wins',
+ '<p>Six versus seventy-three is nice. The real lesson is what happens when the list <b>grows</b>.</p><p>Compare the <b>worst cases</b> &mdash; the unluckiest possible target. Double the list from 100 to 200 and one-by-one&rsquo;s worst case doubles too, from 100 checks to 200. Binary search&rsquo;s worst case goes from 7 to <b>8</b>. One extra step for twice the work, because one extra halving covers twice the ground.</p><table><tr><td>list size</td><td>one by one, at most</td><td>halving, at most</td></tr><tr><td>100</td><td>100</td><td>7</td></tr><tr><td>1,000</td><td>1,000</td><td>10</td></tr><tr><td>1,000,000</td><td>1,000,000</td><td>20</td></tr></table><p>That is why a search box on a site with a million records answers instantly. Prove it: search for a number near the END of the list, where one-by-one is at its worst.</p>',
+ 'Binary-search sortedNumbers for 99 and show the steps. (Count how few it still takes.)',
+ 'let low = 0;\nlet high = sortedNumbers.length - 1;\n',
+ 'let low = 0;\nlet high = sortedNumbers.length - 1;\nwhile (low <= high) {\n  step();\n  const middle = Math.floor((low + high) / 2);\n  if (sortedNumbers[middle] === 99) {\n    break;\n  }\n  if (sortedNumbers[middle] < 99) {\n    low = middle + 1;\n  } else {\n    high = middle - 1;\n  }\n}\nshowSteps(\'Found 99 near the end\');',
+ 'Same shape as last lesson, hunting 99 instead of 73.',
+ (c)=> all(c,[[/while\s*\(\s*low\s*<=\s*high\s*\)/,'a <code>while (low &lt;= high)</code> loop'],[/99/,'the number <code>99</code> as the target'],[/Math\.floor\s*\(/,'a middle found with <code>Math.floor(...)</code>'],[/step\s*\(\s*\)/,'a <code>step()</code> call inside the loop'],[/showSteps\s*\(/,'a <code>showSteps(...)</code> line']])
+   ? {ok:true,msg:'Six steps, even at the far end. Doubling the haystack costs binary search one extra look, not double the work.'} : {ok:false,msg:'Same halving loop, target 99.'}),
+
+JL('Straight to the shelf',
+ '<p>Searching is what you do when you do not know WHERE something is. If you do know, there is no search at all.</p><p><code>sortedNumbers[49]</code> hands you the fiftieth item <b>immediately</b> &mdash; not after 49 checks. The computer does arithmetic: start of the list, plus 49 slots, done. One step, whether the list holds ten items or ten million.</p><p>That is what an index really is: not a position to hunt for, but a <b>direct address</b>.</p>',
+ 'Read sortedNumbers[49] straight out with ONE step() and show it on screen.',
+ '',
+ 'step();\nconst value = sortedNumbers[49];\nscreen.textContent = \'Item 49 is \' + value + \' — found in \' + steps + \' step\';',
+ 'One step(), one index read, one screen line gluing the value and the count.',
+ (c)=> all(c,[[/step\s*\(\s*\)/,'a single <code>step()</code>'],[/sortedNumbers\s*\[\s*49\s*\]/,'a direct read of <code>sortedNumbers[49]</code>'],[/screen\.textContent\s*=/,'a <code>screen.textContent =</code> line'],[/steps/,'the <code>steps</code> count shown in the sentence']])
+   ? {ok:true,msg:'One step. Knowing where something lives beats any search ever written.'} : {ok:false,msg:'step() once, read sortedNumbers[49], and glue the value and steps into one screen line.'}),
+
+JL('The coat check',
+ '<p>Lists are numbered. But most real data is looked up by <b>name</b>: a username, a product code, a phone owner.</p><p>Hand your coat to a coat check and you get a ticket. Nobody searches a rail of coats &mdash; the ticket IS the location. An object works the same way: <code>phone[\'Sam\']</code> goes straight to Sam, in about one step, no matter how many people are in there.</p><p>The real name for this trick is a <b>hash</b>: the computer turns the key text into a number, and that number is the shelf. This is why Grade 11 gave you objects &mdash; not for tidiness, for speed.</p>',
+ 'Look up Sam in the phone object with ONE step(), and show the number.',
+ 'const phone = { Ana: \'555-0101\', Ben: \'555-0102\', Sam: \'555-0103\' };\n',
+ 'const phone = { Ana: \'555-0101\', Ben: \'555-0102\', Sam: \'555-0103\' };\nstep();\nconst number = phone[\'Sam\'];\nscreen.textContent = \'Sam: \' + number + \' — found in \' + steps + \' step\';',
+ 'One step(), then phone[\'Sam\'] straight into a box, then one screen line.',
+ (c)=> all(c,[[/step\s*\(\s*\)/,'a single <code>step()</code>'],[/phone\s*\[\s*[\x27"]Sam[\x27"]\s*\]|phone\.Sam/,'a direct lookup of <code>phone[\'Sam\']</code>'],[/screen\.textContent\s*=/,'a <code>screen.textContent =</code> line'],[/steps/,'the <code>steps</code> count in the sentence']])
+   ? {ok:true,msg:'One step to any name in the book. That is the whole reason objects exist.'} : {ok:false,msg:'step() once, look up phone[\'Sam\'], show the number and the step count.'}),
+
+JL('Loops inside loops',
+ '<p>Now the shape of <b>slow</b>. Put a loop inside a loop and the work does not add &mdash; it <b>multiplies</b>.</p><p>Ten names in the outer loop, ten in the inner, and you have done a hundred pieces of work. Twenty and twenty is four hundred. This is how a page that felt instant with test data crawls once real customers show up.</p><p>Nested loops are not forbidden &mdash; sometimes you genuinely must compare everything to everything. But now you can SEE the price before you pay it.</p>',
+ 'Loop the names inside the names (both loops), step() in the inner one, then showSteps.',
+ 'const names = [\'Ana\', \'Ben\', \'Cara\', \'Dan\', \'Eve\'];\n',
+ 'const names = [\'Ana\', \'Ben\', \'Cara\', \'Dan\', \'Eve\'];\nfor (const first of names) {\n  for (const second of names) {\n    step();\n  }\n}\nshowSteps(\'Every pair\');',
+ 'Two for...of loops, one inside the other, step() in the inner braces.',
+ (c)=> all(c,[[/for[\s\S]*for[\s\S]*step\s*\(\s*\)/,'one <code>for ... of</code> loop nested INSIDE another'],[/for\s*\(\s*const\s+\w+\s+of\s+names\s*\)[\s\S]*for\s*\(\s*const\s+\w+\s+of\s+names\s*\)/,'both loops walking <code>names</code>'],[/showSteps\s*\(/,'a <code>showSteps(...)</code> line']])
+   ? {ok:true,msg:'Twenty-five steps from five names. Five hundred names would be two hundred and fifty thousand.'} : {ok:false,msg:'A for...of inside a for...of, step() in the inner one, showSteps at the end.'}),
+
+JL('Sorting you can watch',
+ '<p>Binary search needed a <b>sorted</b> list. Somebody has to do the sorting &mdash; and sorting is where nested loops earn their keep and their bad reputation.</p><p>The simplest method is <b>bubble sort</b>: walk the list, and any time two neighbours are in the wrong order, swap them. Repeat until a full pass makes no swaps. Big items "bubble" to the end.</p><p>It is not the fastest sort in the world &mdash; it is the one you can see. Watch the counter: sorting five items costs far more than searching them.</p>',
+ 'Bubble-sort the messy list: nested loops, step() each comparison, swap when out of order, then show the sorted list.',
+ 'const messy = [5, 3, 8, 1, 9];\n',
+ 'const messy = [5, 3, 8, 1, 9];\nfor (const pass of messy) {\n  for (let i = 0; i < messy.length - 1; i++) {\n    step();\n    if (messy[i] > messy[i + 1]) {\n      const held = messy[i];\n      messy[i] = messy[i + 1];\n      messy[i + 1] = held;\n    }\n  }\n}\nscreen.textContent = messy.join(\', \') + \' — sorted in \' + steps + \' steps\';',
+ 'Outer loop repeats the passes; inner loop compares messy[i] with messy[i + 1] and swaps using a holding box.',
+ (c)=> all(c,[[/for[\s\S]*for[\s\S]*step\s*\(\s*\)/,'a nested loop with <code>step()</code> inside'],[/messy\s*\[\s*i\s*\]\s*>\s*messy\s*\[\s*i\s*\+\s*1\s*\]/,'a comparison of <code>messy[i]</code> with <code>messy[i + 1]</code>'],[/=\s*messy\s*\[\s*i\s*\]/,'a holding box that saves one value before the swap'],[/screen\.textContent\s*=/,'a <code>screen.textContent =</code> line showing the result']])
+   ? {ok:true,msg:'Sorted &mdash; and you watched what it cost. Every sort in every app you own is this idea, done cleverer.'} : {ok:false,msg:'Nested loops, step() each comparison, swap neighbours that are out of order, then show the list.'}),
+
+JL('Mirrors',
+ '<p>A function can call <b>itself</b>. Stand between two mirrors and you see the same image inside itself, getting smaller &mdash; that is <b>recursion</b>.</p><p>The danger is obvious: mirrors facing mirrors go forever. So every recursive function needs a <b>base case</b> &mdash; a stopping condition checked FIRST, before it calls itself again. Without one you get the infinite loop of Grade 9, wearing a different hat.</p><p>Counting down is the classic first one: say the number, then hand the smaller number to yourself.</p>',
+ 'Write countdown(n): if n is 0 stop, otherwise step() and call countdown(n - 1). Run it from 5 and show the steps.',
+ '',
+ 'function countdown(n) {\n  if (n === 0) {\n    return;\n  }\n  step();\n  countdown(n - 1);\n}\ncountdown(5);\nshowSteps(\'Counted down from 5\');',
+ 'The if with return is the base case; the call to itself uses n - 1 so it always shrinks.',
+ (c)=> all(c,[[/function\s+countdown\s*\(\s*\w+\s*\)/,'a <code>function countdown(n)</code>'],[/if\s*\([^)]*===\s*0\s*\)[\s\S]*return/,'a base case: <code>if (n === 0)</code> then <code>return</code>'],[/countdown\s*\(\s*\w+\s*-\s*1\s*\)/,'a call to itself with <code>n - 1</code> so it shrinks'],[/countdown\s*\(\s*5\s*\)/,'a start: <code>countdown(5)</code>'],[/showSteps\s*\(/,'a <code>showSteps(...)</code> line']])
+   ? {ok:true,msg:'Five steps, and it stopped. A function that calls itself and knows when to quit &mdash; that is recursion.'} : {ok:false,msg:'countdown(n): base case first, then step(), then countdown(n - 1). Start it at 5.'}),
+
+JL('Pick the right tool',
+ '<p>The whole grade in one decision. Somebody hands you a job; you choose the approach BEFORE writing it, and you can defend the choice with numbers:</p><table><tr><td>know the position</td><td>index read</td><td>1 step</td></tr><tr><td>know the name</td><td>object lookup</td><td>about 1 step</td></tr><tr><td>sorted list, hunting a value</td><td>binary search</td><td>a handful</td></tr><tr><td>unsorted list</td><td>one by one</td><td>the whole list, worst case</td></tr><tr><td>compare everything to everything</td><td>nested loops</td><td>size times size</td></tr></table><p>Here is the job: you have the phone object and you know the name. Take the cheapest route and prove it with the counter.</p>',
+ 'Look up Cara in the phone object the cheap way (one step) and report the number AND the step count.',
+ 'const phone = { Ana: \'555-0101\', Ben: \'555-0102\', Cara: \'555-0103\' };\n',
+ 'const phone = { Ana: \'555-0101\', Ben: \'555-0102\', Cara: \'555-0103\' };\nstep();\nconst number = phone[\'Cara\'];\nscreen.textContent = \'Cara: \' + number + \' — \' + steps + \' step, no search needed\';',
+ 'You know the name, so no loop belongs here at all: one step, one lookup, one sentence.',
+ (c)=> all(c,[[/step\s*\(\s*\)/,'a single <code>step()</code>'],[/phone\s*\[\s*[\x27"]Cara[\x27"]\s*\]|phone\.Cara/,'a direct lookup of <code>phone[\'Cara\']</code>'],[/^(?![\s\S]*\bfor\s*\()[\s\S]*$/,'NO loop &mdash; you know the name, so searching would be wasted work'],[/screen\.textContent\s*=/,'a <code>screen.textContent =</code> line with the number and the count']])
+   ? {ok:true,msg:'One step, no loop. Choosing the right shape beats optimising the wrong one every time.'} : {ok:false,msg:'No loop: step() once, look up phone[\'Cara\'], and report the number with the step count.'}),
+
+]);
+
+REV('MR','js',
+ REV_INTRO+'<p>Machine Room in one breath:</p><ul><li><code>step()</code> counts work; measuring beats guessing.</li><li>One by one costs the whole list. Halving a <b>sorted</b> list costs a handful.</li><li>Ten times the data adds ONE step to a halving search.</li><li>An index or an object key is a direct address &mdash; about one step, always.</li><li>Loops inside loops multiply. That is the shape of slow.</li><li>A function may call itself, if it has a base case.</li></ul>',
+ 'Search the names one by one for Dan (step, break), then report the name AND the steps in one screen line.',
+ 'const names = [\'Ana\', \'Ben\', \'Cara\', \'Dan\', \'Eve\'];\n',
+ 'const names = [\'Ana\', \'Ben\', \'Cara\', \'Dan\', \'Eve\'];\nlet found = \'\';\nfor (const name of names) {\n  step();\n  if (name === \'Dan\') {\n    found = name;\n    break;\n  }\n}\nscreen.textContent = \'Found \' + found + \' in \' + steps + \' steps\';',
+ 'A box to hold what you found, the loop with step() and break, then one screen line gluing the name and the count.',
+ (c)=> all(c,[[/for\s*\(\s*const\s+\w+\s+of\s+names\s*\)/,'a <code>for ... of</code> loop over <code>names</code>'],[/step\s*\(\s*\)/,'a <code>step()</code> inside the loop'],[/if\s*\([^)]*===[^)]*\)/,'an <code>if</code> comparing with <code>===</code>'],[/break/,'a <code>break</code> once it is found'],[/screen\.textContent\s*=[^\n]*steps/,'a <code>screen.textContent =</code> line that includes <code>steps</code>']])
+   ? {ok:true,msg:'You can now measure work, name the shape of a problem, and pick the cheap road. That is computer science, and it is yours.'} : {ok:false,msg:'Loop with step() and break, then one screen line with the name and the step count.'});
+
+PRACT('MR','js','count the laps','<p>Reps on the counter itself.</p>','Loop the numbers list, step() each lap, and showSteps.',
+ 'const scores = [12, 7, 9, 4];\n',
+ 'const scores = [12, 7, 9, 4];\nfor (const score of scores) {\n  step();\n}\nshowSteps(\'Read every score\');',
+ 'for...of over scores, step() inside, showSteps after.',
+ (c)=> all(c,[[/for\s*\(\s*const\s+\w+\s+of\s+scores\s*\)/,'a <code>for ... of</code> over <code>scores</code>'],[/step\s*\(\s*\)/,'a <code>step()</code> inside the loop'],[/showSteps\s*\(/,'a <code>showSteps(...)</code> line']])
+   ? {ok:true,msg:'Four scores, four steps.'} : {ok:false,msg:'Loop scores, step() each lap, showSteps.'});
+
+PRACT('MR','js','find it fast','<p>Same rep, cheaper road: you know the key.</p>','Look up the price of bread in one step and show it with the count.',
+ 'const prices = { milk: 3, bread: 2, eggs: 4 };\n',
+ 'const prices = { milk: 3, bread: 2, eggs: 4 };\nstep();\nconst price = prices[\'bread\'];\nscreen.textContent = \'Bread costs \' + price + \' — \' + steps + \' step\';',
+ 'One step(), one key lookup, one screen line.',
+ (c)=> all(c,[[/step\s*\(\s*\)/,'a single <code>step()</code>'],[/prices\s*\[\s*[\x27"]bread[\x27"]\s*\]|prices\.bread/,'a direct lookup of <code>prices[\'bread\']</code>'],[/screen\.textContent\s*=/,'a <code>screen.textContent =</code> line']])
+   ? {ok:true,msg:'One step. No rail of coats searched.'} : {ok:false,msg:'step() once, look up prices[\'bread\'], show it with the count.'});
+
+PRACT('MR','js','the price of pairs','<p>Feel the multiplication one more time.</p>','Nested loops over the four colors, step() in the inner loop, then showSteps.',
+ 'const colors = [\'red\', \'blue\', \'green\', \'gold\'];\n',
+ 'const colors = [\'red\', \'blue\', \'green\', \'gold\'];\nfor (const first of colors) {\n  for (const second of colors) {\n    step();\n  }\n}\nshowSteps(\'Every color pair\');',
+ 'Two for...of loops over colors, step() in the inner braces.',
+ (c)=> all(c,[[/for[\s\S]*for[\s\S]*step\s*\(\s*\)/,'one loop nested inside another with <code>step()</code> inside'],[/showSteps\s*\(/,'a <code>showSteps(...)</code> line']])
+   ? {ok:true,msg:'Sixteen steps from four colors. Square the list, square the bill.'} : {ok:false,msg:'A for...of inside a for...of over colors, step() in the inner one, then showSteps.'});
+
+/* In-the-wild lines, attached by title so lesson indices stay free to move */
+const MR_WILD = {
+ 'Counting the work':'Every "this page is slow" ticket at every company starts exactly here: someone stops guessing and measures where the work actually goes.',
+ 'One by one':'Ctrl+F scanning a page you have not sorted is a linear search - which is why it takes longer on longer pages.',
+ 'The phone book trick':'Your bank finding your account among fifty million, in the time it takes the page to paint, is this halving trick on sorted data.',
+ 'Why halving wins':'It is why a search box over a million products answers as fast as one over a thousand - twenty steps instead of ten.',
+ 'Straight to the shelf':'Jumping to a video timestamp does not scan the video; the player computes where that second lives and reads it directly.',
+ 'The coat check':'Every username login, every product-code lookup, every cache hit on the internet is a hash lookup - the coat-check ticket.',
+ 'Loops inside loops':'The classic startup outage: a "find mutual friends" feature that compared everyone to everyone, fine at a thousand users, fatal at a million.',
+ 'Sorting you can watch':'Sorting a column in a spreadsheet or a price list on a shop is this idea, done with a smarter method than bubble.',
+ 'Mirrors':'Every folder inside a folder inside a folder - file explorers, comment replies, and site menus are all walked recursively.',
+ 'Pick the right tool':'This conversation - "should this be a list or an object?" - happens in code review at every company, every week.'
+};
+
 const ORDER = [];
 for (const g of GRADES) for (let i=0;i<L.length;i++) if (L[i].g===g.id && !L[i].chal && !L[i].proj && !L[i].pract) ORDER.push(i);
 
@@ -1911,6 +2064,9 @@ const RW={
 59:'Twitter\'s mobile site, Starbucks ordering, and this very Code Lab are PWAs - web pages acting as apps. The \'app\' on your home screen is often your three languages in a costume.',
 60:'The \'@\' check you wrote runs on every signup form on the internet - and the never-ship-secrets rule you learned is the one that, when broken, makes national news.'
 };
+/* Machine Room in-the-wild lines, attached now that RW exists */
+L.forEach((les,i)=>{ if (les.g==='MR' && MR_WILD[les.title]) RW[i] = MR_WILD[les.title]; });
+
 
 /* ============================ ENGINE ============================ */
 const $ = s => document.querySelector(s);
@@ -1990,6 +2146,12 @@ const GLOSS = {
  '+':['plus','adds numbers, or glues pieces of text together'],
  '===':['strictly equals','asks whether two things are the same, type included'],
  '=>':['arrow','a shorthand way of writing a function'],
+ 'step':['step','the work counter this grade wires in - call it once for every piece of work your code does'],
+ 'showSteps':['show steps','prints the tally so far, so effort becomes a number you can compare'],
+ 'sortedNumbers':['sorted numbers','a ready-made list of 1 to 100 in order - built with a loop you could write yourself'],
+ 'break':['break','stop this loop right now; the job is done and more laps would be wasted work'],
+ '.push':['push','adds one more item onto the end of a list'],
+ '.join':['join','glues every item of a list into one piece of text, with your separator between them'],
  'padding: A B':['two numbers','the first is up-and-down, the second is left-and-right - so 10px 20px is a short pill shape'],
  'margin: A B':['two numbers','the first is up-and-down, the second is left-and-right']
 };
@@ -2004,7 +2166,8 @@ function decoderFor(les){
   for (const m of code.matchAll(/\d+(px|rem|em|%)/g)) push(m[1]);
   for (const m of code.matchAll(/\b(const|let|var|function|return|if|else|for|while|true|false|typeof)\b/g)) push(m[1]);
   for (const m of code.matchAll(/(Math\.random|Math\.floor|console\.log|document\.getElementById)/g)) push(m[1]);
-  for (const m of code.matchAll(/\.(textContent|length|disabled|includes|toUpperCase)\b/g)) push('.'+m[1]);
+  for (const m of code.matchAll(/\.(textContent|length|disabled|includes|toUpperCase|push|join)\b/g)) push('.'+m[1]);
+  for (const m of code.matchAll(/\b(step|showSteps|resetSteps|sortedNumbers|break)\b/g)) push(m[1]==='resetSteps'?'step':m[1]);
   for (const m of code.matchAll(/(padding|margin)\s*:\s*[\d.]+[a-z%]*\s+[\d.]+/g)) push(m[1]+': A B');
   if (/^\s*\.[a-zA-Z]/m.test(code)) push('.name');
   if (/^\s*#[a-zA-Z]/m.test(code)) push('#name');
@@ -2101,7 +2264,11 @@ function buildDoc(les, code){
   let body, css = les.css || '', js = '';
   if (les.lang === 'html'){ body = code.trim() ? code : '<p style="color:#a9a29a;font-family:Georgia,serif;text-align:center;margin-top:48px">Your page will appear here as you type&hellip;</p>'; js = les.js || ''; }
   else if (les.lang === 'css'){ body = les.html; css = code; js = les.js || ''; }
-  else { body = les.html; js = 'const screen=document.getElementById("screen");const btn=document.getElementById("btn");\ntry{\n' + safeJs(code) + '\n}catch(e){}'; }
+  else {
+    body = les.html;
+    const mr = les.g==='MR' ? MR_PRELUDE : '';
+    js = 'const screen=document.getElementById("screen");const btn=document.getElementById("btn");' + mr + '\ntry{\n' + safeJs(code) + '\n}catch(e){}';
+  }
   let doc = '<!DOCTYPE html><html><head><meta charset="utf-8"><style>' + css + '</style></head><body>' + body;
   if (js) doc += '<scr'+'ipt>' + js + '<\/scr'+'ipt>';
   return doc;
@@ -2282,7 +2449,7 @@ function runCheck(){
   } else if (les.lang === 'js'){
     const err = jsSyntaxError(code);
     if (err) res = {ok:false, cls:'coach', msg:'🧑‍🏫 '+friendlySyntax(err, code)};
-    else if (!/\.textContent\s*=/.test(code))
+    else if (!/\.textContent\s*=/.test(code) && !/showSteps\s*\(/.test(code))
       res = {ok:false, cls:'coach', msg:'🧑‍🏫 Nothing reaches the screen yet. Remember: working it out is not showing it &mdash; you need a <code>screen.textContent =</code> line.'};
     else res = normRes(les, code);
   } else {

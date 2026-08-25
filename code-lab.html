@@ -223,6 +223,8 @@ body.dark .wcard{background:var(--panel)}
 .tick.pop{animation:tickpop .45s ease}
 @keyframes tickpop{40%{transform:scale(1.7)}}
 .xpfloat{position:fixed;font-family:Menlo,Consolas,monospace;font-weight:bold;color:var(--accent);z-index:120;pointer-events:none;animation:xprise 1.2s ease forwards}
+.navtip{position:fixed;top:54px;left:0;max-width:290px;background:var(--panel);color:var(--ink);border:2px solid var(--accent);border-radius:10px;padding:11px 14px;font-size:.9rem;line-height:1.45;box-shadow:0 10px 30px rgba(0,0,0,.3);z-index:130;cursor:pointer}
+.navtip:after{content:'';position:absolute;top:-9px;left:24px;border:8px solid transparent;border-top:none;border-bottom-color:var(--accent)}
 @keyframes xprise{to{transform:translateY(-42px);opacity:0}}
 #status{transition:background .25s,color .25s}
 button:focus-visible,.navitem:focus-visible,#ed:focus-visible,input:focus-visible{outline:3px solid var(--accent2);outline-offset:1px}
@@ -3111,6 +3113,31 @@ function setNav(hidden){
   try{ localStorage.setItem('navhid', hidden?'1':'0'); }catch(e){}
 }
 $('#btnNav').onclick = ()=>setNav(!document.body.classList.contains('navhid'));
+/* Show the wide-open typing mode once, the first time someone actually goes to
+   type - otherwise they can finish a whole lesson never knowing it exists. */
+function teachNav(){
+  let taught=false; try{ taught = localStorage.getItem('navtaught')==='1'; }catch(e){}
+  if (taught) return;
+  /* Guards come BEFORE the flag is burned: typing in free play, or on a phone
+     where the button does not exist, must not use up the one teaching moment. */
+  if (sandbox) return;
+  if (innerWidth<=700) return;
+  const mark=()=>{ try{ localStorage.setItem('navtaught','1'); }catch(e){} };
+  if (document.body.classList.contains('navhid')){ mark(); return; }  /* already found it */
+  mark();
+  setNav(true);
+  const tip=document.createElement('div'); tip.className='navtip';
+  tip.innerHTML='Gave you room to type. Press <b>&#9776; Lessons</b> up there to bring the lesson list back.';
+  const go=()=>tip.remove();
+  tip.onclick=go; document.body.appendChild(tip);
+  /* point the arrow at the actual button, wherever the header puts it */
+  const r=$('#btnNav').getBoundingClientRect();
+  tip.style.left = Math.max(8, Math.min(innerWidth - tip.offsetWidth - 8, r.left + r.width/2 - 32)) + 'px';
+  tip.style.top = Math.round(r.bottom + 10) + 'px';
+  setTimeout(go, 6000);
+}
+edEl.addEventListener('pointerdown', teachNav);
+edEl.addEventListener('keydown', teachNav);
 try{ if (localStorage.getItem('navhid')==='1') setNav(true); }catch(e){}
 $('#navSearch').addEventListener('input', renderNav);
 document.addEventListener('keydown', (e)=>{

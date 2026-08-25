@@ -92,6 +92,14 @@ details.ft p{margin:6px 0 0;line-height:1.5}
 .btnrow button:hover, header .hbtn:hover{border-color:var(--accent)}
 #btnRun{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700}
 #btnRun:hover{background:var(--accent2);border-color:var(--accent2)}
+#duckbar{display:none;align-items:center;gap:10px;padding:8px 12px;background:#f6edd2;border-top:2px solid var(--line);font-size:.88rem;line-height:1.4}
+body.dark #duckbar{background:#3a3423;color:var(--ink)}
+#duckbar.on{display:flex}
+#duckbar .dk{font-size:1.3rem}
+#duckbar .dbtns{margin-left:auto;display:flex;gap:6px;flex:0 0 auto}
+#duckbar button{font-family:inherit;font-size:.8rem;padding:4px 10px;border-radius:6px;border:2px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+#duckbar button:hover{border-color:var(--accent)}
+#errlay .duckhl{background:rgba(214,164,32,.28);border-radius:3px;outline:1px solid rgba(214,164,32,.55)}
 #btnNext{background:var(--accent);color:#fff;border-color:var(--accent);display:none;animation:npulse .8s ease 2}
 @keyframes npulse{50%{transform:scale(1.08);box-shadow:0 0 0 6px rgba(47,125,92,.25)}}
 #status{flex:0 0 auto;padding:9px 14px;font-size:.92rem;border-top:2px solid var(--line);background:var(--bad);border-color:var(--badline)}
@@ -269,6 +277,7 @@ button:focus-visible,.navitem:focus-visible,#ed:focus-visible,input:focus-visibl
       <div class="goalbox" id="goal"></div>
       <div class="remind" id="remind"><span id="remindTxt"></span><button id="remindHide">hide</button></div>
       <div class="scaffold" id="scaffold"><div class="sclabel" id="scLabel"></div><pre id="scPre"></pre></div>
+      <div id="duckbar"><span class="dk">🦆</span><span id="duckQ"></span><span class="dbtns"><button id="duckNext">Next line →</button><button id="duckDone">Done</button></span></div>
       <div class="edwrap"><pre id="hl"></pre><pre id="errlay"></pre><textarea id="ed" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea></div>
       <div class="btnrow">
         <button id="btnRun" title="Run your code — the coach grades only when you press this (Ctrl+Enter works too)">▶ Run</button>
@@ -276,6 +285,7 @@ button:focus-visible,.navitem:focus-visible,#ed:focus-visible,input:focus-visibl
         <button id="btnLead" title="Reveals the answer in 4 steps - you finish the thought">🪜 Give me a lead</button>
         <button id="btnSol" title="Shows the full answer">👀 Show me</button>
         <button id="btnReDo" title="Back to the starting code">↺ Start over</button>
+        <button id="btnDuck" title="Rubber-duck debugging: explain your code out loud, one line at a time — you will usually catch your own bug">🦆 Duck</button>
         <button id="btnTheme" title="Editor theme — more unlock as you level up">🎨</button>
         <button id="btnNext" title="Ctrl+Enter also works">Next lesson &rarr;</button>
       </div>
@@ -916,7 +926,7 @@ JL('The detective’s notebook',
    : {ok:false,msg:'I need both a console.log(...) line and a screen.textContent line.'}),
 
 JL('Reading an error message',
- '<p>Below is BROKEN code &mdash; run your eyes over the red message this page gives you. Errors are not scolding; they are the computer saying “I got confused HERE, because of THIS.”</p><p>This one has an unfinished quote: the computer hit the end of the line while still inside the string. Fix it, watch the red turn green, and notice the feeling &mdash; errors are handrails, not walls.</p>',
+ '<p>Meet your second debugging tool: the <b>🦆 Duck</b> button under the editor. It walks you through YOUR code one line at a time and makes you explain each line out loud. It gives no answers &mdash; and that is the point: most bugs do not survive being explained. Professionals genuinely do this.</p><p>Below is BROKEN code &mdash; run your eyes over the red message this page gives you. Errors are not scolding; they are the computer saying “I got confused HERE, because of THIS.”</p><p>This one has an unfinished quote: the computer hit the end of the line while still inside the string. Fix it, watch the red turn green, and notice the feeling &mdash; errors are handrails, not walls.</p>',
  'Fix the broken line so the message shows properly.',
  'screen.textContent = \'I forgot to close this quote;',
  'screen.textContent = \'I closed the quote properly!\';',
@@ -1699,6 +1709,10 @@ const QA = [
  {k:'learn coding point purpose worth bother benefit', a:'Three honest reasons: you stop being at the mercy of software other people built; you can make a thing exist out of nothing but typing; and it pays &mdash; landing pages, fixes, and small apps are real money. Bonus: the web stops looking like magic and starts looking like instructions.'},
  {k:'progress restore device export import lost cleared browser', a:'Your ticks live in this browser. <b>Export save</b> gives you a code; <b>Import</b> pastes it back on any device or browser. If site data got cleared without an export the ticks are gone &mdash; but the knowledge is not, and Replay turns a second run into a victory lap.'},
  {k:'closer slash direction opener second item typed twice', a:'The closer wears the slash: <code>&lt;li&gt;</code> opens, <code>&lt;/li&gt;</code> closes. Typing the opener a second time does NOT end the first one &mdash; it opens another. It is the most common beginner bug there is, which is why the coach marks it right where you typed it.'},
+ {k:'rubber duck debugging explain out loud method', a:'Rubber-duck debugging: explain your code out loud, line by line, to a duck (or anything). Saying it forces you to actually read what you WROTE instead of what you MEANT &mdash; and the difference is usually the bug. The 🦆 Duck button under the editor walks you through it.'},
+ {k:'find my own bugs stuck debug myself without help', a:'Three moves, in order: 1) press 🦆 Duck and explain every line out loud &mdash; most bugs die right there; 2) read the coach&rsquo;s red-pen mark; 3) delete half the code and Run &mdash; if the bug is gone it lived in the half you removed. Narrowing beats staring.'},
+ {k:'style polish clean code matter looks readable why', a:'Style notes (🧹) never touch your ✓ &mdash; correctness comes first. But code is read far more often than it is written, and messy-but-working code is where future bugs hide. Clean indentation and honest names are what make a vet trust your work at a glance. ✨ clean code pays +2 XP.'},
+ {k:'indentation spaces two levels nesting readable', a:'Two spaces per level of nesting; closers step back out one level. The browser ignores it completely &mdash; indentation is a letter to the next human (usually future you), making the structure visible so mismatched tags and braces jump out.'},
 ];
 
 /* extra reference material for lessons whose teach text is short */
@@ -2055,13 +2069,14 @@ let idx = 0, done = new Set(), tested = new Set(), leadStep = 0, sandbox = false
 let chalDone = new Set(), projDone = new Set(), practDone = new Set(), msSeen = new Set(), edTheme = '', sensei = false, certName = '';
 let stk = {last:'', cur:0, best:0, xp:0};
 
-function saveP(){ try{ localStorage.setItem('codeschool', JSON.stringify({done:[...done], idx, tested:[...tested], chalDone:[...chalDone], projDone:[...projDone], practDone:[...practDone], ms:[...msSeen], edTheme, sensei, certName, stk})); }catch(e){} }
+function saveP(){ try{ localStorage.setItem('codeschool', JSON.stringify({done:[...done], idx, tested:[...tested], chalDone:[...chalDone], projDone:[...projDone], practDone:[...practDone], ms:[...msSeen], edTheme, sensei, certName, stk, styleDone:[...styleDone]})); }catch(e){} }
 function loadP(){
   let p = null;
   try{ p = JSON.parse(localStorage.getItem('codeschool')); }catch(e){}
   if (!p || !Array.isArray(p.done)) p = (location.protocol === 'file:') ? CARRIED : {done:[], idx:0};
   done = new Set(p.done.filter(n => n >= 0 && n < L.length && !L[n].chal && !L[n].proj && !L[n].pract));
   tested = new Set(p.tested || []);
+  styleDone = new Set(p.styleDone || []);
   chalDone = new Set((p.chalDone||[]).filter(n=>n>=0&&n<L.length));
   projDone = new Set((p.projDone||[]).filter(n=>n>=0&&n<L.length));
   practDone = new Set((p.practDone||[]).filter(n=>n>=0&&n<L.length));
@@ -2277,7 +2292,16 @@ function runCheck(){
   markErr(res.cls==='coach' ? lintRange : null);
   if (res.cls==='coach' && lintRange) res.msg += ' <b>Marked in red in your code.</b>';
   statusEl.className = (res.ok ? 'ok' : (res.cls || '')) + (!res.ok && /class="story /.test(res.msg) ? ' projlist' : '');
-  statusEl.innerHTML = (res.ok ? '✓ ' : '') + res.msg + (res.ok && RW[idx] ? '<span class="wild">🌍 <b>In the wild:</b> ' + RW[idx] + '</span>' : '');
+  let styleHtml='';
+  if (res.ok && !sandbox){
+    const notes = stylePass(code, les.lang, les.start);
+    if (notes.length){ styleHtml = '<span class="wild">🧹 <b>Polish (does not affect your ✓):</b> ' + notes.join(' · ') + '</span>'; }
+    else {
+      styleHtml = '<span class="wild">✨ <b>Clean code</b> — a pro could read this.' + (!styleDone.has(idx) ? ' <b>+2 XP</b>' : '') + '</span>';
+      if (!styleDone.has(idx)){ styleDone.add(idx); stk.xp = (stk.xp|0) + 2; saveP(); }
+    }
+  }
+  statusEl.innerHTML = (res.ok ? '✓ ' : '') + res.msg + (res.ok && RW[idx] ? '<span class="wild">🌍 <b>In the wild:</b> ' + RW[idx] + '</span>' : '') + styleHtml;
   btnNext.style.display = res.ok ? 'inline-block' : 'none';
   if (res.ok && !done.has(idx) && solShown && edEl.value === L[idx].sol){
     statusEl.innerHTML = '✓ ' + 'That IS the answer — but shown is not earned. Hit <b>↺ Start over</b> and type it yourself: the ✓ (and the XP) go to your fingers, not your eyes. Typing it is faster than you think.';
@@ -2320,6 +2344,52 @@ function runCheck(){
     document.body.appendChild(fl); setTimeout(()=>fl.remove(), 1300);
   }
 }
+/* ---- The Polish: style graded AFTER correctness, never blocking the tick.
+   Correctness first, readability second - a green check that is also a mess
+   gets a gentle note; a clean one gets applause (and once, +2 XP). ---- */
+function stylePass(code, lang, start){
+  const notes = [];
+  const lines = code.split('\n');
+  if (lines.some(l=>/\s+$/.test(l))) notes.push('a line ends with invisible spaces &mdash; pros trim those');
+  if (/\n\s*\n\s*\n\s*\n/.test(code)) notes.push('three or more blank lines in a row &mdash; one is plenty');
+  /* indentation: depth from braces, brackets and tags; expected 2 spaces per level */
+  let depth=0, badIndent=false;
+  const VOIDI=/^(br|hr|img|input|meta|link|source)$/i;
+  for (const raw of lines){
+    if (!raw.trim()) continue;
+    const startsClose = /^\s*(\}|\]|<\/)/.test(raw);
+    const want = Math.max(0, depth - (startsClose?1:0)) * 2;
+    const got = (raw.match(/^ */)||[''])[0].length;
+    if (got !== want) badIndent = true;
+    let net = (raw.match(/[{\[]/g)||[]).length - (raw.match(/[}\]]/g)||[]).length;
+    for (const m of raw.matchAll(/<(\/?)([a-zA-Z][\w-]*)[^>]*>/g)){
+      if (VOIDI.test(m[2]) || /\/>$/.test(m[0])) continue;
+      net += m[1] ? -1 : 1;
+    }
+    depth = Math.max(0, depth + net);
+  }
+  if (badIndent) notes.push('indentation drifts &mdash; two spaces per level of nesting, closers back out one level');
+  if (lang==='html'){
+    if (/<[A-Z]/.test(code)) notes.push('tag names in capitals &mdash; the pro convention is all lowercase');
+  }
+  if (lang==='css'){
+    if (/:[^\s\n\/]/.test(code.replace(/https?:/g,''))) notes.push('put one space after each <code>:</code> &mdash; <code>color: red</code> reads better than <code>color:red</code>');
+    if (/[a-z-]+\s*:\s*[^;{}\n]+\n/.test(code) && /[a-z-]+\s*:\s*[^;{}\n]+[^;\s]\s*\n\s*\}/.test(code)) notes.push('the last line before <code>}</code> is missing its <code>;</code> &mdash; it works, but the next line you add will break');
+    if (/;[ \t]*[a-z-]+[ \t]*:/.test(code)) notes.push('two properties share one line &mdash; one per line is the pro habit');
+  }
+  if (lang==='js'){
+    for (const m of code.matchAll(/\blet\s+(\w+)\s*=/g)){
+      const n=m[1];
+      if (!new RegExp('(^|[^.\\w])'+n+'\\s*(=[^=]|\\+\\+|--|\\+=|-=)','').test(code.slice(m.index+m[0].length)))
+        notes.push('<code>let '+n+'</code> never changes &mdash; a box that never changes should be <code>const</code>');
+    }
+    for (const m of code.matchAll(/\b(?:const|let)\s+([a-hk-z])\b\s*=/g))
+      if (!(start && start.indexOf(m[0]) > -1))   /* names the lesson itself handed out are exempt */
+        notes.push('<code>'+m[1]+'</code> is a one-letter name &mdash; names should say what the box holds');
+  }
+  return notes.slice(0,2);
+}
+let styleDone = new Set();
 function reqList(reqs){
   const k = reqs.filter(r=>r.ok).length;
   return '<div class="hd">What the goal asks for <span class="pct">'+k+' / '+reqs.length+'</span></div>'
@@ -2521,6 +2591,7 @@ function loadLesson(i){
     : les.lang==='css' ? 'Type your CSS rules here - the page below re-dresses as you type'
     : 'Type your JavaScript here - remember: screen.textContent = shows things';
   edEl.value = les.start;
+  if (duckLine>-1) duckEnd(false);
   saveP(); renderNav();
   if (done.has(idx)||chalDone.has(idx)||projDone.has(idx)||practDone.has(idx)) runCheck(); else previewOnly();
   const cp=$('#crPrev'), cn=$('#crNext');
@@ -2658,6 +2729,7 @@ function openSandbox(){
 /* wiring */
 edEl.addEventListener('input', ()=>{
   if (sandbox){ syncHl(); errEl.innerHTML=''; outEl.srcdoc = edEl.value; try{localStorage.setItem('sandboxCode', edEl.value);}catch(e){} return; }
+  if (duckLine>-1) duckEnd(false);
   syncHl(); errEl.innerHTML='';
   outEl.srcdoc = buildDoc(L[idx], edEl.value);
   if (graded) previewOnly();
@@ -2686,6 +2758,51 @@ edEl.addEventListener('keydown', (e)=>{
     edEl.dispatchEvent(new Event('input'));
   }
 });
+/* ---- The Duck: rubber-duck debugging as a first-class tool. No AI, no answers -
+   it walks you through YOUR code one line at a time and makes you say what each
+   line does out loud. Most bugs do not survive being explained. ---- */
+let duckLine = -1;
+function duckQFor(line){
+  const t = line.trim();
+  if (!t) return 'A blank line. Take a breath and say what the NEXT line should do before you look at it.';
+  if (/^<\//.test(t)) return 'Say out loud: what is this closing? Point at the opener it pairs with.';
+  if (/^<[a-zA-Z]/.test(t)) return 'Say out loud: what does this line open, and where exactly does it close?';
+  if (/^[.#]?[\w-]+\s*\{/.test(t)) return 'Say the selector out loud: WHO on the page does this rule dress?';
+  if (/^\}/.test(t)) return 'A closer. Say which rule or block just ended - was everything you meant inside it?';
+  if (/[a-z-]+\s*:/.test(t) && !/=/.test(t)) return 'Say the property and its value out loud - is the value what you actually meant?';
+  if (/^(const|let)\b/.test(t)) return 'Say out loud: what goes in this box, and does the name tell the truth about it?';
+  if (/^if\b/.test(t)) return 'Read the test aloud. When EXACTLY is it true? Name one value that makes it false.';
+  if (/^\} else/.test(t) || /^else\b/.test(t)) return 'Say out loud: what has to happen for the code to land HERE instead of the if?';
+  if (/^for\b|^while\b/.test(t)) return 'Say aloud: where does this loop start, when does it stop, and what changes each lap?';
+  if (/screen\.textContent/.test(t)) return 'This is the line the audience sees. Say exactly what text lands on screen.';
+  if (/return\b/.test(t)) return 'Say out loud: what value is handed back, and who asked for it?';
+  if (/onclick|addEventListener/.test(t)) return 'Say aloud: what has to happen in the real world for this code to run?';
+  if (/\w+\s*\(/.test(t)) return 'A call. Say which trick runs here and what you hand it.';
+  return 'Read this line out loud, word for word. Slowly. Does it say what you meant?';
+}
+function duckShow(){
+  const lines = edEl.value.split('\n');
+  if (duckLine >= lines.length){ duckEnd(true); return; }
+  $('#duckQ').innerHTML = '<b>Line ' + (duckLine+1) + ' of ' + lines.length + ':</b> ' + duckQFor(lines[duckLine]);
+  /* amber-highlight the current line in the mark layer */
+  let a=0; for (let n=0;n<duckLine;n++) a += lines[n].length+1;
+  const b=a+lines[duckLine].length;
+  const code=edEl.value;
+  errEl.innerHTML = hlEsc(code.slice(0,a)) + '<span class="duckhl">' + hlEsc(code.slice(a,b) || ' ') + '</span>' + hlEsc(code.slice(b)) + '\n';
+  errEl.scrollTop = edEl.scrollTop; errEl.scrollLeft = edEl.scrollLeft;
+}
+function duckEnd(finished){
+  duckLine=-1; errEl.innerHTML='';
+  $('#duckbar').classList.remove('on');
+  if (finished){ statusEl.className=''; statusEl.innerHTML='🦆 Spotted it? That is the whole trick — explaining code out loud is how professionals debug. (If not: run the duck again and listen for the line that felt shaky when you said it.)'; }
+  edEl.focus();
+}
+$('#btnDuck').onclick = ()=>{
+  if (!edEl.value.trim()){ statusEl.className=''; statusEl.innerHTML='🦆 The duck needs some code to listen to — type something first.'; return; }
+  duckLine=0; $('#duckbar').classList.add('on'); duckShow();
+};
+$('#duckNext').onclick = ()=>{ duckLine++; duckShow(); };
+$('#duckDone').onclick = ()=>duckEnd(true);
 $('#btnRun').onclick = ()=>{ if(sandbox){ syncHl(); outEl.srcdoc = edEl.value; } else runCheck(); };
 $('#btnHelp').onclick = ()=>{ if(!sandbox){ statusEl.className=''; statusEl.innerHTML = '💡 ' + L[idx].hint; } };
 $('#btnLead').onclick = ()=>{ if(!sandbox) giveLead(); };

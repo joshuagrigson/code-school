@@ -378,7 +378,11 @@ function hasRe(code, re){ return re.test(code); }
    again. reqLog is read by runCheck to draw the checklist. */
 let reqLog = [];
 function all(code, pairs){
-  reqLog = pairs.map(p => ({t:p[1], ok: (p[0] instanceof RegExp) ? p[0].test(code) : !!p[0](code)}));
+  reqLog = pairs.map(p => {
+    const isRe = p[0] instanceof RegExp;
+    const m = isRe ? code.match(p[0]) : null;
+    return {t:p[1], ok: isRe ? !!m : !!p[0](code), at: m ? m.index : -1, src: isRe ? p[0].source : ''};
+  });
   return reqLog.every(r=>r.ok);
 }
 function txtOf(doc, sel){ const el = doc.querySelector(sel); return el ? el.textContent.trim() : null; }
@@ -580,12 +584,12 @@ CL('Size and center',
  G2HTML),
 
 CL('Breathing room',
- '<p>Squashed text is hard to read. <code>padding</code> adds space INSIDE a box, between its edge and its contents &mdash; like the cardboard around a framed photo.</p><pre>p {\n  padding: 20px;\n  background: mintcream;\n}</pre><p>The background makes the padding visible &mdash; watch the colored area grow around the words.</p>',
+ '<p>Squashed text is hard to read. <code>padding</code> adds space INSIDE a box, between its edge and its contents &mdash; like the cardboard around a framed photo.</p><pre>p {\n  background: mintcream;\n  padding: 20px;\n}</pre><p>The background makes the padding visible &mdash; watch the colored area grow around the words.</p>',
  'Give the p (the paragraph) a background color and at least 20px of padding.',
  'p {\n\n}',
  'p {\n  background: mintcream;\n  padding: 20px;\n}',
  'Two lines: a background color, and <code>padding: 20px;</code>.',
- (c)=> all(c,[[/padding\s*:\s*\d+px/,'a <code>padding:</code> with a number'], [/background(-color)?\s*:\s*[#a-zA-Z]\w*/,'a <code>background:</code> with a colour']])
+ (c)=> all(c,[[/background(-color)?\s*:\s*[#a-zA-Z]\w*/,'a <code>background:</code> with a colour'], [/padding\s*:\s*\d+px/,'a <code>padding:</code> with a number']])
    ? {ok:true,msg:'Room to breathe. Space is not wasted screen &mdash; it is what makes things readable.'}
    : {ok:false,msg:'I need both: a background, and padding of at least a few px.'},
  G2HTML),
@@ -1533,7 +1537,7 @@ JL('Why halving wins',
  'let low = 0;\nlet high = sortedNumbers.length - 1;\n',
  'let low = 0;\nlet high = sortedNumbers.length - 1;\nwhile (low <= high) {\n  step();\n  const middle = Math.floor((low + high) / 2);\n  if (sortedNumbers[middle] === 99) {\n    break;\n  }\n  if (sortedNumbers[middle] < 99) {\n    low = middle + 1;\n  } else {\n    high = middle - 1;\n  }\n}\nshowSteps(\'Found 99 near the end\');',
  'Same shape as last lesson, hunting 99 instead of 73.',
- (c)=> all(c,[[/while\s*\(\s*low\s*<=\s*high\s*\)/,'a <code>while (low &lt;= high)</code> loop'],[/99/,'the number <code>99</code> as the target'],[/Math\.floor\s*\(/,'a middle found with <code>Math.floor(...)</code>'],[/step\s*\(\s*\)/,'a <code>step()</code> call inside the loop'],[/showSteps\s*\(/,'a <code>showSteps(...)</code> line']])
+ (c)=> all(c,[[/while\s*\(\s*low\s*<=\s*high\s*\)/,'a <code>while (low &lt;= high)</code> loop'],[/step\s*\(\s*\)/,'a <code>step()</code> call inside the loop'],[/Math\.floor\s*\(/,'a middle found with <code>Math.floor(...)</code>'],[/99/,'the number <code>99</code> as the target'],[/showSteps\s*\(/,'a <code>showSteps(...)</code> line']])
    ? {ok:true,msg:'Six steps, even at the far end. Doubling the haystack costs binary search one extra look, not double the work.'} : {ok:false,msg:'Same halving loop, target 99.'}),
 
 JL('Straight to the shelf',
@@ -2571,7 +2575,7 @@ let styleDone = new Set();
 function reqList(reqs){
   const k = reqs.filter(r=>r.ok).length;
   return '<div class="hd">What the goal asks for <span class="pct">'+k+' / '+reqs.length+'</span></div>'
-    + reqs.map(r=>'<div class="story '+(r.ok?'pass':'fail')+'"><span class="ic">'+(r.ok?'\u2713':'\u2717')+'</span><span class="stx">'+r.t+'</span></div>').join('');
+    + reqs.map((r,n)=>'<div class="story '+(r.ok?'pass':'fail')+'"><span class="ic">'+(r.ok?'\u2713':'\u2717')+'</span><span class="stx"><b>'+(n+1)+'.</b> '+r.t+'</span></div>').join('');
 }
 function normRes(les, code){
   let doc = null;

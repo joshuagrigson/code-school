@@ -714,7 +714,7 @@ JL('A list in a box',
    : {ok:false,msg:'I need a list in square brackets AND a screen line showing an item by its [number].'}),
 
 JL('Picking at random',
- '<p>To pick a random item, two helpers team up:</p><pre>Math.random()</pre><p>gives a random decimal between 0 and 1 (like 0.63). Multiply by the list’s length and chop off the decimals with <code>Math.floor</code>, and you get a fair random position:</p><pre>const pick = Math.floor(Math.random() * excuses.length);\nscreen.textContent = excuses[pick];</pre><p>Press “Start over” and re-type it a few times &mdash; a different excuse (sometimes) each run. Randomness is what will make your Excuse-O-Matic feel alive.</p><details class=\'ft\'><summary>The full truth</summary><p>Math.random() is <i>pseudo</i>-random &mdash; a deterministic formula that looks random. Perfect for games and shuffles; never acceptable for passwords or lottery draws, which use crypto-grade randomness. Naming that difference out loud is a very developer thing to do.</p></details>',
+ '<p>To pick a random item, two helpers team up:</p><pre>Math.random()</pre><p>gives a random decimal between 0 and 1 (like 0.63). Multiply &mdash; that is what the <code>*</code> star means; keyboards have no &times; so code borrows the star &mdash; by the list’s length and chop off the decimals with <code>Math.floor</code>, and you get a fair random position:</p><pre>const pick = Math.floor(Math.random() * excuses.length);\nscreen.textContent = excuses[pick];</pre><p>Press “Start over” and re-type it a few times &mdash; a different excuse (sometimes) each run. Randomness is what will make your Excuse-O-Matic feel alive.</p><details class=\'ft\'><summary>The full truth</summary><p>Math.random() is <i>pseudo</i>-random &mdash; a deterministic formula that looks random. Perfect for games and shuffles; never acceptable for passwords or lottery draws, which use crypto-grade randomness. Naming that difference out loud is a very developer thing to do.</p></details>',
  'Pick a random item from your list and show it.',
  'const excuses = [\'My dog ate it\', \'Aliens took it\', \'I overslept\'];\n',
  'const excuses = [\'My dog ate it\', \'Aliens took it\', \'I overslept\'];\nconst pick = Math.floor(Math.random() * excuses.length);\nscreen.textContent = excuses[pick];',
@@ -2177,9 +2177,27 @@ const GLOSS = {
  '.join':['join','glues every item of a list into one piece of text, with your separator between them'],
  'padding: A B':['two numbers','the first is up-and-down, the second is left-and-right - so 10px 20px is a short pill shape'],
  'margin: A B':['two numbers','the first is up-and-down, the second is left-and-right'],
+ '*':['times','multiplication - keyboards have no &times; key, so code borrows the star. 3 * 4 is 12'],
+ '-':['minus','subtraction, exactly like maths'],
+ '/':['divided by','division - keyboards have no &divide; key, so code borrows the slash. 10 / 2 is 5'],
+ 'A % B':['remainder','what is LEFT OVER after dividing: 7 % 3 is 1. Real lingo: modulo. (Different job from the CSS % size unit)'],
+ '&&':['and','both sides must be true for the whole test to be true'],
+ '||':['or','either side being true is enough'],
+ '<':['less than','a question: is the left smaller? Answers true or false'],
+ '>':['greater than','a question: is the left bigger? Answers true or false'],
+ '<=':['less than or equal','like &lt; but a tie also counts as true'],
+ '>=':['greater than or equal','like &gt; but a tie also counts as true'],
+ '++':['plus plus','add 1 to the box - shorthand for x = x + 1'],
+ '+=':['plus equals','grow the box by this much - x += 3 means x = x + 3'],
+ '!':['not','flips a true to false and a false to true'],
+ '!==':['strictly not equal','the partner of === - true when the two things are NOT the same'],
+ ',':['comma','the separator - between list items, function ingredients, and label: value pairs'],
  'label':['label','quoted text you glue in front of a value so a human knows what it is - <code>\'Total: \' + 7</code> shows <code>Total: 7</code>. Real lingo: a string literal'],
  'label: value':['field label','the NAME of a compartment inside an object - <code>{ name: \'Josh\' }</code> has the field label <code>name</code>. Real lingo: a key. A different job from the label above']
 };
+const JOPS = [[/\*/, '*'],[/[\w)\]]\s*-\s*[\w(]/, '-'],[/[\w)\]]\s*\/\s*[\w(]/, '/'],[/[\w)\]]\s*%\s*[\w(]/, 'A % B'],
+  [/&&/, '&&'],[/\|\|/, '||'],[/<=/, '<='],[/>=/, '>='],[/[\w)\]]\s*<\s*[\w(]/, '<'],[/[\w)\]]\s*>\s*[\w(]/, '>'],
+  [/\+\+/, '++'],[/\+=/, '+='],[/!==/, '!=='],[/!(?![=])/, '!'],[/,/, ',']];
 const GSYMS = [[/<\//,'</'],[/=/,'='],[/"/,'"'],[/\{/,'{}'],[/;/,';'],[/\(/,'()'],[/\[/,'[]'],[/\+/,'+'],[/===/,'==='],[/=>/,'=>']];
 function decoderFor(les){
   const code = (les.sol||'') + '\n' + (les.html||'');
@@ -2200,6 +2218,10 @@ function decoderFor(les){
   if (/^\s*#[a-zA-Z]/m.test(code)) push('#name');
   if (/[a-z-]+\s*:/.test(code) && les.lang==='css') push(':');
   for (const [re,t] of GSYMS){ if (re.test(code)) push(t); }
+  if (les.lang==='js'){
+    const ns = code.replace(/(['"`])(?:[^'"`\\]|\\.)*?\1/g, m=>' '.repeat(m.length));
+    for (const [re,t] of JOPS){ if (re.test(ns)) push(t); }
+  }
   if (!seen.length) return '';
   return '<div class="decoder"><b>What every piece means</b><table>' + seen.map(t=>
     '<tr><td>'+hlEsc(t)+'</td><td><b>'+GLOSS[t][0]+'</b> &mdash; '+GLOSS[t][1]+'</td></tr>').join('') + '</table></div>';

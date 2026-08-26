@@ -2476,10 +2476,17 @@ function runCheck(){
     res = {ok:false, cls:'wait', msg:'Start typing whenever you are ready &mdash; the goal is in the blue bar above.'};
   } else if (les.lang === 'js'){
     const err = jsSyntaxError(code);
+    const nm = err ? null : nearMissJS(code);
     if (err) res = {ok:false, cls:'coach', msg:'🧑‍🏫 '+friendlySyntax(err, code)};
+    else if (nm){
+      /* a near-miss vetoes even a regex-satisfied tick: this code breaks when it runs */
+      lintRange = nm.range;
+      res = {ok:false, cls:'coach', msg:'🧑‍🏫 '+nm.msg};
+    }
     else if (!/\.textContent\s*=/.test(code) && !/showSteps\s*\(/.test(code))
       res = {ok:false, cls:'coach', msg:'🧑‍🏫 Nothing reaches the screen yet. Remember: working it out is not showing it &mdash; you need a <code>screen.textContent =</code> line.'};
     else {
+      lintRange = null;
       res = normRes(les, code);
       if (res.ok){
         const sq = squishedOutput(code);
@@ -2560,6 +2567,66 @@ function runCheck(){
 /* ---- The Polish: style graded AFTER correctness, never blocking the tick.
    Correctness first, readability second - a green check that is also a mess
    gets a gentle note; a clean one gets applause (and once, +2 XP). ---- */
+/* ---- Near-miss red pen ---------------------------------------------------
+   Syntactically valid JavaScript that fails the goal used to get one generic
+   line and no marks. These detectors mark the mistake that is PRESENT in the
+   code - a bare [0], a name typed in the wrong case, a one-letter misspelling,
+   a mangled textContent. Same law as the squish coach: fire only on hard
+   evidence, return nothing rather than guess. ----------------------------- */
+const JS_KNOWN = new Set(('screen btn Math console document JSON floor random log getElementById '
+ + 'textContent length disabled includes toUpperCase toLowerCase push join step showSteps resetSteps '
+ + 'sortedNumbers steps function return if else for of in while break continue const let var true false '
+ + 'null undefined typeof new onclick addEventListener value innerHTML style trim indexOf slice split '
+ + 'map filter Number String parseInt parseFloat alert Error throw').split(' '));
+function levLE(a,b,k){
+  if (Math.abs(a.length-b.length)>k) return false;
+  let prev=[...Array(b.length+1).keys()];
+  for (let i=1;i<=a.length;i++){
+    const cur=[i];
+    for (let j=1;j<=b.length;j++)
+      cur[j]=Math.min(prev[j]+1, cur[j-1]+1, prev[j-1]+(a[i-1]===b[j-1]?0:1));
+    prev=cur;
+    if (Math.min.apply(null,cur)>k) return false;
+  }
+  return prev[b.length]<=k;
+}
+function nearMissJS(code){
+  const noStr = code.replace(/(['"`])(?:[^'"`\\]|\\.)*?\1/g, m=>' '.repeat(m.length));
+  /* 1. bare [0] where a list exists - brackets with no list name in front */
+  let m = noStr.match(/(?:screen\.textContent\s*=|\+)\s*(\[\s*\d+\s*\])/);
+  if (m && /(?:const|let|var)\s+\w+\s*=\s*\[/.test(noStr)){
+    const at = m.index + m[0].lastIndexOf(m[1]);
+    const listName = (code.match(/(?:const|let|var)\s+(\w+)\s*=\s*\[/)||[])[1] || 'list';
+    return {range:{a:at,b:at+m[1].length},
+      msg:'Square brackets pick FROM a list, so the list&rsquo;s name goes in front: <code>'+esc(listName)+'[0]</code>. A bare <code>'+esc(m[1].replace(/\s+/g,''))+'</code> is a brand-new list holding that number &mdash; not a pick from yours.'};
+  }
+  /* 4. screen property one-or-two letters off textContent */
+  m = noStr.match(/screen\s*\.\s*(\w+)\s*=/);
+  if (m && m[1]!=='textContent' && levLE(m[1],'textContent',2)){
+    const at = noStr.indexOf(m[1], m.index);
+    return {range:{a:at,b:at+m[1].length},
+      msg:'So close &mdash; the property is <code>textContent</code>, spelled exactly with a capital C, not <code>'+esc(m[1])+'</code>. JavaScript names must match letter for letter.'};
+  }
+  /* 2+3. a used name that is almost - but not quite - one you declared */
+  const decl = new Set();
+  for (const d of noStr.matchAll(/\b(?:const|let|var|function)\s+(\w+)/g)) decl.add(d[1]);
+  for (const d of noStr.matchAll(/function\s+\w+\s*\(([^)]*)\)/g)) d[1].split(',').forEach(x=>{ x=x.trim(); if(x) decl.add(x); });
+  if (decl.size){
+    for (const u of noStr.matchAll(/\b([A-Za-z_$][\w$]*)\b/g)){
+      const w=u[1];
+      if (decl.has(w) || JS_KNOWN.has(w) || noStr[u.index-1]==='.') continue;
+      for (const d of decl){
+        if (d.toLowerCase()===w.toLowerCase())
+          return {range:{a:u.index,b:u.index+w.length},
+            msg:'Capital letters matter: you made <code>'+esc(d)+'</code> but typed <code>'+esc(w)+'</code> here &mdash; to JavaScript those are two different names.'};
+        if (Math.min(d.length,w.length)>=3 && levLE(d,w,1))
+          return {range:{a:u.index,b:u.index+w.length},
+            msg:'Spelling: the box is called <code>'+esc(d)+'</code>, but this says <code>'+esc(w)+'</code>. One letter off is a different name to the computer.'};
+      }
+    }
+  }
+  return null;
+}
 /* ---- Squished output ----------------------------------------------------
    Every checker is a regex over the CODE, so a sentence that renders as one
    mashed word ("Joshlives inAustin") used to earn a green tick. This resolves

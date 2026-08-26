@@ -662,7 +662,7 @@ JL('A box with a name on it',
  '',
  'const myName = \'Josh\';\nscreen.textContent = myName;',
  'Line 1 makes the box with const. Line 2 shows it: <code>screen.textContent = myName;</code> &mdash; no quotes around the box name.',
- (c)=> hasRe(c,/const\s+\w+\s*=\s*['"].+['"]/) && hasRe(c,/screen\.textContent\s*=\s*\w+\s*;?\s*$/m) && !hasRe(c,/screen\.textContent\s*=\s*['"]/)
+ (c)=> all(c,[[/const\s+\w+\s*=\s*['"].+['"]/,'A box made with <code>const</code>, holding quoted words'],[/screen\.textContent\s*=\s*\w+\s*;?\s*$/m,'A screen line showing the bare box name'],[c2=>!/screen\.textContent\s*=\s*['"]/.test(c2),'No quotes around the box name &mdash; quotes would show the name itself, not what is inside']])
    ? {ok:true,msg:'The box went in, its contents came out. Quotes mean literal words; no quotes means a box name. Burn that in &mdash; it is THE beginner trap.'}
    : {ok:false,msg:'Two lines: a <code>const</code> box with quoted words, then screen.textContent = the box name (unquoted).'}),
 
@@ -672,7 +672,7 @@ JL('Waiting for a click',
  '',
  'btn.onclick = function () {\n  screen.textContent = \'You clicked me!\';\n};',
  'Start with <code>btn.onclick = function () {</code>, put a screen.textContent line inside, close with <code>};</code>',
- (c)=> hasRe(c,/btn\.onclick\s*=\s*function|btn\.addEventListener/) && hasRe(c,/\{[\s\S]*screen\.textContent\s*=[\s\S]*\}/)
+ (c)=> all(c,[[/btn\.onclick\s*=\s*function|btn\.addEventListener/,'Instructions saved onto <code>btn.onclick</code> (or addEventListener)'],[/\{[\s\S]*screen\.textContent\s*=[\s\S]*\}/,'A <code>screen.textContent =</code> line INSIDE the curly braces, so the click runs it']])
    ? {ok:true,msg:'INTERACTIVE. The page now responds to a human. Grade 4 complete &mdash; you speak all three languages of the web.'}
    : {ok:false,msg:'The screen.textContent line must be INSIDE the function’s braces, and it all starts with btn.onclick =.'},
  JS_HTML_BTN),
@@ -686,7 +686,7 @@ JL('Sticking words together',
  '',
  'const name = \'Josh\';\nscreen.textContent = \'Hello \' + name + \'!\';',
  'The glued line mixes both kinds: <code>\'Hello \' + name</code> &mdash; quotes on the greeting, none on the box.',
- (c)=> hasRe(c,/const\s+\w+\s*=/) && hasRe(c,/screen\.textContent\s*=\s*['"][^'"]*['"]\s*\+\s*\w+/)
+ (c)=> all(c,[[/const\s+\w+\s*=/,'A box made with <code>const</code>'],[/screen\.textContent\s*=\s*['"][^'"]*['"]\s*\+\s*\w+/,'A screen line gluing a quoted label + the bare box name with <code>+</code>']])
    ? {ok:true,msg:'Glued! Mixing fixed words with box contents is how apps say “Welcome back, Josh” instead of “Welcome back, user.”'}
    : {ok:false,msg:'I want to see quoted words + an unquoted box name, glued with +, going to the screen.'}),
 
@@ -709,7 +709,7 @@ JL('A list in a box',
  '',
  'const excuses = [\'My dog ate it\', \'Aliens took it\', \'I overslept\'];\nscreen.textContent = excuses[0];',
  'Line 1: <code>const something = [\'a\', \'b\', \'c\'];</code>. Line 2: show <code>something[0]</code>.',
- (c)=> hasRe(c,/=\s*\[\s*['"]/) && hasRe(c,/screen\.textContent\s*=\s*\w+\s*\[\s*\d+\s*\]/)
+ (c)=> all(c,[[/=\s*\[\s*['"]/,'A list in square brackets with quoted items'],[/screen\.textContent\s*=\s*\w+\s*\[\s*\d+\s*\]/,'A screen line reaching into it by number: <code>list[0]</code>']])
    ? {ok:true,msg:'One box, many things, each reachable by number. Lists are how programs handle MANY of anything.'}
    : {ok:false,msg:'I need a list in square brackets AND a screen line showing an item by its [number].'}),
 
@@ -719,7 +719,7 @@ JL('Picking at random',
  'const excuses = [\'My dog ate it\', \'Aliens took it\', \'I overslept\'];\n',
  'const excuses = [\'My dog ate it\', \'Aliens took it\', \'I overslept\'];\nconst pick = Math.floor(Math.random() * excuses.length);\nscreen.textContent = excuses[pick];',
  'The magic line: <code>Math.floor(Math.random() * excuses.length)</code> &mdash; save it in a box, use the box as the position.',
- (c)=> hasRe(c,/Math\.random\s*\(\s*\)/) && hasRe(c,/Math\.floor\s*\(/) && hasRe(c,/screen\.textContent\s*=\s*\w+\s*\[/)
+ (c)=> all(c,[[/Math\.floor\s*\(/,'<code>Math.floor(</code> to chop the decimal down'],[/Math\.random\s*\(\s*\)/,'<code>Math.random()</code> inside it for the fresh random number'],[/screen\.textContent\s*=\s*\w+\s*\[/,'A screen line picking from the list with <code>list[...]</code>']])
    ? {ok:true,msg:'Random choice achieved! Grade 6 done. You now hold every ingredient of the Excuse-O-Matic &mdash; the rest of school is learning to combine them with style.'}
    : {ok:false,msg:'I need Math.random(), Math.floor(...), and the screen showing a list item by that random position.'}),
 ]);
@@ -732,7 +732,7 @@ JL('Teaching the computer a trick',
  '',
  'function sayHello() {\n  screen.textContent = \'Hello from my first function!\';\n}\n\nsayHello();',
  'Teach with <code>function name() { ... }</code>, then command with <code>name();</code> on its own line after.',
- (c)=> hasRe(c,/function\s+(\w+)\s*\(\s*\)\s*\{[\s\S]*screen\.textContent[\s\S]*\}/) && hasRe(c,/\}\s*[\s\S]*\w+\s*\(\s*\)\s*;/)
+ (c)=> all(c,[[/function\s+(\w+)\s*\(\s*\)\s*\{[\s\S]*screen\.textContent[\s\S]*\}/,'A <code>function name() { }</code> with the screen line inside it'],[/\}\s*[\s\S]*\w+\s*\(\s*\)\s*;/,'The call &mdash; <code>name();</code> &mdash; AFTER the closing brace; teaching is not performing']])
    ? {ok:true,msg:'Taught AND performed. Teaching is not doing &mdash; the trick waits for its name. You met this in Grade 4: the click function also waited.'}
    : {ok:false,msg:'Two parts: the function {...} teaching it, and a separate <code>name();</code> line calling it.'}),
 
@@ -742,7 +742,7 @@ JL('A trick with an ingredient',
  '',
  'function greet(person) {\n  screen.textContent = \'Hello \' + person + \'!\';\n}\n\ngreet(\'Josh\');',
  'Put an ingredient name in the () of the function, use it (unquoted) inside, and hand a quoted value in the call.',
- (c)=> hasRe(c,/function\s+\w+\s*\(\s*\w+\s*\)\s*\{[\s\S]*screen\.textContent[\s\S]*\}/) && hasRe(c,/\w+\s*\(\s*['"].+['"]\s*\)\s*;/)
+ (c)=> all(c,[[/function\s+\w+\s*\(\s*\w+\s*\)\s*\{[\s\S]*screen\.textContent[\s\S]*\}/,'A function with ONE ingredient in the round brackets, screen line inside'],[/\w+\s*\(\s*['"].+['"]\s*\)\s*;/,'A call handing it a quoted value: <code>name(\'something\');</code>']])
    ? {ok:true,msg:'One recipe, many meals. Change the call’s ingredient and the same trick greets anyone.'}
    : {ok:false,msg:'The function needs a named ingredient in its (), and the call needs a quoted value: <code>greet(\'Josh\');</code>'}),
 
@@ -752,7 +752,7 @@ JL('A trick that hands something back',
  '',
  'function double(number) {\n  return number * 2;\n}\n\nscreen.textContent = \'Answer: \' + double(5);',
  'The function body uses <code>return</code>; the screen line glues a label + the call.',
- (c)=> hasRe(c,/function\s+\w+\s*\([^)]*\)\s*\{[\s\S]*return\b[\s\S]*\}/) && hasRe(c,/screen\.textContent\s*=[\s\S]*\w+\s*\(/)
+ (c)=> all(c,[[/function\s+\w+\s*\([^)]*\)\s*\{[\s\S]*return\b[\s\S]*\}/,'A function that <code>return</code>s a value instead of showing it'],[/screen\.textContent\s*=[\s\S]*\w+\s*\(/,'A screen line that CALLS it &mdash; the returned value only shows if you put it there']])
    ? {ok:true,msg:'Worked out AND shown. Tricks that return values are LEGO bricks &mdash; next lesson you snap them together.'}
    : {ok:false,msg:'I need a <code>return</code> inside the function, and the screen line using the function’s result.'}),
 
@@ -762,11 +762,12 @@ JL('Tricks using tricks',
  '',
  'function double(number) {\n  return number * 2;\n}\n\nfunction describe(number) {\n  return number + \' doubled is \' + double(number);\n}\n\nscreen.textContent = describe(6);',
  'Function one returns something. Function two’s return line CALLS function one. Screen shows function two’s result.',
- (c)=>{ const fns=[...c.matchAll(/function\s+(\w+)/g)].map(m=>m[1]);
-   if (fns.length<2) return {ok:false,msg:'I need TWO functions taught with the function keyword.'};
-   const inner = new RegExp('function\\s+'+fns[1]+'[\\s\\S]*?'+fns[0]+'\\s*\\(');
-   const inner2 = new RegExp('function\\s+'+fns[0]+'[\\s\\S]*?'+fns[1]+'\\s*\\(');
-   return (inner.test(c)||inner2.test(c)) && hasRe(c,/screen\.textContent\s*=/)
+ (c)=>{ return all(c,[
+   [c2=>(c2.match(/function\s+\w+/g)||[]).length>=2,'TWO functions taught with the <code>function</code> keyword'],
+   [c2=>{ const fns=[...c2.matchAll(/function\s+(\w+)/g)].map(m=>m[1]); if (fns.length<2) return false;
+     return new RegExp('function\\s+'+fns[1]+'[\\s\\S]*?'+fns[0]+'\\s*\\(').test(c2)
+         || new RegExp('function\\s+'+fns[0]+'[\\s\\S]*?'+fns[1]+'\\s*\\(').test(c2); },'One of them CALLING the other from inside its own braces'],
+   [/screen\.textContent\s*=/,'A screen line showing the result']])
      ? {ok:true,msg:'Tricks calling tricks &mdash; Grade 7 complete. You now organize code the way professionals do.'}
      : {ok:false,msg:'One of the functions must CALL the other by name inside its body, and the result must reach the screen.'}; }),
 ]);
@@ -789,7 +790,7 @@ JL('Otherwise...',
  '',
  'const score = 3;\n\nif (score > 5) {\n  screen.textContent = \'Great score!\';\n} else {\n  screen.textContent = \'Keep practicing.\';\n}',
  'After the if’s closing brace: <code>} else {</code> then the other screen line, then <code>}</code>.',
- (c)=> hasRe(c,/if\s*\([^)]+\)\s*\{[\s\S]*\}\s*else\s*\{[\s\S]*screen\.textContent[\s\S]*\}/) && (c.match(/screen\.textContent/g)||[]).length>=2
+ (c)=> all(c,[[/if\s*\([^)]+\)\s*\{[\s\S]*\}\s*else\s*\{[\s\S]*screen\.textContent[\s\S]*\}/,'An <code>if { } else { }</code> pair, with a screen line in the else'],[c2=>(c2.match(/screen\.textContent/g)||[]).length>=2,'TWO screen lines &mdash; one for each road, so both cases say something']])
    ? {ok:true,msg:'Two roads, one always taken. That certainty &mdash; SOMETHING always happens &mdash; is what makes programs feel dependable.'}
    : {ok:false,msg:'I need both branches, each with its own screen.textContent line.'}),
 
@@ -799,7 +800,7 @@ JL('A chain of choices',
  '',
  'const temp = 15;\n\nif (temp > 25) {\n  screen.textContent = \'Shorts weather\';\n} else if (temp > 10) {\n  screen.textContent = \'Jacket weather\';\n} else {\n  screen.textContent = \'Stay inside\';\n}',
  'Middle branch: <code>} else if (another test) {</code>. Try temp values 30, 15, and 3 to see all three doors.',
- (c)=> hasRe(c,/else\s+if\s*\(/) && hasRe(c,/\}\s*else\s*\{/) && (c.match(/screen\.textContent/g)||[]).length>=3
+ (c)=> all(c,[[/else\s+if\s*\(/,'An <code>else if</code> for the middle case'],[/\}\s*else\s*\{/,'A final bare <code>else</code> to catch everything left over'],[c2=>(c2.match(/screen\.textContent/g)||[]).length>=3,'THREE screen lines &mdash; every road says something']])
    ? {ok:true,msg:'A proper decision ladder. First open door wins &mdash; remember that when a branch mysteriously never runs.'}
    : {ok:false,msg:'I need all three: if, else if, and a final else &mdash; each writing to the screen.'}),
 
@@ -809,7 +810,7 @@ JL('Two things at once',
  '',
  'const day = \'Saturday\';\nconst sunny = true;\n\nif (day === \'Saturday\' && sunny) {\n  screen.textContent = \'Beach day!\';\n} else {\n  screen.textContent = \'Normal day.\';\n}',
  'Inside the if’s brackets, join two tests with <code>&amp;&amp;</code>.',
- (c)=> hasRe(c,/if\s*\([^)]*(&&|\|\|)[^)]*\)/) && hasRe(c,/else/)
+ (c)=> all(c,[[/if\s*\([^)]*(&&|\|\|)[^)]*\)/,'An <code>if</code> testing TWO things at once with <code>&amp;&amp;</code> or <code>||</code>'],[/else/,'An <code>else</code> for when the combined test fails']])
    ? {ok:true,msg:'Compound choices! Grade 8 complete &mdash; your programs can now weigh up situations, not just follow orders.'}
    : {ok:false,msg:'The if needs two tests joined by <code>&amp;&amp;</code> or <code>||</code>, plus an else branch.'}),
 ]);
@@ -822,7 +823,7 @@ JL('Doing it again and again',
  '',
  'let out = \'\';\nfor (let i = 1; i <= 5; i = i + 1) {\n  out = out + i + \' \';\n}\nscreen.textContent = out;',
  'An empty let box before, the loop adds to it each lap, the screen line after the loop shows it.',
- (c)=> hasRe(c,/for\s*\(\s*let\s+\w+/) && hasRe(c,/screen\.textContent\s*=/)
+ (c)=> all(c,[[/for\s*\(\s*let\s+\w+/,'A counting loop: <code>for (let ...</code>'],[/screen\.textContent\s*=/,'A screen line showing the result']])
    ? {ok:true,msg:'Five laps, no complaints. Start empty, add each lap, show at the end &mdash; the accumulator pattern. You will use it forever.'}
    : {ok:false,msg:'I need a for loop with (let i = ...; test; change), building something the screen then shows.'}),
 
@@ -832,7 +833,7 @@ JL('A loop over a list',
  'const excuses = [\'My dog ate it\', \'Aliens\', \'I overslept\'];\n',
  'const excuses = [\'My dog ate it\', \'Aliens\', \'I overslept\'];\nlet out = \'\';\nfor (const excuse of excuses) {\n  out = out + excuse + \'. \';\n}\nscreen.textContent = out;',
  'Shape: <code>for (const item of listName) { ... }</code> with the accumulator pattern inside.',
- (c)=> hasRe(c,/for\s*\(\s*const\s+\w+\s+of\s+\w+\s*\)/) && hasRe(c,/screen\.textContent\s*=/)
+ (c)=> all(c,[[/for\s*\(\s*const\s+\w+\s+of\s+\w+\s*\)/,'A <code>for (const item of list)</code> walk over the list'],[/screen\.textContent\s*=/,'A screen line showing the result']])
    ? {ok:true,msg:'Every item visited by name. Lists and loops are dance partners &mdash; you will rarely see one without the other.'}
    : {ok:false,msg:'Use the for (const something of yourList) shape, and show the built-up result.'}),
 
@@ -842,7 +843,7 @@ JL('Building a sentence in a loop',
  'const scores = [3, 9, 6, 10];\n',
  'const scores = [3, 9, 6, 10];\nlet out = \'\';\nfor (const s of scores) {\n  if (s >= 6) {\n    out = out + s + \' passed. \';\n  } else {\n    out = out + s + \' failed. \';\n  }\n}\nscreen.textContent = out;',
  'The if/else lives INSIDE the loop braces. Both branches add to the same out box.',
- (c)=> hasRe(c,/for\s*\([\s\S]*\)\s*\{[\s\S]*if\s*\([\s\S]*\}/) && hasRe(c,/screen\.textContent\s*=/)
+ (c)=> all(c,[[/for\s*\([\s\S]*\)\s*\{[\s\S]*if\s*\([\s\S]*\}/,'A loop with an <code>if</code> INSIDE it, testing each lap'],[/screen\.textContent\s*=/,'A screen line showing the result']])
    ? {ok:true,msg:'A choice made on every lap. You just combined three grades of learning into eight lines.'}
    : {ok:false,msg:'I need an if (with else) nested inside a for loop, building text the screen shows.'}),
 
@@ -852,7 +853,7 @@ JL('Knowing when to stop',
  '',
  'let pile = 10;\nlet bites = 0;\nwhile (pile > 0) {\n  pile = pile - 3;\n  bites = bites + 1;\n}\nscreen.textContent = \'Finished in \' + bites + \' bites.\';',
  'Two let boxes; the while shrinks one and grows the other; the screen line comes AFTER the loop.',
- (c)=> hasRe(c,/while\s*\([^)]+\)\s*\{[\s\S]*\}/) && hasRe(c,/screen\.textContent\s*=/)
+ (c)=> all(c,[[/while\s*\([^)]+\)\s*\{[\s\S]*\}/,'A <code>while (test) { }</code> loop that runs as long as the test holds'],[/screen\.textContent\s*=/,'A screen line showing the result']])
    ? {ok:true,msg:'Grade 9 complete. for = known laps, while = keep going until. Choose by which thing you know in advance.'}
    : {ok:false,msg:'I need a while loop whose body changes its own condition, then a screen line after it.'}),
 ]);
@@ -865,7 +866,7 @@ JL('The machine’s body',
  '',
  'btn.onclick = function () {\n  screen.textContent = \'My dog ate my homework.\';\n};',
  'Grade 4 skills: <code>btn.onclick = function () { screen line };</code>',
- (c)=> hasRe(c,/btn\.onclick\s*=\s*function|btn\.addEventListener/) && hasRe(c,/screen\.textContent\s*=/)
+ (c)=> all(c,[[/btn\.onclick\s*=\s*function|btn\.addEventListener/,'Instructions saved onto the button'],[/screen\.textContent\s*=/,'A screen line inside them for the click to run']])
    ? {ok:true,msg:'The body works: press &rarr; excuse. Build the dumb version first, ALWAYS &mdash; it finds wiring problems while they are cheap.'}
    : {ok:false,msg:'Clicking btn must set screen.textContent to some excuse text.'},
  '<button id="btn">Give me an excuse</button>\n<p id="screen">press the button...</p>'),
@@ -876,7 +877,7 @@ JL('The machine’s brain',
  '',
  'const excuses = [\'My dog ate it\', \'Aliens took it\', \'I overslept\', \'Gravity failed\'];\n\nfunction pickExcuse() {\n  const pick = Math.floor(Math.random() * excuses.length);\n  return excuses[pick];\n}\n\nbtn.onclick = function () {\n  screen.textContent = pickExcuse();\n};',
  'Three layers: the const list, the function with return, the btn.onclick that calls it.',
- (c)=> hasRe(c,/=\s*\[\s*['"]/) && hasRe(c,/function\s+\w+[\s\S]*Math\.random[\s\S]*return/) && hasRe(c,/onclick[\s\S]*screen\.textContent\s*=\s*\w+\s*\(/)
+ (c)=> all(c,[[/=\s*\[\s*['"]/,'A list of quoted excuses'],[/function\s+\w+[\s\S]*Math\.random[\s\S]*return/,'A function that random-picks and <code>return</code>s the pick'],[/onclick[\s\S]*screen\.textContent\s*=\s*\w+\s*\(/,'The button click showing a CALL to that function']])
    ? {ok:true,msg:'It THINKS. Data, brain, wiring &mdash; three layers you will recognize in every app ever written.'}
    : {ok:false,msg:'I need the list, a function using Math.random that returns an item, and a click showing the function’s result.'},
  '<button id="btn">Give me an excuse</button>\n<p id="screen">press the button...</p>'),
@@ -887,7 +888,7 @@ JL('No repeats &mdash; the polish',
  'const excuses = [\'My dog ate it\', \'Aliens took it\', \'I overslept\', \'Gravity failed\'];\n',
  'const excuses = [\'My dog ate it\', \'Aliens took it\', \'I overslept\', \'Gravity failed\'];\nlet last = -1;\n\nfunction pickExcuse() {\n  let pick = Math.floor(Math.random() * excuses.length);\n  while (pick === last) {\n    pick = Math.floor(Math.random() * excuses.length);\n  }\n  last = pick;\n  return excuses[pick];\n}\n\nbtn.onclick = function () {\n  screen.textContent = pickExcuse();\n};',
  'A let box remembering the last pick, and a while that re-rolls while the new pick equals it.',
- (c)=> hasRe(c,/let\s+\w+\s*=/) && hasRe(c,/while\s*\([^)]*===?[^)]*\)/) && hasRe(c,/Math\.random/) && hasRe(c,/screen\.textContent\s*=/)
+ (c)=> all(c,[[/let\s+\w+\s*=/,'A <code>let</code> box remembering the last pick (it must be allowed to change)'],[/Math\.random/,'<code>Math.random</code> doing the rolling'],[/while\s*\([^)]*===?[^)]*\)/,'A <code>while</code> that re-rolls as long as the new pick equals the last'],[/screen\.textContent\s*=/,'A screen line showing the final pick']])
    ? {ok:true,msg:'THE EXCUSE-O-MATIC IS COMPLETE. Grade 10 done &mdash; you designed, built, and polished a working machine. Everything past here is refinement of what you already are: a programmer.'}
    : {ok:false,msg:'I need a remembering box (let), a while that re-picks on a repeat, and the click showing the result.'},
  '<button id="btn">Give me an excuse</button>\n<p id="screen">press the button...</p>'),
@@ -901,7 +902,7 @@ JL('A box with labels inside',
  '',
  'const person = {\n  name: \'Josh\',\n  age: 40,\n  hobby: \'camping\'\n};\n\nscreen.textContent = person.name;',
  'Shape: <code>const thing = { label: value, label: value };</code> then <code>screen.textContent = thing.label;</code>',
- (c)=> hasRe(c,/=\s*\{[\s\S]*\w+\s*:[\s\S]*,[\s\S]*\w+\s*:[\s\S]*\}/) && hasRe(c,/screen\.textContent\s*=\s*\w+\.\w+/)
+ (c)=> all(c,[[/=\s*\{[\s\S]*\w+\s*:[\s\S]*,[\s\S]*\w+\s*:[\s\S]*\}/,'An object in curly braces with 3+ <code>label: value</code> pairs, commas between'],[/screen\.textContent\s*=\s*\w+\.\w+/,'A screen line reading ONE field with a dot: <code>thing.label</code>']])
    ? {ok:true,msg:'Labels beat numbers when things HAVE names. person.age asks for exactly what you mean.'}
    : {ok:false,msg:'I need an object with 3+ label: value pairs, and the screen showing one via thing.label.'}),
 
@@ -911,8 +912,10 @@ JL('Reading several labels',
  'const person = {\n  name: \'Josh\',\n  age: 40\n};\n',
  'const person = {\n  name: \'Josh\',\n  age: 40\n};\n\nscreen.textContent = person.name + \' is \' + person.age + \' years old.\';',
  'One screen line gluing person.name and person.age with quoted words between.',
- (c)=>{ const m=c.match(/screen\.textContent\s*=([\s\S]*)/); const rhs=m?m[1]:'';
-   return (rhs.match(/\w+\.\w+/g)||[]).length>=2 && rhs.includes('+')
+ (c)=>{ return all(c,[
+   [/screen\.textContent\s*=/,'A screen line'],
+   [c2=>{ const m2=c2.match(/screen\.textContent\s*=([\s\S]*)/); return ((m2?m2[1]:'').match(/\w+\.\w+/g)||[]).length>=2; },'At least TWO dot-reads (<code>thing.label</code>) on that line'],
+   [c2=>{ const m2=c2.match(/screen\.textContent\s*=([\s\S]*)/); return (m2?m2[1]:'').includes('+'); },'Plus signs gluing them into one sentence']])
      ? {ok:true,msg:'Data in, sentence out. Every profile page you have ever seen is this line wearing makeup.'}
      : {ok:false,msg:'The screen line must glue at least two thing.label reads with + signs.'}; }),
 
@@ -922,7 +925,7 @@ JL('A list of labelled boxes',
  '',
  'const excuses = [\n  { text: \'My dog ate it\', danger: 2 },\n  { text: \'Aliens took it\', danger: 5 },\n  { text: \'I overslept\', danger: 1 }\n];\n\nscreen.textContent = excuses[1].text;',
  'Square brackets holding {label: value} objects with commas between, then list[number].label on the screen line.',
- (c)=> hasRe(c,/\[\s*\{[\s\S]*\}\s*,\s*\{[\s\S]*\]/) && hasRe(c,/screen\.textContent\s*=\s*\w+\s*\[\s*\d+\s*\]\s*\.\w+/)
+ (c)=> all(c,[[/\[\s*\{[\s\S]*\}\s*,\s*\{[\s\S]*\]/,'Square brackets holding <code>{label: value}</code> objects, commas between'],[/screen\.textContent\s*=\s*\w+\s*\[\s*\d+\s*\]\s*\.\w+/,'A screen line chaining both reaches: <code>list[number].label</code>']])
    ? {ok:true,msg:'List of labelled boxes &mdash; the data shape of the entire software industry. You can now read the address chains in real code.'}
    : {ok:false,msg:'I need a [ {..}, {..}, {..} ] list and the screen showing list[number].field.'}),
 
@@ -932,7 +935,7 @@ JL('Changing what’s inside',
  '',
  'const person = {\n  name: \'Josh\',\n  mood: \'sleepy\'\n};\n\nperson.mood = \'caffeinated\';\nscreen.textContent = person.name + \' is now \' + person.mood;',
  'Three steps: build the object, assign thing.field = new value, show it glued into a sentence.',
- (c)=> hasRe(c,/\w+\.\w+\s*=\s*['"].+['"]\s*;/) && hasRe(c,/screen\.textContent\s*=[\s\S]*\.\w+/)
+ (c)=> all(c,[[/\w+\.\w+\s*=\s*['"].+['"]\s*;/,'A dot on the LEFT of <code>=</code> putting a new value into a field'],[/screen\.textContent\s*=[\s\S]*\.\w+/,'A screen line reading a field back to prove it changed']])
    ? {ok:true,msg:'Grade 11 complete. Objects hold state, and state can change &mdash; that is what makes apps feel alive between clicks.'}
    : {ok:false,msg:'I need a line assigning a NEW quoted value into thing.field, and the screen showing the changed field.'}),
 ]);
@@ -945,7 +948,7 @@ JL('The detective’s notebook',
  '',
  'const pick = Math.floor(Math.random() * 3);\nconsole.log(\'pick was:\', pick);\nscreen.textContent = \'Picked number \' + pick;',
  'Two outputs: <code>console.log(\'label\', box)</code> for you, screen.textContent for the user.',
- (c)=> hasRe(c,/console\.log\s*\(/) && hasRe(c,/screen\.textContent\s*=/)
+ (c)=> all(c,[[/console\.log\s*\(/,'A <code>console.log(...)</code> note for YOU, in the browser console'],[/screen\.textContent\s*=/,'A screen line for the USER &mdash; two audiences, two outputs']])
    ? {ok:true,msg:'Notebook AND screen. Logging is not failure &mdash; it is how experts see inside a running program.'}
    : {ok:false,msg:'I need both a console.log(...) line and a screen.textContent line.'}),
 
@@ -965,7 +968,7 @@ JL('Asking a value “what are you?”',
  '',
  'const mystery = \'4\';\nscreen.textContent = \'mystery is a \' + typeof mystery;',
  'Glue a label &mdash; quoted text like <code>\'mystery is a \'</code> &mdash; onto <code>typeof boxName</code> on the screen line.',
- (c)=> hasRe(c,/typeof\s+\w+/) && hasRe(c,/screen\.textContent\s*=/)
+ (c)=> all(c,[[/screen\.textContent\s*=/,'A screen line'],[/typeof\s+\w+/,'<code>typeof boxName</code> glued into it, asking the species directly']])
    ? {ok:true,msg:'“What ARE you?” &mdash; the debugging question. Words that look like numbers are still words.'}
    : {ok:false,msg:'Use <code>typeof someBox</code> in the text you put on screen.'}),
 
@@ -975,7 +978,7 @@ JL('Guarding the door',
  '',
  'const name = \'\';\n\nif (name === \'\') {\n  screen.textContent = \'No name given - try again!\';\n} else {\n  screen.textContent = \'Welcome, \' + name + \'!\';\n}',
  'The test is <code>name === \'\'</code> &mdash; three equals, two quotes with nothing between.',
- (c)=> hasRe(c,/if\s*\(\s*\w+\s*===?\s*['"]\s*['"]\s*\)/) && hasRe(c,/else/) && (c.match(/screen\.textContent/g)||[]).length>=2
+ (c)=> all(c,[[/if\s*\(\s*\w+\s*===?\s*['"]\s*['"]\s*\)/,'An <code>if</code> comparing the box to empty quotes <code>\'\'</code>'],[/else/,'An <code>else</code> for the non-empty road'],[c2=>(c2.match(/screen\.textContent/g)||[]).length>=2,'TWO screen lines &mdash; the complaint and the normal result']])
    ? {ok:true,msg:'Grade 12 complete. Log it, read the error, check the type, guard the door &mdash; the four survival skills of working programmers.'}
    : {ok:false,msg:'I need an if testing === against \'\' (empty quotes), with different screen messages in each branch.'}),
 ]);
@@ -998,7 +1001,7 @@ JL('One job per trick',
  'const excuseList = [\'My dog ate it\', \'Aliens\', \'I overslept\'];\n\nfunction doEverything() {\n  const pick = Math.floor(Math.random() * excuseList.length);\n  screen.textContent = \'Your excuse: \' + excuseList[pick];\n}\ndoEverything();',
  'const excuseList = [\'My dog ate it\', \'Aliens\', \'I overslept\'];\n\nfunction pickExcuse() {\n  const pick = Math.floor(Math.random() * excuseList.length);\n  return excuseList[pick];\n}\n\nfunction showExcuse(excuse) {\n  screen.textContent = \'Your excuse: \' + excuse;\n}\n\nshowExcuse(pickExcuse());',
  'pickExcuse ends in return; showExcuse takes an ingredient and touches the screen; the last line feeds one into the other.',
- (c)=> hasRe(c,/function\s+pickExcuse[\s\S]*return/) && hasRe(c,/function\s+showExcuse\s*\(\s*\w+\s*\)[\s\S]*screen\.textContent/) && hasRe(c,/showExcuse\s*\(\s*pickExcuse\s*\(\s*\)\s*\)/)
+ (c)=> all(c,[[/function\s+pickExcuse[\s\S]*return/,'A <code>pickExcuse</code> function that <code>return</code>s its pick'],[/function\s+showExcuse\s*\(\s*\w+\s*\)[\s\S]*screen\.textContent/,'A <code>showExcuse(ingredient)</code> function that puts it on screen'],[/showExcuse\s*\(\s*pickExcuse\s*\(\s*\)\s*\)/,'The stack: <code>showExcuse(pickExcuse())</code> &mdash; one trick feeding the other']])
    ? {ok:true,msg:'Untangled. Chooser and shower, snapped together on the last line. This is architecture &mdash; at five lines’ scale.'}
    : {ok:false,msg:'I need pickExcuse returning a value, showExcuse(ingredient) displaying it, and showExcuse(pickExcuse()); wiring them.'}),
 
@@ -1008,7 +1011,7 @@ JL('Don’t repeat yourself',
  'let out = \'\';\nout = out + \'Day 1 done. \';\nout = out + \'Day 2 done. \';\nout = out + \'Day 3 done. \';\nout = out + \'Day 4 done. \';\nout = out + \'Day 5 done. \';\nscreen.textContent = out;',
  'let out = \'\';\nfor (let day = 1; day <= 5; day = day + 1) {\n  out = out + \'Day \' + day + \' done. \';\n}\nscreen.textContent = out;',
  'A for from 1 to 5, gluing \'Day \' + day + \' done. \' each lap.',
- (c)=> hasRe(c,/for\s*\(/) && hasRe(c,/screen\.textContent\s*=/) && (c.match(/Day/g)||[]).length<=2
+ (c)=> all(c,[[/for\s*\(/,'A loop doing the repetition'],[/screen\.textContent\s*=/,'A screen line showing the built sentence'],[c2=>(c2.match(/Day/g)||[]).length<=2,'The LOOP builds the days &mdash; typing them out by hand defeats the point (at most 2 hand-typed Days)']])
    ? {ok:true,msg:'Five lines became one pattern. Repetition is where bugs breed &mdash; each pasted copy is another place to forget a fix.'}
    : {ok:false,msg:'Use ONE for loop &mdash; the words \'Day\' and \'done\' should each appear only once in your code.'}),
 
@@ -1018,7 +1021,7 @@ JL('The final project: the Mood Machine',
  'const workExcuses = [\'My laptop died\', \'Traffic was biblical\', \'The meeting ran over\'];\nconst schoolExcuses = [\'My dog ate it\', \'Aliens took it\', \'I overslept\'];\nconst mood = \'work\';\n',
  'const workExcuses = [\'My laptop died\', \'Traffic was biblical\', \'The meeting ran over\'];\nconst schoolExcuses = [\'My dog ate it\', \'Aliens took it\', \'I overslept\'];\nconst mood = \'work\';\n\nfunction pickExcuse() {\n  let list;\n  if (mood === \'work\') {\n    list = workExcuses;\n  } else if (mood === \'school\') {\n    list = schoolExcuses;\n  } else {\n    return \'I have no excuse for that mood.\';\n  }\n  const pick = Math.floor(Math.random() * list.length);\n  return list[pick];\n}\n\nbtn.onclick = function () {\n  screen.textContent = pickExcuse();\n};',
  'Inside the function: an if/else if choosing which list goes in a let box, a guard else returning a complaint, then the random pick from the chosen list.',
- (c)=> hasRe(c,/if\s*\([^)]*===?[^)]*\)/) && hasRe(c,/else/) && hasRe(c,/Math\.random/) && hasRe(c,/function\s+\w+[\s\S]*return/) && hasRe(c,/onclick|addEventListener/) && hasRe(c,/screen\.textContent\s*=/)
+ (c)=> all(c,[[/function\s+\w+[\s\S]*return/,'A function with a <code>return</code> doing the thinking'],[/if\s*\([^)]*===?[^)]*\)/,'An <code>if</code> reading the mood box'],[/else/,'An <code>else</code> road'],[/Math\.random/,'<code>Math.random</code> picking from the chosen list'],[/onclick|addEventListener/,'The button wired up'],[/screen\.textContent\s*=/,'A screen line showing the result']])
    ? {ok:true,msg:'THE MOOD MACHINE LIVES. Designed from a description, no worked example. That is the whole job &mdash; and you just did it.'}
    : {ok:false,msg:'Checklist: an if/else choosing by mood, Math.random picking, a function that returns, and the button showing the result.'},
  '<button id="btn">Excuse me!</button>\n<p id="screen">press the button...</p>'),
@@ -1053,7 +1056,7 @@ JL('The call to action',
  '',
  'btn.onclick = function () {\n  screen.textContent = \'You are on the list! Check your email.\';\n  btn.disabled = true;\n};',
  'Grade 4 shape, plus one new line inside the function: <code>btn.disabled = true;</code>',
- (c)=> hasRe(c,/btn\.onclick\s*=\s*function|btn\.addEventListener/) && hasRe(c,/screen\.textContent\s*=/) && hasRe(c,/btn\.disabled\s*=\s*true/)
+ (c)=> all(c,[[/btn\.onclick\s*=\s*function|btn\.addEventListener/,'Instructions saved onto the button'],[/screen\.textContent\s*=/,'A screen line inside them'],[/btn\.disabled\s*=\s*true/,'<code>btn.disabled = true</code> so one click is all it takes']])
    ? {ok:true,msg:'Click &rarr; confirmation &rarr; button retires. You just built a conversion, which is the atom every online business is made of.'}
    : {ok:false,msg:'Inside the click function I need both: the screen confirmation AND btn.disabled = true;'},
  '<h1 style="margin:0 0 6px">Never cook a boring dinner again</h1>\n<button id="btn">Try it free</button>\n<p id="screen"></p>'),
@@ -1074,7 +1077,7 @@ JL('Protect the bag',
  'const email = \'joshexample.com\';\n',
  'const email = \'joshexample.com\';\n\nif (email === \'\' || !email.includes(\'@\')) {\n  screen.textContent = \'That email looks wrong - check it and try again.\';\n} else {\n  screen.textContent = \'Welcome aboard, \' + email + \'!\';\n}',
  'Two tests joined by || : empty (=== \'\') or missing @ (!email.includes(\'@\')). Flip the box&rsquo;s value to test both doors.',
- (c)=> hasRe(c,/if\s*\([^)]*(includes\s*\(\s*['"]@['"]\s*\)|===?\s*['"]\s*['"])[^)]*\)/) && hasRe(c,/else/) && (c.match(/screen\.textContent/g)||[]).length>=2
+ (c)=> all(c,[[/if\s*\([^)]*(includes\s*\(\s*['"]@['"]\s*\)|===?\s*['"]\s*['"])[^)]*\)/,'A guard testing the input (empty, or missing the @)'],[/else/,'An <code>else</code> for the healthy road'],[c2=>(c2.match(/screen\.textContent/g)||[]).length>=2,'TWO screen lines &mdash; the complaint and the success']])
    ? {ok:true,msg:'HUSTLE COMPLETE. You can pitch it, convert it, app it, and protect it &mdash; with a paper trail of green ticks proving it. Now go find your first customer; they are easier to find than you think.'}
    : {ok:false,msg:'I need an if testing empty OR missing @ (use ||), an else, and a different screen message in each branch.'}),
 ]);
@@ -1137,7 +1140,7 @@ REV('G4','js',
  '',
  'const myName = \'Josh\';\n\nbtn.onclick = function () {\n  screen.textContent = myName;\n};',
  'The const line first; then the click function whose screen line uses the box name (no quotes).',
- (c)=> hasRe(c,/const\s+\w+\s*=\s*['"].+['"]/) && hasRe(c,/btn\.onclick\s*=\s*function|addEventListener/) && hasRe(c,/\{[\s\S]*screen\.textContent\s*=\s*\w+[\s\S]*\}/) && !hasRe(c,/screen\.textContent\s*=\s*['"]/)
+ (c)=> all(c,[[/const\s+\w+\s*=\s*['"].+['"]/,'A box made with <code>const</code> holding quoted words'],[/btn\.onclick\s*=\s*function|addEventListener/,'Instructions saved onto the button'],[/\{[\s\S]*screen\.textContent\s*=\s*\w+[\s\S]*\}/,'Inside the braces, the screen showing the BARE box name'],[c2=>!/screen\.textContent\s*=\s*['"]/.test(c2),'No quotes around the box name on the screen line']])
    ? {ok:true,msg:'Box, wiring, and display working as one system — press the button and YOUR data appears. Grade 4 is yours.'}
    : {ok:false,msg:'I need the const box, the btn.onclick function, and the screen showing the BOX (unquoted) inside the click.'},
  '<button id="btn">Greet me</button>\n<p id="screen">press the button...</p>');
@@ -1164,7 +1167,11 @@ REV('G6','js',
  '',
  'const dinners = [\'tacos\', \'ramen\', \'pizza\', \'stir fry\'];\nconst pick = Math.floor(Math.random() * dinners.length);\nscreen.textContent = \'Tonight: \' + dinners[pick];',
  'Three lines: your list, the random-position line, and a screen line gluing a quoted label + list[pick].',
- (c)=>{ const items=(c.match(/'[^']*'/g)||[]).length; return hasRe(c,/=\s*\[/) && items>=5 && hasRe(c,/Math\.floor\s*\(\s*Math\.random/) && hasRe(c,/screen\.textContent\s*=\s*['"][^'"]*['"]\s*\+\s*\w+\s*\[/)
+ (c)=>{ return all(c,[
+   [/=\s*\[/,'YOUR OWN list in square brackets'],
+   [c2=>(c2.match(/'[^']*'/g)||[]).length>=5,'At least 4 quoted items in it (with the quoted label, 5 quoted pieces in total)'],
+   [/Math\.floor\s*\(\s*Math\.random/,'The fair-pick line: <code>Math.floor(Math.random() * list.length)</code>'],
+   [/screen\.textContent\s*=\s*['"][^'"]*['"]\s*\+\s*\w+\s*\[/,'A screen line gluing the quoted label + <code>list[pick]</code>']])
    ? {ok:true,msg:'Your own data, a fair random choice, and a labeled result — that is a tiny product, not an exercise.'}
    : {ok:false,msg:'I need a list with 4+ quoted items, the Math.floor(Math.random()...) line, and a label glued to list[pick].'}; });
 
@@ -1174,7 +1181,7 @@ REV('G7','js',
  'const snacks = [\'chips\', \'fruit\', \'cookies\'];\n',
  'const snacks = [\'chips\', \'fruit\', \'cookies\'];\n\nfunction describe(position) {\n  return \'Snack choice: \' + snacks[position];\n}\n\nscreen.textContent = describe(1);',
  'The function takes one ingredient, returns a quoted label + snacks[ingredient]; the screen line calls it with a number.',
- (c)=> hasRe(c,/function\s+\w+\s*\(\s*\w+\s*\)\s*\{[\s\S]*return[\s\S]*\[\s*\w+\s*\][\s\S]*\}/) && hasRe(c,/screen\.textContent\s*=\s*\w+\s*\(\s*\d+\s*\)/)
+ (c)=> all(c,[[/function\s+\w+\s*\(\s*\w+\s*\)\s*\{[\s\S]*return[\s\S]*\[\s*\w+\s*\][\s\S]*\}/,'A function taking a position, <code>return</code>ing a label + <code>list[position]</code>'],[/screen\.textContent\s*=\s*\w+\s*\(\s*\d+\s*\)/,'A screen line calling it with a number']])
    ? {ok:true,msg:'A reusable trick with an ingredient, a return, and a real call — functions, lists, and gluing all shaking hands.'}
    : {ok:false,msg:'The function needs (an ingredient), a return using the list[ingredient], and the screen must show a call like describe(1).'});
 
@@ -1184,7 +1191,7 @@ REV('G8','js',
  '',
  'function rateScore(score) {\n  if (score > 8) {\n    return \'gold\';\n  } else if (score > 5) {\n    return \'silver\';\n  } else {\n    return \'keep practicing\';\n  }\n}\n\nscreen.textContent = \'Result: \' + rateScore(7);',
  'An if / else if / else ladder inside the function, each branch returning; then show a call. Test 9, 7, and 3.',
- (c)=> hasRe(c,/function\s+\w+\s*\(\s*\w+\s*\)/) && hasRe(c,/else\s+if\s*\(/) && hasRe(c,/\}\s*else\s*\{/) && (c.match(/return/g)||[]).length>=3 && hasRe(c,/screen\.textContent\s*=[\s\S]*\w+\s*\(\s*\d+\s*\)/)
+ (c)=> all(c,[[/function\s+\w+\s*\(\s*\w+\s*\)/,'A function taking one ingredient'],[/else\s+if\s*\(/,'An <code>else if</code> middle road'],[/\}\s*else\s*\{/,'A final bare <code>else</code>'],[c2=>(c2.match(/return/g)||[]).length>=3,'THREE <code>return</code>s &mdash; every road hands something back'],[/screen\.textContent\s*=[\s\S]*\w+\s*\(\s*\d+\s*\)/,'A screen line calling it with a number']])
    ? {ok:true,msg:'A deciding function — the exact shape of grading, shipping tiers, and every rating system online. Doors mastered.'}
    : {ok:false,msg:'I need the full ladder (if, else if, else) with a return in each branch, and the screen calling it with a number.'});
 
@@ -1194,7 +1201,7 @@ REV('G9','js',
  'const scores = [4, 9, 7, 2, 8];\n',
  'const scores = [4, 9, 7, 2, 8];\nlet out = \'\';\nfor (const s of scores) {\n  if (s >= 6) {\n    out = out + s + \' pass. \';\n  } else {\n    out = out + s + \' fail. \';\n  }\n}\nscreen.textContent = out;',
  'Empty let box, for...of over scores, if/else inside adding to the box, screen line AFTER the loop.',
- (c)=> hasRe(c,/let\s+\w+\s*=\s*['"]{2}/) && hasRe(c,/for\s*\(\s*const\s+\w+\s+of\s+\w+\s*\)/) && hasRe(c,/if\s*\([^)]*\)/) && hasRe(c,/else/) && hasRe(c,/screen\.textContent\s*=\s*\w+/)
+ (c)=> all(c,[[/let\s+\w+\s*=\s*['"]{2}/,'A <code>let</code> box starting as empty quotes, to build into'],[/for\s*\(\s*const\s+\w+\s+of\s+\w+\s*\)/,'A <code>for ... of</code> walk over the list'],[/if\s*\([^)]*\)/,'An <code>if</code> deciding per item'],[/else/,'An <code>else</code> for the other case'],[/screen\.textContent\s*=\s*\w+/,'AFTER the loop, one screen line showing the built box']])
    ? {ok:true,msg:'Loop + choice + accumulator — the three-piece engine that renders feeds, grades tests, and totals carts everywhere.'}
    : {ok:false,msg:'I need the empty let box, a for...of loop, an if/else inside adding to the box, and the screen showing it after.'});
 
@@ -1204,7 +1211,7 @@ REV('G10','js',
  'const excuses = [\'My dog ate it\', \'Aliens took it\', \'I overslept\', \'Gravity failed\'];\n',
  'const excuses = [\'My dog ate it\', \'Aliens took it\', \'I overslept\', \'Gravity failed\'];\nlet last = -1;\n\nfunction pickExcuse() {\n  let pick = Math.floor(Math.random() * excuses.length);\n  while (pick === last) {\n    pick = Math.floor(Math.random() * excuses.length);\n  }\n  last = pick;\n  return excuses[pick];\n}\n\nbtn.onclick = function () {\n  screen.textContent = pickExcuse();\n};',
  'Three layers from memory: the remembering let, the function (random, while-guard, remember, return), the click. Peek at Grade 10 if needed — that is reviewing, not cheating.',
- (c)=> hasRe(c,/let\s+\w+\s*=/) && hasRe(c,/function\s+\w+/) && hasRe(c,/while\s*\([^)]*===?[^)]*\)/) && hasRe(c,/Math\.random/) && hasRe(c,/return/) && hasRe(c,/onclick|addEventListener/) && hasRe(c,/screen\.textContent\s*=/)
+ (c)=> all(c,[[/let\s+\w+\s*=/,'A <code>let</code> box remembering the last pick'],[/function\s+\w+/,'A function owning the picking job'],[/Math\.random/,'<code>Math.random</code> rolling'],[/while\s*\([^)]*===?[^)]*\)/,'A <code>while</code> re-rolling on repeats'],[/return/,'A <code>return</code> handing the pick back'],[/onclick|addEventListener/,'The button wired up'],[/screen\.textContent\s*=/,'A screen line showing it']])
    ? {ok:true,msg:'You rebuilt the whole machine from memory. That is not review — that is ownership.'}
    : {ok:false,msg:'All the pieces: remembering let, function with Math.random + while guard + return, and the click showing it.'},
  '<button id="btn">Excuse me!</button>\n<p id="screen">press the button...</p>');
@@ -1215,7 +1222,7 @@ REV('G11','js',
  'const players = [\n  { name: \'Sam\', points: 12 },\n  { name: \'Alex\', points: 9 },\n  { name: \'Jo\', points: 15 }\n];\n',
  'const players = [\n  { name: \'Sam\', points: 12 },\n  { name: \'Alex\', points: 9 },\n  { name: \'Jo\', points: 15 }\n];\nlet out = \'\';\nfor (const p of players) {\n  out = out + p.name + \': \' + p.points + \' points. \';\n}\nscreen.textContent = out;',
  'Accumulator + for...of; inside, glue p.name and p.points with quoted bits between.',
- (c)=> hasRe(c,/for\s*\(\s*const\s+\w+\s+of\s+\w+\s*\)/) && (c.match(/\w+\.\w+/g)||[]).filter(x=>!/Math\.|screen\.|console\./.test(x)).length>=2 && hasRe(c,/screen\.textContent\s*=\s*\w+/)
+ (c)=> all(c,[[/for\s*\(\s*const\s+\w+\s+of\s+\w+\s*\)/,'A <code>for ... of</code> walk over the list of objects'],[c2=>(c2.match(/\w+\.\w+/g)||[]).filter(x=>!/Math\.|screen\.|console\./.test(x)).length>=2,'At least two dot-reads reaching into each object by field label'],[/screen\.textContent\s*=\s*\w+/,'AFTER the loop, a screen line showing the built report']])
    ? {ok:true,msg:'A leaderboard from a list of objects — you just did what every scoreboard, feed, and results page does.'}
    : {ok:false,msg:'Loop with for...of, read BOTH fields with dots (p.name, p.points), build the text, show it after the loop.'});
 
@@ -1226,7 +1233,7 @@ REV('G11','js',
  '',
  'const out = document.getElementById(\'screen\');\nout.textContent = \'No more magic. I know how everything works.\';',
  'Line 1: const yourName = document.getElementById(\'screen\'); Line 2: yourName.textContent = your message.',
- (c)=> hasRe(c,/const\s+\w+\s*=\s*document\.getElementById\s*\(\s*['"]screen['"]\s*\)/) && hasRe(c,/\w+\.textContent\s*=\s*['"].+['"]/)
+ (c)=> all(c,[[/const\s+\w+\s*=\s*document\.getElementById\s*\(\s*['"]screen['"]\s*\)/,'Your OWN handle: <code>const box = document.getElementById(\'screen\')</code>'],[/\w+\.textContent\s*=\s*['"].+['"]/,'That handle putting quoted words on screen &mdash; no training wheels']])
    ? {ok:true,msg:'The last curtain pulled back. document.getElementById is the exact line running under every real website &mdash; and now under your fingers.'}
    : {ok:false,msg:'Fetch it yourself: const something = document.getElementById(&#39;screen&#39;); then something.textContent = a message.'});
   les.g='G12'; L.push(les);
@@ -1237,7 +1244,7 @@ REV('G12','js',
  'const username = \'\';\n',
  'const username = \'\';\nconsole.log(\'username is:\', username, typeof username);\n\nif (username === \'\') {\n  screen.textContent = \'No username given - try again!\';\n} else {\n  screen.textContent = \'Welcome, \' + username + \'!\';\n}',
  'One console.log line using typeof, then the empty-string guard with different messages per branch. Flip the box value to test both doors.',
- (c)=> hasRe(c,/console\.log\s*\(/) && hasRe(c,/typeof\s+\w+/) && hasRe(c,/if\s*\(\s*\w+\s*===?\s*['"]{2}\s*\)/) && hasRe(c,/else/) && (c.match(/screen\.textContent/g)||[]).length>=2
+ (c)=> all(c,[[/console\.log\s*\(/,'A <code>console.log</code> clue for you'],[/typeof\s+\w+/,'A <code>typeof</code> asking the species'],[/if\s*\(\s*\w+\s*===?\s*['"]{2}\s*\)/,'A guard comparing to empty quotes'],[/else/,'An <code>else</code> road'],[c2=>(c2.match(/screen\.textContent/g)||[]).length>=2,'TWO screen lines &mdash; complaint and result']])
    ? {ok:true,msg:'Logging, type-checking, and guarding in one flow — the complete debugging reflex, installed.'}
    : {ok:false,msg:'I need the console.log with typeof, the === \'\' guard, an else, and a different screen message in each branch.'});
 
@@ -1247,7 +1254,7 @@ REV('C','js',
  'const greetings = [\'Hello!\', \'Welcome back!\', \'Good to see you!\'];\n',
  'const greetings = [\'Hello!\', \'Welcome back!\', \'Good to see you!\'];\n\nfunction pickGreeting() {\n  const pick = Math.floor(Math.random() * greetings.length);\n  return greetings[pick];\n}\n\nfunction showGreeting(text) {\n  screen.textContent = text;\n}\n\nbtn.onclick = function () {\n  showGreeting(pickGreeting());\n};',
  'Two one-job functions with honest names, and the click line snapping them together: showGreeting(pickGreeting());',
- (c)=> hasRe(c,/function\s+pickGreeting[\s\S]*return/) && hasRe(c,/function\s+showGreeting\s*\(\s*\w+\s*\)[\s\S]*screen\.textContent/) && hasRe(c,/showGreeting\s*\(\s*pickGreeting\s*\(\s*\)\s*\)/) && hasRe(c,/onclick|addEventListener/)
+ (c)=> all(c,[[/function\s+pickGreeting[\s\S]*return/,'A <code>pickGreeting</code> function that <code>return</code>s'],[/function\s+showGreeting\s*\(\s*\w+\s*\)[\s\S]*screen\.textContent/,'A <code>showGreeting(ingredient)</code> function that shows'],[/onclick|addEventListener/,'All of it fired by the button'],[/showGreeting\s*\(\s*pickGreeting\s*\(\s*\)\s*\)/,'Inside it, the stack: <code>showGreeting(pickGreeting())</code>']])
    ? {ok:true,msg:'Clean names, one job each, snapped together on a click. This is code a professional would merge. College: complete.'}
    : {ok:false,msg:'Exact names matter here: pickGreeting returning a random item, showGreeting(text) displaying, and showGreeting(pickGreeting()) inside the click.'},
  '<button id="btn">Greet me</button>\n<p id="screen">press the button...</p>');
@@ -1258,7 +1265,7 @@ REV('M','js',
  'const welcomes = [\'You are in!\', \'Welcome aboard!\', \'Glad you joined!\'];\nconst email = \'josh@example.com\';\n',
  'const welcomes = [\'You are in!\', \'Welcome aboard!\', \'Glad you joined!\'];\nconst email = \'josh@example.com\';\n\nbtn.onclick = function () {\n  if (email === \'\' || !email.includes(\'@\')) {\n    screen.textContent = \'That email looks wrong - check it and try again.\';\n  } else {\n    const pick = Math.floor(Math.random() * welcomes.length);\n    screen.textContent = welcomes[pick] + \' (\' + email + \')\';\n    btn.disabled = true;\n  }\n};',
  'Inside the click: the || guard first; the else does the random pick, the glued message, and btn.disabled = true. Flip the email value to test both paths.',
- (c)=> hasRe(c,/onclick|addEventListener/) && hasRe(c,/\|\|/) && hasRe(c,/includes\s*\(\s*['"]@['"]\s*\)/) && hasRe(c,/Math\.random/) && hasRe(c,/btn\.disabled\s*=\s*true/) && (c.match(/screen\.textContent/g)||[]).length>=2
+ (c)=> all(c,[[/onclick|addEventListener/,'The button wired up'],[/\|\|/,'An OR (<code>||</code>) combining the guard tests'],[/includes\s*\(\s*['"]@['"]\s*\)/,'The @ check on the email'],[/Math\.random/,'<code>Math.random</code> picking the reply'],[/btn\.disabled\s*=\s*true/,'The button disabling itself after success'],[c2=>(c2.match(/screen\.textContent/g)||[]).length>=2,'TWO screen lines &mdash; complaint and success']])
    ? {ok:true,msg:'Wiring, guarding, randomness, lists, gluing, and conversion polish — every grade of this school, alive in one machine. There is nothing here you did not build yourself.'}
    : {ok:false,msg:'Checklist: click function, || guard with includes(&#64;), random pick from the list, both screen messages, and btn.disabled = true on success.'},
  '<button id="btn">Sign me up</button>\n<p id="screen">ready...</p>');
@@ -1273,7 +1280,7 @@ CHAL('G6','Pick and tell',
  'Pick a random item and show BOTH the position and the item, like: Pick #2: cookies',
  'const snacks = [\'chips\', \'fruit\', \'cookies\', \'jerky\'];\n',
  'const snacks = [\'chips\', \'fruit\', \'cookies\', \'jerky\'];\nconst pick = Math.floor(Math.random() * snacks.length);\nscreen.textContent = \'Pick #\' + pick + \': \' + snacks[pick];',
- (c)=> hasRe(c,/Math\.floor\s*\(\s*Math\.random/) && hasRe(c,/screen\.textContent\s*=[^\n]*\+\s*\w+\s*\+[^\n]*\[\s*\w+\s*\]/)
+ (c)=> all(c,[[/Math\.floor\s*\(\s*Math\.random/,'The fair-pick line: <code>Math.floor(Math.random() * list.length)</code>'],[/screen\.textContent\s*=[^\n]*\+\s*\w+\s*\+[^\n]*\[\s*\w+\s*\]/,'A screen line gluing a quoted label + <code>list[pick]</code> &mdash; the pick, not the whole list']])
    ? {ok:true,msg:'Position AND value, one line. You used the same variable twice for two jobs — efficient thinking.'}
    : {ok:false,msg:'Show the pick number AND snacks[pick] glued into one sentence, using the same random position for both.'}),
 CHAL('G7','The shouting trick',
@@ -1281,7 +1288,7 @@ CHAL('G7','The shouting trick',
  'Teach shout(text) that RETURNS the text uppercased with \'!!!\' stuck on, and show a call.',
  '',
  'function shout(text) {\n  return text.toUpperCase() + \'!!!\';\n}\n\nscreen.textContent = shout(\'this works\');',
- (c)=> hasRe(c,/function\s+\w+\s*\(\s*\w+\s*\)[\s\S]*return[\s\S]*toUpperCase\s*\(\s*\)/) && hasRe(c,/screen\.textContent\s*=\s*\w+\s*\(/)
+ (c)=> all(c,[[/function\s+\w+\s*\(\s*\w+\s*\)[\s\S]*return[\s\S]*toUpperCase\s*\(\s*\)/,'A function that <code>return</code>s its ingredient run through <code>.toUpperCase()</code>'],[/screen\.textContent\s*=\s*\w+\s*\(/,'A screen line calling it']])
    ? {ok:true,msg:'You just used a tool you were never taught, from a one-line description. That skill — reading a doc, applying it — IS the job.'}
    : {ok:false,msg:'A function with an ingredient, returning ingredient.toUpperCase() + something, shown via a call.'}),
 CHAL('G8','FizzBuzz junior',
@@ -1289,7 +1296,7 @@ CHAL('G8','FizzBuzz junior',
  'Teach describe(n): return \'fizzbuzz\' if divisible by both 3 and 5, \'fizz\' if by 3, \'buzz\' if by 5, otherwise the number glued to \'\'. Show describe(15).',
  '',
  'function describe(n) {\n  if (n % 3 === 0 && n % 5 === 0) {\n    return \'fizzbuzz\';\n  } else if (n % 3 === 0) {\n    return \'fizz\';\n  } else if (n % 5 === 0) {\n    return \'buzz\';\n  } else {\n    return \'\' + n;\n  }\n}\n\nscreen.textContent = describe(15);',
- (c)=> hasRe(c,/%\s*3\s*===?\s*0/) && hasRe(c,/%\s*5\s*===?\s*0/) && hasRe(c,/&&/) && hasRe(c,/else\s+if/) && hasRe(c,/screen\.textContent\s*=\s*\w+\s*\(/)
+ (c)=> all(c,[[/%\s*3\s*===?\s*0/,'A remainder test for 3: <code>n % 3 === 0</code>'],[/&&/,'An AND (<code>&amp;&amp;</code>) joining it to the next test &mdash; FizzBuzz needs both'],[/%\s*5\s*===?\s*0/,'A remainder test for 5'],[/else\s+if/,'<code>else if</code> ladder &mdash; the combined test must come FIRST'],[/screen\.textContent\s*=\s*\w+\s*\(/,'A screen line calling your function']])
    ? {ok:true,msg:'You just solved the interview classic — and you put the && door FIRST, which is the exact trap most candidates fall into.'}
    : {ok:false,msg:'Four doors, both-divisible FIRST (with &&), using % 3 === 0 and % 5 === 0. Test 15, 9, 10, and 7.'}),
 CHAL('G9','The accountant',
@@ -1297,7 +1304,7 @@ CHAL('G9','The accountant',
  'Loop over the prices and show the total like: Total: 34',
  'const prices = [12, 5, 8, 9];\n',
  'const prices = [12, 5, 8, 9];\nlet total = 0;\nfor (const p of prices) {\n  total = total + p;\n}\nscreen.textContent = \'Total: \' + total;',
- (c)=> hasRe(c,/let\s+\w+\s*=\s*0/) && hasRe(c,/for\s*\(\s*const\s+\w+\s+of\s+\w+\s*\)/) && hasRe(c,/screen\.textContent\s*=\s*['"][^'"]*['"]\s*\+\s*\w+/)
+ (c)=> all(c,[[/let\s+\w+\s*=\s*0/,'A total starting at 0, OUTSIDE the loop'],[/for\s*\(\s*const\s+\w+\s+of\s+\w+\s*\)/,'A <code>for ... of</code> adding each price'],[/screen\.textContent\s*=\s*['"][^'"]*['"]\s*\+\s*\w+/,'AFTER the loop, a quoted label glued to the total']])
    ? {ok:true,msg:'The numeric accumulator — this exact loop totals every shopping cart on the internet.'}
    : {ok:false,msg:'Start a total at 0, add each price in a for...of, show it glued after a label AFTER the loop.'}),
 CHAL('G10','The counting machine',
@@ -1305,7 +1312,7 @@ CHAL('G10','The counting machine',
  'Random excuse on click, numbered: \'Excuse #3: My dog ate it\' — the number grows every click.',
  'const excuses = [\'My dog ate it\', \'Aliens took it\', \'I overslept\'];\n',
  'const excuses = [\'My dog ate it\', \'Aliens took it\', \'I overslept\'];\nlet count = 0;\n\nbtn.onclick = function () {\n  count = count + 1;\n  const pick = Math.floor(Math.random() * excuses.length);\n  screen.textContent = \'Excuse #\' + count + \': \' + excuses[pick];\n};',
- (c)=> hasRe(c,/let\s+\w+\s*=\s*0/) && hasRe(c,/onclick|addEventListener/) && hasRe(c,/Math\.random/) && hasRe(c,/screen\.textContent\s*=[^\n]*#[^\n]*\+/)
+ (c)=> all(c,[[/let\s+\w+\s*=\s*0/,'A counter starting at 0'],[/onclick|addEventListener/,'The button wired up'],[/Math\.random/,'<code>Math.random</code> doing the roll'],[/screen\.textContent\s*=[^\n]*#[^\n]*\+/,'A screen line gluing the roll number (with its #) into the sentence']])
    ? {ok:true,msg:'State that survives between clicks, growing every press. That counter is the seed of every score, cart, and like tally.'}
    : {ok:false,msg:'A let counter starting at 0, +1 inside the click, and the message gluing #, the count, and a random excuse.'},
  '<button id="btn">Excuse me!</button>\n<p id="screen">press the button...</p>'),
@@ -1314,7 +1321,7 @@ CHAL('C','The bulletproof picker',
  'Teach pickFrom(list): if the list is empty return \'nothing to pick\', else a random item. Show it working on BOTH lists, glued with \' / \'.',
  'const full = [\'alpha\', \'beta\', \'gamma\'];\nconst empty = [];\n',
  'const full = [\'alpha\', \'beta\', \'gamma\'];\nconst empty = [];\n\nfunction pickFrom(list) {\n  if (list.length === 0) {\n    return \'nothing to pick\';\n  }\n  const pick = Math.floor(Math.random() * list.length);\n  return list[pick];\n}\n\nscreen.textContent = pickFrom(full) + \' / \' + pickFrom(empty);',
- (c)=> hasRe(c,/function\s+\w+\s*\(\s*\w+\s*\)/) && hasRe(c,/\.length\s*===?\s*0/) && hasRe(c,/Math\.random/) && (c.match(/\w+\s*\(\s*\w+\s*\)/g)||[]).length>=2 && hasRe(c,/screen\.textContent\s*=/)
+ (c)=> all(c,[[/function\s+\w+\s*\(\s*\w+\s*\)/,'A function taking the list as its ingredient'],[/\.length\s*===?\s*0/,'The guard: empty list handled first'],[/Math\.random/,'<code>Math.random</code> picking when the list is healthy'],[c2=>(c2.match(/\w+\s*\(\s*\w+\s*\)/g)||[]).length>=2,'The function called on BOTH lists to prove the guard works'],[/screen\.textContent\s*=/,'A screen line showing results']])
    ? {ok:true,msg:'A guard, a general-purpose parameter, and graceful failure. This function would pass code review at any company.'}
    : {ok:false,msg:'One function taking a list parameter, an empty guard (length === 0), a random pick otherwise — called on BOTH lists in one glued sentence.'});
 
@@ -1343,7 +1350,7 @@ PRACT('G4','js','two boxes, one line','<p>Drilling two Grade 4 habits at once: m
    ? {ok:true,msg:'Two boxes, one sentence. Smooth.'} : {ok:false,msg:'Two const boxes with quoted words, glued into one screen line.'}),
 PRACT('G4','js','the button talks back','<p>Until now a click changed something ELSE on the page. This drills the other half: a button can change <b>itself</b>.</p><p>Inside one <code>onclick</code>, write to the screen and to the button&rsquo;s own <code>textContent</code>. That is the pattern behind every button that turns into &ldquo;Sending&hellip;&rdquo; the moment you press it.</p><p><b>Done looks like:</b> one click, two things changed.</p>','On click: change the screen message AND the button&rsquo;s own text.','',
  'btn.onclick = function () {\n  screen.textContent = \'You woke me up!\';\n  btn.textContent = \'Again!\';\n};','Two lines inside the click: screen.textContent and btn.textContent.',
- (c)=> hasRe(c,/btn\.onclick\s*=\s*function|addEventListener/) && hasRe(c,/screen\.textContent\s*=/) && hasRe(c,/btn\.textContent\s*=/)
+ (c)=> all(c,[[/btn\.onclick\s*=\s*function|addEventListener/,'Instructions saved onto the button'],[/screen\.textContent\s*=/,'A screen line changing the page'],[/btn\.textContent\s*=/,'The BUTTON&rsquo;s own words changing too']])
    ? {ok:true,msg:'The button renamed itself mid-click. Elements are all editable, all the time.'} : {ok:false,msg:'Inside the click: set screen.textContent AND btn.textContent.'},
  '<button id="btn">Wake the machine</button>\n<p id="screen">sleeping...</p>'),
 PRACT('G5','js','mad libs','<p>Same gluing skill as the greeting lesson, now with three boxes instead of one &mdash; because real sentences are built from several pieces, not two.</p><p>Watch every join: each quoted connector needs its own spaces, or the words weld together. Read your result out loud before you Run it.</p><p><b>Done looks like:</b> a sentence that reads properly, using all three boxes.</p>','Three const boxes (a name, an animal, a food) glued into one sentence.','',
@@ -1364,23 +1371,25 @@ PRACT('G6','js','roll the dice','<p>The random shift, in your own hands.</p><p><
    ? {ok:true,msg:'A fair die. That +1 shift shows up everywhere randomness meets humans.'} : {ok:false,msg:'The exact shape: Math.floor(Math.random() * 6) + 1.'}),
 PRACT('G7','js','one trick, two calls','<p>The whole point of teaching the computer a trick: write it once, use it as many times as you like.</p><p>Two calls to the same function, each with a different ingredient, each handing back its own answer. Nothing about the trick itself changes between calls.</p><p><b>Done looks like:</b> one function defined, called twice, both results on screen.</p>','A greet function with an ingredient, called TWICE for two people in one screen line.','',
  'function greet(person) {\n  return \'Hi \' + person + \'! \';\n}\n\nscreen.textContent = greet(\'Ana\') + greet(\'Bo\');','The screen line glues two calls: greet(\'Ana\') + greet(\'Bo\').',
- (c)=> hasRe(c,/function\s+\w+\s*\(\s*\w+\s*\)[\s\S]*return/) && (c.match(/\w+\s*\(\s*['"][^'"]+['"]\s*\)/g)||[]).length>=2
+ (c)=> all(c,[[/function\s+\w+\s*\(\s*\w+\s*\)[\s\S]*return/,'ONE function taking an ingredient and <code>return</code>ing'],[c2=>(c2.match(/\w+\s*\(\s*['"][^'"]+['"]\s*\)/g)||[]).length>=2,'Called at least TWICE with different quoted values &mdash; write once, use many']])
    ? {ok:true,msg:'One definition, two performances. DRY in one line.'} : {ok:false,msg:'A returning function with an ingredient, called twice with different names.'}),
 PRACT('G8','js','even or odd','<p>The remainder operator from the FizzBuzz challenge, doing its simplest job.</p><p><code>%</code> hands back what is left over after dividing. Left over nothing means it divided cleanly &mdash; which is exactly what &ldquo;even&rdquo; means. Everything else is odd.</p><p><b>Done looks like:</b> a function that takes a number and hands back which one it is.</p>','A function evenOrOdd(n) returning \'even\' or \'odd\' using % 2, shown with a call.','',
  'function evenOrOdd(n) {\n  if (n % 2 === 0) {\n    return \'even\';\n  } else {\n    return \'odd\';\n  }\n}\n\nscreen.textContent = 7 + \' is \' + evenOrOdd(7);','n % 2 === 0 means divisible by two - even.',
- (c)=> hasRe(c,/%\s*2\s*===?\s*0/) && hasRe(c,/else/) && hasRe(c,/screen\.textContent\s*=[\s\S]*\w+\s*\(\s*\d+\s*\)/)
+ (c)=> all(c,[[/%\s*2\s*===?\s*0/,'The even test: <code>n % 2 === 0</code>'],[/else/,'An <code>else</code> for odd'],[/screen\.textContent\s*=[\s\S]*\w+\s*\(\s*\d+\s*\)/,'A screen line calling it with a number']])
    ? {ok:true,msg:'The parity check - a tiny tool you will reuse for stripes, turns, and alternating rows forever.'} : {ok:false,msg:'if (n % 2 === 0) return even, else odd; show a call with a number.'}),
 PRACT('G9','js','countdown','<p>Loops are not stuck going up.</p><p>A loop has three parts: where it starts, when it stops, and what changes each lap. Start high, stop low, and subtract instead of adding &mdash; the same machine, run in reverse.</p><p><b>Done looks like:</b> the numbers counting down, then a finish line at the end.</p>','Build \'5 4 3 2 1 liftoff!\' with a loop counting DOWN.','',
  'let out = \'\';\nfor (let i = 5; i >= 1; i = i - 1) {\n  out = out + i + \' \';\n}\nscreen.textContent = out + \'liftoff!\';','Start at 5, keep going while i >= 1, step DOWN with i = i - 1.',
- (c)=> hasRe(c,/for\s*\(\s*let\s+\w+\s*=\s*5\s*;[^;]*>=\s*1\s*;[^)]*-\s*1\s*\)/) && hasRe(c,/screen\.textContent\s*=/)
+ (c)=> all(c,[[/for\s*\(\s*let\s+\w+\s*=\s*5\s*;[^;]*>=\s*1\s*;[^)]*-\s*1\s*\)/,'A countdown loop: start at 5, run while >= 1, step DOWN by 1'],[/screen\.textContent\s*=/,'A screen line showing the built countdown']])
    ? {ok:true,msg:'Liftoff. Reversing a loop means reversing all three parts - you just proved you understand each one.'} : {ok:false,msg:'for (let i = 5; i >= 1; i = i - 1), building the string each lap.'}),
 PRACT('G11','js','the pet card','<p>Objects again, in a fresh context, so the shape sticks rather than the example.</p><p>A list numbers its items; an object <b>labels</b> them. Reach in by name with a dot and pull out exactly the piece you want.</p><p><b>Done looks like:</b> one sentence built from several labelled pieces of the same object.</p>','A pet object with name, kind, and age - shown as one sentence reading all three.','',
  'const pet = {\n  name: \'Biscuit\',\n  kind: \'corgi\',\n  age: 3\n};\n\nscreen.textContent = pet.name + \' is a \' + pet.age + \' year old \' + pet.kind + \'.\';','Three fields in the object, three dot-reads in the sentence.',
- (c)=>{const m=c.match(/\w+\.\w+/g)||[];return hasRe(c,/=\s*\{[\s\S]*:\s*[\s\S]*,[\s\S]*:/) && m.filter(x=>!/Math\.|screen\.|console\./.test(x)).length>=3
+ (c)=>{ return all(c,[
+   [/=\s*\{[\s\S]*:\s*[\s\S]*,[\s\S]*:/,'An object with <code>label: value</code> fields, commas between'],
+   [c2=>((c2.match(/\w+\.\w+/g)||[]).filter(x=>!/Math\.|screen\.|console\./.test(x)).length>=3),'THREE dot-reads reaching in by field label, glued into one sentence']])
    ? {ok:true,msg:'Biscuit is immortalized. Three reads, one sentence - profile pages everywhere.'} : {ok:false,msg:'An object with 3 fields and a sentence gluing all three dot-reads.'};}),
 PRACT('G11','js','team total','<p>Three skills in one rep: loop a list, reach into each object by label, and keep a running total.</p><p>The total lives in a <code>let</code> box outside the loop &mdash; declare it inside and it resets every lap, which is the classic way this goes wrong.</p><p><b>Done looks like:</b> one number on screen, the sum of every score.</p>','Total the points across the whole team and show it after a quoted label like <code>\'Team total: \'</code>.','const team = [\n  { name: \'Sam\', points: 12 },\n  { name: \'Alex\', points: 9 },\n  { name: \'Jo\', points: 15 }\n];\n',
  'const team = [\n  { name: \'Sam\', points: 12 },\n  { name: \'Alex\', points: 9 },\n  { name: \'Jo\', points: 15 }\n];\nlet total = 0;\nfor (const p of team) {\n  total = total + p.points;\n}\nscreen.textContent = \'Team total: \' + total;','Start total at 0; each lap add p.points; show after the loop.',
- (c)=> hasRe(c,/let\s+\w+\s*=\s*0/) && hasRe(c,/for\s*\(\s*const\s+\w+\s+of\s+\w+\s*\)/) && hasRe(c,/\.points\b/) && hasRe(c,/screen\.textContent\s*=/)
+ (c)=> all(c,[[/let\s+\w+\s*=\s*0/,'A total starting at 0, outside the loop'],[/for\s*\(\s*const\s+\w+\s+of\s+\w+\s*\)/,'A <code>for ... of</code> over the team'],[/\.points\b/,'A dot-read of each member&rsquo;s <code>.points</code>'],[/screen\.textContent\s*=/,'AFTER the loop, the labeled total on screen']])
    ? {ok:true,msg:'36 points, totaled by machine. Every leaderboard sum is this exact loop.'} : {ok:false,msg:'Numeric accumulator + for...of + adding p.points each lap.'}),
 PRACT('G12','js','type detective','<p><code>typeof</code>, drilled on a deliberately mixed bag.</p><p>Two values can look identical on screen and still be different species &mdash; quotes make text, and text will not do maths. Asking directly is how you settle it instead of guessing.</p><p><b>Done looks like:</b> both species named in one sentence, and they will not match.</p>','Show the typeof BOTH boxes, glued into one sentence with quoted labels between them.','const a = \'42\';\nconst b = 42;\n',
  'const a = \'42\';\nconst b = 42;\nscreen.textContent = \'a is a \' + typeof a + \', b is a \' + typeof b;','Two typeof reads glued with labels - they will differ!',
@@ -2614,6 +2623,39 @@ function levLE(a,b,k){
 }
 function nearMissJS(code){
   const noStr = code.replace(/(['"`])(?:[^'"`\\]|\\.)*?\1/g, m=>' '.repeat(m.length));
+  /* 0. assigning INTO a built-in trick instead of calling it: Math.floor = ... */
+  let ma = noStr.match(/(Math\.\w+|console\.log)\s*=(?![=])/);
+  if (ma){
+    return {range:{a:ma.index,b:ma.index+ma[0].length},
+      msg:'<code>'+esc(ma[1])+'</code> is a trick you CALL, not a box you fill. The <code>=</code> tries to pour a value INTO it &mdash; you want round brackets handing it a value: <code>'+esc(ma[1])+'(...)</code>.'};
+  }
+  /* 0b. gluing the WHOLE list where one item was picked for */
+  ma = noStr.match(/screen\.textContent\s*=[^\n]*/);
+  if (ma && /(?:const|let)\s+\w+\s*=[^\n]*Math\.floor/.test(noStr)){
+    const listName=(code.match(/(?:const|let|var)\s+(\w+)\s*=\s*\[/)||[])[1];
+    const pickName=(noStr.match(/(?:const|let)\s+(\w+)\s*=[^\n]*Math\.floor/)||[])[1];
+    if (listName && pickName){
+      const bare=ma[0].match(new RegExp('\\b'+listName+'\\b(?!\\s*[\\[.])'));
+      if (bare && ma[0].indexOf(pickName)<0){
+        const at=ma.index+bare.index;
+        return {range:{a:at,b:at+listName.length},
+          msg:'<code>'+esc(listName)+'</code> here is the WHOLE list &mdash; that is why every item lands on screen. You built <code>'+esc(pickName)+'</code> to choose one; square brackets reach in and take it: <code>'+esc(listName)+'['+esc(pickName)+']</code>.'};
+      }
+    }
+  }
+  /* 0c. a dot reaching into a LIST - lists are numbered, not labelled */
+  {
+    const ln=(code.match(/(?:const|let|var)\s+(\w+)\s*=\s*\[/)||[])[1];
+    if (ln){
+      const LM=new Set(['length','push','join','includes','indexOf','slice','map','filter','pop','shift','sort','reverse','concat','forEach']);
+      for (const dm of noStr.matchAll(new RegExp('\\b'+ln+'\\s*\\.\\s*(\\w+)','g'))){
+        if (LM.has(dm[1])) continue;
+        const pk=(noStr.match(/(?:const|let)\s+(\w+)\s*=[^\n]*Math\.floor/)||[])[1];
+        return {range:{a:dm.index,b:dm.index+dm[0].length},
+          msg:'A dot reaches into an OBJECT by its field label &mdash; but <code>'+esc(ln)+'</code> is a LIST, and lists are numbered, not labelled. There is no compartment called <code>'+esc(dm[1])+'</code>, so the computer hands back <code>undefined</code> &mdash; that is the word on your screen. Square brackets reach in by number: <code>'+esc(ln)+'['+esc(pk||'0')+']</code>.'};
+      }
+    }
+  }
   /* 1. bare [0] where a list exists - brackets with no list name in front */
   let m = noStr.match(/(?:screen\.textContent\s*=|\+)\s*(\[\s*\d+\s*\])/);
   if (m && /(?:const|let|var)\s+\w+\s*=\s*\[/.test(noStr)){

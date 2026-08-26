@@ -223,6 +223,7 @@ body.dark .wcard{background:var(--panel)}
 .tick.pop{animation:tickpop .45s ease}
 @keyframes tickpop{40%{transform:scale(1.7)}}
 .xpfloat{position:fixed;font-family:Menlo,Consolas,monospace;font-weight:bold;color:var(--accent);z-index:120;pointer-events:none;animation:xprise 1.2s ease forwards}
+.ghost{color:var(--soft);opacity:.55}
 .navtip{position:fixed;top:54px;left:0;max-width:290px;background:var(--panel);color:var(--ink);border:2px solid var(--accent);border-radius:10px;padding:11px 14px;font-size:.9rem;line-height:1.45;box-shadow:0 10px 30px rgba(0,0,0,.3);z-index:130;cursor:pointer}
 .navtip:after{content:'';position:absolute;top:-9px;left:24px;border:8px solid transparent;border-top:none;border-bottom-color:var(--accent)}
 @keyframes xprise{to{transform:translateY(-42px);opacity:0}}
@@ -1147,9 +1148,15 @@ REV('G5','js',
  'const name = \'Josh\';\n',
  'const name = \'Josh\';\nscreen.textContent = name + \' scored \' + (10 + 7) + \' points\';',
  'Shape: box + quoted label + (number + number) + quoted label — a label is just text in quotes, like <code>\' scored \'</code>. Brackets around the math.',
- (c)=> hasRe(c,/const\s+\w+\s*=/) && hasRe(c,/screen\.textContent\s*=[^\n]*\w+[^\n]*\+[^\n]*\(\s*\d+\s*\+\s*\d+\s*\)/)
-   ? {ok:true,msg:'Boxes, glue, and honest math in a single sentence. The Total: 43 trap can never fool you again.'}
-   : {ok:false,msg:'The screen line must glue the name box AND a bracketed sum like (10 + 7) with + signs.'});
+ (c)=>{ const boxes=[...c.matchAll(/const\s+(\w+)\s*=/g)].map(m=>m[1]);
+   const line=c.match(/screen\.textContent\s*=([^\n]*)/);
+   /* strip quoted text first, so letters inside a label can never stand in for the box */
+   const bare=line?line[1].replace(/(['"])[^'"\n]*\1/g,''):'';
+   const glued=boxes.some(b=>new RegExp('\\b'+b+'\\b').test(bare));
+   const sum=/\(\s*\d+\s*\+\s*\d+\s*\)/.test(bare);
+   if (boxes.length&&line&&glued&&sum) return {ok:true,msg:'Boxes, glue, and honest math in a single sentence. The Total: 43 trap can never fool you again.'};
+   if (boxes.length&&line&&!glued) return {ok:false,msg:'The box is declared, but it never made it INTO the sentence &mdash; glue the bare box name (no quotes) into the screen line with +.'};
+   return {ok:false,msg:'The screen line must glue the name box AND a bracketed sum like (10 + 7) with + signs.'}; });
 
 REV('G6','js',
  REV_INTRO+'<p>Grade 6 in one breath:</p><ul><li>Lists hold many values: <code>[\'a\', \'b\', \'c\']</code>, positions counted from ZERO.</li><li><code>Math.floor(Math.random() * list.length)</code> = a fair random position.</li></ul><p>Now combine with Grade 5: glue a label onto the random pick.</p>',
@@ -2241,7 +2248,7 @@ function syncHl(){
   const lang = sandbox ? 'html' : L[idx].lang;
   const code = edEl.value;
   const fn = lang==='js' ? hlJS : lang==='css' ? hlCSS : hlHTML;
-  hlEl.innerHTML = fn(code) + '\n';
+  hlEl.innerHTML = fn(code) + (ghostRevealed>0 ? '<span class="ghost">'+hlEsc(ghostTarget.slice(0,ghostRevealed))+'</span>' : '') + '\n';
   hlEl.scrollTop = edEl.scrollTop; hlEl.scrollLeft = edEl.scrollLeft;
 }
 const edEl=$('#ed'), hlEl=$('#hl'), teachEl=$('#teach'), goalEl=$('#goal'), statusEl=$('#status'),
@@ -2249,6 +2256,7 @@ const edEl=$('#ed'), hlEl=$('#hl'), teachEl=$('#teach'), goalEl=$('#goal'), stat
       btnNext=$('#btnNext');
 
 let idx = 0, done = new Set(), tested = new Set(), leadStep = 0, sandbox = false, checkTimer = null, solShown = false;
+let ghostOn = true, ghostLap = false, ghostTarget = '', ghostRevealed = 0, ghostTimer = null, assistedKeys = 0, typedThisLesson = false;
 let chalDone = new Set(), projDone = new Set(), practDone = new Set(), msSeen = new Set(), edTheme = '', sensei = false, certName = '';
 let stk = {last:'', cur:0, best:0, xp:0};
 
@@ -2505,6 +2513,12 @@ function runCheck(){
   if (res.ok && !done.has(idx) && solShown && edEl.value === L[idx].sol){
     statusEl.innerHTML = '✓ ' + 'That IS the answer — but shown is not earned. Hit <b>↺ Start over</b> and type it yourself: the ✓ (and the XP) go to your fingers, not your eyes. Typing it is faster than you think.';
     btnNext.style.display = 'none';
+    return;
+  }
+  if (res.ok && !done.has(idx) && !L[idx].chal && !L[idx].pract && !L[idx].proj && assistedKeys >= 12){
+    statusEl.innerHTML = '✓ ' + 'That was the guided lap &mdash; the faint text typed along with you. Hit <b>↺ Start over</b> and run it solo: the ✓ (and the XP) go to your fingers. You just typed the whole thing once, so the second lap is faster than you think.';
+    btnNext.style.display = 'none';
+    ghostLap = true;
     return;
   }
   if (res.ok && L[idx].pract && !practDone.has(idx)){
@@ -2799,6 +2813,7 @@ function renderNav(){
 
 function loadLesson(i){
   sandbox = false; idx = i; leadStep = 0; solShown = false;
+  assistedKeys = 0; ghostOn = true; ghostLap = false; typedThisLesson = false; killGhost();
   const les = L[i], g = GRADES.find(x=>x.id===les.g);
   teachEl.dataset.lv = g.lv;
   const gl = L.map((l,n)=>({l,n})).filter(x=>x.l.g===les.g);
@@ -2820,6 +2835,7 @@ function loadLesson(i){
     : 'Type your JavaScript here - remember: screen.textContent = shows things';
   edEl.value = les.start;
   if (duckLine>-1) duckEnd(false);
+  updateGhost();
   saveP(); renderNav();
   if (done.has(idx)||chalDone.has(idx)||projDone.has(idx)||practDone.has(idx)) runCheck(); else previewOnly();
   const cp=$('#crPrev'), cn=$('#crNext');
@@ -2842,6 +2858,7 @@ function giveLead(){
   let s = 0;
   while (s < start.length - p && s < sol.length - p && start[start.length-1-s] === sol[sol.length-1-s]) s++;
   const gap = sol.slice(p, sol.length - s);
+  killGhost();
   leadStep = Math.min(leadStep + 1, 4);
   let cut = Math.floor(gap.length * leadStep / 4);
   while (cut < gap.length && !/\s/.test(gap[cut])) cut++;  /* snap forward to whitespace */
@@ -2955,9 +2972,53 @@ function openSandbox(){
 }
 
 /* wiring */
+/* ---- The ghost coach: guided lap, then solo lap. --------------------------
+   First attempt on a core lesson, once the learner starts typing along the
+   answer, the NEXT word types itself in as dim ghost text ahead of the caret.
+   It never touches the textarea - every real character is the learner's. The
+   moment their code stops matching the answer, the ghost steps aside: other
+   correct answers stay first-class. A green earned with real assistance is a
+   guided lap - the tick waits for the solo lap. ---------------------------- */
+function ghostable(){
+  return !sandbox && !sensei && L[idx] && !L[idx].chal && !L[idx].proj && !L[idx].pract
+      && !L[idx].title.includes('Review') && !done.has(idx) && !solShown && ghostOn;
+}
+function killGhost(){
+  if (ghostTimer){ clearInterval(ghostTimer); ghostTimer=null; }
+  if (ghostTarget || ghostRevealed){ ghostTarget=''; ghostRevealed=0; syncHl(); }
+}
+function ghostTip(){
+  let t=false; try{ t = localStorage.getItem('ghosttaught')==='1'; }catch(e){}
+  if (t) return;
+  try{ localStorage.setItem('ghosttaught','1'); }catch(e){}
+  const tip=document.createElement('div'); tip.className='navtip';
+  tip.innerHTML='&#128123; <b>The code types along with you</b> on this first lap &mdash; follow the faint text. Then you&rsquo;ll do a lap on your own; that one earns the &#10003;.';
+  tip.onclick=()=>tip.remove(); document.body.appendChild(tip);
+  const r=edEl.getBoundingClientRect();
+  tip.style.left = Math.max(8, r.left + 12) + 'px';
+  tip.style.top = Math.max(60, r.top - tip.offsetHeight - 12) + 'px';
+  setTimeout(()=>tip.remove(), 9000);
+}
+function updateGhost(){
+  if (!ghostable()){ killGhost(); return; }
+  const sol=L[idx].sol, v=edEl.value;
+  if ((typedThisLesson && edEl.selectionStart!==v.length) || !sol.startsWith(v) || v.length>=sol.length){ killGhost(); return; }
+  /* before the first keystroke, only the first couple of letters - enough to show how to START */
+  const m = sol.slice(v.length).match(typedThisLesson ? /^\s*\S+/ : /^\s*\S{1,3}/);
+  const target = m ? m[0] : sol.slice(v.length);
+  if (target!==ghostTarget){ ghostTarget=target; ghostRevealed=0; }
+  if (!ghostTimer){
+    ghostTimer=setInterval(()=>{
+      if (ghostRevealed<ghostTarget.length){ ghostRevealed++; if(ghostRevealed===1) ghostTip(); syncHl(); }
+      else { clearInterval(ghostTimer); ghostTimer=null; }
+    }, 34);
+  }
+}
 edEl.addEventListener('input', ()=>{
   if (sandbox){ syncHl(); errEl.innerHTML=''; outEl.srcdoc = edEl.value; try{localStorage.setItem('sandboxCode', edEl.value);}catch(e){} return; }
   if (duckLine>-1) duckEnd(false);
+  typedThisLesson = true;
+  updateGhost();
   syncHl(); errEl.innerHTML='';
   outEl.srcdoc = buildDoc(L[idx], edEl.value);
   if (graded) previewOnly();
@@ -2978,6 +3039,7 @@ edEl.addEventListener('paste', (e)=>{
 });
 edEl.addEventListener('scroll', ()=>{ hlEl.scrollTop = edEl.scrollTop; hlEl.scrollLeft = edEl.scrollLeft; errEl.scrollTop = edEl.scrollTop; errEl.scrollLeft = edEl.scrollLeft; });
 edEl.addEventListener('keydown', (e)=>{
+  if (!sandbox && ghostRevealed>0 && (e.key.length===1 || e.key==='Enter' || e.key==='Tab')) assistedKeys++;
   if ((e.ctrlKey || e.metaKey) && e.key === 'Enter'){ e.preventDefault(); $('#btnRun').click(); return; }
   if (e.key === 'Tab'){ e.preventDefault();
     const s = edEl.selectionStart;
@@ -3034,8 +3096,8 @@ $('#duckDone').onclick = ()=>duckEnd(true);
 $('#btnRun').onclick = ()=>{ if(sandbox){ syncHl(); outEl.srcdoc = edEl.value; } else runCheck(); };
 $('#btnHelp').onclick = ()=>{ if(!sandbox){ statusEl.className=''; statusEl.innerHTML = '💡 ' + L[idx].hint; } };
 $('#btnLead').onclick = ()=>{ if(!sandbox) giveLead(); };
-$('#btnSol').onclick  = ()=>{ if(!sandbox){ solShown = true; edEl.value = L[idx].sol; runCheck(); } };
-$('#btnReDo').onclick = ()=>{ if(sandbox){ edEl.value = SANDBOX_START; outEl.srcdoc = edEl.value; } else { edEl.value = L[idx].start; leadStep=0; solShown=false; runCheck(); } };
+$('#btnSol').onclick  = ()=>{ if(!sandbox){ solShown = true; killGhost(); edEl.value = L[idx].sol; runCheck(); } };
+$('#btnReDo').onclick = ()=>{ if(sandbox){ edEl.value = SANDBOX_START; outEl.srcdoc = edEl.value; } else { edEl.value = L[idx].start; leadStep=0; solShown=false; assistedKeys=0; if(ghostLap){ ghostOn=false; ghostLap=false; } killGhost(); runCheck(); } };
 btnNext.onclick = ()=>{ const p=ORDER.indexOf(idx); if (p>-1 && p<ORDER.length-1) loadLesson(ORDER[p+1]); };
 $('#remindHide').onclick = ()=>{ remindBox.style.display='none'; try{localStorage.setItem('remindHidden','1');}catch(e){} };
 $('#btnReplay').onclick = ()=>{

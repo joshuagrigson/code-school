@@ -2515,7 +2515,7 @@ function runCheck(){
     btnNext.style.display = 'none';
     return;
   }
-  if (res.ok && !done.has(idx) && !L[idx].chal && !L[idx].pract && !L[idx].proj && assistedKeys >= 12){
+  if (res.ok && !L[idx].chal && !L[idx].proj && assistedKeys >= 12 && !(L[idx].pract ? practDone.has(idx) : done.has(idx))){
     statusEl.innerHTML = '✓ ' + 'That was the guided lap &mdash; the faint text typed along with you. Hit <b>↺ Start over</b> and run it solo: the ✓ (and the XP) go to your fingers. You just typed the whole thing once, so the second lap is faster than you think.';
     btnNext.style.display = 'none';
     ghostLap = true;
@@ -2830,9 +2830,7 @@ function loadLesson(i){
     $('#scLabel').textContent = les.lang==='css' ? 'The page you are styling (already on the page — you write only the CSS)' : 'The page your JavaScript controls (already on the page)';
     $('#scPre').innerHTML = hlHTML(les.html);
   } else { sc.style.display='none'; }
-  edEl.placeholder = les.lang==='html' ? 'Type your HTML here - the page below updates with every keystroke'
-    : les.lang==='css' ? 'Type your CSS rules here - the page below re-dresses as you type'
-    : 'Type your JavaScript here - remember: screen.textContent = shows things';
+  edEl.placeholder = phFor(les.lang);
   edEl.value = les.start;
   if (duckLine>-1) duckEnd(false);
   updateGhost();
@@ -2980,11 +2978,17 @@ function openSandbox(){
    correct answers stay first-class. A green earned with real assistance is a
    guided lap - the tick waits for the solo lap. ---------------------------- */
 function ghostable(){
-  return !sandbox && !sensei && L[idx] && !L[idx].chal && !L[idx].proj && !L[idx].pract
-      && !L[idx].title.includes('Review') && !done.has(idx) && !solShown && ghostOn;
+  if (sandbox || sensei || !L[idx] || L[idx].chal || L[idx].proj || solShown || !ghostOn) return false;
+  return !(L[idx].pract ? practDone.has(idx) : done.has(idx));
+}
+function phFor(lang){
+  return lang==='html' ? 'Type your HTML here - the page below updates with every keystroke'
+    : lang==='css' ? 'Type your CSS rules here - the page below re-dresses as you type'
+    : 'Type your JavaScript here - remember: screen.textContent = shows things';
 }
 function killGhost(){
   if (ghostTimer){ clearInterval(ghostTimer); ghostTimer=null; }
+  if (!sandbox && L[idx]) edEl.placeholder = phFor(L[idx].lang);
   if (ghostTarget || ghostRevealed){ ghostTarget=''; ghostRevealed=0; syncHl(); }
 }
 function ghostTip(){
@@ -3007,6 +3011,7 @@ function updateGhost(){
   const m = sol.slice(v.length).match(typedThisLesson ? /^\s*\S+/ : /^\s*\S{1,3}/);
   const target = m ? m[0] : sol.slice(v.length);
   if (target!==ghostTarget){ ghostTarget=target; ghostRevealed=0; }
+  if (!v) edEl.placeholder='';
   if (!ghostTimer){
     ghostTimer=setInterval(()=>{
       if (ghostRevealed<ghostTarget.length){ ghostRevealed++; if(ghostRevealed===1) ghostTip(); syncHl(); }

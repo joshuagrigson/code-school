@@ -224,6 +224,9 @@ body.dark .wcard{background:var(--panel)}
 @keyframes tickpop{40%{transform:scale(1.7)}}
 .xpfloat{position:fixed;font-family:Menlo,Consolas,monospace;font-weight:bold;color:var(--accent);z-index:120;pointer-events:none;animation:xprise 1.2s ease forwards}
 .ghost{color:var(--soft);opacity:.55}
+#ghosttalk{display:none;font-size:.88rem;line-height:1.45;padding:8px 12px;border:1px solid var(--goodline);border-left:4px solid var(--goodline);border-radius:8px;background:var(--good);color:var(--ink)}
+#ghosttalk.on{display:block}
+#ghosttalk b{font-family:'JetBrains Mono',Consolas,monospace}
 .navtip{position:fixed;top:54px;left:0;max-width:290px;background:var(--panel);color:var(--ink);border:2px solid var(--accent);border-radius:10px;padding:11px 14px;font-size:.9rem;line-height:1.45;box-shadow:0 10px 30px rgba(0,0,0,.3);z-index:130;cursor:pointer}
 .navtip:after{content:'';position:absolute;top:-9px;left:24px;border:8px solid transparent;border-top:none;border-bottom-color:var(--accent)}
 @keyframes xprise{to{transform:translateY(-42px);opacity:0}}
@@ -291,6 +294,7 @@ button:focus-visible,.navitem:focus-visible,#ed:focus-visible,input:focus-visibl
       <div class="scaffold" id="scaffold"><div class="sclabel" id="scLabel"></div><pre id="scPre"></pre></div>
       <div id="duckbar"><span class="dk">🦆</span><span id="duckQ"></span><span class="dbtns"><button id="duckNext">Next line →</button><button id="duckDone">Done</button></span></div>
       <div class="edwrap"><pre id="hl"></pre><pre id="errlay"></pre><textarea id="ed" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea></div>
+      <div id="ghosttalk"></div>
       <div class="btnrow">
         <button id="btnRun" title="Run your code — the coach grades only when you press this (Ctrl+Enter works too)">▶ Run</button>
         <button id="btnHelp" title="A hint that points without telling">💡 Help me</button>
@@ -2287,7 +2291,7 @@ const edEl=$('#ed'), hlEl=$('#hl'), teachEl=$('#teach'), goalEl=$('#goal'), stat
       btnNext=$('#btnNext');
 
 let idx = 0, done = new Set(), tested = new Set(), leadStep = 0, sandbox = false, checkTimer = null, solShown = false;
-let ghostOn = true, ghostLap = false, ghostTarget = '', ghostRevealed = 0, ghostTimer = null, assistedKeys = 0, typedThisLesson = false;
+let ghostOn = true, ghostLap = false, ghostTarget = '', ghostRevealed = 0, ghostTimer = null, assistedKeys = 0, typedThisLesson = false, ghostFrom = 0;
 let chalDone = new Set(), projDone = new Set(), practDone = new Set(), msSeen = new Set(), edTheme = '', sensei = false, certName = '';
 let stk = {last:'', cur:0, best:0, xp:0};
 
@@ -2944,7 +2948,7 @@ function renderNav(){
 
 function loadLesson(i){
   sandbox = false; idx = i; leadStep = 0; solShown = false;
-  assistedKeys = 0; ghostOn = true; ghostLap = false; typedThisLesson = false; killGhost();
+  assistedKeys = 0; ghostOn = true; ghostLap = false; typedThisLesson = false; ghostFrom = 0; ghostSpoken = new Set(); ghostTalkOff(); killGhost();
   const les = L[i], g = GRADES.find(x=>x.id===les.g);
   teachEl.dataset.lv = g.lv;
   const gl = L.map((l,n)=>({l,n})).filter(x=>x.l.g===les.g);
@@ -3108,6 +3112,71 @@ function openSandbox(){
    moment their code stops matching the answer, the ghost steps aside: other
    correct answers stay first-class. A green earned with real assistance is a
    guided lap - the tick waits for the solo lap. ---------------------------- */
+/* ---- Ghost narration: REAL teaching during the guided lap. -----------------
+   Each time the learner types through a piece, this strip says what that piece
+   IS, what it DOES, and WHY it sits where it sits. Hand-written, first
+   occurrence per lesson only, silent when it has nothing true to say. ------ */
+const GT = {
+  'const':      ['const','you are making a named box whose contents never change','Declarations open the line &mdash; the box has to exist before anything can use it.'],
+  'let':        ['let','a named box whose contents ARE allowed to change','It opens the line like const &mdash; but let is a promise that this value will move later.'],
+  'function':   ['function','you are teaching the computer a named trick','It opens the recipe; the name and the ingredients follow it on the same line.'],
+  'return':     ['return','hands the result back to whoever called the trick','It lives INSIDE the braces &mdash; it is the trick&rsquo;s way of answering, not showing.'],
+  'if':         ['if','a fork in the road &mdash; the next block runs only when the test is true','It comes before the block it controls, with the test in round brackets.'],
+  'else':       ['else','the other road &mdash; what happens when the if test failed','It sits right after the if-block&rsquo;s closing brace, so the two roads touch.'],
+  'for':        ['for','a repeat &mdash; the block after it runs once per lap','It comes first so the computer knows the next block is a loop before entering it.'],
+  'of':         ['of','walks a list one item at a time','It sits between your item name and the list: for (const item OF list).'],
+  'while':      ['while','keep repeating for as long as the test stays true','The test rides in front so it is checked BEFORE every lap, including the first.'],
+  'typeof':     ['typeof','asks what species a value is','It goes directly in front of the thing it is asking about.'],
+  'scrtc':      ['screen.textContent','the words inside the screen box &mdash; writing here changes the page','It sits LEFT of the equals because it RECEIVES; whatever the right side makes lands on the page.'],
+  'mfloor':     ['Math.floor','rounds a number DOWN to a whole number','It wraps the randomness because it runs LAST &mdash; first the inside is worked out, then the chop.'],
+  'mrandom':    ['Math.random()','a fresh number between 0 and 1 every time','It sits innermost &mdash; its raw number is the ingredient everything else on the line cooks.'],
+  'clog':       ['console.log','writes a note to the browser console, for YOU not the user','It takes what to write inside its round brackets.'],
+  'getel':      ['document.getElementById','reaches into the page and grabs the ONE element wearing an id','It is how JavaScript gets a handle on something HTML built.'],
+  '=':          ['=','puts the value on the right into the name on the left','Left of it receives, right of it supplies &mdash; it always reads right-to-left.'],
+  ';':          [';','ends this instruction','Like a full stop &mdash; it tells the computer the thought is complete before the next line starts.'],
+  'str':        ['quotes','quoted text is WORDS to show, exactly as written &mdash; a string literal','No quotes would make it a name the computer tries to look up.'],
+  '[':          ['[ ]','square brackets &mdash; a list, or a numbered reach into one','Right after a name they PICK from it; after an equals they BUILD one.'],
+  ',':          [',','the separator','It marks where one item ends and the next begins &mdash; without it the computer reads one long word.'],
+  '+':          ['+','glue &mdash; joins pieces into one sentence, or adds numbers','It sits between every two pieces being joined; each junction needs its own +.'],
+  '*':          ['*','times &mdash; multiplication','Keyboards have no &times; key, so code borrows the star.'],
+  '(':          ['( )','round brackets &mdash; they hold what a trick is being given, or force what runs first','Whatever is inside finishes before the outside touches it.'],
+  '{':          ['{ }','curly braces &mdash; they fence off a block that belongs together','Everything inside belongs to the line that opened them.'],
+  'newbox':     ['','the name YOU chose for this box','From now on, typing it (no quotes) means &ldquo;whatever is inside&rdquo;.'],
+  'usebox':     ['','reading your box by its name','No quotes, so the computer swaps in what the box holds instead of the name itself.']
+};
+let ghostSpoken = new Set();
+function ghostSay(key, tokTxt){
+  if (ghostSpoken.has(key)) return false;
+  ghostSpoken.add(key);
+  const e=GT[key]; if (!e) return false;
+  const name = e[0] || tokTxt;
+  const el=document.getElementById('ghosttalk');
+  el.innerHTML = '&#128123; <b>'+hlEsc(name)+'</b> &mdash; '+e[1]+'. <span class="why">'+e[2]+'</span>';
+  el.classList.add('on');
+  return true;
+}
+function ghostTalk(consumed, before){
+  const toks = consumed.match(/screen\.textContent|Math\.floor|Math\.random|console\.log|document\.getElementById|'[^']*'|"[^"]*"|\b[A-Za-z_$][\w$]*\b|[=;,+*\[({]/g) || [];
+  for (const t of toks){
+    let key = null;
+    if (t==='screen.textContent') key='scrtc';
+    else if (t==='Math.floor') key='mfloor';
+    else if (t==='Math.random') key='mrandom';
+    else if (t==='console.log') key='clog';
+    else if (t==='document.getElementById') key='getel';
+    else if (/^['"]/.test(t)) key='str';
+    else if (GT[t]) key=t;
+    else if (/^[A-Za-z_$]/.test(t)){
+      if (new RegExp('(?:const|let|var|function)\\s+$').test(before + consumed.slice(0, consumed.indexOf(t)))) key='newbox';
+      else if (new RegExp('\\b(?:const|let|var|function)\\s+'+t+'\\b').test(before)) key='usebox';
+    }
+    if (key && ghostSay(key, t)) return;
+  }
+}
+function ghostTalkOff(){
+  const el=document.getElementById('ghosttalk');
+  el.classList.remove('on'); el.innerHTML='';
+}
 function ghostable(){
   if (sandbox || sensei || !L[idx] || L[idx].chal || L[idx].proj || solShown || !ghostOn) return false;
   return !(L[idx].pract ? practDone.has(idx) : done.has(idx));
@@ -3135,10 +3204,20 @@ function ghostTip(){
   setTimeout(()=>tip.remove(), 9000);
 }
 function updateGhost(){
-  if (!ghostable()){ killGhost(); return; }
+  if (!ghostable()){ ghostTalkOff(); killGhost(); return; }
   const sol=L[idx].sol, v=edEl.value;
-  if ((typedThisLesson && edEl.selectionStart!==v.length) || !sol.startsWith(v) || v.length>=sol.length){ killGhost(); return; }
+  if (typedThisLesson && sol.startsWith(v) && v.length>=sol.length){
+    /* lap complete - teach the final piece, leave the note standing */
+    if (v.length>ghostFrom) ghostTalk(sol.slice(ghostFrom, v.length), sol.slice(0, ghostFrom));
+    ghostFrom=v.length; killGhost(); return;
+  }
+  if ((typedThisLesson && edEl.selectionStart!==v.length) || !sol.startsWith(v)){ ghostTalkOff(); killGhost(); return; }
   /* before the first keystroke, only the first couple of letters - enough to show how to START */
+  /* a piece is complete when the caret sits on whitespace in the answer */
+  if (typedThisLesson && v.length>ghostFrom && /\s/.test(sol[v.length])){
+    ghostTalk(sol.slice(ghostFrom, v.length), sol.slice(0, ghostFrom));
+    ghostFrom=v.length;
+  }
   const m = sol.slice(v.length).match(typedThisLesson ? /^\s*\S+/ : /^\s*\S{1,3}/);
   const target = m ? m[0] : sol.slice(v.length);
   if (target!==ghostTarget){ ghostTarget=target; ghostRevealed=0; }

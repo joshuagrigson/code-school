@@ -176,7 +176,7 @@ body.sensei #btnTheme{border-color:#8a1c1c}
 @keyframes lookglow{0%,100%{box-shadow:0 0 0 0 rgba(0,0,0,0)}25%,75%{box-shadow:0 0 14px 4px var(--accent);border-color:var(--accent)}50%{box-shadow:0 0 4px 1px var(--accent)}}
 #btnTheme.glow{animation:lookglow 1s ease-in-out 3}
 .kitrow{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
-.kitrow button{font-family:inherit;font-size:.85rem;padding:8px 12px;border:2px solid var(--line);border-radius:8px;background:var(--panel);cursor:pointer}
+.kitrow button{font-family:inherit;font-size:.85rem;padding:8px 12px;border:2px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink);cursor:pointer}
 .kitrow button:disabled{opacity:.5;cursor:not-allowed}
 .edwrap.th-midnight,.edwrap.th-midnight #hl{background:#0d1b2a}
 .edwrap.th-midnight #ed{background:transparent}
@@ -202,7 +202,7 @@ body.sensei #btnTheme{border-color:#8a1c1c}
 #qaPanel{position:fixed;inset:auto 16px 16px auto;width:340px;max-height:70vh;background:var(--panel);border:2px solid var(--line);border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.15);display:none;flex-direction:column;overflow:hidden;z-index:50}
 #qaPanel.open{display:flex}
 #qaPanel .qhead{padding:8px 12px;background:var(--code);display:flex;align-items:center}
-#qaPanel .qhead button{margin-left:auto;border:none;background:none;cursor:pointer;font-size:1rem}
+#qaPanel .qhead button{margin-left:auto;border:none;background:none;cursor:pointer;font-size:1rem;color:var(--ink)}
 .qachip{display:block;width:100%;text-align:left;margin:6px 0;padding:8px 10px;font-family:inherit;font-size:.82rem;border:1px solid var(--line);border-radius:8px;background:var(--code);color:var(--ink);cursor:pointer;line-height:1.35}
 .qachip:hover{border-color:var(--accent)}
 #qaIn{border:none;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:8px 12px;font-family:inherit;font-size:.9rem;outline:none}
@@ -336,8 +336,8 @@ button:focus-visible,.navitem:focus-visible,#ed:focus-visible,input:focus-visibl
   <p style="font-size:.85rem;color:#6b6058">Experienced developer? <a href="https://github.com/joshuagrigson/code-school#for-skeptics" target="_blank" rel="noopener">Read the pedagogy, then view-source and judge us.</a> Reviews double as test-out exams (⚡).</p>
   <button id="wStart">Start Kindergarten &rarr;</button>
 </div></div>
-<div id="certOv"><div class="wcard"><div class="cert" id="certBody"></div><div id="certBtns" style="display:flex;gap:8px;margin-top:14px"><button id="certPrint" style="flex:1;background:var(--accent);color:#fff;border:none;font-family:inherit;font-size:1rem;padding:10px;border-radius:8px;cursor:pointer">🖨 Print / save as PDF</button><button id="certClose" style="flex:0 0 auto;border:2px solid var(--line);background:none;border-radius:8px;padding:10px 14px;cursor:pointer;font-family:inherit">Close</button></div></div></div>
-<div id="statsOv"><div class="wcard"><h2>Your stats</h2><div id="statsBody"></div><button id="statsClose" style="width:100%;margin-top:12px;border:2px solid var(--line);background:none;border-radius:8px;padding:10px;cursor:pointer;font-family:inherit">Close</button></div></div>
+<div id="certOv"><div class="wcard"><div class="cert" id="certBody"></div><div id="certBtns" style="display:flex;gap:8px;margin-top:14px"><button id="certPrint" style="flex:1;background:var(--accent);color:#fff;border:none;font-family:inherit;font-size:1rem;padding:10px;border-radius:8px;cursor:pointer">🖨 Print / save as PDF</button><button id="certClose" style="flex:0 0 auto;border:2px solid var(--line);background:none;border-radius:8px;padding:10px 14px;cursor:pointer;font-family:inherit;color:var(--ink)">Close</button></div></div></div>
+<div id="statsOv"><div class="wcard"><h2>Your stats</h2><div id="statsBody"></div><button id="statsClose" style="width:100%;margin-top:12px;border:2px solid var(--line);background:none;border-radius:8px;padding:10px;cursor:pointer;font-family:inherit;color:var(--ink)">Close</button></div></div>
 <div id="themeOv"><div class="wcard"><h2>🎨 Looks</h2><div id="themeList"></div><div id="senseiRow"></div><button id="themeClose" style="width:100%;margin-top:12px;border:2px solid var(--line);background:none;border-radius:8px;padding:10px;cursor:pointer;font-family:inherit;color:var(--ink)">Close</button></div></div>
 <div id="qaPanel">
   <div class="qhead"><b>Ask a question</b><button id="qaClose" aria-label="Close">&times;</button></div>
@@ -2952,7 +2952,9 @@ function renderNav(){
 }
 
 function loadLesson(i){
-  sandbox = false; idx = i; leadStep = 0; solShown = false;
+  sandbox = false; idx = i;
+  $('#btnSandbox').textContent = 'Free play';
+  $('#btnSandbox').title = 'An uncheckable scratch page - write anything, break nothing'; leadStep = 0; solShown = false;
   assistedKeys = 0; ghostOn = true; ghostLap = false; typedThisLesson = false; ghostFrom = 0; ghostSpoken = new Set(); ghostTalkOff(); killGhost();
   const les = L[i], g = GRADES.find(x=>x.id===les.g);
   teachEl.dataset.lv = g.lv;
@@ -3086,6 +3088,10 @@ function answer(q){
 const SANDBOX_START = '<h1>Free play<\/h1>\n<p>This page is all yours. No goals, no checks.<\/p>\n<button id="btn">A button<\/button>\n<p id="screen">a screen box<\/p>';
 function openSandbox(){
   sandbox = true;
+  ghostTalkOff(); killGhost();
+  document.querySelectorAll('.navtip').forEach(t=>t.remove());
+  $('#btnSandbox').textContent = '\u2190 Back to lessons';
+  $('#btnSandbox').title = 'Return to the lesson you were on';
   teachEl.dataset.lv = 2;
   const KITS=[
  {name:'Blank page', min:0, code:'<h1>Free play<\/h1>\n<p>All yours.<\/p>'},
@@ -3509,7 +3515,7 @@ document.addEventListener('keydown', (e)=>{
   if (e.key==='Escape'){ $('#qaPanel').classList.remove('open'); $('#themeOv').classList.remove('open'); const w=$('#welcome'); if (w.classList.contains('open')){ w.classList.remove('open'); try{localStorage.setItem('welcomed','1');}catch(x){} } }
   if ((e.ctrlKey||e.metaKey) && e.key==='Enter' && btnNext.style.display!=='none' && !sandbox){ e.preventDefault(); btnNext.click(); }
 });
-$('#btnSandbox').onclick = openSandbox;
+$('#btnSandbox').onclick = ()=>{ if (sandbox) loadLesson(idx); else openSandbox(); };
 teachEl.addEventListener('click', (e)=>{
   const kb = e.target.closest('[data-kit]');
   if (!kb || !sandbox || kb.disabled) return;

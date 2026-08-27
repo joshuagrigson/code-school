@@ -224,9 +224,14 @@ body.dark .wcard{background:var(--panel)}
 @keyframes tickpop{40%{transform:scale(1.7)}}
 .xpfloat{position:fixed;font-family:Menlo,Consolas,monospace;font-weight:bold;color:var(--accent);z-index:120;pointer-events:none;animation:xprise 1.2s ease forwards}
 .ghost{color:var(--soft);opacity:.55}
-#ghosttalk{display:none;font-size:.88rem;line-height:1.45;padding:8px 12px;border:1px solid var(--goodline);border-left:4px solid var(--goodline);border-radius:8px;background:var(--good);color:var(--ink)}
+#ghosttalk{display:none;font-size:1rem;line-height:1.5;padding:11px 14px;border:2px solid var(--goodline);border-left:6px solid var(--accent);border-radius:10px;background:var(--good);color:var(--ink);box-shadow:0 2px 10px rgba(0,0,0,.10)}
 #ghosttalk.on{display:block}
-#ghosttalk b{font-family:'JetBrains Mono',Consolas,monospace}
+#ghosttalk b{font-family:'JetBrains Mono',Consolas,monospace;font-size:1.02em}
+#ghosttalk .gtg{display:inline-block;margin-right:4px}
+#ghosttalk.pop{animation:gtpop .7s ease}
+#ghosttalk.pop .gtg{animation:gtwig .7s ease}
+@keyframes gtpop{0%{transform:translateY(5px);box-shadow:0 0 0 4px var(--accent)}55%{transform:none;box-shadow:0 0 0 2px var(--accent)}100%{box-shadow:0 2px 10px rgba(0,0,0,.10)}}
+@keyframes gtwig{0%,100%{transform:rotate(0)}25%{transform:rotate(-14deg) scale(1.25)}65%{transform:rotate(12deg) scale(1.15)}}
 .navtip{position:fixed;top:54px;left:0;max-width:290px;background:var(--panel);color:var(--ink);border:2px solid var(--accent);border-radius:10px;padding:11px 14px;font-size:.9rem;line-height:1.45;box-shadow:0 10px 30px rgba(0,0,0,.3);z-index:130;cursor:pointer}
 .navtip:after{content:'';position:absolute;top:-9px;left:24px;border:8px solid transparent;border-top:none;border-bottom-color:var(--accent)}
 @keyframes xprise{to{transform:translateY(-42px);opacity:0}}
@@ -3151,8 +3156,9 @@ function ghostSay(key, tokTxt){
   const e=GT[key]; if (!e) return false;
   const name = e[0] || tokTxt;
   const el=document.getElementById('ghosttalk');
-  el.innerHTML = '&#128123; <b>'+hlEsc(name)+'</b> &mdash; '+e[1]+'. <span class="why">'+e[2]+'</span>';
+  el.innerHTML = '<span class="gtg">&#128123;</span> <b>'+hlEsc(name)+'</b> &mdash; '+e[1]+'. <span class="why">'+e[2]+'</span>';
   el.classList.add('on');
+  el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
   return true;
 }
 function ghostTalk(consumed, before){
@@ -3234,7 +3240,8 @@ function updateGhost(){
       errEl.innerHTML = hlEsc(v.slice(0,p2)) + '<span class="redpen">' + hlEsc(tail) + '</span>\n';
       errEl.scrollTop = edEl.scrollTop; errEl.scrollLeft = edEl.scrollLeft;
       const el=document.getElementById('ghosttalk');
-      el.innerHTML = '&#128123; <b>Small detour</b> &mdash; ' + (detour==='case'
+      el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
+      el.innerHTML = '<span class="gtg">&#128123;</span> <b>Small detour</b> &mdash; ' + (detour==='case'
         ? 'capital letters matter here: this piece is <code>'+hlEsc(fullSol)+'</code>, and you typed <code>'+hlEsc(fullTyped)+'</code>. To the computer those are two different names. Fix the capital and I&rsquo;ll keep going.'
         : 'one letter is off: this piece is <code>'+hlEsc(fullSol)+'</code>, and you typed <code>'+hlEsc(fullTyped)+'</code>. Fix it and I&rsquo;ll keep going.');
       el.classList.add('on');

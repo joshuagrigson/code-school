@@ -3211,7 +3211,38 @@ function updateGhost(){
     if (v.length>ghostFrom) ghostTalk(sol.slice(ghostFrom, v.length), sol.slice(0, ghostFrom));
     ghostFrom=v.length; killGhost(); return;
   }
-  if ((typedThisLesson && edEl.selectionStart!==v.length) || !sol.startsWith(v)){ ghostTalkOff(); killGhost(); return; }
+  if (typedThisLesson && !sol.startsWith(v)){
+    /* A slip while following the ghost must not kill the lesson - the slip IS
+       the lesson. Case errors and one-letter typos become a live correction;
+       anything bigger is a deliberate different answer and gets its freedom. */
+    let p2=0; while (p2<v.length && p2<sol.length && v[p2]===sol[p2]) p2++;
+    const tail=v.slice(p2);
+    const swm=sol.slice(p2).match(/^\S+/); const sw=swm?swm[0]:'';
+    const cmp=sw.slice(0,tail.length);
+    /* quote whole words in the message - "textContent" beats "Content" */
+    let ws=p2; while (ws>0 && /\S/.test(sol[ws-1])) ws--;
+    const fullSol=(sol.slice(ws).match(/^\S+/)||[''])[0];
+    const fullTyped=v.slice(ws);
+    let detour=null;
+    if (tail && !/\s/.test(tail) && tail.length<=sw.length){
+      if (tail!==cmp && tail.toLowerCase()===cmp.toLowerCase()) detour='case';
+      else { let d=0; for (let i=0;i<tail.length;i++) if (tail[i].toLowerCase()!==cmp[i].toLowerCase()) d++; if (d===1 && tail.length>1) detour='typo'; }
+    }
+    if (detour){
+      if (ghostTimer){ clearInterval(ghostTimer); ghostTimer=null; }
+      ghostTarget=''; ghostRevealed=0; syncHl();
+      errEl.innerHTML = hlEsc(v.slice(0,p2)) + '<span class="redpen">' + hlEsc(tail) + '</span>\n';
+      errEl.scrollTop = edEl.scrollTop; errEl.scrollLeft = edEl.scrollLeft;
+      const el=document.getElementById('ghosttalk');
+      el.innerHTML = '&#128123; <b>Small detour</b> &mdash; ' + (detour==='case'
+        ? 'capital letters matter here: this piece is <code>'+hlEsc(fullSol)+'</code>, and you typed <code>'+hlEsc(fullTyped)+'</code>. To the computer those are two different names. Fix the capital and I&rsquo;ll keep going.'
+        : 'one letter is off: this piece is <code>'+hlEsc(fullSol)+'</code>, and you typed <code>'+hlEsc(fullTyped)+'</code>. Fix it and I&rsquo;ll keep going.');
+      el.classList.add('on');
+      return;
+    }
+    ghostTalkOff(); killGhost(); return;
+  }
+  if (typedThisLesson && edEl.selectionStart!==v.length){ killGhost(); return; }
   /* before the first keystroke, only the first couple of letters - enough to show how to START */
   /* a piece is complete when the caret sits on whitespace in the answer */
   if (typedThisLesson && v.length>ghostFrom && /\s/.test(sol[v.length])){
@@ -3233,8 +3264,8 @@ edEl.addEventListener('input', ()=>{
   if (sandbox){ syncHl(); errEl.innerHTML=''; outEl.srcdoc = edEl.value; try{localStorage.setItem('sandboxCode', edEl.value);}catch(e){} return; }
   if (duckLine>-1) duckEnd(false);
   typedThisLesson = true;
-  updateGhost();
   syncHl(); errEl.innerHTML='';
+  updateGhost();
   outEl.srcdoc = buildDoc(L[idx], edEl.value);
   if (graded) previewOnly();
 });

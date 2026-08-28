@@ -2392,7 +2392,14 @@ function buildDoc(les, code){
   else {
     body = les.html;
     const mr = les.g==='MR' ? MR_PRELUDE : '';
-    js = 'const screen=document.getElementById("screen");const btn=document.getElementById("btn");' + mr + '\ntry{\n' + safeJs(code) + '\n}catch(e){}';
+    /* Loop guard: an endless loop must not freeze and kill the preview - it
+       should SHOW the bug. Every loop body gets a lap counter; past 200000
+       laps the screen explains the classic mistake instead of dying. */
+    const guarded = safeJs(code).replace(/\b(for|while)\s*\(([^)]*)\)\s*\{/g,
+      '$& if(++__laps>200000){ __loopStop(); }');
+    js = 'const screen=document.getElementById("screen");const btn=document.getElementById("btn");'
+      + 'let __laps=0;function __loopStop(){ if(screen){ screen.textContent="\u26a0 This loop never ends - nothing inside it pushes it toward the exit. Check the KEEP-GOING test and the change step: does the change ever make the test false?"; } throw new Error("loop guard"); }'
+      + mr + '\ntry{\n' + guarded + '\n}catch(e){}';
   }
   let doc = '<!DOCTYPE html><html><head><meta charset="utf-8"><style>' + css + '</style></head><body>' + body;
   if (js) doc += '<scr'+'ipt>' + js + '<\/scr'+'ipt>';

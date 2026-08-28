@@ -232,6 +232,8 @@ body.dark .wcard{background:var(--panel)}
 .ghost{color:var(--soft);opacity:.55}
 .guidechip{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-weight:700;letter-spacing:.3px;background:var(--accent);color:#fff;border-radius:999px;padding:4px 12px;margin:0 0 8px;animation:gcpulse 1.8s ease infinite}
 .guide-now{outline:2px solid var(--accent);outline-offset:3px;border-radius:12px;animation:gopulse 1.8s ease infinite}
+.predcard.guide-now{outline-offset:-3px;border-radius:0}
+.predcard .guidechip{align-self:flex-start;margin:0}
 @keyframes gcpulse{0%,100%{box-shadow:0 0 0 0 rgba(15,157,110,.45)}50%{box-shadow:0 0 0 7px rgba(15,157,110,0)}}
 @keyframes gopulse{0%,100%{outline-color:var(--accent)}50%{outline-color:rgba(15,157,110,.25)}}
 .prevwrap{position:relative;box-shadow:0 2px 10px rgba(15,23,42,.08)}
@@ -267,6 +269,7 @@ body.dark .wcard{background:var(--panel)}
 .tracebox table{border-collapse:collapse;font-size:.86rem;width:100%;font-family:'JetBrains Mono',Consolas,monospace}
 .tracebox th,.tracebox td{border:1px solid var(--line);padding:3px 9px;text-align:left}
 .tracebox th{color:var(--soft);font-weight:400}
+.tracebox tr.cur td{background:var(--good);border-color:var(--goodline);font-weight:700}
 .tracebox .trbtns{margin-top:9px;display:flex;gap:8px}
 .tracebox .trbtns button{font-family:inherit;font-size:.85rem;padding:6px 13px;border:2px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink);cursor:pointer}
 .tracebox .trbtns .trstep{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700}
@@ -875,7 +878,7 @@ JL('Two things at once',
 /* ============================ GRADE 9 (37-40) ============================ */
 grade('G9', [
 JL('Doing it again and again',
- '<p>Computers never get bored. A <code>for</code> loop repeats instructions a set number of times:</p><pre>let out = \'\';\nfor (let i = 1; i <= 5; i = i + 1) {\n  out = out + i + \' \';\n}\nscreen.textContent = out;</pre><p>The three parts in the brackets: START (<code>let i = 1</code>), KEEP GOING WHILE (<code>i &lt;= 5</code>), AFTER EACH LAP (<code>i = i + 1</code>). Note <code>let</code> not <code>const</code>: let boxes are allowed to CHANGE, and loops change them every lap.</p>',
+ '<p>Computers never get bored. A <code>for</code> loop repeats instructions a set number of times:</p><pre>let out = \'\';\nfor (let i = 1; i <= 5; i = i + 1) {\n  out = out + i + \' \';\n}\nscreen.textContent = out;</pre><p>The three parts in the brackets: START (<code>let i = 1</code>), KEEP GOING WHILE (<code>i &lt;= 5</code>), AFTER EACH LAP (<code>i = i + 1</code>). Note <code>let</code> not <code>const</code>: let boxes are allowed to CHANGE, and loops change them every lap.</p><p>Two things here deserve naming. <b>What is <code>i</code>?</b> Just a box, like any other &mdash; it holds the lap number, and the loop changes it every lap. The name is pure tradition: short for <i>index</i>, and programmers have used it since the 1950s. You could call it <code>lap</code> and everything would still work.</p><p><b>And the quotes:</b> <code>\'\'</code> (nothing between them) is an EMPTY piece of text &mdash; a pile with zero characters, ready to build into. <code>\' \'</code> (one space between them) is a single quoted SPACE, glued after each number so they read &ldquo;1 2 3&rdquo; instead of squishing into &ldquo;123&rdquo;. The computer only puts spaces where you type them &mdash; so one is typed, inside quotes, every lap.</p>',
  'Use a for loop to build the text "1 2 3 4 5 " and show it.',
  '',
  'let out = \'\';\nfor (let i = 1; i <= 5; i = i + 1) {\n  out = out + i + \' \';\n}\nscreen.textContent = out;',
@@ -2258,6 +2261,9 @@ const GLOSS = {
  '!':['not','flips a true to false and a false to true'],
  '!==':['strictly not equal','the partner of === - true when the two things are NOT the same'],
  ',':['comma','the separator - between list items, function ingredients, and label: value pairs'],
+ 'i':['i - the counter','a box holding the lap number; the loop changes it every lap. The name is tradition - short for index - but any name works'],
+ "''":['empty quotes','a piece of text with ZERO characters - an empty pile to build into'],
+ "' '":['a quoted space','one space character in quotes - glued between pieces so they do not squish together'],
  'label':['label','quoted text you glue in front of a value so a human knows what it is - <code>\'Total: \' + 7</code> shows <code>Total: 7</code>. Real lingo: a string literal'],
  'label: value':['field label','the NAME of a compartment inside an object - <code>{ name: \'Josh\' }</code> has the field label <code>name</code>. Real lingo: a key. A different job from the label above']
 };
@@ -2287,6 +2293,9 @@ function decoderFor(les){
   if (les.lang==='js'){
     const ns = code.replace(/(['"`])(?:[^'"`\\]|\\.)*?\1/g, m=>' '.repeat(m.length));
     for (const [re,t] of JOPS){ if (re.test(ns)) push(t); }
+    if (/\b(?:for|while)\s*\([^)]*\bi\b/.test(code)) push('i');
+    if (/''/.test(code)) push("''");
+    if (/' '/.test(code)) push("' '");
   }
   if (!seen.length) return '';
   return '<div class="decoder"><b>What every piece means</b><table>' + seen.map(t=>
@@ -3373,12 +3382,12 @@ function ghostTalkOff(){
 /* ---- The footpath: walks the learner through the page's stations in order.
    A pulsing chip sits on the current activity; finishing it moves the chip to
    the next and glides it into view. It leads, it never gates. -------------- */
-let guideList=[], guideIdx=-1;
+let guideList=[], guideIdx=-1, guideDoneKinds=new Set();
 const GUIDE_LABEL={tryit:'Try the knob',shuf:'Do the warm-up',trace:'Watch it run',pred:'Make your prediction',ed:'Now type it for real'};
 function guideInit(){
   document.querySelectorAll('.guidechip').forEach(x=>x.remove());
   document.querySelectorAll('.guide-now').forEach(x=>x.classList.remove('guide-now'));
-  guideList=[]; guideIdx=-1;
+  guideList=[]; guideIdx=-1; guideDoneKinds=new Set();
   if (sandbox || done.has(idx)) return;
   teachEl.querySelectorAll('.shufbox,.tibox,.tracebox').forEach(el=>{
     guideList.push({el, kind: el.classList.contains('shufbox')?'shuf':el.classList.contains('tibox')?'tryit':'trace'});
@@ -3398,14 +3407,15 @@ function guideMark(scroll){
   g.el.classList.add('guide-now');
   const chip=document.createElement('div'); chip.className='guidechip';
   chip.innerHTML='&#128099; Step '+(guideIdx+1)+' of '+guideList.length+' &middot; '+GUIDE_LABEL[g.kind];
-  g.el.parentElement.insertBefore(chip, g.el);
+  if (g.kind==='pred') g.el.insertBefore(chip, g.el.firstChild);
+  else g.el.parentElement.insertBefore(chip, g.el);
   if (scroll){ try{ chip.scrollIntoView({behavior:'smooth', block:'center'}); }catch(e){} }
 }
 function guideDone(kind){
+  guideDoneKinds.add(kind);
   if (guideIdx<0) return;
-  const cur=guideList[guideIdx];
-  if (!cur || cur.kind!==kind) return;
-  guideIdx++;
+  if (!guideList[guideIdx] || !guideDoneKinds.has(guideList[guideIdx].kind)) return;
+  while (guideIdx<guideList.length && guideDoneKinds.has(guideList[guideIdx].kind)) guideIdx++;
   if (guideIdx>=guideList.length){ guideIdx=-1; guideMark(false); return; }
   guideMark(true);
 }
@@ -3806,8 +3816,13 @@ teachEl.addEventListener('click',(e)=>{
       const pre=document.getElementById('trcode');
       pre.innerHTML=tr.lines.map((l,k)=> (k===step.ln?'<b>':'<span data-tl="'+k+'">')+hlEsc(l)+(k===step.ln?'</b>':'</span>')).join('\n');
       const tb=document.getElementById('trbody');
-      tb.innerHTML += '<tr><td>'+(traceStep===0?'start':traceStep)+'</td>'+step.v.map(v=>'<td>'+hlEsc(v)+'</td>').join('')+'</tr>';
+      tb.querySelectorAll('tr').forEach(x=>x.classList.remove('cur'));
+      tb.innerHTML += '<tr class="cur"><td>'+(traceStep===0?'start':traceStep)+'</td>'+step.v.map(v=>'<td>'+hlEsc(v)+'</td>').join('')+'</tr>';
+      tb.lastElementChild.classList.add('cur');
       if (step.say){ document.getElementById('trsay').innerHTML=step.say; }
+      const sb=document.querySelector('.trstep');
+      if (traceStep>=tr.steps.length-1){ sb.style.display='none'; }
+      else sb.innerHTML='&#9654; Step ('+(traceStep+1)+' of '+tr.steps.length+')';
       if (step.out!=null){ const o=document.getElementById('trout'); o.style.display='block'; o.innerHTML='&#128421; Screen shows: <b>'+hlEsc(step.out)+'</b> &mdash; you just watched every lap that built it.'; guideDone('trace'); }
     }
     return;
@@ -3818,6 +3833,7 @@ teachEl.addEventListener('click',(e)=>{
     document.getElementById('trbody').innerHTML='';
     document.getElementById('trsay').innerHTML='Press <b>&#9654; Step</b> to run the first lap.';
     document.getElementById('trout').style.display='none';
+    const sb=document.querySelector('.trstep'); sb.style.display=''; sb.innerHTML='&#9654; Step';
     document.getElementById('trcode').innerHTML=tr.lines.map((l,k)=>'<span data-tl="'+k+'">'+hlEsc(l)+'</span>').join('\n');
   }
 });

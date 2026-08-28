@@ -271,6 +271,7 @@ body.dark .wcard{background:var(--panel)}
 .tracebox .trbtns button{font-family:inherit;font-size:.85rem;padding:6px 13px;border:2px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink);cursor:pointer}
 .tracebox .trbtns .trstep{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700}
 .tracebox .trout{margin-top:8px;font-size:.9rem;display:none}
+.tracebox .trsay{margin:0 0 10px;padding:8px 12px;border-left:4px solid var(--accent2);border-radius:8px;background:var(--panel);font-size:.92rem;line-height:1.5}
 #ghosttalk{display:none;font-size:1rem;line-height:1.5;padding:11px 14px;border:2px solid var(--goodline);border-left:6px solid var(--accent);border-radius:10px;background:var(--good);color:var(--ink);box-shadow:0 2px 10px rgba(0,0,0,.10)}
 #ghosttalk.on{display:block}
 #ghosttalk b{font-family:'JetBrains Mono',Consolas,monospace;font-size:1.02em}
@@ -738,7 +739,7 @@ JL('Waiting for a click',
 grade('G5', [
 JL('Sticking words together',
  '<p>The <code>+</code> sign glues words together:</p><pre>screen.textContent = \'Hello \' + \'Josh\';</pre><p>Here is the powerful part &mdash; you can glue quoted words to a BOX:</p><pre>const name = \'Josh\';\nscreen.textContent = \'Hello \' + name + \'!\';</pre><p>Quoted pieces appear exactly as written; unquoted box names are swapped for their contents. Mind the space inside <code>\'Hello \'</code> &mdash; the computer only puts spaces where you type them.</p>',
- 'Make a name box, then greet it by gluing quoted words + the box.',
+ 'Make a name box, then greet it by gluing quoted words + the box, like <code>\'Hello \'</code> + the box name.',
  '',
  'const name = \'Josh\';\nscreen.textContent = \'Hello \' + name + \'!\';',
  'The glued line mixes both kinds: <code>\'Hello \' + name</code> &mdash; quotes on the greeting, none on the box.',
@@ -794,7 +795,7 @@ JL('Teaching the computer a trick',
 
 JL('A trick with an ingredient',
  '<p>Tricks get powerful when they accept an <b>ingredient</b>. Name the ingredient inside the round brackets:</p><pre>function greet(person) {\n  screen.textContent = \'Hello \' + person + \'!\';\n}\n\ngreet(\'Josh\');</pre><p><code>person</code> is a temporary box that exists only inside the trick. Whatever you hand over in the call &mdash; <code>greet(\'Josh\')</code>, <code>greet(\'Mum\')</code> &mdash; lands in that box. One trick, endless uses.</p>',
- 'Teach a trick that takes an ingredient and uses it on screen, then call it with a value.',
+ 'Teach a trick that takes an ingredient and glues it after a quoted label like <code>\'Hello \'</code> on screen, then call it with a value.',
  '',
  'function greet(person) {\n  screen.textContent = \'Hello \' + person + \'!\';\n}\n\ngreet(\'Josh\');',
  'Put an ingredient name in the () of the function, use it (unquoted) inside, and hand a quoted value in the call.',
@@ -804,7 +805,7 @@ JL('A trick with an ingredient',
 
 JL('A trick that hands something back',
  '<p>Some tricks don’t show anything &mdash; they <b>work something out and hand it back</b>, using <code>return</code>:</p><pre>function double(number) {\n  return number * 2;\n}\n\nscreen.textContent = \'Answer: \' + double(5);</pre><p>The call <code>double(5)</code> gets REPLACED by what came back: 10. Big idea, worth carving in stone: <b>working something out is not the same as showing it.</b> return hands back; only screen.textContent shows.</p>',
- 'Teach a trick that returns a worked-out value, and SHOW the result on screen.',
+ 'Teach a trick that returns a worked-out value, and SHOW the result on screen glued after a label like <code>\'Answer: \'</code>.',
  '',
  'function double(number) {\n  return number * 2;\n}\n\nscreen.textContent = \'Answer: \' + double(5);',
  'The function body uses <code>return</code>; the screen line glues a label + the call.',
@@ -905,7 +906,7 @@ JL('Building a sentence in a loop',
 
 JL('Knowing when to stop',
  '<p>A <code>for</code> loop runs a set number of laps. A <code>while</code> loop runs “as long as something is true”:</p><pre>let pile = 10;\nlet bites = 0;\nwhile (pile > 0) {\n  pile = pile - 3;\n  bites = bites + 1;\n}\nscreen.textContent = \'Finished in \' + bites + \' bites.\';</pre><p><b>Warning, and it’s a real one:</b> if the condition can never become false, the loop never ends and the page freezes. Something inside the braces MUST push toward the exit &mdash; here, the pile shrinks every lap.</p>',
- 'Write a while loop that counts something down to zero, counting its laps, then show the count.',
+ 'Write a while loop that counts something down to zero, counting its laps, then show the count after a label like <code>\'Finished in \'</code>.',
  '',
  'let pile = 10;\nlet bites = 0;\nwhile (pile > 0) {\n  pile = pile - 3;\n  bites = bites + 1;\n}\nscreen.textContent = \'Finished in \' + bites + \' bites.\';',
  'Two let boxes; the while shrinks one and grows the other; the screen line comes AFTER the loop.',
@@ -1000,7 +1001,7 @@ JL('Changing what’s inside',
 grade('G12', [
 JL('The detective’s notebook',
  '<p>When code misbehaves, professionals don’t stare harder &mdash; they ask the program what it’s doing. <code>console.log()</code> writes notes to a hidden notebook (press F12 in a real browser &rarr; Console tab):</p><pre>const pick = Math.floor(Math.random() * 3);\nconsole.log(\'pick was:\', pick);\nscreen.textContent = \'Picked number \' + pick;</pre><p>The log is for YOU; the screen is for USERS. Sprinkle logs when confused, read them, delete them after. It is the single most-used debugging tool on Earth.</p>',
- 'Use console.log to note a value, AND still show a proper message on screen.',
+ 'Use console.log to note a value, AND still show a proper message on screen &mdash; a label like <code>\'Picked number \'</code> glued to the value.',
  '',
  'const pick = Math.floor(Math.random() * 3);\nconsole.log(\'pick was:\', pick);\nscreen.textContent = \'Picked number \' + pick;',
  'Two outputs: <code>console.log(\'label\', box)</code> for you, screen.textContent for the user.',
@@ -1020,7 +1021,7 @@ JL('Reading an error message',
 
 JL('Asking a value “what are you?”',
  '<p>Remember Grade 5: <code>\'4\'</code> and <code>4</code> are different species, and mixing them causes the Total: 43 bug. When unsure what species a box holds, ASK, with <code>typeof</code>:</p><pre>const mystery = \'4\';\nscreen.textContent = \'mystery is a \' + typeof mystery;</pre><p>It answers <code>string</code> (words), <code>number</code>, <code>boolean</code> (true/false), <code>object</code> (labelled boxes and lists), or <code>function</code>. Half of all confusing bugs dissolve the moment you check what type you actually have.</p>',
- 'Use typeof to show what species a box holds.',
+ 'Use typeof to show what species a box holds, glued after a label like <code>\'mystery is a \'</code>.',
  '',
  'const mystery = \'4\';\nscreen.textContent = \'mystery is a \' + typeof mystery;',
  'Glue a label &mdash; quoted text like <code>\'mystery is a \'</code> &mdash; onto <code>typeof boxName</code> on the screen line.',
@@ -1030,7 +1031,7 @@ JL('Asking a value “what are you?”',
 
 JL('Guarding the door',
  '<p>Real programs receive bad input constantly: empty answers, wrong types, nonsense. Professionals GUARD before they use:</p><pre>const name = \'\';\n\nif (name === \'\') {\n  screen.textContent = \'No name given &mdash; try again!\';\n} else {\n  screen.textContent = \'Welcome, \' + name + \'!\';\n}</pre><p>Check first, act second. Flip the box between <code>\'\'</code> and a real name to see both doors. Every login form, every payment page, every search box does exactly this before trusting what it was given.</p>',
- 'Write a guard: if a box is empty show a helpful complaint, else use it in a greeting.',
+ 'Write a guard: if a box is empty show a helpful complaint, else use it in a greeting like <code>\'Welcome, \'</code> + the box.',
  '',
  'const name = \'\';\n\nif (name === \'\') {\n  screen.textContent = \'No name given - try again!\';\n} else {\n  screen.textContent = \'Welcome, \' + name + \'!\';\n}',
  'The test is <code>name === \'\'</code> &mdash; three equals, two quotes with nothing between.',
@@ -1053,7 +1054,7 @@ JL('Names that tell the truth',
 
 JL('One job per trick',
  '<p>Second judgement call: each function does ONE job. Below, choosing and showing are tangled into one blob. Untangle it: <code>pickExcuse()</code> only chooses (returns), <code>showExcuse()</code> only displays.</p><pre>function doEverything() {\n  const pick = Math.floor(Math.random() * excuseList.length);\n  screen.textContent = \'Your excuse: \' + excuseList[pick];\n}\ndoEverything();</pre><p>Why bother? Because next month you’ll want the same picker for a DIFFERENT display &mdash; and one-job functions recombine like LEGO, while blobs must be rewritten.</p>',
- 'Split into pickExcuse (returns a choice) and showExcuse (displays it), then use both.',
+ 'Split into pickExcuse (returns a choice) and showExcuse (displays it after a label like <code>\'Your excuse: \'</code>), then use both.',
  'const excuseList = [\'My dog ate it\', \'Aliens\', \'I overslept\'];\n\nfunction doEverything() {\n  const pick = Math.floor(Math.random() * excuseList.length);\n  screen.textContent = \'Your excuse: \' + excuseList[pick];\n}\ndoEverything();',
  'const excuseList = [\'My dog ate it\', \'Aliens\', \'I overslept\'];\n\nfunction pickExcuse() {\n  const pick = Math.floor(Math.random() * excuseList.length);\n  return excuseList[pick];\n}\n\nfunction showExcuse(excuse) {\n  screen.textContent = \'Your excuse: \' + excuse;\n}\n\nshowExcuse(pickExcuse());',
  'pickExcuse ends in return; showExcuse takes an ingredient and touches the screen; the last line feeds one into the other.',
@@ -1129,7 +1130,7 @@ HL('Your app on their phone',
 
 JL('Protect the bag',
  '<p>The moment strangers use your page, you hold two treasures: their trust and your reputation. Lose either and the money stops. Three renegade security rules, all of which you already met in this course:</p><p><b>1) Guard every door.</b> Never trust what users type (Grade 12). A signup that accepts garbage fills your list with junk and your inbox with bounce-backs.</p><p><b>2) Never ship secrets.</b> Anything in your page&rsquo;s code &mdash; HTML, CSS, JS &mdash; is readable by anyone with right-click&rarr;Inspect. Passwords, API keys, and customer lists live on a server, never in the page. (Ask the question box about &ldquo;never trust client&rdquo; &mdash; it is the most expensive lesson in software, and you get it free.)</p><p><b>3) Collect only what you can protect.</b> Every piece of customer data you store is a liability with your name on it. The less you hold, the less can leak &mdash; and as a public builder, keep your OWN address and personal details out of your pages too (the doxing rules apply double to people with customers).</p><p>Practice rule 1: guard a signup so junk cannot get in.</p>',
- 'Guard the signup: if the email box is empty OR has no @ sign, complain helpfully; otherwise confirm.',
+ 'Guard the signup: if the email box is empty OR has no @ sign, complain helpfully; otherwise confirm with a label like <code>\'Welcome aboard, \'</code> + the email.',
  'const email = \'joshexample.com\';\n',
  'const email = \'joshexample.com\';\n\nif (email === \'\' || !email.includes(\'@\')) {\n  screen.textContent = \'That email looks wrong - check it and try again.\';\n} else {\n  screen.textContent = \'Welcome aboard, \' + email + \'!\';\n}',
  'Two tests joined by || : empty (=== \'\') or missing @ (!email.includes(\'@\')). Flip the box&rsquo;s value to test both doors.',
@@ -1243,7 +1244,7 @@ REV('G7','js',
 
 REV('G8','js',
  REV_INTRO+'<p>Grade 8 in one breath:</p><ul><li><code>if (test) { }</code> — first true door wins.</li><li><code>else</code> guarantees one branch always runs.</li><li><code>else if</code> chains more doors; order matters.</li><li><code>&amp;&amp;</code> both, <code>||</code> either.</li></ul><p>Combine with Grade 7: a function that DECIDES and returns.</p>',
- 'Teach rateScore(score): returns \'gold\' above 8, \'silver\' above 5, otherwise \'keep practicing\'. Show one call.',
+ 'Teach rateScore(score): returns \'gold\' above 8, \'silver\' above 5, otherwise \'keep practicing\'. Show one call on screen, glued after a label like <code>\'Result: \'</code>.',
  '',
  'function rateScore(score) {\n  if (score > 8) {\n    return \'gold\';\n  } else if (score > 5) {\n    return \'silver\';\n  } else {\n    return \'keep practicing\';\n  }\n}\n\nscreen.textContent = \'Result: \' + rateScore(7);',
  'An if / else if / else ladder inside the function, each branch returning; then show a call. Test 9, 7, and 3.',
@@ -1296,7 +1297,7 @@ REV('G11','js',
 })();
 REV('G12','js',
  REV_INTRO+'<p>Grade 12 in one breath:</p><ul><li><code>console.log</code> is your detective notebook.</li><li>Errors are handrails — read the last line first.</li><li><code>typeof</code> asks a value what species it is.</li><li>Guard before you use: check, then act.</li></ul>',
- 'Write a guard that logs the value AND its typeof, shows a complaint if the box is empty, otherwise shows a welcome.',
+ 'Write a guard that logs the value AND its typeof, shows a complaint if the box is empty, otherwise shows a welcome like <code>\'Welcome, \'</code> + the box.',
  'const username = \'\';\n',
  'const username = \'\';\nconsole.log(\'username is:\', username, typeof username);\n\nif (username === \'\') {\n  screen.textContent = \'No username given - try again!\';\n} else {\n  screen.textContent = \'Welcome, \' + username + \'!\';\n}',
  'One console.log line using typeof, then the empty-string guard with different messages per branch. Flip the box value to test both doors.',
@@ -1417,7 +1418,7 @@ PRACT('G5','js','honest math','<p>The trap from Grade 5, once more with feeling.
  'screen.textContent = \'Sum: \' + (12 + 8);','Brackets force the math first.',
  (c)=> hasRe(c,/\(\s*12\s*\+\s*8\s*\)/)
    ? {ok:true,msg:'Sum: 20. The trap will never catch you again.'} : {ok:false,msg:'Wrap the numbers: (12 + 8).'}),
-PRACT('G6','js','grab the last one','<p>Reaching the last item without knowing how many there are.</p><p>Counting starts at zero, so the last slot is always one less than the length. Hard-coding a number works today and breaks the moment the list changes; <code>list.length - 1</code> never does.</p><p><b>Done looks like:</b> the final item shown, with no fixed number typed anywhere.</p>','Show the LAST item using list.length - 1 (not a hard-coded number).','const queue = [\'Ana\', \'Bo\', \'Cy\', \'Dee\'];\n',
+PRACT('G6','js','grab the last one','<p>Reaching the last item without knowing how many there are.</p><p>Counting starts at zero, so the last slot is always one less than the length. Hard-coding a number works today and breaks the moment the list changes; <code>list.length - 1</code> never does.</p><p><b>Done looks like:</b> the final item shown, with no fixed number typed anywhere.</p>','Show the LAST item using list.length - 1 (not a hard-coded number), glued after a label like <code>\'Last in line: \'</code>.','const queue = [\'Ana\', \'Bo\', \'Cy\', \'Dee\'];\n',
  'const queue = [\'Ana\', \'Bo\', \'Cy\', \'Dee\'];\nscreen.textContent = \'Last in line: \' + queue[queue.length - 1];','The address of the end: queue[queue.length - 1].',
  (c)=> hasRe(c,/\w+\s*\[\s*\w+\.length\s*-\s*1\s*\]/)
    ? {ok:true,msg:'Add ten more names — same line still finds the end. Code that adapts beats code that counts.'} : {ok:false,msg:'Use queue[queue.length - 1], not a hard-coded position.'}),
@@ -1447,7 +1448,7 @@ PRACT('G11','js','team total','<p>Three skills in one rep: loop a list, reach in
  'const team = [\n  { name: \'Sam\', points: 12 },\n  { name: \'Alex\', points: 9 },\n  { name: \'Jo\', points: 15 }\n];\nlet total = 0;\nfor (const p of team) {\n  total = total + p.points;\n}\nscreen.textContent = \'Team total: \' + total;','Start total at 0; each lap add p.points; show after the loop.',
  (c)=> all(c,[[/let\s+\w+\s*=\s*0/,'A total starting at 0, outside the loop'],[/for\s*\(\s*const\s+\w+\s+of\s+\w+\s*\)/,'A <code>for ... of</code> over the team'],[/\.points\b/,'A dot-read of each member&rsquo;s <code>.points</code>'],[/screen\.textContent\s*=/,'AFTER the loop, the labeled total on screen']])
    ? {ok:true,msg:'36 points, totaled by machine. Every leaderboard sum is this exact loop.'} : {ok:false,msg:'Numeric accumulator + for...of + adding p.points each lap.'}),
-PRACT('G12','js','type detective','<p><code>typeof</code>, drilled on a deliberately mixed bag.</p><p>Two values can look identical on screen and still be different species &mdash; quotes make text, and text will not do maths. Asking directly is how you settle it instead of guessing.</p><p><b>Done looks like:</b> both species named in one sentence, and they will not match.</p>','Show the typeof BOTH boxes, glued into one sentence with quoted labels between them.','const a = \'42\';\nconst b = 42;\n',
+PRACT('G12','js','type detective','<p><code>typeof</code>, drilled on a deliberately mixed bag.</p><p>Two values can look identical on screen and still be different species &mdash; quotes make text, and text will not do maths. Asking directly is how you settle it instead of guessing.</p><p><b>Done looks like:</b> both species named in one sentence, and they will not match.</p>','Show the typeof BOTH boxes, glued into one sentence with quoted labels between them, like <code>\'a is a \'</code>.','const a = \'42\';\nconst b = 42;\n',
  'const a = \'42\';\nconst b = 42;\nscreen.textContent = \'a is a \' + typeof a + \', b is a \' + typeof b;','Two typeof reads glued with labels - they will differ!',
  (c)=> (c.match(/typeof\s+\w+/g)||[]).length>=2 && hasRe(c,/screen\.textContent\s*=/)
    ? {ok:true,msg:'Same-looking values, different species - and now you can prove it on demand.'} : {ok:false,msg:'Use typeof on BOTH boxes in one glued sentence.'}),
@@ -1614,7 +1615,7 @@ JL('Why halving wins',
 
 JL('Straight to the shelf',
  '<p>Searching is what you do when you do not know WHERE something is. If you do know, there is no search at all.</p><p><code>sortedNumbers[49]</code> hands you the fiftieth item <b>immediately</b> &mdash; not after 49 checks. The computer does arithmetic: start of the list, plus 49 slots, done. One step, whether the list holds ten items or ten million.</p><p>That is what an index really is: not a position to hunt for, but a <b>direct address</b>.</p>',
- 'Read sortedNumbers[49] straight out with ONE step() and show it on screen.',
+ 'Read sortedNumbers[49] straight out with ONE step() and show it after a label like <code>\'Item 49 is \'</code>.',
  '',
  'step();\nconst value = sortedNumbers[49];\nscreen.textContent = \'Item 49 is \' + value + \' — found in \' + steps + \' step\';',
  'One step(), one index read, one screen line gluing the value and the count.',
@@ -1623,7 +1624,7 @@ JL('Straight to the shelf',
 
 JL('The coat check',
  '<p>Lists are numbered. But most real data is looked up by <b>name</b>: a username, a product code, a phone owner.</p><p>Hand your coat to a coat check and you get a ticket. Nobody searches a rail of coats &mdash; the ticket IS the location. An object works the same way: <code>phone[\'Sam\']</code> goes straight to Sam, in about one step, no matter how many people are in there.</p><p>The real name for this trick is a <b>hash</b>: the computer turns the key text into a number, and that number is the shelf. This is why Grade 11 gave you objects &mdash; not for tidiness, for speed.</p>',
- 'Look up Sam in the phone object with ONE step(), and show the number.',
+ 'Look up Sam in the phone object with ONE step(), and show the number after a label like <code>\'Sam: \'</code>.',
  'const phone = { Ana: \'555-0101\', Ben: \'555-0102\', Sam: \'555-0103\' };\n',
  'const phone = { Ana: \'555-0101\', Ben: \'555-0102\', Sam: \'555-0103\' };\nstep();\nconst number = phone[\'Sam\'];\nscreen.textContent = \'Sam: \' + number + \' — found in \' + steps + \' step\';',
  'One step(), then phone[\'Sam\'] straight into a box, then one screen line.',
@@ -1659,7 +1660,7 @@ JL('Mirrors',
 
 JL('Pick the right tool',
  '<p>The whole grade in one decision. Somebody hands you a job; you choose the approach BEFORE writing it, and you can defend the choice with numbers:</p><table><tr><td>know the position</td><td>index read</td><td>1 step</td></tr><tr><td>know the name</td><td>object lookup</td><td>about 1 step</td></tr><tr><td>sorted list, hunting a value</td><td>binary search</td><td>a handful</td></tr><tr><td>unsorted list</td><td>one by one</td><td>the whole list, worst case</td></tr><tr><td>compare everything to everything</td><td>nested loops</td><td>size times size</td></tr></table><p>Here is the job: you have the phone object and you know the name. Take the cheapest route and prove it with the counter.</p>',
- 'Look up Cara in the phone object the cheap way (one step) and report the number AND the step count.',
+ 'Look up Cara in the phone object the cheap way (one step) and report the number AND the step count, like <code>\'Cara: \'</code> + the number.',
  'const phone = { Ana: \'555-0101\', Ben: \'555-0102\', Cara: \'555-0103\' };\n',
  'const phone = { Ana: \'555-0101\', Ben: \'555-0102\', Cara: \'555-0103\' };\nstep();\nconst number = phone[\'Cara\'];\nscreen.textContent = \'Cara: \' + number + \' — \' + steps + \' step, no search needed\';',
  'You know the name, so no loop belongs here at all: one step, one lookup, one sentence.',
@@ -1670,7 +1671,7 @@ JL('Pick the right tool',
 
 REV('MR','js',
  REV_INTRO+'<p>Machine Room in one breath:</p><ul><li><code>step()</code> counts work; measuring beats guessing.</li><li>One by one costs the whole list. Halving a <b>sorted</b> list costs a handful.</li><li>Ten times the data adds ONE step to a halving search.</li><li>An index or an object key is a direct address &mdash; about one step, always.</li><li>Loops inside loops multiply. That is the shape of slow.</li><li>A function may call itself, if it has a base case.</li></ul>',
- 'Search the names one by one for Dan (step, break), then report the name AND the steps in one screen line.',
+ 'Search the names one by one for Dan (step, break), then report the name AND the steps in one screen line, starting with a label like <code>\'Found \'</code>.',
  'const names = [\'Ana\', \'Ben\', \'Cara\', \'Dan\', \'Eve\'];\n',
  'const names = [\'Ana\', \'Ben\', \'Cara\', \'Dan\', \'Eve\'];\nlet found = \'\';\nfor (const name of names) {\n  step();\n  if (name === \'Dan\') {\n    found = name;\n    break;\n  }\n}\nscreen.textContent = \'Found \' + found + \' in \' + steps + \' steps\';',
  'A box to hold what you found, the loop with step() and break, then one screen line gluing the name and the count.',
@@ -1684,7 +1685,7 @@ PRACT('MR','js','count the laps','<p>Reps on the counter itself, before it is us
  (c)=> all(c,[[/for\s*\(\s*const\s+\w+\s+of\s+scores\s*\)/,'a <code>for ... of</code> over <code>scores</code>'],[/step\s*\(\s*\)/,'a <code>step()</code> inside the loop'],[/showSteps\s*\(/,'a <code>showSteps(...)</code> line']])
    ? {ok:true,msg:'Four scores, four steps.'} : {ok:false,msg:'Loop scores, step() each lap, showSteps.'});
 
-PRACT('MR','js','find it fast','<p>The same lookup, down the cheaper road.</p><p>When you already know the label, searching is wasted work. An object goes straight to the value in about one step, no matter how many entries sit beside it &mdash; the coat-check ticket, not a walk down the rail.</p><p><b>Done looks like:</b> the price on screen, and a count of one.</p>','Look up the price of bread in one step and show it with the count.',
+PRACT('MR','js','find it fast','<p>The same lookup, down the cheaper road.</p><p>When you already know the label, searching is wasted work. An object goes straight to the value in about one step, no matter how many entries sit beside it &mdash; the coat-check ticket, not a walk down the rail.</p><p><b>Done looks like:</b> the price on screen, and a count of one.</p>','Look up the price of bread in one step and show it with the count, after a label like <code>\'Bread costs \'</code>.',
  'const prices = { milk: 3, bread: 2, eggs: 4 };\n',
  'const prices = { milk: 3, bread: 2, eggs: 4 };\nstep();\nconst price = prices[\'bread\'];\nscreen.textContent = \'Bread costs \' + price + \' — \' + steps + \' step\';',
  'One step(), one key lookup, one screen line.',
@@ -3231,11 +3232,27 @@ const SHUF = {
 };
 const TRACE = {
  37:{lines:['let out = \'\';','for (let i = 1; i <= 5; i = i + 1) {','  out = out + i + \' \';','}','screen.textContent = out;'],vars:['i','out'],
-  steps:[{ln:0,v:['-','\'\'']},{ln:2,v:['1','\'1 \'']},{ln:2,v:['2','\'1 2 \'']},{ln:2,v:['3','\'1 2 3 \'']},{ln:2,v:['4','\'1 2 3 4 \'']},{ln:2,v:['5','\'1 2 3 4 5 \'']},{ln:4,v:['6 (test fails)','\'1 2 3 4 5 \''],out:'1 2 3 4 5'}]},
+  steps:[{ln:0,say:'Before the loop: <code>out</code> is created holding empty quotes &mdash; a pile to build into.',v:['-','\'\'']},
+   {ln:2,say:'Lap 1: the loop set <code>i</code> to 1, checked i &lt;= 5 (true), and GREW the pile: out = out + 1 + a space.',v:['1','\'1 \'']},
+   {ln:2,say:'Lap 2: same body, new i. The pile keeps everything it had and adds 2.',v:['2','\'1 2 \'']},
+   {ln:2,say:'Lap 3: notice out is never replaced &mdash; <code>out = out + ...</code> means grow, not overwrite.',v:['3','\'1 2 3 \'']},
+   {ln:2,say:'Lap 4: the loop does not care what is in the pile &mdash; it just runs the same two steps per lap.',v:['4','\'1 2 3 4 \'']},
+   {ln:2,say:'Lap 5: i is 5 and the test 5 &lt;= 5 still passes &mdash; equal counts as true for &lt;=.',v:['5','\'1 2 3 4 5 \'']},
+   {ln:4,say:'i became 6, the test 6 &lt;= 5 FAILED, the loop let go &mdash; and only THEN did the screen line run, showing the finished pile.',v:['6 (test fails)','\'1 2 3 4 5 \''],out:'1 2 3 4 5'}]},
  39:{lines:['const scores = [3, 9, 6, 10];','let out = \'\';','for (const s of scores) {','  if (s >= 6) {','    out = out + s + \' passed. \';','  } else {','    out = out + s + \' failed. \';','  }','}','screen.textContent = out;'],vars:['s','out'],
-  steps:[{ln:1,v:['-','\'\'']},{ln:6,v:['3','\'3 failed. \'']},{ln:4,v:['9','\'3 failed. 9 passed. \'']},{ln:4,v:['6','\'3 failed. 9 passed. 6 passed. \'']},{ln:4,v:['10','\'...6 passed. 10 passed. \'']},{ln:9,v:['(list done)','(full sentence)'],out:'3 failed. 9 passed. 6 passed. 10 passed.'}]},
+  steps:[{ln:1,say:'Before the loop: an empty pile to build the report into.',v:['-','\'\'']},
+   {ln:6,say:'Lap 1: <code>s</code> is 3. The if asked s &gt;= 6 &mdash; FALSE &mdash; so the ELSE road glued &ldquo;3 failed.&rdquo;',v:['3','\'3 failed. \'']},
+   {ln:4,say:'Lap 2: s is 9. This time the test PASSED, so the if road ran instead. Same loop, different door per item.',v:['9','\'3 failed. 9 passed. \'']},
+   {ln:4,say:'Lap 3: s is 6 &mdash; and 6 &gt;= 6 counts as true. Equal passes for &gt;=.',v:['6','\'3 failed. 9 passed. 6 passed. \'']},
+   {ln:4,say:'Lap 4: last item, same two-door choice. Every item got judged by the SAME rule.',v:['10','\'...6 passed. 10 passed. \'']},
+   {ln:9,say:'The list ran out, the loop ended, and the screen showed the sentence the laps built one piece at a time.',v:['(list done)','(full sentence)'],out:'3 failed. 9 passed. 6 passed. 10 passed.'}]},
  40:{lines:['let pile = 10;','let bites = 0;','while (pile > 0) {','  pile = pile - 3;','  bites = bites + 1;','}','screen.textContent = \'Finished in \' + bites + \' bites.\';'],vars:['pile','bites'],
-  steps:[{ln:0,v:['10','0']},{ln:4,v:['7','1']},{ln:4,v:['4','2']},{ln:4,v:['1','3']},{ln:4,v:['-2','4']},{ln:6,v:['-2 (test fails)','4'],out:'Finished in 4 bites.'}]}
+  steps:[{ln:0,say:'Before the loop: pile starts at 10, bites at 0. The while has not even looked yet.',v:['10','0']},
+   {ln:4,say:'Bite 1: the test pile &gt; 0 passed (10 is above 0), so the body ran: pile 10 &rarr; 7, bites 0 &rarr; 1.',v:['7','1']},
+   {ln:4,say:'Bite 2: the test is checked BEFORE every lap. 7 is still above 0, so in it goes again.',v:['4','2']},
+   {ln:4,say:'Bite 3: pile lands on 1. Here is the trap: 1 is STILL above 0&hellip;',v:['1','3']},
+   {ln:4,say:'Bite 4: &hellip;so one MORE bite runs, and pile crashes to &minus;2. This is the off-by-one everyone guesses wrong.',v:['-2','4']},
+   {ln:6,say:'Now the test finally fails (&minus;2 is not above 0), the loop lets go, and the screen reports 4 bites &mdash; not 3.',v:['-2 (test fails)','4'],out:'Finished in 4 bites.'}]}
 };
 let shufState=null, traceStep=-1, predsDone=new Set();
 try{ predsDone = new Set(JSON.parse(localStorage.getItem('preds'))||[]); }catch(e){}
@@ -3269,8 +3286,10 @@ function widgetsFor(i){
   const tr=TRACE[i];
   if (tr){
     traceStep=-1;
-    h+='<div class="tracebox" id="tracebox"><div class="tih">&#128269; The glass machine &mdash; watch it run</div>'
+    h+='<div class="tracebox" id="tracebox"><div class="tih">&#128269; The glass machine</div>'
+      +'<p style="margin:0 0 8px">This is the loop below, under glass. Each press of <b>&#9654; Step</b> runs exactly ONE lap and shows what every box holds after it &mdash; so you can SEE the loop think instead of imagining it.</p>'
       +'<pre id="trcode">'+tr.lines.map((l,k)=>'<span data-tl="'+k+'">'+hlEsc(l)+'</span>').join('\n')+'</pre>'
+      +'<div class="trsay" id="trsay">Press <b>&#9654; Step</b> to run the first lap.</div>'
       +'<table><thead><tr><th>lap</th>'+tr.vars.map(v=>'<th>'+hlEsc(v)+'</th>').join('')+'</tr></thead><tbody id="trbody"></tbody></table>'
       +'<div class="trout" id="trout"></div>'
       +'<div class="trbtns"><button class="trstep">&#9654; Step</button><button class="trreset">&#8634; Reset</button></div></div>';
@@ -3788,6 +3807,7 @@ teachEl.addEventListener('click',(e)=>{
       pre.innerHTML=tr.lines.map((l,k)=> (k===step.ln?'<b>':'<span data-tl="'+k+'">')+hlEsc(l)+(k===step.ln?'</b>':'</span>')).join('\n');
       const tb=document.getElementById('trbody');
       tb.innerHTML += '<tr><td>'+(traceStep===0?'start':traceStep)+'</td>'+step.v.map(v=>'<td>'+hlEsc(v)+'</td>').join('')+'</tr>';
+      if (step.say){ document.getElementById('trsay').innerHTML=step.say; }
       if (step.out!=null){ const o=document.getElementById('trout'); o.style.display='block'; o.innerHTML='&#128421; Screen shows: <b>'+hlEsc(step.out)+'</b> &mdash; you just watched every lap that built it.'; guideDone('trace'); }
     }
     return;
@@ -3796,6 +3816,7 @@ teachEl.addEventListener('click',(e)=>{
     const tr=TRACE[idx]; if (!tr) return;
     traceStep=-1;
     document.getElementById('trbody').innerHTML='';
+    document.getElementById('trsay').innerHTML='Press <b>&#9654; Step</b> to run the first lap.';
     document.getElementById('trout').style.display='none';
     document.getElementById('trcode').innerHTML=tr.lines.map((l,k)=>'<span data-tl="'+k+'">'+hlEsc(l)+'</span>').join('\n');
   }

@@ -6,13 +6,19 @@
 <title>Code Lab — K through College</title>
 <style>
 :root{
-  --bg:#edeae4; --panel:#f8f6f2; --ink:#2b2320; --soft:#655c53;
-  --line:#d9d2c6; --accent:#2f7d5c; --accent2:#1d5c8f; --warn:#b3542e;
-  --good:#e0efe6; --goodline:#94c9ad; --bad:#f7e9e3; --badline:#e3b8a6;
-  --code:#e8e4dc;
+  --bg:#eef1f5; --panel:#ffffff; --ink:#111827; --soft:#556270;
+  --line:#d8dee7; --accent:#0f9d6e; --accent2:#1d5c8f; --warn:#c2542e;
+  --good:#e2f3ec; --goodline:#8fd0b3; --bad:#faeae5; --badline:#e6b8a6;
+  --code:#e7ebf1; --sb:#c2cbd6; --sbh:#9aa8b8;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Georgia,'Times New Roman',serif;background:var(--bg);color:var(--ink);height:100vh;display:flex;flex-direction:column;overflow:hidden}
+*{scrollbar-width:thin;scrollbar-color:var(--sb) var(--bg)}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--sb);border-radius:8px;border:2px solid var(--bg);background-clip:padding-box}
+::-webkit-scrollbar-thumb:hover{background:var(--sbh);border:2px solid var(--bg);background-clip:padding-box}
+::-webkit-scrollbar-corner{background:var(--bg)}
+body{font-family:'Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;font-weight:500;background:var(--bg);color:var(--ink);height:100vh;display:flex;flex-direction:column;overflow:hidden}
 header{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:2px solid var(--line);flex:0 0 auto}
 header h1{font-size:1.1rem;letter-spacing:.5px}
 #progTxt{font-family:Menlo,Consolas,monospace;font-size:.85rem;color:var(--soft)}
@@ -52,17 +58,17 @@ body.navhid .scaffold{max-height:90px}
 .teach[data-lv="2"] p{font-size:.97rem}
 .teach code, .goalbox code, #qaOut code{font-family:Menlo,Consolas,monospace;background:var(--code);padding:1px 5px;border-radius:4px;font-size:.9em}
 .teach pre{background:var(--code);padding:10px 12px;border-radius:8px;margin:0 0 10px;overflow-x:auto;font-family:Menlo,Consolas,monospace;font-size:.88rem;line-height:1.5}
-.goalbox{flex:0 0 auto;background:#dcebf9;border:2px solid var(--accent2);border-left:6px solid var(--accent2);border-radius:10px;padding:12px 16px;font-size:1.05rem;line-height:1.45}
+.goalbox{flex:0 0 auto;background:#e3eefb;border:2px solid var(--accent2);border-left:6px solid var(--accent2);border-radius:12px;box-shadow:0 1px 6px rgba(15,23,42,.06);padding:12px 16px;font-size:1.05rem;line-height:1.45}
 .goalbox b{color:var(--accent2);font-size:1.05em;letter-spacing:.5px}
-.elders{margin:14px 0 0;background:#f3ecdd;border:1px solid #ddd0b4;border-left:5px solid #b08d4a;border-radius:8px;padding:10px 14px;font-size:.92rem;line-height:1.55}
+.elders{margin:14px 0 0;background:#f2f0ea;border:1px solid #ddd6c2;border-left:5px solid #b08d4a;border-radius:8px;padding:10px 14px;font-size:.92rem;line-height:1.55}
 .elders b.el{color:#8a6d33;font-size:.7rem;text-transform:uppercase;letter-spacing:1px;margin-right:6px}
-body.dark .elders{background:#2c2b29;border-color:#43413a}
+body.dark .elders{background:#24272d;border-color:#42474f}
 .realname{margin:14px 0 0;background:#eef3ee;border:1px solid #cfe0d4;border-left:5px solid var(--accent);border-radius:8px;padding:8px 14px;font-size:.92rem}
 details.ft{margin:10px 0;font-size:.9rem;color:var(--soft)}
 details.ft summary{cursor:pointer;font-size:.78rem;text-transform:uppercase;letter-spacing:1px;color:#a09488}
 details.ft p{margin:6px 0 0;line-height:1.5}
 .realname b{color:var(--accent);font-size:.7rem;text-transform:uppercase;letter-spacing:1px;margin-right:6px}
-.morebox{margin-top:18px;background:#f4f0e7;border:2px solid var(--line);border-radius:10px;padding:12px 16px}
+.morebox{margin-top:18px;background:#f2f4f7;border:2px solid var(--line);border-radius:10px;padding:12px 16px}
 .decoder{margin-top:18px;background:var(--panel);border:2px solid var(--line);border-left:5px solid var(--accent);border-radius:10px;padding:12px 16px}
 .decoder>b{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--soft);margin-bottom:8px}
 .decoder table{border-collapse:collapse;width:100%}
@@ -81,9 +87,9 @@ details.ft p{margin:6px 0 0;line-height:1.5}
 .gradbtn{display:inline-block;background:var(--accent);color:#fff;padding:10px 18px;border-radius:10px;text-decoration:none;font-size:1.05rem;margin:4px 0}
 .gradbtn:hover{background:var(--accent2)}
 .right{flex:1;display:flex;flex-direction:column;min-width:0;padding:10px;gap:8px}
-.remind{flex:0 0 auto;background:#fbf6da;border:2px solid #e8dfae;border-radius:10px;padding:6px 12px;font-size:.8rem;font-family:Menlo,Consolas,monospace;display:flex;gap:8px;align-items:center}
+.remind{flex:0 0 auto;background:#f6f4e4;border:2px solid #ded9b8;border-radius:10px;padding:6px 12px;font-size:.8rem;font-family:Menlo,Consolas,monospace;display:flex;gap:8px;align-items:center}
 .remind button{margin-left:auto;border:none;background:none;cursor:pointer;font-size:.75rem;color:var(--soft)}
-.edwrap{position:relative;flex:1;min-height:180px;background:#1e1e1e;border:2px solid var(--line);border-radius:10px;overflow:hidden}
+.edwrap{position:relative;flex:1;min-height:180px;background:#1e1e1e;border:2px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:0 2px 10px rgba(15,23,42,.10)}
 #ed,#hl,#errlay{position:absolute;inset:0;margin:0;border:none;padding:12px 14px;font-family:Menlo,Consolas,monospace;font-size:.95rem;line-height:1.55;white-space:pre;tab-size:2;overflow:auto}
 #errlay{color:transparent;background:transparent;pointer-events:none;overflow:hidden;z-index:1}
 #errlay .redpen{background:rgba(205,50,50,.22);border-radius:3px;text-decoration:underline wavy #d43c3c 2px;text-underline-offset:4px}
@@ -93,12 +99,12 @@ details.ft p{margin:6px 0 0;line-height:1.5}
 #ed::selection{background:rgba(38,79,120,.85);color:transparent}
 .t-k{color:#c586c0}.t-kw{color:#569cd6}.t-s{color:#ce9178}.t-n{color:#b5cea8}.t-c{color:#6a9955}.t-f{color:#dcdcaa}.t-t{color:#569cd6}.t-a{color:#9cdcfe}.t-p{color:#9cdcfe}.t-sel{color:#d7ba7d}
 .btnrow{flex:0 0 auto;display:flex;gap:8px;padding:8px 12px;background:var(--panel);border:2px solid var(--line);border-radius:10px;flex-wrap:wrap}
-.btnrow button, header .hbtn{font-family:inherit;font-size:.85rem;padding:6px 12px;border-radius:8px;border:2px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink)}
+.btnrow button, header .hbtn{font-family:inherit;font-size:.85rem;padding:7px 14px;border-radius:10px;border:2px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink)}
 .btnrow button:hover, header .hbtn:hover{border-color:var(--accent)}
 #btnRun{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700}
 #btnRun:hover{background:var(--accent2);border-color:var(--accent2)}
-#duckbar{display:none;align-items:center;gap:10px;padding:8px 12px;background:#f6edd2;border:2px solid var(--line);border-radius:10px;font-size:.88rem;line-height:1.4}
-body.dark #duckbar{background:#31302c;color:var(--ink)}
+#duckbar{display:none;align-items:center;gap:10px;padding:8px 12px;background:#eef3f8;border:2px solid var(--line);border-radius:10px;font-size:.88rem;line-height:1.4}
+body.dark #duckbar{background:#2a2f38;color:var(--ink)}
 #duckbar.on{display:flex}
 #duckbar .dk{font-size:1.3rem}
 #duckbar .dbtns{margin-left:auto;display:flex;gap:6px;flex:0 0 auto}
@@ -109,8 +115,8 @@ body.dark #duckbar{background:#31302c;color:var(--ink)}
 @keyframes npulse{50%{transform:scale(1.08);box-shadow:0 0 0 6px rgba(47,125,92,.25)}}
 #status{flex:0 0 auto;padding:9px 14px;font-size:.92rem;border:2px solid var(--line);border-radius:10px;background:var(--bad);border-color:var(--badline)}
 #status.ok{background:var(--good)}
-#status.wait{background:#f1ede6;color:var(--soft)}
-#status.coach{background:#fdf3d7;border-color:#e8d48a}
+#status.wait{background:#eef1f5;color:var(--soft)}
+#status.coach{background:#fdf6df;border-color:#e3d391}
 #status .wild{display:block;margin-top:5px;font-size:.85rem;color:var(--soft);border-top:1px dashed var(--goodline);padding-top:5px}
 .prevwrap{flex:0 0 33%;display:flex;flex-direction:column;border:2px solid var(--line);border-radius:10px;overflow:hidden}
 .prevlabel{flex:0 0 auto;font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--soft);padding:5px 12px;background:var(--code);display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--line)}
@@ -150,9 +156,9 @@ body.dark #duckbar{background:#31302c;color:var(--ink)}
 body.dark .navitem.pract{color:#b89fe0}
 .navitem.proj{color:#1d5c8f;font-weight:bold}
 body.dark .navitem.proj{color:#7db8e8}
-.brief{background:#f3ecdd;border:1px solid #ddd0b4;border-left:5px solid #b08d4a;border-radius:8px;padding:12px 16px;margin:12px 0}
+.brief{background:#f2f0ea;border:1px solid #ddd6c2;border-left:5px solid #b08d4a;border-radius:8px;padding:12px 16px;margin:12px 0}
 .brief>b{font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:#8a6d33;display:block;margin-bottom:6px}
-body.dark .brief{background:#2c2b29;border-color:#43413a}
+body.dark .brief{background:#24272d;border-color:#42474f}
 .pay{background:#eef3ee;border:1px solid #cfe0d4;border-left:5px solid var(--accent);border-radius:8px;padding:10px 14px;margin:12px 0;font-size:.92rem}
 body.dark .pay{background:#28332c;border-color:#3a4f40}
 #status.projlist{padding:10px 14px;max-height:34vh;overflow-y:auto}
@@ -209,13 +215,13 @@ body.sensei #btnTheme{border-color:#8a1c1c}
 #qaOut{padding:10px 12px;overflow-y:auto;font-size:.88rem;line-height:1.5}
 #qaOut p{margin-bottom:8px}
 .hint-on #status{background:#eef;border-color:#ccd}
-body.dark{--bg:#141516;--panel:#1c1d1f;--ink:#e2e2e3;--soft:#95989d;--line:#323336;--code:#262729;--good:#26382d;--goodline:#3a5c48;--bad:#3c2b28;--badline:#5c3d38}
-body.dark .goalbox{background:#2c3a47;border-color:#5b8cb8}
+body.dark{font-weight:400;--bg:#16181c;--panel:#1e2126;--ink:#e3e5e8;--soft:#9aa1a9;--line:#34393f;--code:#25292f;--sb:#31363d;--sbh:#454c56;--good:#22362c;--goodline:#40604f;--bad:#3d2c29;--badline:#63423a}
+body.dark .goalbox{background:#2a333d;border-color:#5f87a8}
 body.dark .goalbox b{color:#8fc1e8}
-body.dark #status.wait{background:#302e2c;color:var(--soft)}
-body.dark #status.coach{background:#373530;border-color:#555148}
-body.dark .remind{background:#34332f;border-color:#4a4942}
-body.dark .morebox{background:#2f2e2c}
+body.dark #status.wait{background:#23262c;color:var(--soft)}
+body.dark #status.coach{background:#2c2f38;border-color:#4d5361}
+body.dark .remind{background:#26292f;border-color:#42474f}
+body.dark .morebox{background:#22262c}
 body.dark .realname{background:#28332c;border-color:#3a4f40}
 body.dark #out{background:#fff}
 body.dark .wcard{background:var(--panel)}
@@ -224,6 +230,43 @@ body.dark .wcard{background:var(--panel)}
 @keyframes tickpop{40%{transform:scale(1.7)}}
 .xpfloat{position:fixed;font-family:Menlo,Consolas,monospace;font-weight:bold;color:var(--accent);z-index:120;pointer-events:none;animation:xprise 1.2s ease forwards}
 .ghost{color:var(--soft);opacity:.55}
+.prevwrap{position:relative;box-shadow:0 2px 10px rgba(15,23,42,.08)}
+.predcard{position:absolute;inset:0;z-index:5;background:var(--panel);display:flex;flex-direction:column;justify-content:center;gap:10px;padding:18px 22px;border-top:3px solid var(--accent)}
+.predcard .pq{font-size:1.05rem;font-weight:700}
+.predcard .pq small{display:block;font-weight:400;color:var(--soft);margin-top:2px}
+.predcard button.pc{font-family:'JetBrains Mono',Consolas,monospace;text-align:left;font-size:.95rem;padding:10px 14px;border:2px solid var(--line);border-radius:10px;background:var(--code);color:var(--ink);cursor:pointer}
+.predcard button.pc:hover{border-color:var(--accent)}
+.predcard .pc.hit{border-color:var(--goodline);background:var(--good)}
+.predcard .pc.miss{border-color:var(--badline);background:var(--bad)}
+.predcard .pwhy{font-size:.9rem;line-height:1.45}
+.predcard .prun{align-self:flex-start;font-family:inherit;font-size:.95rem;font-weight:700;padding:9px 16px;border:none;border-radius:9px;background:var(--accent);color:#fff;cursor:pointer}
+.tryit{margin:14px 0;padding:12px 14px;border:2px solid var(--line);border-left:6px solid var(--accent);border-radius:10px;background:var(--code)}
+.tryit .tih{font-size:.7rem;letter-spacing:1px;text-transform:uppercase;color:var(--soft);margin-bottom:8px}
+.tryit code.tic{display:block;font-size:.95rem;margin:8px 0;font-family:'JetBrains Mono',Consolas,monospace}
+.tryit input[type=range]{width:100%}
+.tryit .tiprev{background:#fffdf8;color:#2b2320;border:1px solid #ccc;border-radius:8px;padding:6px;margin-top:8px;overflow:hidden}
+.tryit .tisw{display:inline-block;width:30px;height:30px;border-radius:50%;border:3px solid transparent;cursor:pointer;margin-right:6px;vertical-align:middle}
+.tryit .tisw.cur{border-color:var(--ink)}
+.shufbox{margin:14px 0;padding:12px 14px;border:2px solid var(--line);border-left:6px solid #b3542e;border-radius:10px;background:var(--code)}
+.shufbox .tih{font-size:.7rem;letter-spacing:1px;text-transform:uppercase;color:var(--soft);margin-bottom:8px}
+.shufrow{display:flex;align-items:center;gap:8px;margin:5px 0;padding:6px 9px;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+.shufrow code{flex:1;font-size:.88rem;white-space:pre;overflow-x:auto;font-family:'JetBrains Mono',Consolas,monospace}
+.shufrow button{border:1px solid var(--line);background:none;color:var(--ink);border-radius:6px;cursor:pointer;font-size:.85rem;padding:2px 8px}
+.shufbox.won .shufrow{border-color:var(--goodline);background:var(--good)}
+.shufbox .shufmsg{margin-top:8px;font-size:.9rem;display:none}
+.shufbox.won .shufmsg{display:block}
+.shufbox.won .shufrow button{display:none}
+.tracebox{margin:14px 0;padding:12px 14px;border:2px solid var(--line);border-left:6px solid #1d5c8f;border-radius:10px;background:var(--code)}
+.tracebox .tih{font-size:.7rem;letter-spacing:1px;text-transform:uppercase;color:var(--soft);margin-bottom:8px}
+.tracebox pre{margin:0 0 10px;font-size:.88rem;line-height:1.5;overflow-x:auto}
+.tracebox pre b{background:var(--good);outline:2px solid var(--goodline);border-radius:4px;font-weight:400;display:inline-block;width:100%}
+.tracebox table{border-collapse:collapse;font-size:.86rem;width:100%;font-family:'JetBrains Mono',Consolas,monospace}
+.tracebox th,.tracebox td{border:1px solid var(--line);padding:3px 9px;text-align:left}
+.tracebox th{color:var(--soft);font-weight:400}
+.tracebox .trbtns{margin-top:9px;display:flex;gap:8px}
+.tracebox .trbtns button{font-family:inherit;font-size:.85rem;padding:6px 13px;border:2px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink);cursor:pointer}
+.tracebox .trbtns .trstep{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700}
+.tracebox .trout{margin-top:8px;font-size:.9rem;display:none}
 #ghosttalk{display:none;font-size:1rem;line-height:1.5;padding:11px 14px;border:2px solid var(--goodline);border-left:6px solid var(--accent);border-radius:10px;background:var(--good);color:var(--ink);box-shadow:0 2px 10px rgba(0,0,0,.10)}
 #ghosttalk.on{display:block}
 #ghosttalk b{font-family:'JetBrains Mono',Consolas,monospace;font-size:1.02em}
@@ -2962,7 +3005,7 @@ function loadLesson(i){
   const pos = gl.findIndex(x=>x.n===i);
   const op = ORDER.indexOf(i);
   const crumb = '<div class="crumb"><button id="crPrev" title="Previous lesson" aria-label="Previous lesson"'+(op<=0?' disabled':'')+'>&larr;</button><span>' + g.name + ' · ' + g.sub + ' — lesson ' + (pos+1) + ' of ' + gl.length + '</span><button id="crNext" title="Next lesson" aria-label="Next lesson"'+(op>=ORDER.length-1?' disabled':'')+'>&rarr;</button></div>';
-  teachEl.innerHTML = crumb + '<h2>' + les.title + '</h2>' + les.teach + decoderFor(les) + (RN[i] ? '<div class="realname"><b>Real name</b>' + RN[i] + '</div>' : '') + (MORE[i] ? '<div class="morebox"><b>More to chew on</b>' + MORE[i] + '</div>' : '') + (OLDS[i] ? '<div class="elders"><b class="el">📜 Lineage</b>' + OLDS[i] + '</div>' : '');
+  teachEl.innerHTML = crumb + '<h2>' + les.title + '</h2>' + les.teach + widgetsFor(i) + decoderFor(les) + (RN[i] ? '<div class="realname"><b>Real name</b>' + RN[i] + '</div>' : '') + (MORE[i] ? '<div class="morebox"><b>More to chew on</b>' + MORE[i] + '</div>' : '') + (OLDS[i] ? '<div class="elders"><b class="el">📜 Lineage</b>' + OLDS[i] + '</div>' : '');
   goalEl.innerHTML = '<b>DO THIS:</b> ' + les.goal;
   remindTxt.innerHTML = REMIND[les.lang];
   remindBox.style.display = localStorage.getItem('remindHidden')==='1' ? 'none' : 'flex';
@@ -2981,6 +3024,7 @@ function loadLesson(i){
   const cp=$('#crPrev'), cn=$('#crNext');
   if (cp) cp.onclick=()=>{ const o=ORDER.indexOf(idx); if (o>0) loadLesson(ORDER[o-1]); };
   if (cn) cn.onclick=()=>{ const o=ORDER.indexOf(idx); if (o>=0 && o<ORDER.length-1) loadLesson(ORDER[o+1]); };
+  predShow(i);
   const isChal = !!les.chal || !!les.proj;
   $('#btnHelp').style.display = isChal ? 'none' : '';
   $('#btnLead').style.display = isChal ? 'none' : '';
@@ -3116,6 +3160,119 @@ function openSandbox(){
 }
 
 /* wiring */
+
+/* ---- Brilliant-style interactive teaching ----------------------------------
+   Four mechanics, one law: the interaction itself teaches.
+   PRED  - commit to a prediction, then the machine settles it.
+   TRYIT - drag a knob, watch real code and the page respond together.
+   SHUF  - put scrambled solution lines in order (order IS the lesson).
+   TRACE - the glass machine: step a loop one lap at a time. ---------------- */
+const PRED = {
+ 25:{q:'What will the screen say?',ch:[
+  ['Hello Josh!',1,'The quoted glue supplies the space, and the bare name swaps in what the box holds.'],
+  ['HelloJosh!',0,'Tempting &mdash; but <code>\'Hello \'</code> carries a space inside its quotes. The computer only puts spaces where you type them, and one WAS typed.'],
+  ['Hello name!',0,'Tempting &mdash; but <code>name</code> has no quotes, so it is not the word &ldquo;name&rdquo;; it is the box, and the box holds Josh.']]},
+ 26:{q:'What will the screen say?',ch:[
+  ['Total: 43',0,'The classic trap &mdash; that is what happens WITHOUT the brackets: glue eats the numbers one at a time. The brackets change everything.'],
+  ['Total: 7',1,'The brackets force <code>(4 + 3)</code> to finish FIRST, so real math happens before any gluing.'],
+  ['Total: 4 + 3',0,'Tempting &mdash; but <code>4 + 3</code> has no quotes, so it is live math, not words to display.']]},
+ 27:{q:'The screen line asks for excuses[0]. What appears?',ch:[
+  ['My dog ate it',1,'Lists count from ZERO, so [0] is the first item. Every programmer trips on this exactly once.'],
+  ['Aliens took it',0,'That would be <code>excuses[1]</code> &mdash; the computer counts from zero, so [1] is the SECOND item.'],
+  ['My dog ate it, Aliens took it, I overslept',0,'That is what the WHOLE list looks like &mdash; but the [0] reaches in and takes exactly one.']]},
+ 31:{q:'double(7) returns number * 2. What will the screen say?',ch:[
+  ['Answer: 7',0,'Tempting &mdash; but the call <code>double(7)</code> is REPLACED by what it returns. The function ran and handed 14 back.'],
+  ['Answer: number * 2',0,'The formula never reaches the screen &mdash; it runs. <code>number</code> filled with 7, the math happened, 14 came back.'],
+  ['Answer: 14',1,'A call is swapped for its returned value: <code>double(7)</code> becomes 14 before the gluing happens.']]},
+ 34:{q:'score is 3, and the if asks: score > 5. What shows?',ch:[
+  ['Great score!',0,'That road only runs when the test is TRUE &mdash; but 3 &gt; 5 is false, so the computer walks the other road.'],
+  ['Keep practicing!',1,'3 &gt; 5 is false, so the <code>else</code> road runs. One test, two roads, exactly one taken.'],
+  ['Nothing at all',0,'The <code>else</code> guarantees SOMETHING always shows &mdash; that is its whole job.']]},
+ 35:{q:'temp is 15. Which door opens?',ch:[
+  ['Shorts weather',0,'That door needs temp &gt; 25 &mdash; 15 does not open it, so the computer keeps walking down.'],
+  ['Jacket weather',1,'The FIRST test that passes wins: 15 is not &gt; 25, but it IS &gt; 10 &mdash; and the rest get skipped.'],
+  ['Stay inside',0,'The bare <code>else</code> only runs when EVERY test above failed &mdash; but 15 &gt; 10 passed first.']]},
+ 37:{q:'The loop glues i and a space, 5 times. What shows?',ch:[
+  ['1 2 3 4 5',1,'Each lap glues the current i plus a space onto the pile: five laps, five numbers.'],
+  ['15',0,'Tempting &mdash; that would be true if it were ADDING numbers. But out started as text <code>\'\'</code>, so + glues instead.'],
+  ['5',0,'The loop does not replace out each lap &mdash; it GROWS it: <code>out = out + ...</code> keeps everything so far.']]},
+ 40:{q:'pile starts at 10, each bite takes 3. How many bites?',ch:[
+  ['3 bites',0,'After 3 bites the pile is at 1 &mdash; still above 0, so the while sends it back in for one more.'],
+  ['4 bites',1,'10 &rarr; 7 &rarr; 4 &rarr; 1 &rarr; -2. The pile has to actually REACH zero or below before the while lets go.'],
+  ['10 bites',0,'Each bite takes 3, not 1 &mdash; the loop runs while pile &gt; 0, shrinking by 3 a lap.']]},
+ 47:{q:'mood is changed AFTER being set. What shows?',ch:[
+  ['Josh is now sleepy',0,'Tempting &mdash; but the change line ran BEFORE the screen line. Code runs top to bottom; the screen reads what is there NOW.'],
+  ['Josh is now caffeinated',1,'Dot on the LEFT of = put a new value into the field. By the time the screen reads it, the change already happened.'],
+  ['Josh is now mood',0,'<code>person.mood</code> has no quotes &mdash; it is a reach into the object, not the word itself.']]},
+ 50:{q:"mystery holds '4' &mdash; in quotes. What does typeof say?",ch:[
+  ['mystery is a number',0,'It LOOKS like a number, but the quotes make it text. This exact confusion causes the Total: 43 bug.'],
+  ['mystery is a string',1,'Quotes decide: <code>\'4\'</code> is a string of characters that happens to look like a number.'],
+  ['mystery is a 4',0,'<code>typeof</code> answers with the SPECIES (string, number, boolean) &mdash; never the value itself.']]}
+};
+const TRYIT = {
+ 14:{kind:'sw',prop:'color',vals:['red','crimson','royalblue','seagreen','darkorange'],sel:'p',txt:'Click a colour and watch the CODE and the page change together.',html:'Tags are invisible instructions.'},
+ 15:{kind:'sw',prop:'background',vals:['lightyellow','lavender','mintcream','peachpuff','lightcyan'],sel:'body',txt:'Same rule, different property: the paper instead of the ink.',html:'The page behind the words.'},
+ 16:{kind:'sl',prop:'font-size',min:14,max:90,val:60,unit:'px',sel:'h1',txt:'Drag the knob. The number in the code IS the size on the page.',html:'My name is Josh'},
+ 17:{kind:'sl',prop:'padding',min:0,max:50,val:20,unit:'px',sel:'p',txt:'Watch the space grow INSIDE the box as the number climbs.',html:'Breathing room.',base:'background:mintcream;border:1px solid #9c9;'},
+ 18:{kind:'sl',prop:'border-radius',min:0,max:40,val:12,unit:'px',sel:'p',txt:'From sharp rectangle to pill — one number does it.',html:'Round my corners.',base:'border:3px solid darkgreen;padding:10px;'}
+};
+const SHUF = {
+ 29:{title:'Warm-up: the order IS the idea',lines:['function sayHello() {','  screen.textContent = \'Hello from my first function!\';','}','sayHello();'],done:'Teach first, call after &mdash; a call before the closing brace would be calling a half-taught trick. Now type it below.'},
+ 35:{title:'Warm-up: most demanding test first',lines:['if (temp > 25) {','  screen.textContent = \'Shorts weather\';','} else if (temp > 10) {','  screen.textContent = \'Jacket weather\';','} else {','  screen.textContent = \'Stay inside\';','}'],done:'The chain reads top to bottom and the FIRST open door wins &mdash; so the strictest test must come first. Now type it below.'},
+ 37:{title:'Warm-up: build the loop',lines:['let out = \'\';','for (let i = 1; i <= 5; i = i + 1) {','  out = out + i + \' \';','}','screen.textContent = out;'],done:'The pile is declared BEFORE the loop, grown INSIDE it, shown AFTER it. That shape is half of all real code. Now type it below.'},
+ 40:{title:'Warm-up: the while shape',lines:['let pile = 10;','let bites = 0;','while (pile > 0) {','  pile = pile - 3;','  bites = bites + 1;','}','screen.textContent = \'Finished in \' + bites + \' bites.\';'],done:'Boxes first, test up front, shrink inside, report after. Now type it below.'},
+ 51:{title:'Warm-up: guard first',lines:['if (name === \'\') {','  screen.textContent = \'No name given - try again!\';','} else {','  screen.textContent = \'Welcome, \' + name + \'!\';','}'],done:'The complaint comes FIRST &mdash; guards live at the door, not in the living room. Now type it below.'},
+ 53:{title:'Warm-up: one job per trick',lines:['function pickExcuse() {','  const pick = Math.floor(Math.random() * excuseList.length);','  return excuseList[pick];','}','function showExcuse(excuse) {','  screen.textContent = \'Your excuse: \' + excuse;','}','showExcuse(pickExcuse());'],done:'Pick, then show, then the stack that feeds one into the other. Small pieces, stacked. Now type it below.'}
+};
+const TRACE = {
+ 37:{lines:['let out = \'\';','for (let i = 1; i <= 5; i = i + 1) {','  out = out + i + \' \';','}','screen.textContent = out;'],vars:['i','out'],
+  steps:[{ln:0,v:['-','\'\'']},{ln:2,v:['1','\'1 \'']},{ln:2,v:['2','\'1 2 \'']},{ln:2,v:['3','\'1 2 3 \'']},{ln:2,v:['4','\'1 2 3 4 \'']},{ln:2,v:['5','\'1 2 3 4 5 \'']},{ln:4,v:['6 (test fails)','\'1 2 3 4 5 \''],out:'1 2 3 4 5'}]},
+ 39:{lines:['const scores = [3, 9, 6, 10];','let out = \'\';','for (const s of scores) {','  if (s >= 6) {','    out = out + s + \' passed. \';','  } else {','    out = out + s + \' failed. \';','  }','}','screen.textContent = out;'],vars:['s','out'],
+  steps:[{ln:1,v:['-','\'\'']},{ln:6,v:['3','\'3 failed. \'']},{ln:4,v:['9','\'3 failed. 9 passed. \'']},{ln:4,v:['6','\'3 failed. 9 passed. 6 passed. \'']},{ln:4,v:['10','\'...6 passed. 10 passed. \'']},{ln:9,v:['(list done)','(full sentence)'],out:'3 failed. 9 passed. 6 passed. 10 passed.'}]},
+ 40:{lines:['let pile = 10;','let bites = 0;','while (pile > 0) {','  pile = pile - 3;','  bites = bites + 1;','}','screen.textContent = \'Finished in \' + bites + \' bites.\';'],vars:['pile','bites'],
+  steps:[{ln:0,v:['10','0']},{ln:4,v:['7','1']},{ln:4,v:['4','2']},{ln:4,v:['1','3']},{ln:4,v:['-2','4']},{ln:6,v:['-2 (test fails)','4'],out:'Finished in 4 bites.'}]}
+};
+let shufState=null, traceStep=-1, predsDone=new Set();
+try{ predsDone = new Set(JSON.parse(localStorage.getItem('preds'))||[]); }catch(e){}
+function widgetsFor(i){
+  let h='';
+  const t=TRYIT[i];
+  if (t){
+    h+='<div class="tryit" data-ti="'+i+'"><div class="tih">&#127899; Try it &mdash; the code is live</div><p style="margin:0 0 6px">'+t.txt+'</p>';
+    if (t.kind==='sl'){
+      h+='<code class="tic">'+t.sel+' { '+t.prop+': <b class="tiv">'+t.val+'</b>'+t.unit+'; }</code>'
+        +'<input type="range" class="ti-r" min="'+t.min+'" max="'+t.max+'" value="'+t.val+'">'
+        +'<div class="tiprev"><div class="tiel" style="'+(t.base||'')+t.prop+':'+t.val+t.unit+'">'+t.html+'</div></div>';
+    } else {
+      h+='<code class="tic">'+t.sel+' { '+t.prop+': <b class="tiv">'+t.vals[0]+'</b>; }</code><div>'
+        +t.vals.map((v,k)=>'<span class="tisw'+(k===0?' cur':'')+'" data-v="'+v+'" style="background:'+v+'"></span>').join('')
+        +'</div><div class="tiprev"><div class="tiel" style="'+(t.prop==='background'?'padding:8px;':'')+t.prop+':'+t.vals[0]+'">'+t.html+'</div></div>';
+    }
+    h+='</div>';
+  }
+  const sh=SHUF[i];
+  if (sh && !done.has(i)){
+    const ord=sh.lines.map((_,k)=>k);
+    /* deterministic scramble that is never the answer */
+    for (let k=0;k<ord.length-1;k+=2){ const tmp=ord[k]; ord[k]=ord[k+1]; ord[k+1]=tmp; }
+    shufState={les:i, order:ord};
+    h+='<div class="shufbox" id="shufbox"><div class="tih">&#129513; '+sh.title+'</div>'
+      +'<p style="margin:0 0 8px">These are the answer&rsquo;s exact lines &mdash; scrambled. Use the arrows to put them in working order.</p>'
+      +ord.map((li,pos)=>'<div class="shufrow" data-li="'+li+'"><button class="shf-up" aria-label="Move up">&uarr;</button><button class="shf-dn" aria-label="Move down">&darr;</button><code>'+hlEsc(sh.lines[li])+'</code></div>').join('')
+      +'<div class="shufmsg">&#9989; <b>Order locked in.</b> '+sh.done+'</div></div>';
+  }
+  const tr=TRACE[i];
+  if (tr){
+    traceStep=-1;
+    h+='<div class="tracebox" id="tracebox"><div class="tih">&#128269; The glass machine &mdash; watch it run</div>'
+      +'<pre id="trcode">'+tr.lines.map((l,k)=>'<span data-tl="'+k+'">'+hlEsc(l)+'</span>').join('\n')+'</pre>'
+      +'<table><thead><tr><th>lap</th>'+tr.vars.map(v=>'<th>'+hlEsc(v)+'</th>').join('')+'</tr></thead><tbody id="trbody"></tbody></table>'
+      +'<div class="trout" id="trout"></div>'
+      +'<div class="trbtns"><button class="trstep">&#9654; Step</button><button class="trreset">&#8634; Reset</button></div></div>';
+  }
+  return h;
+}
+
 /* ---- The ghost coach: guided lap, then solo lap. --------------------------
    First attempt on a core lesson, once the learner starts typing along the
    answer, the NEXT word types itself in as dim ghost text ahead of the caret.
@@ -3277,6 +3434,7 @@ edEl.addEventListener('input', ()=>{
   if (sandbox){ syncHl(); errEl.innerHTML=''; outEl.srcdoc = edEl.value; try{localStorage.setItem('sandboxCode', edEl.value);}catch(e){} return; }
   if (duckLine>-1) duckEnd(false);
   typedThisLesson = true;
+  document.querySelectorAll('.predcard').forEach(x=>x.remove());
   syncHl(); errEl.innerHTML='';
   updateGhost();
   outEl.srcdoc = buildDoc(L[idx], edEl.value);
@@ -3516,6 +3674,84 @@ document.addEventListener('keydown', (e)=>{
   if ((e.ctrlKey||e.metaKey) && e.key==='Enter' && btnNext.style.display!=='none' && !sandbox){ e.preventDefault(); btnNext.click(); }
 });
 $('#btnSandbox').onclick = ()=>{ if (sandbox) loadLesson(idx); else openSandbox(); };
+/* ---- PRED: commit to a guess, then the machine settles it ---- */
+function predShow(i){
+  document.querySelectorAll('.predcard').forEach(x=>x.remove());
+  const pd=PRED[i];
+  if (!pd || sandbox || done.has(i) || predsDone.has(i)) return;
+  const card=document.createElement('div'); card.className='predcard';
+  card.innerHTML='<div class="pq">&#128302; Before it runs &mdash; '+pd.q+'<small>Commit to a guess. Being wrong here is free; the reason WHY is the lesson.</small></div>'
+    + pd.ch.map((c,k)=>'<button class="pc" data-k="'+k+'">'+hlEsc(c[0])+'</button>').join('')
+    + '<div class="pwhy"></div>';
+  document.querySelector('.prevwrap').appendChild(card);
+  card.addEventListener('click',(e)=>{
+    const b=e.target.closest('.pc');
+    if (b && !card.querySelector('.prun')){
+      const k=+b.dataset.k, c=pd.ch[k];
+      card.querySelectorAll('.pc').forEach((x,j)=>{ x.disabled=true; if (pd.ch[j][1]) x.classList.add('hit'); });
+      if (!c[1]) b.classList.add('miss');
+      card.querySelector('.pwhy').innerHTML=(c[1]?'&#9989; <b>Called it.</b> ':'&#10060; <b>Good guess to get wrong.</b> ')+c[2];
+      const run=document.createElement('button'); run.className='prun'; run.innerHTML='&#9654; See for yourself';
+      card.appendChild(run);
+      predsDone.add(i); try{ localStorage.setItem('preds', JSON.stringify([...predsDone])); }catch(e2){}
+      if (c[1]){ stk.xp=(stk.xp|0)+2; saveP();
+        const xr=$('#xpTxt').getBoundingClientRect();
+        const fl=document.createElement('div'); fl.className='xpfloat'; fl.textContent='+2 XP';
+        fl.style.left=xr.left+'px'; fl.style.top=(xr.top-4)+'px';
+        document.body.appendChild(fl); setTimeout(()=>fl.remove(),1300);
+      }
+      return;
+    }
+    if (e.target.closest('.prun')) card.remove();
+  });
+}
+/* ---- TRYIT / SHUF / TRACE interactions, delegated on the teach panel ---- */
+teachEl.addEventListener('input',(e)=>{
+  const r=e.target.closest('.ti-r'); if (!r) return;
+  const box=r.closest('.tryit'), t=TRYIT[+box.dataset.ti];
+  box.querySelector('.tiv').textContent=r.value;
+  box.querySelector('.tiel').style.setProperty(t.prop, r.value+t.unit);
+});
+teachEl.addEventListener('click',(e)=>{
+  const sw=e.target.closest('.tisw');
+  if (sw){
+    const box=sw.closest('.tryit'), t=TRYIT[+box.dataset.ti];
+    box.querySelectorAll('.tisw').forEach(x=>x.classList.remove('cur')); sw.classList.add('cur');
+    box.querySelector('.tiv').textContent=sw.dataset.v;
+    box.querySelector('.tiel').style.setProperty(t.prop, sw.dataset.v);
+    return;
+  }
+  const mv=e.target.closest('.shf-up,.shf-dn');
+  if (mv){
+    const row=mv.closest('.shufrow'), box=row.parentElement;
+    if (mv.classList.contains('shf-up')){ const prev=row.previousElementSibling; if (prev && prev.classList.contains('shufrow')) box.insertBefore(row, prev); }
+    else { const nx=row.nextElementSibling; if (nx && nx.classList.contains('shufrow')) box.insertBefore(nx, row); }
+    const order=[...box.querySelectorAll('.shufrow')].map(x=>+x.dataset.li);
+    if (order.every((v,k)=>v===k)) box.classList.add('won');
+    return;
+  }
+  const st=e.target.closest('.trstep');
+  if (st){
+    const tr=TRACE[idx]; if (!tr) return;
+    if (traceStep < tr.steps.length-1){
+      traceStep++;
+      const step=tr.steps[traceStep];
+      const pre=document.getElementById('trcode');
+      pre.innerHTML=tr.lines.map((l,k)=> (k===step.ln?'<b>':'<span data-tl="'+k+'">')+hlEsc(l)+(k===step.ln?'</b>':'</span>')).join('\n');
+      const tb=document.getElementById('trbody');
+      tb.innerHTML += '<tr><td>'+(traceStep===0?'start':traceStep)+'</td>'+step.v.map(v=>'<td>'+hlEsc(v)+'</td>').join('')+'</tr>';
+      if (step.out!=null){ const o=document.getElementById('trout'); o.style.display='block'; o.innerHTML='&#128421; Screen shows: <b>'+hlEsc(step.out)+'</b> &mdash; you just watched every lap that built it.'; }
+    }
+    return;
+  }
+  if (e.target.closest('.trreset')){
+    const tr=TRACE[idx]; if (!tr) return;
+    traceStep=-1;
+    document.getElementById('trbody').innerHTML='';
+    document.getElementById('trout').style.display='none';
+    document.getElementById('trcode').innerHTML=tr.lines.map((l,k)=>'<span data-tl="'+k+'">'+hlEsc(l)+'</span>').join('\n');
+  }
+});
 teachEl.addEventListener('click', (e)=>{
   const kb = e.target.closest('[data-kit]');
   if (!kb || !sandbox || kb.disabled) return;

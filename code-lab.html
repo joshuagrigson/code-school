@@ -230,6 +230,10 @@ body.dark .wcard{background:var(--panel)}
 @keyframes tickpop{40%{transform:scale(1.7)}}
 .xpfloat{position:fixed;font-family:Menlo,Consolas,monospace;font-weight:bold;color:var(--accent);z-index:120;pointer-events:none;animation:xprise 1.2s ease forwards}
 .ghost{color:var(--soft);opacity:.55}
+.guidechip{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-weight:700;letter-spacing:.3px;background:var(--accent);color:#fff;border-radius:999px;padding:4px 12px;margin:0 0 8px;animation:gcpulse 1.8s ease infinite}
+.guide-now{outline:2px solid var(--accent);outline-offset:3px;border-radius:12px;animation:gopulse 1.8s ease infinite}
+@keyframes gcpulse{0%,100%{box-shadow:0 0 0 0 rgba(15,157,110,.45)}50%{box-shadow:0 0 0 7px rgba(15,157,110,0)}}
+@keyframes gopulse{0%,100%{outline-color:var(--accent)}50%{outline-color:rgba(15,157,110,.25)}}
 .prevwrap{position:relative;box-shadow:0 2px 10px rgba(15,23,42,.08)}
 .predcard{position:absolute;inset:0;z-index:5;background:var(--panel);display:flex;flex-direction:column;justify-content:flex-start;gap:8px;padding:12px 18px;border-top:3px solid var(--accent);overflow-y:auto}
 .predcard .pq{font-size:.98rem;font-weight:700}
@@ -240,13 +244,13 @@ body.dark .wcard{background:var(--panel)}
 .predcard .pc.miss{border-color:var(--badline);background:var(--bad)}
 .predcard .pwhy{font-size:.9rem;line-height:1.45}
 .predcard .prun{align-self:flex-start;font-family:inherit;font-size:.95rem;font-weight:700;padding:9px 16px;border:none;border-radius:9px;background:var(--accent);color:#fff;cursor:pointer}
-.tryit{margin:14px 0;padding:12px 14px;border:2px solid var(--line);border-left:6px solid var(--accent);border-radius:10px;background:var(--code)}
-.tryit .tih{font-size:.7rem;letter-spacing:1px;text-transform:uppercase;color:var(--soft);margin-bottom:8px}
-.tryit code.tic{display:block;font-size:.95rem;margin:8px 0;font-family:'JetBrains Mono',Consolas,monospace}
-.tryit input[type=range]{width:100%}
-.tryit .tiprev{background:#fffdf8;color:#2b2320;border:1px solid #ccc;border-radius:8px;padding:6px;margin-top:8px;overflow:hidden}
-.tryit .tisw{display:inline-block;width:30px;height:30px;border-radius:50%;border:3px solid transparent;cursor:pointer;margin-right:6px;vertical-align:middle}
-.tryit .tisw.cur{border-color:var(--ink)}
+.tibox{margin:14px 0;padding:12px 14px;border:2px solid var(--line);border-left:6px solid var(--accent);border-radius:10px;background:var(--code)}
+.tibox .tih{font-size:.7rem;letter-spacing:1px;text-transform:uppercase;color:var(--soft);margin-bottom:8px}
+.tibox code.tic{display:block;font-size:.95rem;margin:8px 0;font-family:'JetBrains Mono',Consolas,monospace}
+.tibox input[type=range]{width:100%}
+.tibox .tiprev{background:#fffdf8;color:#2b2320;border:1px solid #ccc;border-radius:8px;padding:6px;margin-top:8px;overflow:hidden}
+.tibox .tisw{display:inline-block;width:30px;height:30px;border-radius:50%;border:3px solid transparent;cursor:pointer;margin-right:6px;vertical-align:middle}
+.tibox .tisw.cur{border-color:var(--ink)}
 .shufbox{margin:14px 0;padding:12px 14px;border:2px solid var(--line);border-left:6px solid #b3542e;border-radius:10px;background:var(--code)}
 .shufbox .tih{font-size:.7rem;letter-spacing:1px;text-transform:uppercase;color:var(--soft);margin-bottom:8px}
 .shufrow{display:flex;align-items:center;gap:8px;margin:5px 0;padding:6px 9px;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
@@ -3025,6 +3029,7 @@ function loadLesson(i){
   if (cp) cp.onclick=()=>{ const o=ORDER.indexOf(idx); if (o>0) loadLesson(ORDER[o-1]); };
   if (cn) cn.onclick=()=>{ const o=ORDER.indexOf(idx); if (o>=0 && o<ORDER.length-1) loadLesson(ORDER[o+1]); };
   predShow(i);
+  guideInit();
   const isChal = !!les.chal || !!les.proj;
   $('#btnHelp').style.display = isChal ? 'none' : '';
   $('#btnLead').style.display = isChal ? 'none' : '';
@@ -3238,7 +3243,7 @@ function widgetsFor(i){
   let h='';
   const t=TRYIT[i];
   if (t){
-    h+='<div class="tryit" data-ti="'+i+'"><div class="tih">&#127899; Try it &mdash; the code is live</div><p style="margin:0 0 6px">'+t.txt+'</p>';
+    h+='<div class="tibox" data-ti="'+i+'"><div class="tih">&#127899; Try it &mdash; the code is live</div><p style="margin:0 0 6px">'+t.txt+'</p>';
     if (t.kind==='sl'){
       h+='<code class="tic">'+t.sel+' { '+t.prop+': <b class="tiv">'+t.val+'</b>'+t.unit+'; }</code>'
         +'<input type="range" class="ti-r" min="'+t.min+'" max="'+t.max+'" value="'+t.val+'">'
@@ -3346,6 +3351,45 @@ function ghostTalkOff(){
   const el=document.getElementById('ghosttalk');
   el.classList.remove('on'); el.innerHTML='';
 }
+/* ---- The footpath: walks the learner through the page's stations in order.
+   A pulsing chip sits on the current activity; finishing it moves the chip to
+   the next and glides it into view. It leads, it never gates. -------------- */
+let guideList=[], guideIdx=-1;
+const GUIDE_LABEL={tryit:'Try the knob',shuf:'Do the warm-up',trace:'Watch it run',pred:'Make your prediction',ed:'Now type it for real'};
+function guideInit(){
+  document.querySelectorAll('.guidechip').forEach(x=>x.remove());
+  document.querySelectorAll('.guide-now').forEach(x=>x.classList.remove('guide-now'));
+  guideList=[]; guideIdx=-1;
+  if (sandbox || done.has(idx)) return;
+  teachEl.querySelectorAll('.shufbox,.tibox,.tracebox').forEach(el=>{
+    guideList.push({el, kind: el.classList.contains('shufbox')?'shuf':el.classList.contains('tibox')?'tryit':'trace'});
+  });
+  const pc=document.querySelector('.predcard');
+  if (pc) guideList.push({el:pc, kind:'pred'});
+  if (!guideList.length) return;
+  guideList.push({el:document.querySelector('.edwrap'), kind:'ed'});
+  guideIdx=0; guideMark(false);
+}
+function guideMark(scroll){
+  document.querySelectorAll('.guidechip').forEach(x=>x.remove());
+  document.querySelectorAll('.guide-now').forEach(x=>x.classList.remove('guide-now'));
+  if (guideIdx<0 || guideIdx>=guideList.length) return;
+  const g=guideList[guideIdx];
+  if (!g.el || !g.el.isConnected){ guideIdx++; guideMark(scroll); return; }
+  g.el.classList.add('guide-now');
+  const chip=document.createElement('div'); chip.className='guidechip';
+  chip.innerHTML='&#128099; Step '+(guideIdx+1)+' of '+guideList.length+' &middot; '+GUIDE_LABEL[g.kind];
+  g.el.parentElement.insertBefore(chip, g.el);
+  if (scroll){ try{ chip.scrollIntoView({behavior:'smooth', block:'center'}); }catch(e){} }
+}
+function guideDone(kind){
+  if (guideIdx<0) return;
+  const cur=guideList[guideIdx];
+  if (!cur || cur.kind!==kind) return;
+  guideIdx++;
+  if (guideIdx>=guideList.length){ guideIdx=-1; guideMark(false); return; }
+  guideMark(true);
+}
 function ghostable(){
   if (sandbox || sensei || !L[idx] || L[idx].chal || L[idx].proj || solShown || !ghostOn) return false;
   return !(L[idx].pract ? practDone.has(idx) : done.has(idx));
@@ -3435,6 +3479,7 @@ edEl.addEventListener('input', ()=>{
   if (duckLine>-1) duckEnd(false);
   typedThisLesson = true;
   document.querySelectorAll('.predcard').forEach(x=>x.remove());
+  if (guideIdx>=0){ guideIdx=-1; guideMark(false); }
   syncHl(); errEl.innerHTML='';
   updateGhost();
   outEl.srcdoc = buildDoc(L[idx], edEl.value);
@@ -3694,6 +3739,7 @@ function predShow(i){
       const run=document.createElement('button'); run.className='prun'; run.innerHTML='&#9654; See for yourself';
       card.appendChild(run);
       predsDone.add(i); try{ localStorage.setItem('preds', JSON.stringify([...predsDone])); }catch(e2){}
+      guideDone('pred');
       if (c[1]){ stk.xp=(stk.xp|0)+2; saveP();
         const xr=$('#xpTxt').getBoundingClientRect();
         const fl=document.createElement('div'); fl.className='xpfloat'; fl.textContent='+2 XP';
@@ -3708,17 +3754,19 @@ function predShow(i){
 /* ---- TRYIT / SHUF / TRACE interactions, delegated on the teach panel ---- */
 teachEl.addEventListener('input',(e)=>{
   const r=e.target.closest('.ti-r'); if (!r) return;
-  const box=r.closest('.tryit'), t=TRYIT[+box.dataset.ti];
+  const box=r.closest('.tibox'), t=TRYIT[+box.dataset.ti];
   box.querySelector('.tiv').textContent=r.value;
   box.querySelector('.tiel').style.setProperty(t.prop, r.value+t.unit);
+  guideDone('tryit');
 });
 teachEl.addEventListener('click',(e)=>{
   const sw=e.target.closest('.tisw');
   if (sw){
-    const box=sw.closest('.tryit'), t=TRYIT[+box.dataset.ti];
+    const box=sw.closest('.tibox'), t=TRYIT[+box.dataset.ti];
     box.querySelectorAll('.tisw').forEach(x=>x.classList.remove('cur')); sw.classList.add('cur');
     box.querySelector('.tiv').textContent=sw.dataset.v;
     box.querySelector('.tiel').style.setProperty(t.prop, sw.dataset.v);
+    guideDone('tryit');
     return;
   }
   const mv=e.target.closest('.shf-up,.shf-dn');
@@ -3727,7 +3775,7 @@ teachEl.addEventListener('click',(e)=>{
     if (mv.classList.contains('shf-up')){ const prev=row.previousElementSibling; if (prev && prev.classList.contains('shufrow')) box.insertBefore(row, prev); }
     else { const nx=row.nextElementSibling; if (nx && nx.classList.contains('shufrow')) box.insertBefore(nx, row); }
     const order=[...box.querySelectorAll('.shufrow')].map(x=>+x.dataset.li);
-    if (order.every((v,k)=>v===k)) box.classList.add('won');
+    if (order.every((v,k)=>v===k)){ box.classList.add('won'); guideDone('shuf'); }
     return;
   }
   const st=e.target.closest('.trstep');
@@ -3740,7 +3788,7 @@ teachEl.addEventListener('click',(e)=>{
       pre.innerHTML=tr.lines.map((l,k)=> (k===step.ln?'<b>':'<span data-tl="'+k+'">')+hlEsc(l)+(k===step.ln?'</b>':'</span>')).join('\n');
       const tb=document.getElementById('trbody');
       tb.innerHTML += '<tr><td>'+(traceStep===0?'start':traceStep)+'</td>'+step.v.map(v=>'<td>'+hlEsc(v)+'</td>').join('')+'</tr>';
-      if (step.out!=null){ const o=document.getElementById('trout'); o.style.display='block'; o.innerHTML='&#128421; Screen shows: <b>'+hlEsc(step.out)+'</b> &mdash; you just watched every lap that built it.'; }
+      if (step.out!=null){ const o=document.getElementById('trout'); o.style.display='block'; o.innerHTML='&#128421; Screen shows: <b>'+hlEsc(step.out)+'</b> &mdash; you just watched every lap that built it.'; guideDone('trace'); }
     }
     return;
   }

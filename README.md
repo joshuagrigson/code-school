@@ -46,14 +46,14 @@ Most coding courses teach you toy examples: `print("hello world")`, a todo list,
 | 11 | Errors, Debugging & Testing | debug systematically, write tests, handle failure gracefully |
 | 12 | Capstone: Ship a Real Feature | design, build, and deploy a new Paper Plate feature end-to-end |
 
-## Coming from Code School (`code-lab.html`)? Start here
+## Already know some programming? Start here
 
-If you've worked through the offline Code School (Kindergarten → Grade 10, the Excuse-O-Matic), this course is your **college**. It picks up where Grade 10 ends and points everything at real, shipped software. What changes for you:
+If you've learned basic programming elsewhere (variables, lists, functions, conditionals, loops — in any language), here's how the course lands for you:
 
-- **Weeks 1–3 are NOT skippable, but they'll be fast.** They teach Python — a new language for you — but the *ideas* (variables, joining words, lists, picking at random, teaching tricks/functions, choices, doing it again) are exactly your Grades 4–10. Expect "oh, it's `def` instead of `function`" moments constantly. Enjoy them: your second language always costs a fraction of your first.
-- **Weeks 7–8 (HTML/CSS/JS) will be part review, part promotion.** You know the tags and the three languages; these weeks add layout (flexbox), the DOM as a system, `fetch`, and reading a 1,200-line production page. Do the exercises anyway — they're at real-app scale, not lesson scale.
-- **The big new territory** is Weeks 4–6 and 9–12: servers, HTTP, Git, deployment, AI APIs, testing. None of it existed in Code School (which is deliberately offline); all of it is what makes you professional.
-- **Keep the Code School habits.** Type everything by hand. When something seems confusing, suspect a defect in the material before doubting yourself — write it in the journal and fix or flag it. Working something out ≠ showing it: here that becomes `return` vs `print` (Week 3) and honest error responses (Week 6).
+- **Weeks 1–3 are NOT skippable, but they'll be fast.** They teach Python fundamentals; if you know the ideas from another language, expect "oh, it's `def` instead of `function`" moments constantly. Enjoy them: your second language always costs a fraction of your first.
+- **Weeks 7–8 (HTML/CSS/JS) will be part review, part promotion** if you've touched web basics — they add layout (flexbox), the DOM as a system, `fetch`, and reading a 1,200-line production page. Do the exercises anyway; they're at real-app scale, not lesson scale.
+- **The big new territory** is Weeks 4–6 and 9–12: servers, HTTP, Git, deployment, AI APIs, testing — the parts that make you professional.
+- **Habits that matter here:** type everything by hand. When something seems confusing, suspect a defect in the material before doubting yourself — write it in the journal and fix or flag it. And working something out is not the same as showing it: that becomes `return` vs `print` (Week 3) and honest error responses (Week 6).
 
 ## Setup (do this before Week 1)
 

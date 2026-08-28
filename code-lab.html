@@ -86,10 +86,14 @@ details.ft p{margin:6px 0 0;line-height:1.5}
 .tryit>b{color:var(--accent)}
 .gradbtn{display:inline-block;background:var(--accent);color:#fff;padding:10px 18px;border-radius:10px;text-decoration:none;font-size:1.05rem;margin:4px 0}
 .gradbtn:hover{background:var(--accent2)}
-.right{flex:1;display:flex;flex-direction:column;min-width:0;padding:10px;gap:8px;overflow-y:auto;overflow-x:hidden}
+.right{flex:1;display:flex;flex-direction:column;min-width:0;padding:10px;gap:7px;overflow-y:auto;overflow-x:hidden}
 .remind{flex:0 0 auto;background:#f6f4e4;border:2px solid #ded9b8;border-radius:10px;padding:6px 12px;font-size:.8rem;font-family:Menlo,Consolas,monospace;display:flex;gap:8px;align-items:center}
 .remind button{margin-left:auto;border:none;background:none;cursor:pointer;font-size:.75rem;color:var(--soft)}
-.edwrap{position:relative;flex:1;min-height:180px;background:#1e1e1e;border:2px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:0 2px 10px rgba(15,23,42,.10)}
+.edwrap{position:relative;flex:1 1 auto;min-height:150px;background:#1e1e1e;border:2px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:0 2px 10px rgba(15,23,42,.10)}
+.edgrip{flex:0 0 auto;height:14px;margin:-4px 0 -4px;display:flex;align-items:center;justify-content:center;cursor:ns-resize;touch-action:none}
+.edgrip i{display:block;width:44px;height:4px;border-radius:3px;background:var(--line);transition:background .15s,width .15s}
+.edgrip:hover i,.edgrip.drag i{background:var(--accent);width:70px}
+body.grabbing{cursor:ns-resize;user-select:none}
 #ed,#hl,#errlay{position:absolute;inset:0;margin:0;border:none;padding:12px 14px 3.2em;font-family:Menlo,Consolas,monospace;font-size:.95rem;line-height:1.55;white-space:pre;tab-size:2;overflow:auto}
 #errlay{color:transparent;background:transparent;pointer-events:none;overflow:hidden;z-index:1}
 #errlay .redpen{background:rgba(205,50,50,.22);border-radius:3px;text-decoration:underline wavy #d43c3c 2px;text-underline-offset:4px}
@@ -98,8 +102,8 @@ details.ft p{margin:6px 0 0;line-height:1.5}
 #ed::placeholder{color:#7a7a7a}
 #ed::selection{background:rgba(38,79,120,.85);color:transparent}
 .t-k{color:#c586c0}.t-kw{color:#569cd6}.t-s{color:#ce9178}.t-n{color:#b5cea8}.t-c{color:#6a9955}.t-f{color:#dcdcaa}.t-t{color:#569cd6}.t-a{color:#9cdcfe}.t-p{color:#9cdcfe}.t-sel{color:#d7ba7d}
-.btnrow{flex:0 0 auto;display:flex;gap:8px;padding:8px 12px;background:var(--panel);border:2px solid var(--line);border-radius:10px;flex-wrap:wrap}
-.btnrow button, header .hbtn{font-family:inherit;font-size:.85rem;padding:7px 14px;border-radius:10px;border:2px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink)}
+.btnrow{flex:0 0 auto;display:flex;gap:6px;padding:6px 9px;background:var(--panel);border:2px solid var(--line);border-radius:10px;flex-wrap:wrap}
+.btnrow button, header .hbtn{font-family:inherit;font-size:.83rem;padding:6px 11px;border-radius:9px;border:2px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink)}
 .btnrow button:hover, header .hbtn:hover{border-color:var(--accent)}
 #btnRun{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700}
 #btnRun:hover{background:var(--accent2);border-color:var(--accent2)}
@@ -113,7 +117,7 @@ body.dark #duckbar{background:#2a2f38;color:var(--ink)}
 #errlay .duckhl{background:rgba(214,164,32,.28);border-radius:3px;outline:1px solid rgba(214,164,32,.55)}
 #btnNext{background:var(--accent);color:#fff;border-color:var(--accent);display:none;animation:npulse .8s ease 2}
 @keyframes npulse{50%{transform:scale(1.08);box-shadow:0 0 0 6px rgba(47,125,92,.25)}}
-#status{flex:0 0 auto;padding:9px 14px;font-size:.92rem;border:2px solid var(--line);border-radius:10px;background:var(--bad);border-color:var(--badline)}
+#status{flex:0 0 auto;padding:8px 12px;font-size:.9rem;border:2px solid var(--line);border-radius:10px;background:var(--bad);border-color:var(--badline)}
 #status.ok{background:var(--good)}
 #status.wait{background:#eef1f5;color:var(--soft)}
 #status.coach{background:#fdf6df;border-color:#e3d391}
@@ -275,7 +279,7 @@ body.dark .wcard{background:var(--panel)}
 .tracebox .trbtns .trstep{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700}
 .tracebox .trout{margin-top:8px;font-size:.9rem;display:none}
 .tracebox .trsay{margin:0 0 10px;padding:8px 12px;border-left:4px solid var(--accent2);border-radius:8px;background:var(--panel);font-size:.92rem;line-height:1.5}
-#ghosttalk{display:none;font-size:1rem;line-height:1.5;padding:11px 14px;border:2px solid var(--goodline);border-left:6px solid var(--accent);border-radius:10px;background:var(--good);color:var(--ink);box-shadow:0 2px 10px rgba(0,0,0,.10)}
+#ghosttalk{display:none;font-size:.97rem;line-height:1.45;padding:9px 13px;border:2px solid var(--goodline);border-left:6px solid var(--accent);border-radius:10px;background:var(--good);color:var(--ink);box-shadow:0 2px 10px rgba(0,0,0,.10)}
 #ghosttalk.on{display:block}
 #ghosttalk b{font-family:'JetBrains Mono',Consolas,monospace;font-size:1.02em}
 #ghosttalk .gtg{display:inline-block;margin-right:4px}
@@ -350,6 +354,7 @@ button:focus-visible,.navitem:focus-visible,#ed:focus-visible,input:focus-visibl
       <div class="scaffold" id="scaffold"><div class="sclabel" id="scLabel"></div><pre id="scPre"></pre></div>
       <div id="duckbar"><span class="dk">🦆</span><span id="duckQ"></span><span class="dbtns"><button id="duckNext">Next line →</button><button id="duckDone">Done</button></span></div>
       <div class="edwrap"><pre id="hl"></pre><pre id="errlay"></pre><textarea id="ed" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea></div>
+      <div class="edgrip" id="edGrip" title="Drag to resize the typing box"><i></i></div>
       <div id="ghosttalk"></div>
       <div class="btnrow">
         <button id="btnRun" title="Run your code — the coach grades only when you press this (Ctrl+Enter works too)">▶ Run</button>
@@ -3038,6 +3043,7 @@ function loadLesson(i){
   } else { sc.style.display='none'; }
   edEl.placeholder = phFor(les.lang);
   edEl.value = les.start;
+  edFit(les);
   if (duckLine>-1) duckEnd(false);
   updateGhost();
   saveP(); renderNav();
@@ -3755,6 +3761,38 @@ document.addEventListener('keydown', (e)=>{
   if ((e.ctrlKey||e.metaKey) && e.key==='Enter' && btnNext.style.display!=='none' && !sandbox){ e.preventDefault(); btnNext.click(); }
 });
 $('#btnSandbox').onclick = ()=>{ if (sandbox) loadLesson(idx); else openSandbox(); };
+/* ---- The typing box sizes itself to the lesson, and to your grip ----------
+   Short lessons get a small box, long ones open tall enough to show the whole
+   answer without scrolling inside it. Drag the handle to overrule; your choice
+   is remembered for the session. ------------------------------------------ */
+let edPref = 0;
+function edFit(les){
+  const wrap=$('.edwrap'); if (!wrap) return;
+  if (edPref){ wrap.style.flex='0 0 '+edPref+'px'; return; }
+  const lines=Math.max((les&&les.sol?les.sol:'').split('\n').length, (edEl.value||'').split('\n').length);
+  const px=Math.round(lines*parseFloat(getComputedStyle(edEl).lineHeight||18) + 78);
+  const room=$('.right').clientHeight;
+  const want=Math.max(190, Math.min(px, Math.round(room*0.52)));
+  wrap.style.flex='0 0 '+want+'px';
+}
+(function(){
+  const grip=$('#edGrip'); if (!grip) return;
+  let startY=0, startH=0, on=false;
+  const down=(e)=>{ on=true; startY=(e.touches?e.touches[0].clientY:e.clientY);
+    startH=$('.edwrap').getBoundingClientRect().height;
+    grip.classList.add('drag'); document.body.classList.add('grabbing'); e.preventDefault(); };
+  const move=(e)=>{ if(!on) return;
+    const y=(e.touches?e.touches[0].clientY:e.clientY);
+    const room=$('.right').clientHeight;
+    edPref=Math.max(150, Math.min(startH + (y-startY), room-150));
+    $('.edwrap').style.flex='0 0 '+edPref+'px';
+    syncHl(); };
+  const up=()=>{ if(!on) return; on=false; grip.classList.remove('drag'); document.body.classList.remove('grabbing'); };
+  grip.addEventListener('mousedown',down); grip.addEventListener('touchstart',down,{passive:false});
+  addEventListener('mousemove',move); addEventListener('touchmove',move,{passive:false});
+  addEventListener('mouseup',up); addEventListener('touchend',up);
+  grip.addEventListener('dblclick',()=>{ edPref=0; edFit(sandbox?null:L[idx]); });
+})();
 /* ---- PRED: commit to a guess, then the machine settles it ---- */
 function predShow(i){
   document.querySelectorAll('.predcard').forEach(x=>x.remove());

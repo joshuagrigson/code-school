@@ -3219,6 +3219,7 @@ function answer(q){
 
 /* sandbox */
 const SANDBOX_START = '<h1>Free play<\/h1>\n<p>This page is all yours. No goals, no checks.<\/p>\n<button id="btn">A button<\/button>\n<p id="screen">a screen box<\/p>';
+let KITS=[];  /* filled by openSandbox; read by the kit buttons' click handler */
 function openSandbox(){
   sandbox = true;
   ghostTalkOff(); killGhost();
@@ -3226,7 +3227,7 @@ function openSandbox(){
   $('#btnSandbox').textContent = '\u2190 Back to lessons';
   $('#btnSandbox').title = 'Return to the lesson you were on';
   teachEl.dataset.lv = 2;
-  const KITS=[
+  KITS=[
  {name:'Blank page', min:0, code:'<h1>Free play<\/h1>\n<p>All yours.<\/p>'},
  {name:'Personal site', min:14, code:'<style>\n  body { font-family: Georgia, serif; background: #faf7f2; padding: 30px; }\n  .card { background: white; padding: 20px; border-radius: 12px; max-width: 400px; }\n<\/style>\n<div class="card">\n  <h1>Your Name<\/h1>\n  <p>One sentence about you.<\/p>\n  <ul>\n    <li>a thing you like<\/li>\n    <li>another thing<\/li>\n  <\/ul>\n<\/div>'},
  {name:'Quiz machine', min:33, code:'<h2 id="q">Capital of France?<\/h2>\n<button id="a">Paris<\/button>\n<button id="b">London<\/button>\n<p id="screen"><\/p>\n<scr'+'ipt>\nconst screen = document.getElementById("screen");\ndocument.getElementById("a").onclick = function () { screen.textContent = "Correct!"; };\ndocument.getElementById("b").onclick = function () { screen.textContent = "Nope - try again."; };\n<\/scr'+'ipt>'},

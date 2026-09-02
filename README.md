@@ -35,6 +35,34 @@ wins over the seed.
 - Per-grade redo buttons, REMEMBER strip per language, reading level that
   "ages up" with the grades.
 
+## Ways of teaching that are not reading
+
+Every lesson is still "read a little, type the real thing". Around that core,
+the school borrows the mechanics that make Duolingo, Brilliant, Tynker, Hedy,
+Grasshopper, Khan Academy and PRIMM-style classrooms work, all offline and all
+keyed to the lesson they belong to. None of them can be pasted into the editor;
+they exist so the typing lands on an idea that already clicked.
+
+| Mechanic | Borrowed from | What the learner does |
+|---|---|---|
+| 🔮 **Before it runs** (`PRED`) | Brilliant, PRIMM *Predict* | Commit to a guess about the output, then see it settle. |
+| 🎛 **Try it** (`TRYIT`) | Brilliant manipulables | Drag a knob / tap a swatch; code and page change together. |
+| 🧩 **Warm-up** (`SHUF`) | Parsons problems | Put the answer's scrambled lines in working order. |
+| 🔍 **The glass machine** (`TRACE`) | PRIMM *Investigate*, tracing tables | Step a loop one lap at a time and watch every box. |
+| 🖼 **In one picture** (`PICS`) | dual coding (Brilliant, Khan) | One diagram per big idea: the hug, the box, the machine, the fork, the lap, the drawers. |
+| 🧩 **Build the line** (`TILES`) | Duolingo word tiles, Tynker block→text | Tap tiles to assemble one line of code; two tiles are decoys. |
+| ✎ **Fill the gap** (`CLOZE`) | Hedy's pink blank, Grasshopper | One piece of real code is missing; tap the piece that fits. |
+| 🐛 **Spot the bug** (`BUGS`) | PRIMM *Investigate*, "errors are the curriculum" | One line is wrong; find it before the computer does, then read the fix. |
+| 🧠 **Quick recall** (`RECALL`) | Duolingo spaced repetition + mistake review | One question from an *earlier* lesson at the top of the page. Right answers push it further out; a miss brings it back next lesson with a "revisit" link. |
+| 🌀 **One more twist** (`TWIST`) | PRIMM *Modify*, Brilliant "play with it" | After the tick, one small change to make to your own working code. |
+| 👣 **The footpath** | Khan talk-through ordering | Chips walk the learner through the page's stations in order, ending at the editor. |
+| 👻 **The ghost coach** | worked-example fading | A guided lap where the next word types itself faintly, then a solo lap for the tick. |
+| 🦆 **The duck** | rubber-duck debugging | Explain your own code aloud, one line at a time. |
+
+Warm-ups (tiles, gap, bug, scrambled lines) disappear once a lesson is ticked;
+the picture and the recall card stay. Recall progress lives in `localStorage`
+under `recall`, the other mechanics' XP under `teach2`.
+
 After College graduation the course sends learners off to build a small real project of their own — the school is deliberately self-contained.
 
 ## For maintainers
@@ -45,6 +73,12 @@ opener, or script open/close tags — they are built via string concatenation or
 escaped (`safeJs`, `'<scr'+'ipt>'`). Test with the recipe in the original
 HANDOFF: serve locally, click every lesson's "Show me" (all must pass) and
 "Start over" (none may pass), and verify stripped-output solutions fail.
+
+Per-lesson extras (`PRED`, `TRYIT`, `SHUF`, `TRACE`, `PICS`, `TILES`, `CLOZE`,
+`BUGS`, `RECALL`, `TWIST`, plus `RN`, `MORE`, `OLDS`, `RW`) are keyed by lesson
+index. Append new lessons at the end of their grade block rather than inserting
+mid-array, or every downstream index shifts. `TWIST` checks must be satisfiable
+while the lesson's own check still passes (ask for additions, not swaps).
 
 ## For skeptics
 
@@ -75,8 +109,9 @@ confetti and thinking "these kids and their shortcuts" — this section is for y
 - **Reviews are placement exams.** Every grade ends with a cumulative review;
   passing one *first* test-outs the whole grade (marked ⚡). Experienced learners
   fast-forward to their actual gaps; beginners get consolidation checkpoints.
-- **Restraint on gamification.** XP and confetti celebrate; there are no streaks,
-  timers, lives, or leaderboards. Motivation without engagement-farming.
+- **Restraint on gamification.** XP, confetti and a gentle daily streak
+  celebrate; there are no timers, lives, hearts, or leaderboards. Motivation
+  without engagement-farming.
 
 **The audit invitation:** it's one dependency-free HTML file. Open it. Read the
 checker (`runCheck`), the linter (`htmlLint`), the highlighter, the lesson data.

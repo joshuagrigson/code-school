@@ -227,6 +227,7 @@ body.dark #status.coach{background:#2c2f38;border-color:#4d5361}
 body.dark .remind{background:#26292f;border-color:#42474f}
 body.dark .morebox{background:#22262c}
 body.dark .realname{background:#28332c;border-color:#3a4f40}
+body.dark .clozebox .czgap{background:#4a2238;color:#f2b8d4}
 body.dark #out{background:#fff}
 body.dark .wcard{background:var(--panel)}
 .navitem,.btnrow button,header .hbtn,.ghead{transition:background .12s,border-color .12s,color .12s}
@@ -279,6 +280,65 @@ body.dark .wcard{background:var(--panel)}
 .tracebox .trbtns .trstep{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700}
 .tracebox .trout{margin-top:8px;font-size:.9rem;display:none}
 .tracebox .trsay{margin:0 0 10px;padding:8px 12px;border-left:4px solid var(--accent2);border-radius:8px;background:var(--panel);font-size:.92rem;line-height:1.5}
+/* six more ways of teaching: picture, tiles, gap, bug hunt, recall, twist */
+.picbox{margin:14px 0;padding:12px 14px;border:2px solid var(--line);border-left:6px solid #7c5cbf;border-radius:10px;background:var(--code)}
+.picbox .tih,.tilesbox .tih,.clozebox .tih,.bugbox .tih,.rcbox .tih{font-size:.7rem;letter-spacing:1px;text-transform:uppercase;color:var(--soft);margin-bottom:8px}
+.picbox svg{display:block;width:100%;max-width:440px;height:auto;margin:0 auto;font-family:inherit;font-size:12px;fill:var(--ink)}
+.picbox svg rect,.picbox svg ellipse,.picbox svg polygon{fill:var(--panel);stroke:var(--soft);stroke-width:1.5}
+.picbox svg .pk{fill:var(--good);stroke:var(--goodline)}
+.picbox svg text{text-anchor:middle;dominant-baseline:middle;fill:var(--ink)}
+.picbox svg .mono{font-family:'JetBrains Mono',Consolas,monospace;font-size:11px}
+.picbox svg .pl{font-size:10px;fill:var(--soft)}
+.picbox svg .sm{font-size:10px}
+.picbox svg .pr{text-anchor:end}
+.picbox svg .pls{text-anchor:start}
+.picbox svg .big{font-size:17px;font-weight:700}
+.picbox svg .ar{fill:none;stroke:var(--accent);stroke-width:2;marker-end:url(#arh)}
+.picbox svg path.ar{stroke-linecap:round}
+.picbox .piccap{margin:8px 0 0;font-size:.9rem;line-height:1.45}
+.tilesbox{margin:14px 0;padding:12px 14px;border:2px solid var(--line);border-left:6px solid #b3542e;border-radius:10px;background:var(--code)}
+.tilesbox .tlans{min-height:44px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:7px 9px;border:2px dashed var(--line);border-radius:8px;background:var(--panel);margin-bottom:8px}
+.tilesbox .tlph{color:var(--soft);font-size:.85rem;font-style:italic}
+.tilesbox .tlpool{display:flex;flex-wrap:wrap;gap:6px}
+.tile{font-family:'JetBrains Mono',Consolas,monospace;font-size:.88rem;white-space:pre;padding:6px 10px;border:2px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink);cursor:pointer}
+.tile:hover{border-color:var(--accent)}
+.tilesbox.won .tlans{border-style:solid;border-color:var(--goodline);background:var(--good)}
+.tilesbox.won .tlpool{display:none}
+.tilesbox .tlmsg{margin-top:8px;font-size:.9rem;line-height:1.45}
+.clozebox{margin:14px 0;padding:12px 14px;border:2px solid var(--line);border-left:6px solid #d08a1e;border-radius:10px;background:var(--code)}
+.clozebox .czcode{background:var(--panel);margin:0 0 8px;font-size:.88rem}
+.clozebox .czgap{display:inline-block;min-width:3.5em;text-align:center;background:#f7d6e6;color:#8a2a55;border-radius:5px;padding:0 6px;font-weight:700}
+.clozebox .czgap.hit{background:var(--good);color:var(--ink);outline:2px solid var(--goodline)}
+.clozebox .czopts{display:flex;flex-wrap:wrap;gap:6px}
+.czo{font-family:'JetBrains Mono',Consolas,monospace;font-size:.88rem;white-space:pre;padding:6px 10px;border:2px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink);cursor:pointer}
+.czo:hover{border-color:var(--accent)}
+.czo.hit{border-color:var(--goodline);background:var(--good)}
+.czo.miss{border-color:var(--badline);background:var(--bad);text-decoration:line-through}
+.clozebox .czwhy{margin-top:8px;font-size:.9rem;line-height:1.45}
+.bugbox{margin:14px 0;padding:12px 14px;border:2px solid var(--line);border-left:6px solid #9b2f2f;border-radius:10px;background:var(--code)}
+.bugbox .bglines{display:flex;flex-direction:column;gap:4px}
+.bgl{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:5px 9px;border:2px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink);cursor:pointer;font-family:inherit}
+.bgl:hover{border-color:var(--accent)}
+.bgl .bgn{font-size:.7rem;color:var(--soft);width:14px;flex:0 0 auto;text-align:right}
+.bgl code{font-family:'JetBrains Mono',Consolas,monospace;font-size:.88rem;white-space:pre;overflow-x:auto}
+.bgl.hit{border-color:var(--goodline);background:var(--good)}
+.bgl.miss{border-color:var(--badline);background:var(--bad);opacity:.7}
+.bugbox .bgwhy{margin-top:8px;font-size:.9rem;line-height:1.45}
+.bugbox .bgfix{margin-top:6px;font-size:.88rem}
+.rcbox{margin:0 0 14px;padding:10px 14px;border:2px solid var(--line);border-left:6px solid var(--accent2);border-radius:10px;background:var(--code);position:relative}
+.rcbox .rcq{font-weight:700;margin-bottom:8px;line-height:1.4}
+.rcbox .rcch{display:flex;flex-direction:column;gap:5px}
+.rco{font-family:'JetBrains Mono',Consolas,monospace;text-align:left;font-size:.86rem;padding:6px 10px;border:2px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink);cursor:pointer;white-space:pre-wrap}
+.rco:hover{border-color:var(--accent)}
+.rco.hit{border-color:var(--goodline);background:var(--good)}
+.rco.miss{border-color:var(--badline);background:var(--bad)}
+.rcbox .rcwhy{margin-top:8px;font-size:.9rem;line-height:1.45}
+.rcbox .rcwhy:empty{display:none}
+.rcgo{font-family:inherit;font-size:.82rem;font-weight:700;padding:5px 11px;border:none;border-radius:8px;background:var(--accent2);color:#fff;cursor:pointer;margin-left:6px}
+.rcskip{position:absolute;top:8px;right:10px;border:1px solid var(--line);background:none;color:var(--soft);border-radius:6px;font-size:.68rem;padding:1px 7px;cursor:pointer;font-family:inherit}
+.rcskip:hover{color:var(--ink);border-color:var(--accent)}
+#status .twist{color:var(--ink);border-top-color:var(--accent2)}
+#status .twist.done{color:var(--soft)}
 #ghosttalk{display:none;font-size:.97rem;line-height:1.45;padding:9px 13px;border:2px solid var(--goodline);border-left:6px solid var(--accent);border-radius:10px;background:var(--good);color:var(--ink);box-shadow:0 2px 10px rgba(0,0,0,.10)}
 #ghosttalk.on{display:block}
 #ghosttalk b{font-family:'JetBrains Mono',Consolas,monospace;font-size:1.02em}
@@ -2624,7 +2684,7 @@ function runCheck(){
       if (!styleDone.has(idx)){ styleDone.add(idx); stk.xp = (stk.xp|0) + 2; saveP(); }
     }
   }
-  statusEl.innerHTML = (res.ok ? '✓ ' : '') + res.msg + (res.ok && RW[idx] ? '<span class="wild">🌍 <b>In the wild:</b> ' + RW[idx] + '</span>' : '') + styleHtml;
+  statusEl.innerHTML = (res.ok ? '✓ ' : '') + res.msg + (res.ok && RW[idx] ? '<span class="wild">🌍 <b>In the wild:</b> ' + RW[idx] + '</span>' : '') + styleHtml + twistHtml(code, res.ok);
   btnNext.style.display = res.ok ? 'inline-block' : 'none';
   if (res.ok && !done.has(idx) && solShown && edEl.value === L[idx].sol){
     statusEl.innerHTML = '✓ ' + 'That IS the answer — but shown is not earned. Hit <b>↺ Start over</b> and type it yourself: the ✓ (and the XP) go to your fingers, not your eyes. Typing it is faster than you think.';
@@ -3032,6 +3092,7 @@ function loadLesson(i){
   const op = ORDER.indexOf(i);
   const crumb = '<div class="crumb"><button id="crPrev" title="Previous lesson" aria-label="Previous lesson"'+(op<=0?' disabled':'')+'>&larr;</button><span>' + g.name + ' · ' + g.sub + ' — lesson ' + (pos+1) + ' of ' + gl.length + '</span><button id="crNext" title="Next lesson" aria-label="Next lesson"'+(op>=ORDER.length-1?' disabled':'')+'>&rarr;</button></div>';
   teachEl.innerHTML = crumb + '<h2>' + les.title + '</h2>' + les.teach + widgetsFor(i) + decoderFor(les) + (RN[i] ? '<div class="realname"><b>Real name</b>' + RN[i] + '</div>' : '') + (MORE[i] ? '<div class="morebox"><b>More to chew on</b>' + MORE[i] + '</div>' : '') + (OLDS[i] ? '<div class="elders"><b class="el">📜 Lineage</b>' + OLDS[i] + '</div>' : '');
+  recallShow(i);
   goalEl.innerHTML = '<b>DO THIS:</b> ' + les.goal;
   remindTxt.innerHTML = REMIND[les.lang];
   remindBox.style.display = localStorage.getItem('remindHidden')==='1' ? 'none' : 'flex';
@@ -3276,6 +3337,341 @@ const TRACE = {
    {ln:4,say:'Bite 4: &hellip;so one MORE bite runs, and pile crashes to &minus;2. This is the off-by-one everyone guesses wrong.',v:['-2','4']},
    {ln:6,say:'Now the test finally fails (&minus;2 is not above 0), the loop lets go, and the screen reports 4 bites &mdash; not 3.',v:['-2 (test fails)','4'],out:'Finished in 4 bites.'}]}
 };
+/* ---- Six more ways of teaching, harvested from the apps kids already love ----
+   The rule stays the same: the interaction itself teaches, and none of it
+   replaces typing the real thing.
+   PICS   - one picture per big idea (dual coding: words + a diagram stick better
+            than words alone).                              Brilliant, Khan
+   TILES  - build the line from word tiles, with a couple of wrong tiles mixed
+            in (Duolingo sentence tiles, Tynker block-to-text bridge).
+   CLOZE  - one blank in real code, tap the right piece (Hedy's pink blank,
+            Grasshopper's fill-the-gap).
+   BUGS   - one line is wrong: find it before the computer does (PRIMM
+            "investigate"; errors are the curriculum).
+   RECALL - a one-question quiz on an EARLIER lesson at the top of the page,
+            spaced out by how well you knew it last time; a miss comes back
+            sooner (Duolingo spaced repetition + mistake review).
+   TWIST  - after the tick, one small change to make to your own working
+            code (PRIMM "modify": play with it until it clicks).
+   All keyed by lesson index like PRED/SHUF/TRACE. -------------------------- */
+const PICS = {
+ 2:{cap:'A tag is a hug: opener in front, your words in the middle, closer behind.',svg:'<svg viewBox="0 0 340 92"><rect x="6" y="22" width="70" height="44" rx="8"/><text x="41" y="50">&lt;h1&gt;</text><rect x="92" y="22" width="150" height="44" rx="8" class="pk"/><text x="167" y="50">My name is Josh</text><rect x="258" y="22" width="76" height="44" rx="8"/><text x="296" y="50">&lt;/h1&gt;</text><text x="41" y="84" class="pl">opener</text><text x="167" y="84" class="pl">your words (the only part people see)</text><text x="296" y="84" class="pl">closer</text></svg>'},
+ 19:{cap:'A class is a name tag. The rule only dresses the elements wearing that tag.',svg:'<svg viewBox="0 0 340 100"><rect x="8" y="10" width="110" height="40" rx="6"/><text x="63" y="35">.special { }</text><rect x="180" y="6" width="150" height="24" rx="5"/><text x="255" y="22">&lt;p&gt; plain</text><rect x="180" y="38" width="150" height="24" rx="5" class="pk"/><text x="255" y="54">&lt;p class="special"&gt;</text><rect x="180" y="70" width="150" height="24" rx="5"/><text x="255" y="86">&lt;p&gt; plain</text><path d="M118 30 C150 30 150 50 178 50" class="ar"/></svg>'},
+ 23:{cap:'A variable is a labelled box. The label is the name; the value is what is inside.',svg:'<svg viewBox="0 0 340 100"><rect x="30" y="30" width="120" height="56" rx="8"/><rect x="45" y="18" width="90" height="22" rx="4" class="pk"/><text x="90" y="33" class="mono">myName</text><text x="90" y="66" class="mono big">\'Josh\'</text><path d="M155 58 L215 58" class="ar"/><rect x="220" y="30" width="110" height="56" rx="8"/><text x="275" y="50" class="pl">screen shows</text><text x="275" y="72" class="big">Josh</text></svg>'},
+ 24:{cap:'Nothing happens until the click. The click is the trigger; your function is what fires.',svg:'<svg viewBox="0 0 340 90"><text x="34" y="52" class="big">&#128433;</text><path d="M58 46 L94 46" class="ar"/><rect x="98" y="26" width="70" height="40" rx="8"/><text x="133" y="51">button</text><path d="M172 46 L208 46" class="ar"/><rect x="212" y="18" width="120" height="56" rx="8" class="pk"/><text x="272" y="40" class="mono">onclick</text><text x="272" y="60" class="mono">function () { }</text><text x="170" y="84" class="pl">click &rarr; trigger &rarr; your code runs</text></svg>'},
+ 27:{cap:'A list is a shelf with numbered slots, and the numbering starts at 0.',svg:'<svg viewBox="0 0 340 92"><rect x="8" y="26" width="100" height="40" rx="6" class="pk"/><text x="58" y="51" class="sm">\'My dog ate it\'</text><rect x="118" y="26" width="100" height="40" rx="6"/><text x="168" y="51" class="sm">\'Aliens took it\'</text><rect x="228" y="26" width="100" height="40" rx="6"/><text x="278" y="51" class="sm">\'I overslept\'</text><text x="58" y="84" class="mono">[0]</text><text x="168" y="84" class="mono">[1]</text><text x="278" y="84" class="mono">[2]</text><text x="170" y="16" class="pl">excuses</text></svg>'},
+ 29:{cap:'A function is a machine. Writing it builds the machine; calling it presses the button.',svg:'<svg viewBox="0 0 340 100"><rect x="102" y="14" width="148" height="60" rx="10" class="pk"/><text x="176" y="38" class="mono">function sayHello()</text><text x="176" y="60" class="pl">the machine (built once)</text><rect x="2" y="30" width="84" height="30" rx="6"/><text x="44" y="46" class="mono">sayHello();</text><path d="M88 45 L98 45" class="ar"/><path d="M252 45 L292 45" class="ar"/><text x="316" y="50" class="big">&#128421;</text><text x="170" y="92" class="pl">the call presses the button; the screen line inside runs</text></svg>'},
+ 30:{cap:'An ingredient goes in the slot on top. Inside the machine it has a name; each call fills it differently.',svg:'<svg viewBox="0 0 340 112"><rect x="120" y="38" width="212" height="56" rx="10" class="pk"/><text x="226" y="58" class="mono">function greet(person)</text><text x="226" y="80" class="pl">inside, person holds what was handed in</text><rect x="186" y="4" width="80" height="22" rx="4"/><text x="226" y="15" class="mono">\'Josh\'</text><path d="M226 26 L226 36" class="ar"/><text x="56" y="66" class="mono">greet(\'Josh\')</text><path d="M104 66 L118 66" class="ar"/><text x="170" y="108" class="pl">a different call fills person with a different name</text></svg>'},
+ 31:{cap:'return is the output chute. The value slides out and lands wherever the call was written.',svg:'<svg viewBox="0 0 340 100"><rect x="20" y="20" width="150" height="56" rx="10" class="pk"/><text x="95" y="42" class="mono">double(5)</text><text x="95" y="64" class="mono">return 5 * 2</text><path d="M172 48 L212 48" class="ar"/><rect x="216" y="30" width="40" height="36" rx="6"/><text x="236" y="53" class="big">10</text><text x="170" y="94" class="pl">\'Answer: \' + double(5)  becomes  \'Answer: \' + 10</text></svg>'},
+ 33:{cap:'An if is a fork in the road. The test picks the path; the other path is simply not walked.',svg:'<svg viewBox="0 0 340 104"><path d="M20 52 L96 52" class="ar"/><polygon points="100,28 150,52 100,76 50,52" class="pk" transform="translate(50 0)"/><text x="150" y="56" class="mono">score &gt; 5 ?</text><path d="M200 44 C230 20 250 20 280 20" class="ar"/><path d="M200 60 C230 84 250 84 280 84" class="ar"/><text x="336" y="12" class="pl pr">true: run the block</text><text x="336" y="98" class="pl pr">false: skip the block</text></svg>'},
+ 37:{cap:'A loop is laps around a track. Same body every lap; only the counter changes.',svg:'<svg viewBox="0 0 340 100"><ellipse cx="110" cy="50" rx="90" ry="36"/><text x="110" y="46" class="mono">i = 1, 2, 3, 4, 5</text><text x="110" y="66" class="pl">body runs once per lap</text><path d="M200 50 C215 30 230 30 240 50" class="ar"/><rect x="238" y="24" width="100" height="52" rx="8" class="pk"/><text x="288" y="46" class="pl">the pile</text><text x="288" y="66" class="mono">out + i + \' \'</text></svg>'},
+ 40:{cap:'A while loop is a gate. Every lap begins with the question; the first no ends the loop.',svg:'<svg viewBox="0 0 340 104"><rect x="20" y="30" width="110" height="44" rx="8" class="pk"/><text x="75" y="57" class="mono">pile &gt; 0 ?</text><path d="M132 44 L196 44" class="ar"/><text x="164" y="36" class="pl">yes</text><rect x="200" y="20" width="120" height="48" rx="8"/><text x="260" y="40" class="mono">pile = pile - 3</text><text x="260" y="58" class="mono">bites = bites + 1</text><path d="M260 70 C260 96 110 96 110 76" class="ar"/><text x="180" y="100" class="pl">back to the question</text><path d="M40 76 L40 96" class="ar"/><text x="4" y="102" class="pl pls">no: on to the screen line</text></svg>'},
+ 44:{cap:'An object is a box with labelled drawers. The dot opens one drawer by its label.',svg:'<svg viewBox="0 0 340 104"><rect x="20" y="14" width="150" height="82" rx="10"/><text x="95" y="10" class="pl">person</text><rect x="32" y="24" width="126" height="20" rx="4" class="pk"/><text x="95" y="38" class="mono">name: \'Josh\'</text><rect x="32" y="48" width="126" height="20" rx="4"/><text x="95" y="62" class="mono">age: 40</text><rect x="32" y="72" width="126" height="20" rx="4"/><text x="95" y="86" class="mono">hobby: \'camping\'</text><path d="M172 34 L222 34" class="ar"/><text x="280" y="38" class="mono">person.name</text><text x="280" y="60" class="pl">opens the name drawer</text><text x="280" y="80" class="big">Josh</text></svg>'}
+};
+const TILES = {
+ 2:{say:'Build the hug from tiles: opener, words, closer. Two tiles do not belong.',t:['<h1>','My name is Josh','</h1>'],x:['<h2>','</p>']},
+ 5:{say:'Build a sentence with ONE emphasised word. Watch which tiles are openers and which are closers.',t:['<p>','I ','<em>','really','</em>',' mean it.','</p>'],x:['<b>','</em >']},
+ 9:{say:'Build a button. The words on the button go between the hug.',t:['<button>','Do not press this button','</button>'],x:['<btn>','</link>']},
+ 12:{say:'Build a link. The address rides inside the opener as an attribute; the clickable words sit between the hug.',t:['<a',' href="https://example.com"','>','My favorite place','</a>'],x:[' src="https://example.com"','</link>']},
+ 14:{say:'Build a CSS rule: WHO gets dressed, then { property: value; }.',t:['p',' {',' color: ','red',';',' }'],x:[' colour: ',' = ']},
+ 21:{say:'One element has id="title". Build the rule that reaches exactly that one.',t:['#title',' {',' color: ','royalblue',';',' }'],x:['.title','title']},
+ 22:{say:'Build your first JavaScript line: the screen, its textContent, equals, quoted words, semicolon.',t:['screen','.textContent',' = ','\'I am writing JavaScript!\'',';'],x:['.text',' == ']},
+ 23:{say:'Show what is INSIDE the box. One tile is a trap: quotes turn a box name into plain words.',t:['screen.textContent',' = ','myName',';'],x:['\'myName\'']},
+ 24:{say:'Wire a click. The function is handed to the button, to be run later, each time it is clicked.',t:['btn.onclick',' = ','function () {',' screen.textContent = \'You clicked me!\'; ','}',';'],x:['btn.click','function {']},
+ 25:{say:'Glue a greeting: quoted pieces supply the spaces and punctuation, the bare box supplies the name.',t:['screen.textContent',' = ','\'Hello \'',' + ','name',' + ','\'!\'',';'],x:['\'name\'']},
+ 27:{say:'Build a list: square brackets, quoted items, commas between.',t:['const excuses',' = ','[','\'My dog ate it\'',', ','\'Aliens took it\'',']',';'],x:['(',')']},
+ 30:{say:'Build a trick with one ingredient. The ingredient name goes in the round brackets, bare.',t:['function ','greet','(person)',' {',' screen.textContent = \'Hello \' + person + \'!\'; ','}'],x:['(\'person\')','function()']},
+ 33:{say:'Build an if: the test in round brackets, the block in curly ones. One tile only LOOKS like a test.',t:['if ','(score > 5)',' {',' screen.textContent = \'Great score!\'; ','}'],x:['(score = 5)','then']},
+ 44:{say:'Open one drawer of the object with a dot. The traps: quotes, and an arrow that is not JavaScript.',t:['screen.textContent',' = ','person','.name',';'],x:['\'person.name\'','->name']},
+ 48:{say:'Build a console note: console, dot log, round brackets, a label, a comma, the box.',t:['console','.log','(','\'pick was:\'',', ','pick',')',';'],x:['.print','.show']}
+};
+const CLOZE = {
+ 4:{code:'<h1>Hello there___',opts:['</h1>','<h1>','<\\h1>'],ans:'</h1>',why:'The closer is the opener with a forward slash right after the pointy bracket. A backslash is a different key and the browser does not know it.'},
+ 10:{code:'<ul>\n  ___tacos</li>\n  <li>camping</li>\n</ul>',opts:['<li>','<ul>','<item>'],ans:'<li>',why:'Every bullet is an li (list item) living inside the ul. The closer already told you: it closes an li.'},
+ 11:{code:'<p ___="You found the secret note!">Hover over me</p>',opts:['title','name','note'],ans:'title',why:'title is a real attribute every element understands: the browser shows it as a tooltip on hover. The others are just words the browser ignores.'},
+ 13:{code:'___\n  <h2>My corner</h2>\n  <p>Everything in this box belongs together.</p>\n</div>',opts:['<div>','<box>','<div/>'],ans:'<div>',why:'A div is the plain grouping box. The closer at the bottom already says div, so the opener must match it exactly.'},
+ 15:{code:'body {\n  ___: lightyellow;\n}',opts:['background','color','paper'],ans:'background',why:'color is the ink; background is the paper. Same value, very different result.'},
+ 20:{code:'___ {\n  background: lavender;\n  padding: 10px;\n}',opts:['.fancy','fancy','#fancy'],ans:'.fancy',why:'The dot means class. Without it CSS looks for a tag called fancy (there is none); with a # it looks for an id.'},
+ 26:{code:'screen.textContent = \'Total: \' + ___;',opts:['(4 + 3)','4 + 3','\'4 + 3\''],ans:'(4 + 3)',why:'Brackets make the maths finish first. Without them the glue eats the 4, then the 3, and you get Total: 43. Quotes would just print the words.'},
+ 28:{code:'const pick = Math.floor(Math.random() * ___);\nscreen.textContent = excuses[pick];',opts:['excuses.length','3','excuses'],ans:'excuses.length',why:'length is the list telling you how big it is. Typing 3 works today and silently breaks the day a fourth excuse is added. Multiplying by the whole list is nonsense to the computer.'},
+ 31:{code:'function double(number) {\n  ___ number * 2;\n}',opts:['return','screen.textContent =','show'],ans:'return',why:'return hands the answer back to whoever called. A screen line inside would show it instead of returning it, and the call would give back nothing.'},
+ 32:{code:'function describe(number) {\n  return number + \' doubled is \' + ___;\n}',opts:['double(number)','double','double(6)'],ans:'double(number)',why:'A trick using a trick: call double with the SAME ingredient describe was given. Bare double is the machine itself, not a result; double(6) ignores the ingredient.'},
+ 34:{code:'if (score > 5) {\n  screen.textContent = \'Great score!\';\n} ___ {\n  screen.textContent = \'Keep practicing.\';\n}',opts:['else','otherwise','else if'],ans:'else',why:'else is the other road, taken whenever the test was false. else if would need its own test in brackets.'},
+ 36:{code:'if (day === \'Saturday\' ___ sunny) {\n  screen.textContent = \'Beach day!\';\n}',opts:['&&','||','+'],ans:'&&',why:'&& means BOTH must be true. With || a rainy Saturday would still be a beach day, and + tries to do maths on a word.'},
+ 38:{code:'for (const excuse ___ excuses) {\n  out = out + excuse + \'. \';\n}',opts:['of','in','from'],ans:'of',why:'of hands you each ITEM. in would hand you the slot numbers 0, 1, 2 instead, and from is not JavaScript.'},
+ 39:{code:'if (s ___ 6) {  // a 6 should count as a pass\n  out = out + s + \' passed. \';\n}',opts:['>=','>','=='],ans:'>=',why:'Greater-or-equal lets 6 through. Plain > fails the 6, and == only passes exactly 6.'},
+ 40:{code:'while (pile ___ 0) {\n  pile = pile - 3;\n  bites = bites + 1;\n}',opts:['>','<','==='],ans:'>',why:'Keep biting WHILE there is pile left. With < the test is false from the start and nothing runs; with === it never runs either.'},
+ 42:{code:'btn.onclick = ___ {\n  screen.textContent = pickExcuse();\n};',opts:['function ()','function','pickExcuse()'],ans:'function ()',why:'A click needs a whole function handed over, round brackets included. Handing over pickExcuse() would run it NOW, once, and give the button its answer instead of a job.'},
+ 45:{code:'screen.textContent = person.name + \' is \' + ___ + \' years old.\';',opts:['person.age','age','person[age]'],ans:'person.age',why:'The drawer is inside person, so you have to go through person to reach it. Bare age is a box that does not exist.'},
+ 46:{code:'screen.textContent = excuses___.text;',opts:['[1]','.1','(1)'],ans:'[1]',why:'Square brackets reach into a list by slot number; then the dot opens the drawer of the object you pulled out.'},
+ 47:{code:'person___ = \'caffeinated\';',opts:['.mood','.mood()','mood'],ans:'.mood',why:'Dot on the LEFT of = puts a new value into that drawer. Round brackets would try to call mood like a function.'},
+ 49:{code:'screen.textContent = \'I closed the quote properly!___',opts:['\';',';','\''],ans:'\';',why:'Quotes come in pairs and the line ends with a semicolon, in that order. Close the words first, then close the sentence.'},
+ 50:{code:'screen.textContent = \'mystery is a \' + ___ mystery;',opts:['typeof','type','kind'],ans:'typeof',why:'typeof is the one built-in word that asks a value its species: string, number, boolean.'},
+ 51:{code:'if (name ___ \'\') {\n  screen.textContent = \'No name given - try again!\';\n}',opts:['===','=','=='],ans:'===',why:'Three equals ASKS if they are the same. One equals would PUT empty quotes into name, wiping it. Two equals works but is looser; the school uses three.'},
+ 53:{code:'showExcuse(___);',opts:['pickExcuse()','pickExcuse','\'pickExcuse\''],ans:'pickExcuse()',why:'With round brackets pickExcuse RUNS and its returned excuse is handed to showExcuse. Without them you hand over the machine itself; with quotes, just the word.'},
+ 54:{code:'for (let day = 1; day ___ 5; day = day + 1) {',opts:['<=','<','=='],ans:'<=',why:'Less-or-equal lets day 5 run. Plain < stops at 4, and == would run only once, on day 1... which never comes, because day starts at 1 and 1 == 5 is false.'}
+};
+const BUGS = {
+ 10:{lines:['<ul>','  <li>tacos</li>','  <li>camping','  <li>naps</li>','</ul>'],bad:[2],why:'camping never got its closing tag. The browser guesses where it ends, and guesses are how layouts go sideways.',fix:'  <li>camping</li>'},
+ 14:{lines:['p {','  color red;','}'],bad:[1],why:'The colon is missing between property and value. CSS silently drops the whole line and the paragraph stays black.',fix:'  color: red;'},
+ 19:{lines:['special {','  color: crimson;','}'],bad:[0],why:'No dot. Without it CSS looks for a TAG called special, finds none, and nothing changes. The dot says class.',fix:'.special {'},
+ 23:{lines:['const myName = \'Josh\';','screen.textContent = \'myName\';'],bad:[1],why:'Quotes turn the box name into plain words. The screen shows myName instead of Josh.',fix:'screen.textContent = myName;'},
+ 24:{lines:['btn.onclik = function () {','  screen.textContent = \'You clicked me!\';','};'],bad:[0],why:'onclik is misspelled. JavaScript does not complain: it happily creates a new field nobody will ever read, and the click does nothing.',fix:'btn.onclick = function () {'},
+ 25:{lines:['const name = \'Josh\';','screen.textContent = \'Hello\' + name + \'!\';'],bad:[1],why:'No space inside the quotes after Hello, so the screen shows HelloJosh!. The computer only puts spaces where you type them.',fix:'screen.textContent = \'Hello \' + name + \'!\';'},
+ 29:{lines:['function sayHello() {','  screen.textContent = \'Hello!\';','}','sayHello;'],bad:[3],why:'No round brackets, so the trick is named but never run. The screen stays empty.',fix:'sayHello();'},
+ 33:{lines:['const score = 8;','if (score = 5) {','  screen.textContent = \'Great score!\';','}'],bad:[1],why:'One equals PUTS 5 into score instead of asking about it. The message shows whatever score was.',fix:'if (score === 5) {   // or score > 5'},
+ 35:{lines:['const temp = 30;','if (temp > 10) {','  screen.textContent = \'Jacket weather\';','} else if (temp > 25) {','  screen.textContent = \'Shorts weather\';','} else {','  screen.textContent = \'Stay inside\';','}'],bad:[1,3],why:'The doors are in the wrong order. 30 is greater than 10, so the first door opens and Shorts weather can never be reached. Most demanding test first.',fix:'if (temp > 25) { ... } else if (temp > 10) { ... }'},
+ 37:{lines:['let out = \'\';','for (let i = 1; i <= 5; i = i + 1) {','  out = i + \' \';','}','screen.textContent = out;'],bad:[2],why:'out = i replaces the pile every lap instead of growing it. Only the last lap survives: the screen shows 5.',fix:'  out = out + i + \' \';'},
+ 40:{lines:['let pile = 10;','let bites = 0;','while (pile > 0) {','  bites = bites + 1;','}','screen.textContent = bites;'],bad:[2,3],why:'Nothing inside the loop ever shrinks pile, so the test is true forever and the loop never lets go. Every while needs a line that moves toward the exit.',fix:'  pile = pile - 3;'},
+ 42:{lines:['function pickExcuse() {','  const pick = Math.floor(Math.random() * excuses.length);','  excuses[pick];','}'],bad:[2],why:'The pick is worked out and then thrown away. Without return, the caller gets undefined.',fix:'  return excuses[pick];'},
+ 45:{lines:['const person = {','  name: \'Josh\',','  age: 40','};','screen.textContent = person.name + \' is \' + person.Age;'],bad:[4],why:'Age with a capital A is a different label from age. The drawer does not exist, so the screen says undefined.',fix:'screen.textContent = person.name + \' is \' + person.age;'},
+ 47:{lines:['const person = { name: \'Josh\', mood: \'sleepy\' };','screen.textContent = person.name + \' is now \' + person.mood;','person.mood = \'caffeinated\';'],bad:[1,2],why:'The change happens AFTER the screen already read the old value. Code runs top to bottom: change first, then show.',fix:'swap the last two lines'},
+ 51:{lines:['const name = \'\';','if (name === \'\') {','  screen.textContent = \'Welcome, \' + name + \'!\';','} else {','  screen.textContent = \'No name given!\';','}'],bad:[2,4],why:'The roads are swapped: an EMPTY name gets welcomed and a real name gets the complaint. The guard belongs with the complaint.',fix:'complaint in the if, welcome in the else'},
+ 54:{lines:['let out = \'\';','for (let day = 1; day <= 5; day = day + 1) {','  out = out + \'Day \' + \'day\' + \' done. \';','}','screen.textContent = out;'],bad:[2],why:'\'day\' in quotes is the WORD day, not the counter. The screen says Day day done. five times.',fix:'  out = out + \'Day \' + day + \' done. \';'}
+};
+const RECALL = {
+ 2:{q:'Which tag makes the biggest heading?',ch:[['<h1>',1,'h for heading, 1 for the biggest kind.'],['<big>',0,'There is no big tag. Headings go h1 (biggest) to h6 (smallest).'],['<h6>',0,'h6 is the SMALLEST heading. The numbers run the other way.']]},
+ 3:{q:'Why do the tags not show up on the page?',ch:[['Tags are instructions, not words',1,'Stage directions: the audience never sees them, only what they do.'],['The browser lost them',0,'Nothing was lost. The browser read them, obeyed them, and hid them on purpose.'],['You have to type them twice',0,'Once is plenty. Tags are meant to be invisible.']]},
+ 4:{q:'What is wrong with <h1>Hello there ?',ch:[['It is missing its closing </h1>',1,'Every element needs its closer, or the heading swallows everything after it.'],['h1 needs a number after Hello',0,'The number lives in the tag name, not the words.'],['Nothing, it is fine',0,'It renders by luck. The browser guesses where it ends, and guesses break pages.']]},
+ 5:{q:'Which hug means emphasis (usually italic)?',ch:[['<em>',1,'em is short for emphasis.'],['<strong>',0,'strong is the bold, this-matters one.'],['<i-really>',0,'Not a tag. Made-up tags are ignored.']]},
+ 6:{q:'Which tag makes a word bold and important?',ch:[['<strong>',1,'strong: important, shown bold.'],['<bold>',0,'Not a real tag. The browser ignores it.'],['<em>',0,'em is emphasis, usually italic.']]},
+ 9:{q:'Which tag makes a real clickable button?',ch:[['<button>',1,'The words between the hug are what appears on the button.'],['<btn>',0,'Not a tag. Full word: button.'],['<click>',0,'Not a tag either.']]},
+ 10:{q:'Inside a <ul>, each bullet lives in a...',ch:[['<li>',1,'li is a list item, nested inside the ul.'],['<item>',0,'Not a tag. li is the real name.'],['<p>',0,'A p is a paragraph. It can go inside an li but is not a bullet itself.']]},
+ 11:{q:'In <p title="hi">, what is title?',ch:[['An attribute: an extra note on the tag',1,'name="value" inside the opener. Attributes tweak an element without new tags.'],['A second tag',0,'It sits INSIDE the p tag, so it is part of that tag.'],['The words on the page',0,'It never shows as text; the browser shows it as a tooltip.']]},
+ 12:{q:'Which attribute holds where a link goes?',ch:[['href',1,'href on an a tag. The words between the hug are what you click.'],['src',0,'src is for images and scripts, not links.'],['link',0,'Not an attribute on a; the tag itself is a.']]},
+ 13:{q:'What is a <div> for?',ch:[['Grouping things into one box',1,'A plain box so related pieces travel together and can be styled as one.'],['Making text bigger',0,'That is a heading. div changes nothing by itself.'],['Dividing numbers',0,'HTML does no maths. div is short for division as in a section.']]},
+ 14:{q:'Which line is correct CSS?',ch:[['color: red;',1,'property, colon, value, semicolon.'],['color = red',0,'CSS uses a colon, not equals, and ends with a semicolon.'],['red: color;',0,'Backwards. The property comes first.']]},
+ 15:{q:'To colour the paper behind everything, you write...',ch:[['body { background: ... }',1,'body is the whole page; background is the paper.'],['p { color: ... }',0,'That colours the INK of paragraphs.'],['page { paper: ... }',0,'Neither is a real selector or property.']]},
+ 19:{q:'In CSS, .special picks...',ch:[['Every element with class="special"',1,'The dot means class, and a class can be on many elements.'],['The element with id="special"',0,'That would be #special. Hash is id, dot is class.'],['A tag named special',0,'That would be bare special with no dot, and no such tag exists.']]},
+ 21:{q:'In CSS, #title picks...',ch:[['The ONE element with id="title"',1,'Hash means id, and an id belongs to exactly one element.'],['Every element with class="title"',0,'That is .title with a dot.'],['All headings',0,'Headings are h1, h2... The # is about the id attribute.']]},
+ 22:{q:'Which line puts words in the screen box?',ch:[['screen.textContent = \'Hi\';',1,'The screen, its textContent, equals your quoted words.'],['screen = \'Hi\';',0,'That throws away the screen box and replaces it with a word.'],['print(\'Hi\');',0,'Not JavaScript in the browser; nothing appears.']]},
+ 23:{q:'const myName = \'Josh\'; then screen.textContent = myName; shows...',ch:[['Josh',1,'No quotes, so myName is the box, and the box holds Josh.'],['myName',0,'That is what QUOTED \'myName\' would show. Bare, it is the box.'],['Nothing',0,'The box has something in it, and the screen shows it.']]},
+ 24:{q:'When does the code inside btn.onclick = function () { ... } run?',ch:[['Each time the button is clicked',1,'The function is handed to the button and fired on every click.'],['Immediately, once',0,'Handing over a function does not run it. The click does.'],['Never',0,'It runs, just not until someone clicks.']]},
+ 25:{q:'\'Hello\' + name, where name holds Josh, shows...',ch:[['HelloJosh',1,'No space inside the quotes, so no space on screen.'],['Hello Josh',0,'Only if the quoted piece were \'Hello \' with a space inside.'],['Hello name',0,'Bare name is the box, so its contents show, not the word.']]},
+ 26:{q:'\'Total: \' + 4 + 3 shows...',ch:[['Total: 43',1,'Glue runs left to right: once text is involved, + glues instead of adding.'],['Total: 7',0,'Only with brackets: \'Total: \' + (4 + 3).'],['Total: 4 + 3',0,'The 4 and 3 have no quotes, so they are real numbers being glued one at a time.']]},
+ 27:{q:'In a list, which slot is the FIRST item?',ch:[['[0]',1,'Lists count from zero. Everyone trips on this exactly once.'],['[1]',0,'[1] is the SECOND item.'],['[first]',0,'Slots are numbers, not words.']]},
+ 28:{q:'Math.random() gives...',ch:[['A decimal from 0 up to (not including) 1',1,'Multiply by list.length and floor it to get a valid slot number.'],['A whole number from 1 to 10',0,'It is a decimal like 0.37. The whole-number part is your job.'],['A random item from a list',0,'It knows nothing about lists. You use it to build a slot number.']]},
+ 29:{q:'Which line RUNS a trick called sayHello?',ch:[['sayHello();',1,'Round brackets press the button.'],['function sayHello() {',0,'That TEACHES the trick. Teaching is not performing.'],['sayHello;',0,'Names the machine without pressing it. Nothing runs.']]},
+ 30:{q:'In function greet(person), the word person is...',ch:[['The ingredient: filled in fresh at every call',1,'greet(\'Josh\') fills person with Josh for that one run.'],['A box that always holds Josh',0,'It holds whatever THIS call handed in.'],['A quoted word',0,'No quotes. It is a name for the incoming value.']]},
+ 31:{q:'What does return do?',ch:[['Hands a value back to whoever called the trick',1,'The call is then replaced by that value.'],['Shows a value on screen',0,'Showing is screen.textContent. return is silent.'],['Ends the whole program',0,'It ends the trick, not the program.']]},
+ 33:{q:'if (score > 5) with score holding 5: does the block run?',ch:[['No: 5 > 5 is false',1,'Greater-than does not include equal. That is what >= is for.'],['Yes: 5 is big enough',0,'5 is not greater than 5.'],['It crashes',0,'A false test is not an error; the block is just skipped.']]},
+ 34:{q:'The else road runs when...',ch:[['The if test was false',1,'One test, two roads, exactly one taken.'],['The if test was true',0,'Then the if road runs and else is skipped.'],['Always, after the if',0,'Never both. else means otherwise.']]},
+ 35:{q:'In an if / else if / else chain, how many doors open?',ch:[['Exactly one: the first test that passes',1,'Everything below the first open door is skipped, so order matters.'],['Every door whose test passes',0,'That would be separate ifs. A chain stops at the first hit.'],['All of them',0,'Then it would not be a choice.']]},
+ 36:{q:'a && b is true when...',ch:[['Both a and b are true',1,'AND means both. OR (||) means either.'],['Either one is true',0,'That is ||.'],['a is bigger than b',0,'&& compares truth, not size.']]},
+ 37:{q:'for (let i = 1; i <= 5; i = i + 1): how many laps?',ch:[['5',1,'1, 2, 3, 4, 5. The <= lets the 5 in.'],['4',0,'That would be i < 5.'],['6',0,'When i becomes 6 the test fails and the loop lets go.']]},
+ 38:{q:'for (const item of list) hands you...',ch:[['Each ITEM, one per lap',1,'of gives items; in would give slot numbers.'],['Each slot number',0,'That is for...in. of gives the items themselves.'],['The whole list each lap',0,'One item per lap, in order.']]},
+ 40:{q:'A while loop stops when...',ch:[['Its test is false at the top of a lap',1,'The test is asked before every lap. The first no ends it.'],['It has run 10 times',0,'It has no idea how many times; only the test matters.'],['You click the button',0,'Clicks cannot interrupt a loop. It must run out on its own.']]},
+ 42:{q:'Math.floor(Math.random() * list.length) gives...',ch:[['A valid random slot number for the list',1,'0 up to length-1, whole numbers only.'],['A random item',0,'A NUMBER. You still write list[thatNumber] to get the item.'],['Always the last slot',0,'It can be any slot, including the last.']]},
+ 44:{q:'person.name means...',ch:[['Reach into person and take the name drawer',1,'The dot opens one labelled drawer.'],['Glue person and name together',0,'Gluing is +. The dot is a reach.'],['The words person.name',0,'Only with quotes around it.']]},
+ 46:{q:'excuses[1].text means...',ch:[['Second object in the list, then its text drawer',1,'Square brackets pick the slot; the dot opens the drawer.'],['First object, then text',0,'[1] is the second slot. Zero counts.'],['The text of every excuse',0,'One slot, one object, one drawer.']]},
+ 47:{q:'person.mood = \'happy\'; does...',ch:[['Changes the mood drawer to happy',1,'Dot on the LEFT of = puts a new value in.'],['Asks whether mood is happy',0,'Asking is ===. One = is a put.'],['Makes a new box called mood',0,'It changes a drawer inside person, not a new box.']]},
+ 48:{q:'console.log writes to...',ch:[['The developer console, not the page',1,'A notebook for you. Working it out is not showing it.'],['The screen box',0,'That is screen.textContent.'],['A file on disk',0,'Nothing is saved. It is a scratch note.']]},
+ 49:{q:'\'Invalid or unexpected token\' usually means...',ch:[['Something was left unclosed: a quote, bracket or brace',1,'Count openers and closers on the line the error names.'],['The computer is broken',0,'The computer is fine. The line is not.'],['Your name is too long',0,'Length is never the problem.']]},
+ 50:{q:'typeof \'4\' answers...',ch:[['string',1,'Quotes make it text, even when it looks like a number.'],['number',0,'It LOOKS like a number. The quotes decide.'],['4',0,'typeof gives the species, never the value.']]},
+ 51:{q:'A guard is...',ch:[['An if at the door that handles bad input first',1,'Complain early, before the real work.'],['A password',0,'Nothing to do with security. It is about bad input.'],['A loop that never stops',0,'That is a bug, not a guard.']]},
+ 52:{q:'Which name tells the truth?',ch:[['excuseList',1,'Says what it holds. Good names are free documentation.'],['x',0,'Says nothing. Fine for maths, useless for a list of excuses.'],['data2',0,'Data of what? The number makes it worse.']]},
+ 53:{q:'One job per trick means...',ch:[['pickExcuse picks, showExcuse shows, neither does both',1,'Small tricks stack. A trick that does everything can be reused nowhere.'],['Every trick is one line',0,'Length is not the measure; purpose is.'],['Only one trick per file',0,'Files can hold many tricks.']]},
+ 54:{q:'DRY stands for...',ch:[['Don\'t Repeat Yourself',1,'Repeated lines become a loop or a trick.'],['Do Run Yearly',0,'No.'],['Debug, Rerun, Yell',0,'Tempting some days. No.']]}
+};
+const TWIST = {
+ 2:{ask:'Under the heading, add a <p> with one more sentence. Two elements, two hugs.',re:/<h1>[\s\S]*<\/h1>[\s\S]*<p>[^<]+<\/p>/},
+ 10:{ask:'Add a fourth thing you like. Same tag, one more line.',re:(c)=>(c.match(/<li>/g)||[]).length>=4},
+ 14:{ask:'Add a second property in the same rule: font-size: 1.2rem;',re:/font-size\s*:/},
+ 15:{ask:'Now change the ink too: add a color line to the same rule.',re:/(^|[^-\w])color\s*:/m},
+ 20:{ask:'Add a third property: a border, like border: 2px solid purple;',re:/border\s*:/},
+ 23:{ask:'Make a SECOND box with const, then show that one instead.',re:/const\s+\w+[\s\S]*const\s+\w+/},
+ 25:{ask:'Glue one more quoted piece on the end, like a question after the greeting.',re:(c)=>(c.match(/\+/g)||[]).length>=3},
+ 27:{ask:'Add a fourth excuse to the list. Keep showing [0]: the list grew, the reach did not change.',re:(c)=>(c.match(/'[^']*'\s*,|"[^"]*"\s*,/g)||[]).length>=3},
+ 29:{ask:'Call your trick TWICE. The screen looks the same, and that is the lesson: a trick can be reused.',re:/(\w+)\(\);[\s\S]*\1\(\);/},
+ 30:{ask:'Call it a second time with a different name. Which call wins on screen, and why?',re:/(\w+)\(['"][^'"]*['"]\);[\s\S]*\1\(['"][^'"]*['"]\);/},
+ 31:{ask:'Change the number you hand in. Say the answer out loud BEFORE you look.',re:(c)=>{ const m=c.match(/\w+\((\d+)\)/); return !!m && m[1]!=='5'; }},
+ 33:{ask:'Add a second if underneath that fires when the score is over 7 as well.',re:(c)=>(c.match(/\bif\s*\(/g)||[]).length>=2},
+ 35:{ask:'Add a fourth door: another else if between the existing ones.',re:(c)=>(c.match(/else\s+if/g)||[]).length>=2},
+ 36:{ask:'Swap && for || and read the result. Which days are beach days now?',re:/\|\|/},
+ 37:{ask:'Make it count to 10. One number changes; nothing else does.',re:/<=\s*10\b|<\s*11\b/},
+ 38:{ask:'Add a fourth excuse to the list. Notice the loop needs no change at all.',re:(c)=>(c.match(/'[^']*'\s*,|"[^"]*"\s*,/g)||[]).length>=3},
+ 40:{ask:'Change the bite size from 3 to 4. Predict the number of bites before you run it.',re:/-\s*(?!3\b)\d+/},
+ 42:{ask:'Add a fifth excuse. pickExcuse needs no change, because length did the counting.',re:(c)=>(c.match(/'[^']*'\s*,|"[^"]*"\s*,/g)||[]).length>=4},
+ 44:{ask:'Add a fourth drawer to the object and show THAT one.',re:(c)=>(c.match(/^\s*\w+\s*:/gm)||[]).length>=4},
+ 47:{ask:'Change the drawer TWICE before the screen line. Which change wins?',re:(c)=>(c.match(/\w+\.\w+\s*=\s*['"][^'"]*['"]\s*;/g)||[]).length>=2},
+ 50:{ask:'Ask typeof about a number and about true as well. Three species, one line or three.',re:/typeof[\s\S]*typeof/},
+ 51:{ask:'Add a second guard: complain when the name is shorter than 2 letters.',re:/\.length\s*</},
+ 54:{ask:'Make it seven days. One character changes.',re:/<=\s*7\b|<\s*8\b/}
+};
+/* progress for these mechanics lives in one key, like preds */
+let tx = {w:[], t:[]};
+try{ const p=JSON.parse(localStorage.getItem('teach2')); if (p && Array.isArray(p.w)) tx={w:p.w, t:p.t||[]}; }catch(e){}
+function txSave(){ try{ localStorage.setItem('teach2', JSON.stringify(tx)); }catch(e){} }
+function txAward(key, n){
+  if (tx.w.includes(key)) return;
+  tx.w.push(key); txSave();
+  stk.xp=(stk.xp|0)+n; saveP();
+  const xr=$('#xpTxt').getBoundingClientRect();
+  const fl=document.createElement('div'); fl.className='xpfloat'; fl.textContent='+'+n+' XP';
+  fl.style.left=xr.left+'px'; fl.style.top=(xr.top-4)+'px';
+  document.body.appendChild(fl); setTimeout(()=>fl.remove(),1300);
+}
+/* deterministic scramble that is never the answer: rotate by a third, then swap pairs */
+function scrambleIdx(n){
+  const a=[]; const r=Math.max(1, Math.floor(n/3));
+  for (let k=0;k<n;k++) a.push((k+r)%n);
+  for (let k=0;k+1<n;k+=2){ const t=a[k]; a[k]=a[k+1]; a[k+1]=t; }
+  if (a.every((v,k)=>v===k) && n>1){ const t=a[0]; a[0]=a[1]; a[1]=t; }
+  return a;
+}
+function widgets2For(i){
+  let h='';
+  const pc=PICS[i];
+  if (pc) h+='<div class="picbox"><div class="tih">&#128444; In one picture</div><svg width="0" height="0" style="position:absolute"><defs><marker id="arh" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f9d6e"/></marker></defs></svg>'+pc.svg+'<p class="piccap">'+pc.cap+'</p></div>';
+  const tl=TILES[i];
+  if (tl && !done.has(i)){
+    const pool=tl.t.concat(tl.x||[]);
+    const ord=scrambleIdx(pool.length);
+    h+='<div class="tilesbox" data-tl="'+i+'"><div class="tih">&#129513; Build the line</div><p style="margin:0 0 8px">'+tl.say+' Tap tiles in order; tap a placed tile to send it back.</p>'
+      +'<div class="tlans"><span class="tlph">your line appears here</span></div>'
+      +'<div class="tlpool">'+ord.map(k=>'<button class="tile" data-k="'+k+'">'+hlEsc(pool[k])+'</button>').join('')+'</div>'
+      +'<div class="tlmsg"></div></div>';
+  }
+  const cz=CLOZE[i];
+  if (cz && !done.has(i)){
+    const parts=cz.code.split('___');
+    const ord=scrambleIdx(cz.opts.length);
+    h+='<div class="clozebox" data-cz="'+i+'"><div class="tih">&#9998; Fill the gap</div><p style="margin:0 0 8px">One piece is missing. Tap the piece that belongs there.</p>'
+      +'<pre class="czcode">'+hlEsc(parts[0])+'<span class="czgap">____</span>'+hlEsc(parts[1]||'')+'</pre>'
+      +'<div class="czopts">'+ord.map(k=>'<button class="czo" data-k="'+k+'">'+hlEsc(cz.opts[k])+'</button>').join('')+'</div>'
+      +'<div class="czwhy"></div></div>';
+  }
+  const bg=BUGS[i];
+  if (bg && !done.has(i)){
+    h+='<div class="bugbox" data-bg="'+i+'"><div class="tih">&#128027; Spot the bug</div><p style="margin:0 0 8px">This code is wrong on exactly one line. Read it like a detective and tap the guilty line.</p>'
+      +'<div class="bglines">'+bg.lines.map((l,k)=>'<button class="bgl" data-k="'+k+'"><span class="bgn">'+(k+1)+'</span><code>'+hlEsc(l)+'</code></button>').join('')+'</div>'
+      +'<div class="bgwhy"></div></div>';
+  }
+  return h;
+}
+/* ---- Quick recall: spaced retrieval of EARLIER lessons. ---------------------
+   rc.q[k] = {b: box 0-4, d: the visit number it is next due}. A right answer
+   moves the question up a box (asked less often); a wrong one drops it to box
+   0 and it returns on the very next visit. Unasked questions from finished
+   lessons are always due, oldest lesson first, so early ideas keep coming
+   back while the newer ones are still being learned. --------------------- */
+let rc={n:0, q:{}}, rcLast=-1;
+try{ const p=JSON.parse(localStorage.getItem('recall')); if (p && p.q) rc={n:p.n|0, q:p.q}; }catch(e){}
+function rcSave(){ try{ localStorage.setItem('recall', JSON.stringify(rc)); }catch(e){} }
+const RC_GAP=[2,4,8,16,32];
+function recallPick(i){
+  /* a missed question outranks everything; then the least-known due one; then
+     never-asked questions, oldest lesson first */
+  let best=null;
+  for (const k in RECALL){
+    const n=+k; if (n===i || !done.has(n)) continue;
+    const r=rc.q[n];
+    if (r && r.d>rc.n) continue;
+    const c = r ? {n, tier:0, b:r.b, d:r.d} : {n, tier:1, b:0, d:0};
+    if (!best || c.tier<best.tier || (c.tier===best.tier && (c.b<best.b || (c.b===best.b && (c.d<best.d || (c.d===best.d && n<best.n)))))) best=c;
+  }
+  return best ? best.n : -1;
+}
+function recallShow(i){
+  document.querySelectorAll('.rcbox').forEach(x=>x.remove());
+  if (sandbox || done.size<2 || L[i].proj) return;
+  if (rcLast!==i){ rc.n++; rcLast=i; rcSave(); }
+  const k=recallPick(i); if (k<0) return;
+  const rq=RECALL[k];
+  const box=document.createElement('div'); box.className='rcbox'; box.dataset.k=k;
+  box.innerHTML='<div class="tih">&#129504; Quick recall &middot; from &ldquo;'+L[k].title+'&rdquo;</div>'
+    +'<div class="rcq">'+rq.q+'</div>'
+    +'<div class="rcch">'+rq.ch.map((c,n)=>'<button class="rco" data-n="'+n+'">'+hlEsc(c[0])+'</button>').join('')+'</div>'
+    +'<div class="rcwhy"></div><button class="rcskip" title="Ask me another time">skip</button>';
+  const h2=teachEl.querySelector('h2');
+  if (h2) h2.insertAdjacentElement('afterend', box); else teachEl.prepend(box);
+}
+/* ---- One more twist: after the tick, change your own working code. ------ */
+function twistHtml(code, ok){
+  const tw=TWIST[idx]; if (!tw || !ok || sandbox) return '';
+  const hit = (tw.re instanceof RegExp) ? tw.re.test(code) : !!tw.re(code);
+  const key='t'+idx, had=tx.t.includes(key);
+  if (hit && !had){ tx.t.push(key); txSave(); txAward('tw'+idx, 3); }
+  if (hit || had) return '<span class="wild twist done">&#127744; <b>Twist done.</b> You changed working code and it kept working. That is most of programming.</span>';
+  return '<span class="wild twist">&#127744; <b>One more twist (+3 XP):</b> '+tw.ask+' Then press &#9654; Run again.</span>';
+}
+teachEl.addEventListener('click',(e)=>{
+  const tile=e.target.closest('.tile');
+  if (tile){
+    const box=tile.closest('.tilesbox'); if (box.classList.contains('won')) return;
+    const tl=TILES[+box.dataset.tl], pool=tl.t.concat(tl.x||[]);
+    const ans=box.querySelector('.tlans'), ph=ans.querySelector('.tlph');
+    if (tile.parentElement===ans){ box.querySelector('.tlpool').appendChild(tile); }
+    else { if (ph) ph.remove(); ans.appendChild(tile); }
+    if (!ans.querySelector('.tile')) ans.innerHTML='<span class="tlph">your line appears here</span>';
+    const built=[...ans.querySelectorAll('.tile')].map(t=>pool[+t.dataset.k]).join('');
+    const msg=box.querySelector('.tlmsg');
+    if (built===tl.t.join('')){
+      box.classList.add('won');
+      msg.innerHTML='&#9989; <b>That is the line.</b> Now type it below for real, from memory if you can.';
+      txAward('tl'+box.dataset.tl, 2); guideDone('tiles');
+    } else if (ans.querySelectorAll('.tile').length>=tl.t.length){
+      msg.innerHTML='&#129300; Not quite: read it back word by word. A tile is either out of place or does not belong at all.';
+    } else msg.innerHTML='';
+    return;
+  }
+  const co=e.target.closest('.czo');
+  if (co){
+    const box=co.closest('.clozebox'); if (box.classList.contains('won')) return;
+    const cz=CLOZE[+box.dataset.cz], pick=cz.opts[+co.dataset.k];
+    if (pick===cz.ans){
+      box.classList.add('won');
+      box.querySelector('.czgap').textContent=pick; box.querySelector('.czgap').classList.add('hit');
+      box.querySelectorAll('.czo').forEach(b=>{ b.disabled=true; if (cz.opts[+b.dataset.k]===cz.ans) b.classList.add('hit'); });
+      box.querySelector('.czwhy').innerHTML='&#9989; <b>Filled.</b> '+cz.why;
+      if (!box.dataset.missed) txAward('cz'+box.dataset.cz, 2);
+      guideDone('cloze');
+    } else {
+      box.dataset.missed='1'; co.classList.add('miss'); co.disabled=true;
+      box.querySelector('.czwhy').innerHTML='&#10060; Not that one. Look at the pieces around the gap: what shape has to fit there?';
+    }
+    return;
+  }
+  const bl=e.target.closest('.bgl');
+  if (bl){
+    const box=bl.closest('.bugbox'); if (box.classList.contains('won')) return;
+    const bg=BUGS[+box.dataset.bg], k=+bl.dataset.k;
+    if (bg.bad.includes(k)){
+      box.classList.add('won');
+      box.querySelectorAll('.bgl').forEach(b=>{ b.disabled=true; if (bg.bad.includes(+b.dataset.k)) b.classList.add('hit'); });
+      box.querySelector('.bgwhy').innerHTML='&#9989; <b>Caught it.</b> '+bg.why+'<div class="bgfix">Fix: <code>'+hlEsc(bg.fix)+'</code></div>';
+      if (!box.dataset.missed) txAward('bg'+box.dataset.bg, 2);
+      guideDone('bug');
+    } else {
+      box.dataset.missed='1'; bl.classList.add('miss'); bl.disabled=true;
+      box.querySelector('.bgwhy').innerHTML='&#10060; That line is innocent. Read each line out loud and ask: does it do what the lesson says it should?';
+    }
+    return;
+  }
+  const ro=e.target.closest('.rco');
+  if (ro){
+    const box=ro.closest('.rcbox'); if (box.classList.contains('done')) return;
+    const k=+box.dataset.k, rq=RECALL[k], c=rq.ch[+ro.dataset.n], r=rc.q[k]||{b:0,d:0};
+    box.classList.add('done');
+    box.querySelectorAll('.rco').forEach((b,n)=>{ b.disabled=true; if (rq.ch[n][1]) b.classList.add('hit'); });
+    if (c[1]){ r.b=Math.min(r.b+1, RC_GAP.length-1); r.d=rc.n+RC_GAP[r.b]; }
+    else { r.b=0; r.d=rc.n+1; ro.classList.add('miss'); }
+    rc.q[k]=r; rcSave();
+    box.querySelector('.rcwhy').innerHTML=(c[1]?'&#9989; <b>Still got it.</b> ':'&#10060; <b>Worth a second look.</b> ')+c[2]
+      +(c[1]?'':' <button class="rcgo" data-go="'+k+'">Revisit that lesson &rarr;</button>');
+    const sk=box.querySelector('.rcskip'); if (sk) sk.remove();
+    if (c[1]){ stk.xp=(stk.xp|0)+1; saveP(); }
+    return;
+  }
+  const go=e.target.closest('.rcgo');
+  if (go){ loadLesson(+go.dataset.go); return; }
+  const sk=e.target.closest('.rcskip');
+  if (sk){
+    const box=sk.closest('.rcbox'), k=+box.dataset.k, r=rc.q[k]||{b:0,d:0};
+    r.d=rc.n+2; rc.q[k]=r; rcSave(); box.remove();
+  }
+});
+
 let shufState=null, traceStep=-1, predsDone=new Set();
 try{ predsDone = new Set(JSON.parse(localStorage.getItem('preds'))||[]); }catch(e){}
 function widgetsFor(i){
@@ -3294,6 +3690,7 @@ function widgetsFor(i){
     }
     h+='</div>';
   }
+  h+=widgets2For(i);
   const sh=SHUF[i];
   if (sh && !done.has(i)){
     const ord=sh.lines.map((_,k)=>k);
@@ -3396,14 +3793,16 @@ function ghostTalkOff(){
    A pulsing chip sits on the current activity; finishing it moves the chip to
    the next and glides it into view. It leads, it never gates. -------------- */
 let guideList=[], guideIdx=-1, guideDoneKinds=new Set();
-const GUIDE_LABEL={tryit:'Try the knob',shuf:'Do the warm-up',trace:'Watch it run',pred:'Make your prediction',ed:'Now type it for real'};
+const GUIDE_LABEL={tryit:'Try the knob',tiles:'Build the line',cloze:'Fill the gap',bug:'Spot the bug',shuf:'Do the warm-up',trace:'Watch it run',pred:'Make your prediction',ed:'Now type it for real'};
+const GUIDE_KIND={shufbox:'shuf',tibox:'tryit',tracebox:'trace',tilesbox:'tiles',clozebox:'cloze',bugbox:'bug'};
 function guideInit(){
   document.querySelectorAll('.guidechip').forEach(x=>x.remove());
   document.querySelectorAll('.guide-now').forEach(x=>x.classList.remove('guide-now'));
   guideList=[]; guideIdx=-1; guideDoneKinds=new Set();
   if (sandbox || done.has(idx)) return;
-  teachEl.querySelectorAll('.shufbox,.tibox,.tracebox').forEach(el=>{
-    guideList.push({el, kind: el.classList.contains('shufbox')?'shuf':el.classList.contains('tibox')?'tryit':'trace'});
+  teachEl.querySelectorAll('.shufbox,.tibox,.tracebox,.tilesbox,.clozebox,.bugbox').forEach(el=>{
+    const cls=[...el.classList].find(c=>GUIDE_KIND[c]);
+    guideList.push({el, kind: GUIDE_KIND[cls]});
   });
   const pc=document.querySelector('.predcard');
   if (pc) guideList.push({el:pc, kind:'pred'});

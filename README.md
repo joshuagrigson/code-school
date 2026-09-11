@@ -6,7 +6,8 @@ and it runs in any browser with **zero network access and zero API usage**.
 
 ## What's inside — 133 lessons
 
-Graduation is the 88 core lessons. Everything else is optional work around them.
+Graduation is the 107 required lessons — every lesson and every practice rep.
+Challenges, portfolio pieces and the Beyond track sit outside that count.
 
 | Track | Territory |
 |---|---|
@@ -26,8 +27,15 @@ Graduation is the 88 core lessons. Everything else is optional work around them.
 | **Beyond** | **15 lessons after graduation: reading and fixing code you did not write, verifying what a machine wrote, writing a spec, asking a question that gets answered, commit messages, READMEs, shipping, secrets, untrusted input, accessibility, transferring to the next language, and performance** |
 
 Reviews double as test-out exams (⚡): pass one first and it ticks the whole
-grade. Challenges are hint-free. Reps are optional drills. Beyond sits outside
-the graduation count on purpose — finishing the school still means 88 lessons.
+grade. Challenges are hint-free. Reps (🏋) are required: they count toward the
+grade and toward graduation, because the practice most likely to make something
+stick was the practice easiest to skip. Beyond sits outside the graduation count
+on purpose — it is what you do after finishing, not a moved goalpost.
+
+Every editor theme is available from the first minute of Kindergarten. Making a
+learner earn a colour scheme gates comfort, not difficulty, and the person most
+likely to need the light or high-contrast theme is the beginner who has not
+earned anything yet.
 
 Real progress lives in `localStorage` under `codeschool`, with the review
 schedule under `srs`. A save code carries all of it to another device.

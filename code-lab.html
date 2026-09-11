@@ -143,7 +143,6 @@ body.dark #duckbar{background:#2a2f38;color:var(--ink)}
 .throw{display:flex;align-items:center;gap:12px;padding:9px 10px;border:2px solid var(--line);border-radius:10px;margin:8px 0;cursor:pointer;background:none;width:100%;font-family:inherit;font-size:.95rem;color:var(--ink);text-align:left}
 .throw:hover{border-color:var(--accent)}
 .throw.cur{border-color:var(--accent);background:var(--good)}
-.throw.locked{opacity:.55;cursor:not-allowed}
 .throw .sw{display:flex;gap:3px;flex:0 0 auto;background:#111;padding:5px 6px;border-radius:6px}
 .throw .sw i{width:12px;height:12px;border-radius:3px;display:block}
 .throw .tstat{margin-left:auto;font-size:.75rem;color:var(--soft)}
@@ -2157,7 +2156,7 @@ BEY("Fast enough", "js",
  "A page that took eight seconds to load, fixed by moving one line above a loop &mdash; the line built a lookup table the loop only ever read, so the table was being rebuilt from scratch for every row. That is a real Tuesday, and the person who found it found it by counting, not by staring.");
 
 const ORDER = [];
-for (const g of GRADES) for (let i=0;i<L.length;i++) if (L[i].g===g.id && !L[i].chal && !L[i].proj && !L[i].pract) ORDER.push(i);
+for (const g of GRADES) for (let i=0;i<L.length;i++) if (L[i].g===g.id && !L[i].chal && !L[i].proj) ORDER.push(i);
 
 /* ============================ QA BANK ============================ */
 const STOP = new Set(['the','a','an','is','are','was','do','does','i','my','me','it','to','of','in','on','and','or','what','how','why','when','can','cant','dont','this','that','you','your','would','use','used','using','real','life','for','back','need','needs','about','there','will','take','much','get','got','put','thing','things','be','been','being','if','but','so','just','any','all','into','very','really','actually','should','could','did','has','have','had','am','were','who','which','whose','from','with','at','as','by','not','please','tell','explain','happens','happen','ever','even','still','also','than','then','them','they','their','our','us','we','one']);
@@ -2804,13 +2803,15 @@ function loadP(){
   let p = null;
   try{ p = JSON.parse(localStorage.getItem('codeschool')); }catch(e){}
   if (!p || !Array.isArray(p.done)) p = (location.protocol === 'file:') ? CARRIED : {done:[], idx:0};
-  done = new Set(p.done.filter(n => n >= 0 && n < L.length && !L[n].chal && !L[n].proj && !L[n].pract && !L[n].beyond));
+  done = new Set(p.done.filter(n => n >= 0 && n < L.length && !L[n].chal && !L[n].proj && !L[n].beyond));
   beyondDone = new Set((p.beyond||[]).filter(n=>n>=0&&n<L.length&&L[n].beyond));
   tested = new Set(p.tested || []);
   styleDone = new Set(p.styleDone || []);
   chalDone = new Set((p.chalDone||[]).filter(n=>n>=0&&n<L.length));
   projDone = new Set((p.projDone||[]).filter(n=>n>=0&&n<L.length));
   practDone = new Set((p.practDone||[]).filter(n=>n>=0&&n<L.length));
+  /* reps used to live in their own set; anyone who did one keeps the credit */
+  practDone.forEach(x=>{ if (L[x] && L[x].pract) done.add(x); });
   msSeen = new Set(p.ms||[]);
   edTheme = p.edTheme||'';
   sensei = !!p.sensei;
@@ -3092,14 +3093,6 @@ function runCheck(){
     document.body.appendChild(el); setTimeout(()=>el.remove(),2700);
     checkMilestones();
   }
-  else if (res.ok && L[idx].pract && !practDone.has(idx)){
-    practDone.add(idx); bumpStreak(); saveP(); renderNav(); confetti(32);
-    const xr = $('#xpTxt').getBoundingClientRect();
-    const fl = document.createElement('div'); fl.className='xpfloat'; fl.textContent='+5 XP';
-    fl.style.left = xr.left+'px'; fl.style.top = (xr.top-4)+'px';
-    document.body.appendChild(fl); setTimeout(()=>fl.remove(), 1300);
-    checkMilestones();
-  }
   else if (res.ok && L[idx].chal && !chalDone.has(idx)){
     chalDone.add(idx); bumpStreak(); saveP(); renderNav(); confetti(120);
     const el=document.createElement('div'); el.className='gbanner';
@@ -3312,7 +3305,10 @@ function normRes(les, code){
   return out;
 }
 
-const LEVELS=[[0,'Rookie'],[4,'Word Wrangler'],[8,'Tag Tamer'],[14,'Style Painter'],[19,'Name Tagger'],[22,'Button Whisperer'],[25,'Word Gluer'],[27,'List Keeper'],[29,'Trick Teacher'],[33,'Decision Maker'],[37,'Loop Rider'],[41,'Machine Builder'],[44,'Box Labeler'],[48,'Bug Detective'],[52,'Code Professional'],[57,'Graduate'],[61,'Paid Renegade'],[75,'Legend']];
+/* Thresholds are positions in the walking order, so they moved when reps became
+   required. Each one was remapped to the same point in the curriculum rather
+   than left where it was, which would have handed out "Loop Rider" in Grade 7. */
+const LEVELS=[[0,'Rookie'],[4,'Word Wrangler'],[8,'Tag Tamer'],[14,'Style Painter'],[19,'Name Tagger'],[22,'Button Whisperer'],[27,'Word Gluer'],[30,'List Keeper'],[32,'Trick Teacher'],[38,'Decision Maker'],[46,'Loop Rider'],[50,'Machine Builder'],[54,'Box Labeler'],[59,'Bug Detective'],[64,'Code Professional'],[69,'Graduate'],[75,'Paid Renegade'],[91,'Legend']];
 function levelFor(n){ let name=LEVELS[0][1]; for (const [min,t] of LEVELS) if (n>=min) name=t; return name; }
 const CCOLORS=['#2f7d5c','#1d5c8f','#d4a017','#b3542e','#7b5cb8','#c94f7c'];
 /* Celebration confetti is made of the code you actually type. Saturated hues in
@@ -3360,11 +3356,15 @@ function gradeToast(gname, allDone){
   document.body.appendChild(el);
   setTimeout(()=>el.remove(), 2700);
 }
-function coreOf(gid){ return L.map((l,i)=>({l,i})).filter(x=>x.l.g===gid && !x.l.chal && !x.l.proj && !x.l.pract && !x.l.beyond); }
-function coreTotal(){ return L.filter(l=>!l.chal && !l.proj && !l.pract && !l.beyond).length; }
-function lessonDone(i){ const l=L[i]; return l.pract?practDone.has(i) : l.chal?chalDone.has(i) : l.proj?projDone.has(i) : l.beyond?beyondDone.has(i) : done.has(i); }
+/* Reps are required. They used to be optional drills sitting outside the count,
+   which meant the practice most likely to make something stick was the practice
+   easiest to skip. They are ordinary lessons now: in the order, in the grade, and
+   in the graduation total. */
+function coreOf(gid){ return L.map((l,i)=>({l,i})).filter(x=>x.l.g===gid && !x.l.chal && !x.l.proj && !x.l.beyond); }
+function coreTotal(){ return L.filter(l=>!l.chal && !l.proj && !l.beyond).length; }
+function lessonDone(i){ const l=L[i]; return l.chal?chalDone.has(i) : l.proj?projDone.has(i) : l.beyond?beyondDone.has(i) : done.has(i); }
 function gradeDone(gid){ const ls=coreOf(gid); return ls.length>0 && ls.every(x=>done.has(x.i)); }
-function xpFor(){ let xp = done.size*10 + chalDone.size*25 + projDone.size*50 + practDone.size*5 + beyondDone.size*15 + (stk.xp|0); for (const g of GRADES){ const ls=coreOf(g.id); if (ls.length && ls.every(x=>done.has(x.i))) xp+=25; } return xp; }
+function xpFor(){ let xp = done.size*10 + chalDone.size*25 + projDone.size*50 + beyondDone.size*15 + (stk.xp|0); for (const g of GRADES){ const ls=coreOf(g.id); if (ls.length && ls.every(x=>done.has(x.i))) xp+=25; } return xp; }
 function dayKey(d){ return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
 const STREAK_BONUS={3:15,7:35,14:75,30:150};
 function bumpStreak(){
@@ -3463,17 +3463,8 @@ function renderNav(){
     for (const x of lessons){
       if (q && !x.l.title.toLowerCase().includes(q)) continue;
       const b = document.createElement('button');
-      b.className = 'navitem' + (x.i===idx && !sandbox ? ' cur':'') + (isOpen ? '' : ' ghidden');
+      b.className = 'navitem' + (x.l.pract ? ' pract' : '') + (x.i===idx && !sandbox ? ' cur':'') + (isOpen ? '' : ' ghidden');
       b.innerHTML = '<span class="tick">' + (done.has(x.i)?'✓':'') + '</span><span>' + x.l.title + '</span>';
-      b.onclick = ()=>loadLesson(x.i);
-      listEl.appendChild(b);
-    }
-    const practs = L.map((l,i)=>({l,i})).filter(x=>x.l.g===g.id && x.l.pract);
-    if (lessons.some(x=>done.has(x.i))) for (const x of practs){
-      if (q && !x.l.title.toLowerCase().includes(q)) continue;
-      const b = document.createElement('button');
-      b.className = 'navitem pract' + (x.i===idx && !sandbox ? ' cur':'') + (isOpen ? '' : ' ghidden');
-      b.innerHTML = '<span class="tick">' + (practDone.has(x.i)?'✓':'') + '</span><span>' + x.l.title + '</span>';
       b.onclick = ()=>loadLesson(x.i);
       listEl.appendChild(b);
     }
@@ -3646,8 +3637,8 @@ function openSandbox(){
   KITS=[
  {name:'Blank page', min:0, code:'<h1>Free play<\/h1>\n<p>All yours.<\/p>'},
  {name:'Personal site', min:14, code:'<style>\n  body { font-family: Georgia, serif; background: #faf7f2; padding: 30px; }\n  .card { background: white; padding: 20px; border-radius: 12px; max-width: 400px; }\n<\/style>\n<div class="card">\n  <h1>Your Name<\/h1>\n  <p>One sentence about you.<\/p>\n  <ul>\n    <li>a thing you like<\/li>\n    <li>another thing<\/li>\n  <\/ul>\n<\/div>'},
- {name:'Quiz machine', min:33, code:'<h2 id="q">Capital of France?<\/h2>\n<button id="a">Paris<\/button>\n<button id="b">London<\/button>\n<p id="screen"><\/p>\n<scr'+'ipt>\nconst screen = document.getElementById("screen");\ndocument.getElementById("a").onclick = function () { screen.textContent = "Correct!"; };\ndocument.getElementById("b").onclick = function () { screen.textContent = "Nope - try again."; };\n<\/scr'+'ipt>'},
- {name:'Mini game', min:41, code:'<h2>Click race - 10 clicks to win<\/h2>\n<button id="btn">CLICK<\/button>\n<p id="screen">0<\/p>\n<scr'+'ipt>\nconst screen = document.getElementById("screen");\nconst btn = document.getElementById("btn");\nlet count = 0;\nbtn.onclick = function () {\n  count = count + 1;\n  screen.textContent = count;\n  if (count >= 10) { screen.textContent = "YOU WIN!"; btn.disabled = true; }\n};\n<\/scr'+'ipt>'},
+ {name:'Quiz machine', min:38, code:'<h2 id="q">Capital of France?<\/h2>\n<button id="a">Paris<\/button>\n<button id="b">London<\/button>\n<p id="screen"><\/p>\n<scr'+'ipt>\nconst screen = document.getElementById("screen");\ndocument.getElementById("a").onclick = function () { screen.textContent = "Correct!"; };\ndocument.getElementById("b").onclick = function () { screen.textContent = "Nope - try again."; };\n<\/scr'+'ipt>'},
+ {name:'Mini game', min:50, code:'<h2>Click race - 10 clicks to win<\/h2>\n<button id="btn">CLICK<\/button>\n<p id="screen">0<\/p>\n<scr'+'ipt>\nconst screen = document.getElementById("screen");\nconst btn = document.getElementById("btn");\nlet count = 0;\nbtn.onclick = function () {\n  count = count + 1;\n  screen.textContent = count;\n  if (count >= 10) { screen.textContent = "YOU WIN!"; btn.disabled = true; }\n};\n<\/scr'+'ipt>'},
 ];
   const kitBtns = KITS.map((k,n)=>{
     const ok = done.size>=k.min;
@@ -5030,26 +5021,29 @@ $('#btnImport').onclick = ()=>{
     alert('Progress restored: ' + done.size + ' / ' + L.length + ' lessons.');
   }catch(e){ alert('That code did not work — make sure you pasted the whole thing.'); }
 };
+/* Every look is available from the first minute of Kindergarten. Making a
+   learner earn a colour scheme gates comfort, not difficulty - and the one
+   person most likely to need the light theme or the high-contrast one is the
+   beginner who has not earned anything yet. */
 const THEMES=[
- {id:'', name:'Classic Dark', min:0},
- {id:'th-midnight', name:'Midnight', min:9},
- {id:'th-paper', name:'Paper (light)', min:22},
- {id:'th-synth', name:'Synthwave', min:36},
- {id:'th-matrix', name:'Phosphor', min:55},
+ {id:'', name:'Classic Dark'},
+ {id:'th-midnight', name:'Midnight'},
+ {id:'th-paper', name:'Paper (light)'},
+ {id:'th-synth', name:'Synthwave'},
+ {id:'th-matrix', name:'Phosphor'},
 ];
 function applyTheme(){
   const w=document.querySelector('.edwrap');
   for (const t of THEMES) if (t.id) w.classList.remove(t.id);
   const t=THEMES.find(x=>x.id===edTheme);
-  if (t && t.id && done.size>=t.min) w.classList.add(t.id);
+  if (t && t.id) w.classList.add(t.id);
 }
 const SWATCH={'':['#1e1e1e','#569cd6','#ce9178','#dcdcaa'],'th-midnight':['#0d1b2a','#6ab0f3','#7fd1b9','#e0c285'],'th-paper':['#faf8f2','#1d5c8f','#a4571f','#7d5a9e'],'th-synth':['#241b2f','#72e0d1','#ff8fa3','#ffd166'],'th-matrix':['#0a0f0a','#4dc36b','#d8f7c0','#c6e88a']};
 function renderThemeTray(){
   $('#themeList').innerHTML = THEMES.map(t=>{
-    const unlocked = done.size>=t.min;
     const sw = SWATCH[t.id].map(c=>'<i style="background:'+c+'"></i>').join('');
-    const stat = !unlocked ? '🔒 unlocks at '+levelFor(t.min) : (t.id===edTheme ? '✓ current' : 'tap to wear');
-    return '<button class="throw'+(t.id===edTheme?' cur':'')+(unlocked?'':' locked')+'" data-th="'+t.id+'"'+(unlocked?'':' disabled')+'><span class="sw">'+sw+'</span><span>'+t.name+'</span><span class="tstat">'+stat+'</span></button>';
+    const stat = t.id===edTheme ? '✓ current' : 'tap to wear';
+    return '<button class="throw'+(t.id===edTheme?' cur':'')+'" data-th="'+t.id+'"><span class="sw">'+sw+'</span><span>'+t.name+'</span><span class="tstat">'+stat+'</span></button>';
   }).join('');
   const gradded = done.size>=coreTotal() && coreTotal()>0;
   $('#senseiRow').innerHTML = gradded
@@ -5065,7 +5059,7 @@ function renderThemeTray(){
       : '🥋 Sensei mode off<small>The hints are back. No shame in it — tools are tools.</small>';
     document.body.appendChild(el); setTimeout(()=>el.remove(),2400);
   };
-  document.querySelectorAll('#themeList .throw:not(.locked)').forEach(b=>{
+  document.querySelectorAll('#themeList .throw').forEach(b=>{
     b.onclick=()=>{ edTheme=b.dataset.th; saveP(); applyTheme(); renderThemeTray();
       const bt=$('#btnTheme'); bt.classList.remove('glow'); void bt.offsetWidth; bt.classList.add('glow');
       setTimeout(()=>bt.classList.remove('glow'), 3200); };
@@ -5084,7 +5078,7 @@ $('#xpTxt').onclick = ()=>{
   const nextL = LEVELS.find(l=>l[0]>done.size);
   $('#statsBody').innerHTML = '<p><b>⭐ '+xpFor()+' XP</b> · Level: <b>'+levelFor(done.size)+'</b>'+(nextL?' · next: '+nextL[1]+' at '+nextL[0]+' lessons':'')+'</p>'
     + rows + '<p style="margin-top:10px;font-size:.85rem;color:var(--soft)">⚔️ Challenges conquered: '+chalDone.size+' · ⚡ = tested out</p>'
-    + '<p style="font-size:.85rem;color:var(--soft)">🏋 Practice reps done: '+practDone.size+' / '+L.filter(l=>l.pract).length+'</p>'
+    + '<p style="font-size:.85rem;color:var(--soft)">🏋 Practice reps done: '+L.filter((l,i)=>l.pract&&done.has(i)).length+' / '+L.filter(l=>l.pract).length+'</p>'
     + '<p style="font-size:.85rem;color:var(--soft)">🧾 Client projects delivered: '+projDone.size+' / '+L.filter(l=>l.proj).length+'</p>'
     + '<p style="font-size:.85rem;color:var(--soft)">🔥 Streak: '+stk.cur+' day'+(stk.cur===1?'':'s')+' (best: '+stk.best+') · a day counts when you earn at least one ✓ · streaks break quietly — no guilt, the best is remembered forever</p>';
   $('#statsOv').classList.add('open');

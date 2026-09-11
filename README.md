@@ -4,7 +4,7 @@ The complete Kindergarten-through-College coding class in one self-contained,
 offline HTML file. Download it (or copy it to `C:\code-school\`), double-click,
 and it runs in any browser with **zero network access and zero API usage**.
 
-## What's inside — 123 lessons
+## What's inside — 133 lessons
 
 Graduation is the 88 core lessons. Everything else is optional work around them.
 
@@ -23,7 +23,7 @@ Graduation is the 88 core lessons. Everything else is optional work around them.
 | Hustle | Turning code into money: a marketing page, a call to action, an app on a phone |
 | Machine Room | Why one way beats another: counting work, search, hashing, sorting, Big-O |
 | Portfolio | Five client jobs graded by a sign-off checklist, unlocked by the grades they need |
-| **Beyond** | **After graduation: code you did not write, questions that get answered, secrets, and machines that write code** |
+| **Beyond** | **15 lessons after graduation: reading and fixing code you did not write, verifying what a machine wrote, writing a spec, asking a question that gets answered, commit messages, READMEs, shipping, secrets, untrusted input, accessibility, transferring to the next language, and performance** |
 
 Reviews double as test-out exams (⚡): pass one first and it ticks the whole
 grade. Challenges are hint-free. Reps are optional drills. Beyond sits outside

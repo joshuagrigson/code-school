@@ -339,6 +339,89 @@ body.dark .wcard{background:var(--panel)}
 .rcskip:hover{color:var(--ink);border-color:var(--accent)}
 #status .twist{color:var(--ink);border-top-color:var(--accent2)}
 #status .twist.done{color:var(--soft)}
+/* the hub, the drill, placement and the jump box */
+.hubhead{display:flex;align-items:center;gap:16px;margin-bottom:16px}
+.hubhead>div{flex:1;font-size:1.45rem;font-weight:700;line-height:1.2}
+.hubhead>div span{display:block;font-size:.92rem;font-weight:400;color:var(--soft);margin-top:6px;line-height:1.45}
+.ring{width:80px;height:80px;flex:0 0 auto}
+.ring circle{fill:none;stroke:var(--code);stroke-width:9}
+.ring circle.rf{stroke:var(--accent);stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dasharray .5s}
+.ring text{text-anchor:middle;font-family:Menlo,Consolas,monospace;font-size:19px;font-weight:700;fill:var(--ink)}
+.ring text.rs{font-size:10px;font-weight:400;fill:var(--soft)}
+.hubnext{display:block;width:100%;text-align:left;border:none;border-radius:14px;background:var(--accent);color:#fff;padding:16px 20px;cursor:pointer;font-family:inherit;box-shadow:0 4px 16px rgba(15,157,110,.30)}
+.hubnext:hover{filter:brightness(1.06)}
+.hubnext .hnl{display:block;font-size:1.2rem;font-weight:700}
+.hubnext .hnw{display:block;font-size:.88rem;opacity:.92;margin-top:4px;line-height:1.4}
+.hubtiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0 18px}
+.hubtile{border:2px solid var(--line);border-radius:12px;background:var(--panel);color:var(--ink);padding:10px 8px;cursor:pointer;font-family:inherit;text-align:center}
+.hubtile:hover{border-color:var(--accent)}
+.hubtile b{display:block;font-family:Menlo,Consolas,monospace;font-size:1.5rem;line-height:1.1}
+.hubtile span{display:block;font-size:.72rem;color:var(--soft);margin-top:3px;line-height:1.3}
+.hubtile.live{border-color:var(--accent2)}
+.hubtile.live b{color:var(--accent2)}
+.hubtile.warn{border-color:#b3542e}
+.hubtile.warn b{color:#b3542e}
+.hubtrack{display:flex;align-items:center;gap:10px;margin:9px 0}
+.hubtrack .htn{flex:0 0 34%;font-size:.9rem;font-weight:700;line-height:1.25}
+.hubtrack .htn span{display:block;font-size:.72rem;font-weight:400;color:var(--soft);margin-top:2px}
+.hubtrack .htb{flex:1;height:9px;background:var(--code);border-radius:5px;overflow:hidden}
+.hubtrack .htb i{display:block;height:100%;background:var(--accent);border-radius:5px;transition:width .4s}
+.hubtrack .htc{flex:0 0 auto;font-family:Menlo,Consolas,monospace;font-size:.78rem;color:var(--soft)}
+.hubtip{margin-top:18px;font-size:.84rem;color:var(--soft);line-height:1.6;border-top:1px dashed var(--line);padding-top:12px}
+.hubtip kbd{font-family:Menlo,Consolas,monospace;font-size:.78rem;background:var(--code);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:1px 5px}
+.hubskip{display:block;margin-top:8px;cursor:pointer}
+.hubskip input{margin-right:6px;vertical-align:middle}
+.hubrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.hubgo{font-family:inherit;font-size:.95rem;font-weight:700;padding:10px 16px;border:2px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink);cursor:pointer}
+.hubgo:first-child{background:var(--accent);color:#fff;border-color:var(--accent)}
+.hubgo:hover{filter:brightness(1.05)}
+.drillbar{display:flex;align-items:center;gap:10px;margin-bottom:14px;font-size:.8rem;color:var(--soft)}
+.drillbar b{font-family:Menlo,Consolas,monospace;color:var(--ink);white-space:nowrap}
+.drillprog{flex:1;height:7px;background:var(--code);border-radius:4px;overflow:hidden}
+.drillprog i{display:block;height:100%;background:var(--accent);transition:width .3s}
+.drillquit{border:1px solid var(--line);background:none;color:var(--soft);border-radius:6px;font-size:.72rem;padding:2px 9px;cursor:pointer;font-family:inherit}
+.drillquit:hover{border-color:var(--accent);color:var(--ink)}
+.drillcard{padding:14px 16px;border:2px solid var(--line);border-left:6px solid var(--accent2);border-radius:12px;background:var(--code)}
+.drillcard.place{border-left-color:#7c5cbf}
+.drillcard .rcq{font-size:1.05rem}
+.drillcard .rco{white-space:pre-wrap;font-size:.9rem}
+.drillcard .rco.dunno{font-family:inherit;font-style:italic;color:var(--soft)}
+.drillnext{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.drillgo{font-family:inherit;font-size:.95rem;font-weight:700;padding:8px 16px;border:none;border-radius:9px;background:var(--accent);color:#fff;cursor:pointer}
+.drillopen{font-family:inherit;font-size:.85rem;padding:8px 13px;border:1px solid var(--line);border-radius:9px;background:var(--panel);color:var(--soft);cursor:pointer}
+.drillopen:hover{border-color:var(--accent);color:var(--ink)}
+.drillscore{font-size:2rem;font-family:Menlo,Consolas,monospace;font-weight:700;margin-bottom:10px}
+.drillscore span{font-size:.9rem;color:var(--accent)}
+.drillmiss{margin:0 0 10px 0;padding:0;list-style:none}
+.drillmiss li{margin:5px 0}
+.drillmiss button{font-family:inherit;font-size:.88rem;padding:5px 11px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink);cursor:pointer;text-align:left}
+.drillmiss button:hover{border-color:var(--accent)}
+.drillfoot{font-size:.85rem;color:var(--soft)}
+#palette{display:none;position:fixed;inset:0;z-index:140;background:rgba(17,24,39,.45);padding:8vh 16px 16px;justify-content:center;align-items:flex-start}
+#palette.open{display:flex}
+.palbox{width:100%;max-width:560px;background:var(--panel);border:2px solid var(--line);border-radius:14px;box-shadow:0 24px 70px rgba(0,0,0,.35);overflow:hidden;display:flex;flex-direction:column;max-height:76vh}
+#palIn{border:none;border-bottom:2px solid var(--line);padding:14px 18px;font-family:inherit;font-size:1.05rem;background:var(--panel);color:var(--ink);outline:none}
+#palList{overflow-y:auto}
+.palrow{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:none;background:none;color:var(--ink);padding:8px 18px;font-family:inherit;font-size:.92rem;cursor:pointer}
+.palrow.on,.palrow:hover{background:var(--good)}
+.paltick{width:14px;flex:0 0 auto;color:var(--accent);font-weight:700}
+.palt{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.palg{flex:0 0 auto;font-size:.7rem;color:var(--soft);text-transform:uppercase;letter-spacing:.5px}
+.palnone{padding:18px;color:var(--soft);font-size:.9rem}
+body.dark .hubtile,body.dark .hubgo,body.dark .drillopen,body.dark .drillmiss button{background:#22262c}
+body.dark #palette{background:rgba(0,0,0,.6)}
+@media (max-width:700px){
+  .hubtiles{grid-template-columns:repeat(2,1fr)}
+  .hubhead>div{font-size:1.25rem}
+  .hubtrack .htn{flex:0 0 42%}
+  #palette{padding:4vh 10px 10px}
+}
+.wdoors{display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.wdoors button{font-family:inherit;font-size:1rem;font-weight:700;padding:12px 16px;border:2px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink);cursor:pointer;text-align:left;line-height:1.35}
+.wdoors button small{display:block;font-weight:400;font-size:.82rem;color:var(--soft);margin-top:3px}
+.wdoors button:first-child{background:var(--accent);color:#fff;border-color:var(--accent)}
+.wdoors button:first-child small{color:rgba(255,255,255,.9)}
+.wdoors button:hover{filter:brightness(1.05);border-color:var(--accent)}
 #ghosttalk{display:none;font-size:.97rem;line-height:1.45;padding:9px 13px;border:2px solid var(--goodline);border-left:6px solid var(--accent);border-radius:10px;background:var(--good);color:var(--ink);box-shadow:0 2px 10px rgba(0,0,0,.10)}
 #ghosttalk.on{display:block}
 #ghosttalk b{font-family:'JetBrains Mono',Consolas,monospace;font-size:1.02em}
@@ -399,6 +482,7 @@ button:focus-visible,.navitem:focus-visible,#ed:focus-visible,input:focus-visibl
   <button class="hbtn" id="btnNav" title="Hide the lesson list for more typing room" aria-label="Hide the lesson list">☰</button>
   <button class="hbtn" id="btnDark" title="Toggle dark mode" aria-label="Toggle dark mode">🌙</button>
   <button class="hbtn" id="btnReplay" style="display:none">🏆 Do it all again</button>
+  <button class="hbtn" id="btnHub" title="The hub: what should I do next?">🏠 Hub</button>
   <button class="hbtn" id="btnSandbox">Free play</button>
   <button class="hbtn" id="btnQA">Ask a question</button>
 </header>
@@ -440,6 +524,7 @@ button:focus-visible,.navitem:focus-visible,#ed:focus-visible,input:focus-visibl
   <button data-tab="tab-code">⌨️ Code</button>
   <button data-tab="tab-result">▶ Result</button>
 </div>
+<div id="palette"><div class="palbox"><input id="palIn" placeholder="Jump to a lesson, or type what you want to do…" aria-label="Jump to a lesson or action"><div id="palList"></div></div></div>
 <div id="welcome"><div class="wcard">
   <h2>Welcome to Code Lab 👋</h2>
   <p>You are going to learn to code by <b>doing</b> — no lectures, no setup, no way to break anything.</p>
@@ -450,7 +535,11 @@ button:focus-visible,.navitem:focus-visible,#ed:focus-visible,input:focus-visibl
   </ol>
   <p>Stuck? <b>Help me</b> gives a hint, and the built-in teacher explains any mistake in plain English. Most people finish a grade in one relaxed evening &mdash; there is no clock and no falling behind.</p>
   <p style="font-size:.85rem;color:#6b6058">Experienced developer? <a href="https://github.com/joshuagrigson/code-school#for-skeptics" target="_blank" rel="noopener">Read the pedagogy, then view-source and judge us.</a> Reviews double as test-out exams (⚡).</p>
-  <button id="wStart">Start Kindergarten &rarr;</button>
+  <div class="wdoors">
+    <button id="wStart">I have never written code<small>Start at the very beginning. You will be typing within a minute.</small></button>
+    <button id="wPlace">I already know some of this<small>A two-minute placement: one question per grade, and we tick off whatever you can prove.</small></button>
+    <button id="wHub">Show me the hub first<small>One screen that always tells you what to do next.</small></button>
+  </div>
 </div></div>
 <div id="certOv"><div class="wcard"><div class="cert" id="certBody"></div><div id="certBtns" style="display:flex;gap:8px;margin-top:14px"><button id="certPrint" style="flex:1;background:var(--accent);color:#fff;border:none;font-family:inherit;font-size:1rem;padding:10px;border-radius:8px;cursor:pointer">🖨 Print / save as PDF</button><button id="certClose" style="flex:0 0 auto;border:2px solid var(--line);background:none;border-radius:8px;padding:10px 14px;cursor:pointer;font-family:inherit;color:var(--ink)">Close</button></div></div></div>
 <div id="statsOv"><div class="wcard"><h2>Your stats</h2><div id="statsBody"></div><button id="statsClose" style="width:100%;margin-top:12px;border:2px solid var(--line);background:none;border-radius:8px;padding:10px;cursor:pointer;font-family:inherit;color:var(--ink)">Close</button></div></div>
@@ -2420,14 +2509,17 @@ const edEl=$('#ed'), hlEl=$('#hl'), teachEl=$('#teach'), goalEl=$('#goal'), stat
 let idx = 0, done = new Set(), tested = new Set(), leadStep = 0, sandbox = false, checkTimer = null, solShown = false;
 let ghostOn = true, ghostLap = false, ghostTarget = '', ghostRevealed = 0, ghostTimer = null, assistedKeys = 0, typedThisLesson = false, ghostFrom = 0;
 let chalDone = new Set(), projDone = new Set(), practDone = new Set(), msSeen = new Set(), edTheme = '', sensei = false, certName = '';
+let beyondDone = new Set();   /* the post-graduation track, kept out of the graduation count */
+let hub = false, drillOn = false;  /* the hub and the drill borrow the teach panel */
 let stk = {last:'', cur:0, best:0, xp:0};
 
-function saveP(){ try{ localStorage.setItem('codeschool', JSON.stringify({done:[...done], idx, tested:[...tested], chalDone:[...chalDone], projDone:[...projDone], practDone:[...practDone], ms:[...msSeen], edTheme, sensei, certName, stk, styleDone:[...styleDone]})); }catch(e){} }
+function saveP(){ try{ localStorage.setItem('codeschool', JSON.stringify({done:[...done], idx, tested:[...tested], chalDone:[...chalDone], projDone:[...projDone], practDone:[...practDone], ms:[...msSeen], edTheme, sensei, certName, stk, styleDone:[...styleDone], beyond:[...beyondDone]})); }catch(e){} }
 function loadP(){
   let p = null;
   try{ p = JSON.parse(localStorage.getItem('codeschool')); }catch(e){}
   if (!p || !Array.isArray(p.done)) p = (location.protocol === 'file:') ? CARRIED : {done:[], idx:0};
-  done = new Set(p.done.filter(n => n >= 0 && n < L.length && !L[n].chal && !L[n].proj && !L[n].pract));
+  done = new Set(p.done.filter(n => n >= 0 && n < L.length && !L[n].chal && !L[n].proj && !L[n].pract && !L[n].beyond));
+  beyondDone = new Set((p.beyond||[]).filter(n=>n>=0&&n<L.length&&L[n].beyond));
   tested = new Set(p.tested || []);
   styleDone = new Set(p.styleDone || []);
   chalDone = new Set((p.chalDone||[]).filter(n=>n>=0&&n<L.length));
@@ -2599,6 +2691,7 @@ function markErr(range){
 }
 let graded = false;
 function previewOnly(){
+  if (hub || drillOn) return;
   syncHl(); errEl.innerHTML=''; graded = false;
   if (sandbox){ outEl.srcdoc = edEl.value; return; }
   outEl.srcdoc = buildDoc(L[idx], edEl.value);
@@ -2607,6 +2700,7 @@ function previewOnly(){
   btnNext.style.display='none';
 }
 function runCheck(){
+  if (hub || drillOn) return;
   syncHl();
   if (sandbox) return;
   graded = true;
@@ -2691,13 +2785,20 @@ function runCheck(){
     btnNext.style.display = 'none';
     return;
   }
-  if (res.ok && !L[idx].chal && !L[idx].proj && assistedKeys >= 12 && !(L[idx].pract ? practDone.has(idx) : done.has(idx))){
+  if (res.ok && !L[idx].chal && !L[idx].proj && assistedKeys >= 12 && !lessonDone(idx)){
     statusEl.innerHTML = '✓ ' + 'That was the guided lap &mdash; the faint text typed along with you. Hit <b>↺ Start over</b> and run it solo: the ✓ (and the XP) go to your fingers. You just typed the whole thing once, so the second lap is faster than you think.';
     btnNext.style.display = 'none';
     ghostLap = true;
     return;
   }
-  if (res.ok && L[idx].pract && !practDone.has(idx)){
+  if (res.ok && L[idx].beyond && !beyondDone.has(idx)){
+    beyondDone.add(idx); bumpStreak(); saveP(); renderNav(); confetti(110);
+    const el=document.createElement('div'); el.className='gbanner';
+    el.innerHTML='\uD83E\uDDED Beyond the school!<small>+15 XP \u2014 that is real-world work, not a exercise.</small>';
+    document.body.appendChild(el); setTimeout(()=>el.remove(),2700);
+    checkMilestones();
+  }
+  else if (res.ok && L[idx].pract && !practDone.has(idx)){
     practDone.add(idx); bumpStreak(); saveP(); renderNav(); confetti(32);
     const xr = $('#xpTxt').getBoundingClientRect();
     const fl = document.createElement('div'); fl.className='xpfloat'; fl.textContent='+5 XP';
@@ -2965,10 +3066,11 @@ function gradeToast(gname, allDone){
   document.body.appendChild(el);
   setTimeout(()=>el.remove(), 2700);
 }
-function coreOf(gid){ return L.map((l,i)=>({l,i})).filter(x=>x.l.g===gid && !x.l.chal && !x.l.proj && !x.l.pract); }
-function coreTotal(){ return L.filter(l=>!l.chal && !l.proj && !l.pract).length; }
+function coreOf(gid){ return L.map((l,i)=>({l,i})).filter(x=>x.l.g===gid && !x.l.chal && !x.l.proj && !x.l.pract && !x.l.beyond); }
+function coreTotal(){ return L.filter(l=>!l.chal && !l.proj && !l.pract && !l.beyond).length; }
+function lessonDone(i){ const l=L[i]; return l.pract?practDone.has(i) : l.chal?chalDone.has(i) : l.proj?projDone.has(i) : l.beyond?beyondDone.has(i) : done.has(i); }
 function gradeDone(gid){ const ls=coreOf(gid); return ls.length>0 && ls.every(x=>done.has(x.i)); }
-function xpFor(){ let xp = done.size*10 + chalDone.size*25 + projDone.size*50 + practDone.size*5 + (stk.xp|0); for (const g of GRADES){ const ls=coreOf(g.id); if (ls.length && ls.every(x=>done.has(x.i))) xp+=25; } return xp; }
+function xpFor(){ let xp = done.size*10 + chalDone.size*25 + projDone.size*50 + practDone.size*5 + beyondDone.size*15 + (stk.xp|0); for (const g of GRADES){ const ls=coreOf(g.id); if (ls.length && ls.every(x=>done.has(x.i))) xp+=25; } return xp; }
 function dayKey(d){ return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
 const STREAK_BONUS={3:15,7:35,14:75,30:150};
 function bumpStreak(){
@@ -3001,8 +3103,28 @@ function renderNav(){
   const listEl = $('#navList');
   const q = ($('#navSearch').value||'').trim().toLowerCase();
   listEl.innerHTML = '';
-  const curG = sandbox ? null : L[idx].g;
+  const curG = (sandbox||hub||drillOn) ? null : L[idx].g;
   for (const g of GRADES){
+    if (g.id==='B'){
+      const bs = L.map((l,i)=>({l,i})).filter(x=>x.l.g==='B');
+      if (!bs.length) continue;
+      const bd = bs.filter(x=>beyondDone.has(x.i)).length;
+      const bh = document.createElement('div'); bh.className='ghead';
+      bh.innerHTML = '<span class="garrow">\u25BC</span><span>'+(bd===bs.length?'\uD83C\uDFC5 ':'')+g.name+'<span class="gsub">'+g.sub+'</span></span><span class="gcount">'+bd+'/'+bs.length+'</span>';
+      const openB = q ? true : (g.id===curG || openGrades.has(g.id));
+      bh.classList.toggle('closed', !openB);
+      bh.onclick = ()=>{ if (openGrades.has(g.id)) openGrades.delete(g.id); else openGrades.add(g.id); renderNav(); };
+      listEl.appendChild(bh);
+      for (const x of bs){
+        if (q && !x.l.title.toLowerCase().includes(q)) continue;
+        const b = document.createElement('button');
+        b.className = 'navitem' + (x.i===idx && !sandbox && !hub ? ' cur':'') + (openB ? '' : ' ghidden');
+        b.innerHTML = '<span class="tick">' + (beyondDone.has(x.i)?'\u2713':'') + '</span><span>' + x.l.title + '</span>';
+        b.onclick = ()=>loadLesson(x.i);
+        listEl.appendChild(b);
+      }
+      continue;
+    }
     if (g.id==='P'){
       const projs = L.map((l,i)=>({l,i})).filter(x=>x.l.g==='P');
       const vis = projs.filter(x=> gradeDone(x.l.gate));
@@ -3081,7 +3203,7 @@ function renderNav(){
 }
 
 function loadLesson(i){
-  sandbox = false; idx = i;
+  sandbox = false; hub = false; drillOn = false; drill = null; placing = null; idx = i;
   $('#btnSandbox').textContent = 'Free play';
   $('#btnSandbox').title = 'An uncheckable scratch page - write anything, break nothing'; leadStep = 0; solShown = false;
   assistedKeys = 0; ghostOn = true; ghostLap = false; typedThisLesson = false; ghostFrom = 0; ghostSpoken = new Set(); ghostTalkOff(); killGhost();
@@ -3108,7 +3230,7 @@ function loadLesson(i){
   if (duckLine>-1) duckEnd(false);
   updateGhost();
   saveP(); renderNav();
-  if (done.has(idx)||chalDone.has(idx)||projDone.has(idx)||practDone.has(idx)) runCheck(); else previewOnly();
+  if (lessonDone(idx)) runCheck(); else previewOnly();
   const cp=$('#crPrev'), cn=$('#crNext');
   if (cp) cp.onclick=()=>{ const o=ORDER.indexOf(idx); if (o>0) loadLesson(ORDER[o-1]); };
   if (cn) cn.onclick=()=>{ const o=ORDER.indexOf(idx); if (o>=0 && o<ORDER.length-1) loadLesson(ORDER[o+1]); };
@@ -3221,7 +3343,7 @@ function answer(q){
 const SANDBOX_START = '<h1>Free play<\/h1>\n<p>This page is all yours. No goals, no checks.<\/p>\n<button id="btn">A button<\/button>\n<p id="screen">a screen box<\/p>';
 let KITS=[];  /* filled by openSandbox; read by the kit buttons' click handler */
 function openSandbox(){
-  sandbox = true;
+  sandbox = true; hub = false; drillOn = false;
   ghostTalkOff(); killGhost();
   document.querySelectorAll('.navtip').forEach(t=>t.remove());
   $('#btnSandbox').textContent = '\u2190 Back to lessons';
@@ -3550,36 +3672,17 @@ function widgets2For(i){
   }
   return h;
 }
-/* ---- Quick recall: spaced retrieval of EARLIER lessons. ---------------------
-   rc.q[k] = {b: box 0-4, d: the visit number it is next due}. A right answer
-   moves the question up a box (asked less often); a wrong one drops it to box
-   0 and it returns on the very next visit. Unasked questions from finished
-   lessons are always due, oldest lesson first, so early ideas keep coming
-   back while the newer ones are still being learned. --------------------- */
-let rc={n:0, q:{}}, rcLast=-1;
-try{ const p=JSON.parse(localStorage.getItem('recall')); if (p && p.q) rc={n:p.n|0, q:p.q}; }catch(e){}
-function rcSave(){ try{ localStorage.setItem('recall', JSON.stringify(rc)); }catch(e){} }
-const RC_GAP=[2,4,8,16,32];
-function recallPick(i){
-  /* a missed question outranks everything; then the least-known due one; then
-     never-asked questions, oldest lesson first */
-  let best=null;
-  for (const k in RECALL){
-    const n=+k; if (n===i || !done.has(n)) continue;
-    const r=rc.q[n];
-    if (r && r.d>rc.n) continue;
-    const c = r ? {n, tier:0, b:r.b, d:r.d} : {n, tier:1, b:0, d:0};
-    if (!best || c.tier<best.tier || (c.tier===best.tier && (c.b<best.b || (c.b===best.b && (c.d<best.d || (c.d===best.d && n<best.n)))))) best=c;
-  }
-  return best ? best.n : -1;
-}
+/* ---- Quick recall, in the lesson. One question that is actually DUE today,
+   pulled from the memory engine above so the schedule survives closing the tab.
+   Multiple-choice recall only here; gap-fills and bug-hunts surface in the
+   warm-up, where there is room for them. ---------------------------------- */
 function recallShow(i){
   document.querySelectorAll('.rcbox').forEach(x=>x.remove());
-  if (sandbox || done.size<2 || L[i].proj) return;
-  if (rcLast!==i){ rc.n++; rcLast=i; rcSave(); }
-  const k=recallPick(i); if (k<0) return;
-  const rq=RECALL[k];
-  const box=document.createElement('div'); box.className='rcbox'; box.dataset.k=k;
+  if (hub || drillOn || sandbox || L[i].proj || done.size<2) return;
+  const q = drillQueue(0).filter(id=>id[0]==='r' && itemLesson(id)!==i);
+  if (!q.length) return;
+  const id=q[0], k=itemLesson(id), rq=RECALL[k];
+  const box=document.createElement('div'); box.className='rcbox'; box.dataset.k=k; box.dataset.id=id;
   box.innerHTML='<div class="tih">&#129504; Quick recall &middot; from &ldquo;'+L[k].title+'&rdquo;</div>'
     +'<div class="rcq">'+rq.q+'</div>'
     +'<div class="rcch">'+rq.ch.map((c,n)=>'<button class="rco" data-n="'+n+'">'+hlEsc(c[0])+'</button>').join('')+'</div>'
@@ -3649,15 +3752,14 @@ teachEl.addEventListener('click',(e)=>{
     }
     return;
   }
-  const ro=e.target.closest('.rco');
+  const ro=e.target.closest('.rcbox .rco');
   if (ro){
     const box=ro.closest('.rcbox'); if (box.classList.contains('done')) return;
-    const k=+box.dataset.k, rq=RECALL[k], c=rq.ch[+ro.dataset.n], r=rc.q[k]||{b:0,d:0};
+    const k=+box.dataset.k, rq=RECALL[k], c=rq.ch[+ro.dataset.n];
     box.classList.add('done');
     box.querySelectorAll('.rco').forEach((b,n)=>{ b.disabled=true; if (rq.ch[n][1]) b.classList.add('hit'); });
-    if (c[1]){ r.b=Math.min(r.b+1, RC_GAP.length-1); r.d=rc.n+RC_GAP[r.b]; }
-    else { r.b=0; r.d=rc.n+1; ro.classList.add('miss'); }
-    rc.q[k]=r; rcSave();
+    if (!c[1]) ro.classList.add('miss');
+    srsGrade(box.dataset.id, !!c[1]);
     box.querySelector('.rcwhy').innerHTML=(c[1]?'&#9989; <b>Still got it.</b> ':'&#10060; <b>Worth a second look.</b> ')+c[2]
       +(c[1]?'':' <button class="rcgo" data-go="'+k+'">Revisit that lesson &rarr;</button>');
     const sk=box.querySelector('.rcskip'); if (sk) sk.remove();
@@ -3668,10 +3770,427 @@ teachEl.addEventListener('click',(e)=>{
   if (go){ loadLesson(+go.dataset.go); return; }
   const sk=e.target.closest('.rcskip');
   if (sk){
-    const box=sk.closest('.rcbox'), k=+box.dataset.k, r=rc.q[k]||{b:0,d:0};
-    r.d=rc.n+2; rc.q[k]=r; rcSave(); box.remove();
+    const box=sk.closest('.rcbox'), s=itemState(box.dataset.id).slice();
+    s[1]=dayNum()+2; srs.q[box.dataset.id]=s; srsSave(); box.remove();
   }
 });
+
+/* ============================================================================
+   THE MEMORY ENGINE, THE HUB, AND THE DRILL
+   ----------------------------------------------------------------------------
+   Three problems this solves, all of them borrowed from places that solved them
+   first:
+
+   1. REVIEW THAT CROSSES SESSIONS. The quick-recall card used to count lesson
+      visits, so closing the tab froze your memory schedule. Now every question
+      the school can ask is an ITEM in a day-based Leitner box (SM-2 without the
+      arithmetic): right answers push a question further out, a miss drops it to
+      the front. Spacing and retrieval are the two best-evidenced study
+      strategies there are, and neither works if the clock only ticks while you
+      are looking.
+
+   2. MISTAKES YOU CAN ACTUALLY GO BACK TO. Every miss is collected in one place
+      and drilled until it is cleared. Duolingo's Mistakes page, Anki's lapses.
+      A mistake you never see again is a mistake you keep.
+
+   3. NEVER HAVING TO DECIDE. Math Academy's real insight is not the algorithm,
+      it is that the learner is never asked "what should I do now?". The Hub
+      answers that in one button, every time.
+   ========================================================================== */
+
+const SRS_GAPS = [1, 2, 4, 8, 16, 32, 64];   /* days between reviews, by box */
+let srs = { q: {} };                          /* id -> [box, dueDay, misses, seen] */
+try { const p = JSON.parse(localStorage.getItem('srs')); if (p && p.q) srs = { q: p.q }; } catch (e) {}
+function srsSave() { try { localStorage.setItem('srs', JSON.stringify(srs)); } catch (e) {} }
+/* local-day integer, so a review scheduled "tomorrow" means the learner's tomorrow */
+function dayNum() { const d = new Date(); return Math.floor((d.getTime() - d.getTimezoneOffset() * 60000) / 864e5); }
+
+/* An item is eligible once the lesson that taught it has been passed. */
+function itemLesson(id) { return +id.slice(1); }
+function itemReady(id) { const n = itemLesson(id); return done.has(n) || practDone.has(n) || beyondDone.has(n); }
+function allItems() {
+  const out = [];
+  for (const k in RECALL) out.push('r' + k);
+  for (const k in CLOZE) out.push('c' + k);
+  for (const k in BUGS) out.push('g' + k);
+  return out.filter(itemReady);
+}
+function itemState(id) { return srs.q[id] || [0, 0, 0, 0]; }
+/* New questions are let in a few at a time. Without this, anyone who arrives with
+   half the school already finished is met by a wall of eighty "due" items, which
+   reads as debt rather than an invitation. Anki and Duolingo both meter new
+   material for exactly this reason: the backlog drains, it never announces itself. */
+const NEW_PER_SESSION = 4;
+function dueItems() {
+  const t = dayNum(), all = allItems();
+  const seen = all.filter(id => srs.q[id] && srs.q[id][1] <= t);
+  const fresh = all.filter(id => !srs.q[id]).slice(0, NEW_PER_SESSION);
+  return seen.concat(fresh);
+}
+function mistakeItems() { return allItems().filter(id => { const s = itemState(id); return s[2] > 0 && s[0] === 0; }); }
+/* misses first, then least-known, then longest overdue, then curriculum order */
+function drillQueue(n) {
+  const t = dayNum();
+  const q = dueItems().sort((a, b) => {
+    const A = itemState(a), B = itemState(b);
+    if ((A[2] > 0) !== (B[2] > 0)) return A[2] > 0 ? -1 : 1;   /* anything you have missed comes first */
+    if (A[0] !== B[0]) return A[0] - B[0];
+    if (A[1] !== B[1]) return A[1] - B[1];
+    return itemLesson(a) - itemLesson(b);
+  });
+  return n ? q.slice(0, n) : q;
+}
+function srsGrade(id, right) {
+  const s = itemState(id).slice();
+  const t = dayNum();
+  /* the interval is the one earned by the box you were IN, then you move up:
+     first success 1 day, then 2, 4, 8, 16, 32, 64 */
+  if (right) { s[1] = t + SRS_GAPS[Math.min(s[0], SRS_GAPS.length - 1)]; s[0] = Math.min(s[0] + 1, SRS_GAPS.length); }
+  else { s[0] = 0; s[1] = t; s[2] = (s[2] | 0) + 1; }
+  s[3] = (s[3] | 0) + 1;
+  srs.q[id] = s; srsSave();
+}
+/* one normalised question card, whatever kind of item it came from */
+function drillCard(id) {
+  const kind = id[0], n = itemLesson(id), title = L[n] ? L[n].title : '';
+  if (kind === 'r') {
+    const d = RECALL[n]; if (!d) return null;
+    return { les: n, head: 'Quick recall', from: title, q: d.q, code: '',
+      ch: d.ch.map(c => ({ t: c[0], ok: !!c[1], why: c[2] })) };
+  }
+  if (kind === 'c') {
+    const d = CLOZE[n]; if (!d) return null;
+    return { les: n, head: 'Fill the gap', from: title, q: 'Which piece belongs in the gap?',
+      code: d.code.split('___').join('████'),
+      ch: d.opts.map(o => ({ t: o, ok: o === d.ans,
+        why: o === d.ans ? d.why : 'Not that one. Look at the pieces either side of the gap: what shape has to fit there?' })) };
+  }
+  const d = BUGS[n]; if (!d) return null;
+  return { les: n, head: 'Spot the bug', from: title, q: 'Exactly one line is wrong. Which one?', code: '',
+    ch: d.lines.map((l, k) => ({ t: (k + 1) + '   ' + l, ok: d.bad.indexOf(k) > -1,
+      why: d.bad.indexOf(k) > -1 ? d.why + '  Fix: ' + d.fix
+        : 'That line is innocent. Read each line and ask what it is supposed to do.' })) };
+}
+
+/* ---- the drill view: one card at a time, then a summary ----------------- */
+let drill = null;   /* {ids, at, right, wrong:[], mode, title, onDone} */
+function drillStart(ids, mode, title) {
+  if (!ids.length) return false;
+  hub = false; drillOn = true; sandbox = false;
+  ghostTalkOff(); killGhost();
+  drill = { ids: ids.slice(), at: 0, right: 0, wrong: [], mode: mode, title: title };
+  $('#scaffold').style.display = 'none';
+  remindBox.style.display = 'none';
+  btnNext.style.display = 'none';
+  $('#btnHelp').style.display = 'none'; $('#btnLead').style.display = 'none'; $('#btnSol').style.display = 'none';
+  goalEl.innerHTML = '<b>' + esc(title) + '</b> No typing, no grade, no way to lose anything.';
+  statusEl.className = 'wait';
+  statusEl.innerHTML = 'Answering from memory is what MAKES the memory. Getting one wrong here is the cheapest lesson in the school.';
+  drillShow();
+  renderNav();
+  return true;
+}
+function drillShow() {
+  const d = drill;
+  if (d.at >= d.ids.length) return drillEnd();
+  const card = drillCard(d.ids[d.at]);
+  if (!card) { d.at++; return drillShow(); }
+  const ord = scrambleIdx(card.ch.length);
+  teachEl.innerHTML =
+    '<div class="drillbar"><b>' + (d.at + 1) + ' of ' + d.ids.length + '</b>'
+    + '<span class="drillprog"><i style="width:' + Math.round(100 * d.at / d.ids.length) + '%"></i></span>'
+    + '<button class="drillquit">Leave</button></div>'
+    + '<div class="drillcard" data-id="' + d.ids[d.at] + '">'
+    + '<div class="tih">' + card.head + ' &middot; from &ldquo;' + esc(card.from) + '&rdquo;</div>'
+    + '<div class="rcq">' + card.q + '</div>'
+    + (card.code ? '<pre class="czcode">' + hlEsc(card.code) + '</pre>' : '')
+    + '<div class="rcch">' + ord.map(k => '<button class="rco" data-n="' + k + '">' + hlEsc(card.ch[k].t) + '</button>').join('') + '</div>'
+    + '<div class="rcwhy"></div></div>';
+  teachEl.scrollTop = 0;
+  const first = teachEl.querySelector('.rco'); if (first) first.focus();
+}
+function drillAnswer(k) {
+  const d = drill, id = d.ids[d.at], card = drillCard(id), c = card.ch[k];
+  const box = teachEl.querySelector('.drillcard');
+  if (!box || box.classList.contains('done')) return;
+  box.classList.add('done');
+  srsGrade(id, c.ok);
+  if (c.ok) d.right++; else d.wrong.push(id);
+  box.querySelectorAll('.rco').forEach((b, n) => { b.disabled = true; if (card.ch[+b.dataset.n].ok) b.classList.add('hit'); });
+  const picked = box.querySelector('.rco[data-n="' + k + '"]');
+  if (picked && !c.ok) picked.classList.add('miss');
+  box.querySelector('.rcwhy').innerHTML =
+    (c.ok ? '&#9989; <b>Yes.</b> ' : '&#10060; <b>Not this time.</b> ') + c.why
+    + '<div class="drillnext"><button class="drillgo">' + (d.at + 1 >= d.ids.length ? 'See how you did &rarr;' : 'Next &rarr;') + '</button>'
+    + '<button class="drillopen" data-go="' + card.les + '">Open that lesson</button></div>';
+  const go = box.querySelector('.drillgo'); if (go) go.focus();
+}
+function drillEnd() {
+  const d = drill, n = d.ids.length, pct = Math.round(100 * d.right / n);
+  const left = mistakeItems().length;
+  if (d.right) { stk.xp = (stk.xp | 0) + d.right; saveP(); }
+  let msg;
+  if (d.wrong.length === 0) msg = 'Every one. That is what a memory that has settled looks like &mdash; these questions will now leave you alone for a while and come back much later.';
+  else if (pct >= 60) msg = 'Solid. The ones you missed just moved to the front of the queue, so you will see them again tomorrow rather than never.';
+  else msg = 'This is the drill doing its job. Missing them here, cheaply, is exactly how they stop being missed later. Nothing about your progress changed.';
+  teachEl.innerHTML = '<h2>' + (d.wrong.length === 0 ? 'Clean sweep' : 'Warm-up done') + '</h2>'
+    + '<div class="drillscore"><b>' + d.right + ' / ' + n + '</b> <span>+' + d.right + ' XP</span></div>'
+    + '<p>' + msg + '</p>'
+    + (d.wrong.length ? '<p><b>Coming back soon:</b></p><ul class="drillmiss">'
+        + d.wrong.map(id => { const c = drillCard(id); return '<li><button data-go="' + c.les + '">' + esc(c.from) + '</button></li>'; }).join('')
+        + '</ul>' : '')
+    + '<p class="drillfoot">' + (left ? left + ' thing' + (left === 1 ? '' : 's') + ' still in your mistakes book.' : 'Your mistakes book is empty.') + '</p>'
+    + '<div class="hubrow"><button class="hubgo" data-act="hub">&larr; Back to the hub</button>'
+    + '<button class="hubgo" data-act="next">Get on with the lesson &rarr;</button></div>';
+  statusEl.className = 'ok'; statusEl.innerHTML = 'Warm-up finished. Your schedule is updated.';
+  drill = null;
+  renderNav();
+}
+
+/* ---- the hub: the one screen that always knows what you should do next --- */
+function nextThing() {
+  const mist = mistakeItems(), due = dueItems();
+  if (mist.length >= 3) return { act: 'mistakes', n: mist.length, label: 'Fix ' + mist.length + ' things you missed',
+    why: 'These are the exact questions you got wrong. Clearing them is worth more than anything else you could do right now.' };
+  if (due.length >= 4) return { act: 'warmup', n: due.length, label: 'Two-minute warm-up',
+    why: 'A few questions from lessons you have already passed. Answering from memory is what turns having-read-it into knowing-it.' };
+  const nx = ORDER.filter(i => !L[i].beyond).find(i => !done.has(i));
+  if (nx != null) return { act: 'lesson', i: nx, label: (done.size ? 'Carry on: ' : 'Start: ') + txtTitle(nx),
+    why: done.size ? 'Where you left off.' : 'The first lesson. You will be typing within a minute.' };
+  const nb = ORDER.filter(i => L[i].beyond).find(i => !beyondDone.has(i));
+  if (nb != null) return { act: 'lesson', i: nb, label: 'Beyond: ' + txtTitle(nb),
+    why: 'You finished the school. This is the part about real work.' };
+  const np = L.map((l, i) => ({ l, i })).find(x => x.l.proj && !projDone.has(x.i) && gradeDone(x.l.gate));
+  if (np) return { act: 'lesson', i: np.i, label: txtTitle(np.i), why: 'A portfolio piece with your name on it.' };
+  const nc = L.map((l, i) => ({ l, i })).find(x => x.l.chal && !chalDone.has(x.i) && gradeDone(x.l.g));
+  if (nc) return { act: 'lesson', i: nc.i, label: txtTitle(nc.i), why: 'No hints, all you.' };
+  if (due.length) return { act: 'warmup', n: due.length, label: 'Warm-up (' + due.length + ' due)', why: 'Keep it all fresh.' };
+  return { act: 'sandbox', label: 'Free play', why: 'Everything is ticked. Go build something that is nobody’s idea but yours.' };
+}
+function txtTitle(i) { return String(L[i].title).replace(/<[^>]+>/g, '').replace(/^[^A-Za-z0-9<]+\s*/, ''); }
+function hubRing(dn, total) {
+  const pct = total ? dn / total : 0, C = 2 * Math.PI * 34;
+  return '<svg class="ring" viewBox="0 0 80 80"><circle cx="40" cy="40" r="34"/>'
+    + '<circle cx="40" cy="40" r="34" class="rf" stroke-dasharray="' + (C * pct).toFixed(1) + ' ' + C.toFixed(1) + '"/>'
+    + '<text x="40" y="38">' + dn + '</text><text x="40" y="54" class="rs">of ' + total + '</text></svg>';
+}
+function openHub() {
+  hub = true; sandbox = false; drillOn = false; drill = null;
+  ghostTalkOff(); killGhost();
+  document.querySelectorAll('.predcard,.navtip').forEach(x => x.remove());
+  $('#btnSandbox').textContent = 'Free play';
+  teachEl.dataset.lv = 2;
+  const nt = nextThing(), mist = mistakeItems().length, due = dueItems().length;
+  const total = coreTotal(), dn = done.size;
+  const bTotal = L.filter(l => l.beyond).length, bDone = beyondDone.size;
+  const hour = new Date().getHours();
+  const hi = hour < 12 ? 'Morning' : hour < 18 ? 'Afternoon' : 'Evening';
+  teachEl.innerHTML =
+    '<div class="hubhead"><div>' + hi + '.<span>' + (dn >= total && total
+      ? 'You have graduated. Everything below is the part that comes after.'
+      : 'Pick up exactly where you were. Nothing here expires.') + '</span></div>' + hubRing(dn, total) + '</div>'
+    + '<button class="hubnext" data-act="' + nt.act + '"' + (nt.i != null ? ' data-i="' + nt.i + '"' : '') + '>'
+      + '<span class="hnl">' + esc(nt.label) + '</span><span class="hnw">' + nt.why + '</span></button>'
+    + '<div class="hubtiles">'
+      + '<button class="hubtile' + (due ? ' live' : '') + '" data-act="warmup"><b>' + due + '</b><span>ready to review</span></button>'
+      + '<button class="hubtile' + (mist ? ' warn' : '') + '" data-act="mistakes"><b>' + mist + '</b><span>in your mistakes book</span></button>'
+      + '<button class="hubtile" data-act="sandbox"><b>&#9998;</b><span>free play</span></button>'
+      + '<button class="hubtile" data-act="place"><b>&#9889;</b><span>test out of what you know</span></button>'
+    + '</div>'
+    + '<div class="hubtracks">'
+      + hubTrack('The school', dn, total, 'K through College, plus the Hustle and the Machine Room')
+      + (bTotal ? hubTrack('Beyond', bDone, bTotal, 'Real work: other people’s code, shipping, safety, and machines that write code') : '')
+      + hubTrack('Portfolio', projDone.size, L.filter(l => l.proj).length, 'Finished pieces you could show someone')
+    + '</div>'
+    + '<p class="hubtip"><b>In a hurry?</b> Press <kbd>Ctrl</kbd>+<kbd>K</kbd> anywhere to jump to any lesson or action. '
+      + '<label class="hubskip"><input type="checkbox" id="hubSkip"' + (localStorage.getItem('hubskip') === '1' ? ' checked' : '') + '> Skip this screen and drop me straight into the lesson next time</label></p>';
+  goalEl.innerHTML = '<b>THE HUB.</b> One screen that always knows what you should do next.';
+  remindBox.style.display = 'none';
+  $('#scaffold').style.display = 'none';
+  btnNext.style.display = 'none';
+  $('#btnHelp').style.display = 'none'; $('#btnLead').style.display = 'none'; $('#btnSol').style.display = 'none';
+  statusEl.className = 'wait';
+  statusEl.innerHTML = due || mist
+    ? 'Warming up first takes about two minutes and is the highest-value thing on this screen.'
+    : 'Nothing is due. Straight to the lesson whenever you are ready.';
+  outEl.srcdoc = '';
+  teachEl.scrollTop = 0;
+  renderNav();
+  const b = teachEl.querySelector('.hubnext'); if (b) b.focus();
+}
+function hubTrack(name, a, b, sub) {
+  return '<div class="hubtrack"><div class="htn">' + name + '<span>' + sub + '</span></div>'
+    + '<div class="htb"><i style="width:' + (b ? Math.round(100 * a / b) : 0) + '%"></i></div>'
+    + '<div class="htc">' + a + '/' + b + '</div></div>';
+}
+
+/* ---- placement: skip what you already know, in about two minutes -------- */
+function placementIds() {
+  const out = [];
+  for (const g of GRADES) {
+    if (g.id === 'P' || g.id === 'B') continue;
+    const ks = Object.keys(RECALL).map(Number).filter(n => L[n] && L[n].g === g.id).sort((a, b) => a - b);
+    if (ks.length) out.push({ g: g.id, id: 'r' + ks[ks.length - 1] });
+  }
+  return out;
+}
+let placing = null;
+function placeStart() {
+  placing = { probes: placementIds(), at: 0, passed: [] };
+  hub = false; drillOn = true; sandbox = false;
+  killGhost(); ghostTalkOff();
+  $('#scaffold').style.display = 'none'; remindBox.style.display = 'none'; btnNext.style.display = 'none';
+  $('#btnHelp').style.display = 'none'; $('#btnLead').style.display = 'none'; $('#btnSol').style.display = 'none';
+  goalEl.innerHTML = '<b>PLACEMENT.</b> One question per grade. Answer honestly &mdash; guessing right only buys you a gap.';
+  statusEl.className = 'wait';
+  statusEl.innerHTML = 'We stop crediting grades at your first miss, so the school never skips you past something you actually need.';
+  placeShow();
+  renderNav();
+}
+function placeShow() {
+  const p = placing;
+  if (p.at >= p.probes.length) return placeEnd();
+  const probe = p.probes[p.at], card = drillCard(probe.id);
+  if (!card) { p.at++; return placeShow(); }
+  const g = GRADES.find(x => x.id === probe.g);
+  const ord = scrambleIdx(card.ch.length);
+  teachEl.innerHTML =
+    '<div class="drillbar"><b>' + g.name + '</b><span class="drillprog"><i style="width:'
+      + Math.round(100 * p.at / p.probes.length) + '%"></i></span><button class="drillquit">Stop here</button></div>'
+    + '<div class="drillcard place" data-id="' + probe.id + '">'
+    + '<div class="tih">' + g.name + ' &middot; ' + g.sub + '</div>'
+    + '<div class="rcq">' + card.q + '</div>'
+    + (card.code ? '<pre class="czcode">' + hlEsc(card.code) + '</pre>' : '')
+    + '<div class="rcch">' + ord.map(k => '<button class="rco" data-n="' + k + '">' + hlEsc(card.ch[k].t) + '</button>').join('')
+    + '<button class="rco dunno">I do not know this one</button></div>'
+    + '<div class="rcwhy"></div></div>';
+  teachEl.scrollTop = 0;
+  const f = teachEl.querySelector('.rco'); if (f) f.focus();
+}
+function placeAnswer(right) {
+  const p = placing, probe = p.probes[p.at];
+  if (right) { p.passed.push(probe.g); p.at++; placeShow(); }
+  else placeEnd();
+}
+function placeEnd() {
+  const p = placing, credited = [];
+  for (const gid of p.passed) {
+    const ls = coreOf(gid);
+    if (!ls.length) continue;
+    for (const x of ls) done.add(x.i);
+    tested.add(gid); credited.push(GRADES.find(g => g.id === gid).name);
+  }
+  saveP();
+  const nx = ORDER.filter(i => !L[i].beyond).find(i => !done.has(i));
+  placing = null;
+  teachEl.innerHTML = '<h2>' + (credited.length ? 'You are placed' : 'We start at the beginning') + '</h2>'
+    + (credited.length
+      ? '<p>Ticked off for you: <b>' + credited.join(', ') + '</b>. They are marked &#9889; in the sidebar, which means tested rather than typed.</p>'
+        + '<p>Nothing is locked. If a later lesson leans on something you skipped, click straight back and type it &mdash; that is what the sidebar is for.</p>'
+      : '<p>No credit given, and that is genuinely the better outcome. Starting at the first lesson costs you one relaxed evening and leaves no holes.</p>')
+    + (nx != null ? '<p>Next up: <b>' + esc(txtTitle(nx)) + '</b>.</p>' : '')
+    + '<div class="hubrow">' + (nx != null ? '<button class="hubgo" data-act="go" data-i="' + nx + '">Start there &rarr;</button>' : '')
+    + '<button class="hubgo" data-act="hub">Back to the hub</button></div>';
+  statusEl.className = 'ok'; statusEl.innerHTML = 'Placement finished.';
+  renderNav();
+}
+
+/* ---- one click handler for every button the hub and the drill can draw -- */
+teachEl.addEventListener('click', (e) => {
+  const opt = e.target.closest('.drillcard .rco');
+  if (opt) {
+    if (placing) { placeAnswer(!opt.classList.contains('dunno') && drillCard(placing.probes[placing.at].id).ch[+opt.dataset.n].ok); return; }
+    if (drill) drillAnswer(+opt.dataset.n);
+    return;
+  }
+  if (e.target.closest('.drillgo')) { drill.at++; drillShow(); return; }
+  const op = e.target.closest('.drillopen,.drillmiss button,[data-go]');
+  if (op && op.dataset.go != null && !op.classList.contains('rcgo')) { loadLesson(+op.dataset.go); return; }
+  if (e.target.closest('.drillquit')) { placing = null; drill = null; openHub(); return; }
+  const act = e.target.closest('[data-act]');
+  if (!act) return;
+  const a = act.dataset.act;
+  if (a === 'hub') return openHub();
+  if (a === 'go' || a === 'lesson') return loadLesson(+act.dataset.i);
+  if (a === 'next') { const nt = nextThing(); return nt.i != null ? loadLesson(nt.i) : openHub(); }
+  if (a === 'sandbox') { hub = false; drillOn = false; return openSandbox(); }
+  if (a === 'place') return placeStart();
+  if (a === 'warmup') {
+    const q = drillQueue(sessionSize());
+    if (!q.length) { statusEl.className = 'ok'; statusEl.innerHTML = 'Nothing is due for review. Your memory schedule is clear &mdash; go and type something.'; return; }
+    return drillStart(q, 'warmup', 'Warm-up: ' + q.length + ' from memory.');
+  }
+  if (a === 'mistakes') {
+    const q = mistakeItems().slice(0, Math.max(sessionSize(), 5));
+    if (!q.length) { statusEl.className = 'ok'; statusEl.innerHTML = 'Your mistakes book is empty. Everything you got wrong, you have since got right.'; return; }
+    return drillStart(q, 'mistakes', 'Mistakes book: ' + q.length + ' to clear.');
+  }
+});
+teachEl.addEventListener('change', (e) => {
+  if (e.target.id === 'hubSkip') { try { localStorage.setItem('hubskip', e.target.checked ? '1' : '0'); } catch (x) {} }
+});
+function sessionSize() { return 6; }
+
+/* ---- the jump box: every lesson and every action, two keys away --------- */
+const PAL_ACTS = [
+  { t: 'Hub — what should I do next?', f: () => openHub() },
+  { t: 'Warm-up (questions due today)', f: () => { const q = drillQueue(sessionSize()); q.length ? drillStart(q, 'warmup', 'Warm-up: ' + q.length + ' from memory.') : openHub(); } },
+  { t: 'Mistakes book', f: () => { const q = mistakeItems().slice(0, 8); q.length ? drillStart(q, 'mistakes', 'Mistakes book: ' + q.length + ' to clear.') : openHub(); } },
+  { t: 'Test out of what I already know (placement)', f: () => placeStart() },
+  { t: 'Free play sandbox', f: () => { hub = false; drillOn = false; openSandbox(); } },
+  { t: 'Run / check my code', f: () => $('#btnRun').click() },
+  { t: 'Help me (hint for this lesson)', f: () => $('#btnHelp').click() },
+  { t: 'Ask a question', f: () => $('#qaPanel').classList.add('open') },
+  { t: 'Rubber-duck my code line by line', f: () => $('#btnDuck').click() },
+  { t: 'Toggle dark mode', f: () => $('#btnDark').click() },
+  { t: 'Next lesson', f: () => { const o = ORDER.indexOf(idx); if (o > -1 && o < ORDER.length - 1) loadLesson(ORDER[o + 1]); } },
+];
+let palPick = 0;
+function palRows() {
+  const q = ($('#palIn').value || '').trim().toLowerCase();
+  const rows = [];
+  PAL_ACTS.forEach((a, n) => { if (!q || a.t.toLowerCase().includes(q)) rows.push({ k: 'a' + n, t: a.t, tag: 'do' }); });
+  L.forEach((l, i) => {
+    const t = txtTitle(i);
+    if (!q || t.toLowerCase().includes(q)) {
+      const g = GRADES.find(x => x.id === l.g);
+      rows.push({ k: 'l' + i, t: t, tag: g ? g.name : '', tick: done.has(i) || practDone.has(i) || chalDone.has(i) || projDone.has(i) || beyondDone.has(i) });
+    }
+  });
+  return rows.slice(0, 40);
+}
+function palDraw() {
+  const rows = palRows();
+  if (palPick >= rows.length) palPick = Math.max(0, rows.length - 1);
+  $('#palList').innerHTML = rows.map((r, n) =>
+    '<button class="palrow' + (n === palPick ? ' on' : '') + '" data-k="' + r.k + '">'
+    + '<span class="paltick">' + (r.tick ? '✓' : '') + '</span><span class="palt">' + esc(r.t) + '</span>'
+    + '<span class="palg">' + esc(r.tag) + '</span></button>').join('')
+    || '<div class="palnone">Nothing matches. Try fewer letters.</div>';
+  const on = $('#palList').querySelector('.palrow.on'); if (on) on.scrollIntoView({ block: 'nearest' });
+}
+function palRun(k) {
+  palClose();
+  if (k[0] === 'a') PAL_ACTS[+k.slice(1)].f();
+  else loadLesson(+k.slice(1));
+}
+function palOpen() { $('#palette').classList.add('open'); $('#palIn').value = ''; palPick = 0; palDraw(); $('#palIn').focus(); }
+function palClose() { $('#palette').classList.remove('open'); }
+$('#palIn').addEventListener('input', () => { palPick = 0; palDraw(); });
+$('#palIn').addEventListener('keydown', (e) => {
+  const rows = palRows();
+  if (e.key === 'ArrowDown') { e.preventDefault(); palPick = Math.min(palPick + 1, rows.length - 1); palDraw(); }
+  else if (e.key === 'ArrowUp') { e.preventDefault(); palPick = Math.max(palPick - 1, 0); palDraw(); }
+  else if (e.key === 'Enter') { e.preventDefault(); if (rows[palPick]) palRun(rows[palPick].k); }
+  else if (e.key === 'Escape') { e.preventDefault(); palClose(); }
+});
+$('#palList').addEventListener('click', (e) => { const r = e.target.closest('.palrow'); if (r) palRun(r.dataset.k); });
+$('#palette').addEventListener('click', (e) => { if (e.target.id === 'palette') palClose(); });
+document.addEventListener('keydown', (e) => {
+  if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) { e.preventDefault(); $('#palette').classList.contains('open') ? palClose() : palOpen(); }
+  else if (e.key === 'Escape' && $('#palette').classList.contains('open')) palClose();
+});
+$('#btnHub').onclick = () => openHub();
 
 let shufState=null, traceStep=-1, predsDone=new Set();
 try{ predsDone = new Set(JSON.parse(localStorage.getItem('preds'))||[]); }catch(e){}
@@ -3833,8 +4352,8 @@ function guideDone(kind){
   guideMark(true);
 }
 function ghostable(){
-  if (sandbox || sensei || !L[idx] || L[idx].chal || L[idx].proj || solShown || !ghostOn) return false;
-  return !(L[idx].pract ? practDone.has(idx) : done.has(idx));
+  if (sandbox || hub || drillOn || sensei || !L[idx] || L[idx].chal || L[idx].proj || solShown || !ghostOn) return false;
+  return !lessonDone(idx);
 }
 function phFor(lang){
   return lang==='html' ? 'Type your HTML here - the page below updates with every keystroke'
@@ -3917,6 +4436,7 @@ function updateGhost(){
   }
 }
 edEl.addEventListener('input', ()=>{
+  if (hub || drillOn) return;
   if (sandbox){ syncHl(); errEl.innerHTML=''; outEl.srcdoc = edEl.value; try{localStorage.setItem('sandboxCode', edEl.value);}catch(e){} return; }
   if (duckLine>-1) duckEnd(false);
   typedThisLesson = true;
@@ -4311,7 +4831,13 @@ loadLesson(idx);
 if (firstVisit) $('#welcome').classList.add('open');
 document.body.classList.toggle('sensei', sensei);
 applyTheme();
-$('#wStart').onclick = ()=>{ $('#welcome').classList.remove('open'); try{localStorage.setItem('welcomed','1');}catch(e){} loadLesson(0); };
+function welcomeDone(){ $('#welcome').classList.remove('open'); try{localStorage.setItem('welcomed','1');}catch(e){} }
+$('#wStart').onclick = ()=>{ welcomeDone(); loadLesson(0); };
+$('#wPlace').onclick = ()=>{ welcomeDone(); placeStart(); };
+$('#wHub').onclick  = ()=>{ welcomeDone(); openHub(); };
+/* A returning learner should never have to decide what to do next. */
+let skipHub=false; try{ skipHub = localStorage.getItem('hubskip')==='1'; }catch(e){}
+if (!firstVisit && !skipHub && (done.size || beyondDone.size)) openHub();
 </script>
 </body>
 </html>

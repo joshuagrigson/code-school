@@ -4,25 +4,52 @@ The complete Kindergarten-through-College coding class in one self-contained,
 offline HTML file. Download it (or copy it to `C:\code-school\`), double-click,
 and it runs in any browser with **zero network access and zero API usage**.
 
-## What's inside — 57 lessons, 14 grades
+## What's inside — 123 lessons
 
-| Grades | Territory |
+Graduation is the 88 core lessons. Everything else is optional work around them.
+
+| Track | Territory |
 |---|---|
 | K–1 | HTML: tags, attributes, lists, buttons, links, boxes |
-| 2–3 | CSS: colors, spacing, borders, classes and ids |
+| 2–3 | CSS: colours, spacing, borders, classes and ids |
 | 4–6 | JavaScript: `screen.textContent`, variables, strings vs numbers, lists, random |
-| 7 | Functions — teach, ingredients, `return`, functions calling functions (4 lessons) |
-| 8 | Choices — if, else, else-if chains, `&&`/`\|\|` (4 lessons) |
-| 9 | Loops — for, for...of, nesting, while (4 lessons) |
-| 10 | Build the Excuse-O-Matic in three staged sittings (3 lessons) |
-| 11 | Objects — labels, dot access, lists of objects, changing state (4 lessons) |
-| 12 | Debugging — console.log, reading errors, typeof, guarding input (4 lessons) |
-| College | Naming, one-job functions, DRY, the Mood Machine final project, graduation (5 lessons) |
+| 7 | Functions — teach, ingredients, `return`, functions calling functions |
+| 8 | Choices — if, else, else-if chains, `&&` / `\|\|` |
+| 9 | Loops — for, for...of, building in a loop, while |
+| 10 | Build the Excuse-O-Matic in three staged sittings |
+| 11 | Objects — labels, dot access, lists of objects, changing state |
+| 12 | Debugging — console.log, reading errors, typeof, guarding input |
+| College | Naming, one-job functions, DRY, the Mood Machine, graduation |
+| Hustle | Turning code into money: a marketing page, a call to action, an app on a phone |
+| Machine Room | Why one way beats another: counting work, search, hashing, sorting, Big-O |
+| Portfolio | Five client jobs graded by a sign-off checklist, unlocked by the grades they need |
+| **Beyond** | **After graduation: code you did not write, questions that get answered, secrets, and machines that write code** |
 
-Lesson indices 0–28 match the original build exactly, and the `CARRIED` seed
-preserves Josh's progress (28/57, resuming at "Picking at random") in any fresh
-browser. Real progress lives in `localStorage` under `codeschool` and always
-wins over the seed.
+Reviews double as test-out exams (⚡): pass one first and it ticks the whole
+grade. Challenges are hint-free. Reps are optional drills. Beyond sits outside
+the graduation count on purpose — finishing the school still means 88 lessons.
+
+Real progress lives in `localStorage` under `codeschool`, with the review
+schedule under `srs`. A save code carries all of it to another device.
+
+## The hub: never having to decide what to do next
+
+A returning learner lands on one screen with one big button and the reason
+underneath it. Mistakes outrank review, review outranks the next lesson, and it
+falls through to challenges, portfolio pieces and free play. It is skippable for
+anyone who would rather be dropped straight into the lesson, and `Ctrl`+`K`
+jumps to any lesson or action from anywhere.
+
+- **The memory engine.** Every question the school can ask — recall cards,
+  gap-fills, bug hunts — is an item in day-based Leitner boxes: 1, 2, 4, 8, 16,
+  32, 64 days, and a miss drops it to the front. Day-based, so the schedule runs
+  while the tab is closed. New questions are metered in four at a time, so
+  someone arriving mid-course meets "4 ready to review" instead of a wall.
+- **The mistakes book.** Every miss is collected and drilled until it is
+  cleared. A mistake you never see again is a mistake you keep.
+- **Placement.** The welcome offers three doors. "I already know some of this"
+  asks one question per grade and ticks off whatever you can prove, stopping at
+  the first miss so nobody is skipped past a gap.
 
 ## Features
 
@@ -30,10 +57,14 @@ wins over the seed.
   *working it out is not showing it* — via the universal `.textContent =` check
   plus a `new Function` syntax gate with friendly error rewrites.
 - **Give me a lead** reveals the answer in 4 word-snapped steps (scaffold, don't solve).
-- **Ask a question**: offline keyword-matched answer bank (32 entries).
+- **Ask a question**: offline keyword-matched answer bank (~230 entries).
 - **Free play** sandbox (self-saving, uncheckable, unbreakable).
 - Per-grade redo buttons, REMEMBER strip per language, reading level that
   "ages up" with the grades.
+- Readable in both themes: every sampled piece of text meets WCAG AA contrast,
+  and the test suite computes the real ratios from rendered styles so it cannot
+  quietly regress. The coach's verdict is a live region, and the drill announces
+  each question and verdict to a screen reader.
 
 ## Ways of teaching that are not reading
 
@@ -55,13 +86,21 @@ they exist so the typing lands on an idea that already clicked.
 | 🐛 **Spot the bug** (`BUGS`) | PRIMM *Investigate*, "errors are the curriculum" | One line is wrong; find it before the computer does, then read the fix. |
 | 🧠 **Quick recall** (`RECALL`) | Duolingo spaced repetition + mistake review | One question from an *earlier* lesson at the top of the page. Right answers push it further out; a miss brings it back next lesson with a "revisit" link. |
 | 🌀 **One more twist** (`TWIST`) | PRIMM *Modify*, Brilliant "play with it" | After the tick, one small change to make to your own working code. |
+| 🧭 **The shape of it** (`SHAPE`) | subgoal labels (Margulieux, Catrambone & Guzdial) | The plan before you type: the solution's steps as plain-English goals with no syntax in them, plus a note naming the reusable pattern. Lessons that share a shape share phrasing on purpose. |
+| 💬 **Say it in your own words** (`SAYIT`) | Explain-in-Plain-English (Lopez et al.; Murphy et al.) | After the tick, one sentence about what the code is *for*. Graded offline against synonym groups, generously. Never a gate, and a model answer appears either way. |
 | 👣 **The footpath** | Khan talk-through ordering | Chips walk the learner through the page's stations in order, ending at the editor. |
 | 👻 **The ghost coach** | worked-example fading | A guided lap where the next word types itself faintly, then a solo lap for the tick. |
 | 🦆 **The duck** | rubber-duck debugging | Explain your own code aloud, one line at a time. |
 
 Warm-ups (tiles, gap, bug, scrambled lines) disappear once a lesson is ticked;
-the picture and the recall card stay. Recall progress lives in `localStorage`
-under `recall`, the other mechanics' XP under `teach2`.
+the picture, the plan and the recall card stay. The review schedule lives in
+`localStorage` under `srs`, answered say-it-backs under `saidok`, and the other
+mechanics' XP under `teach2`.
+
+Two things were deliberately **not** taken from the apps that popularised them:
+hearts, energy and lives, which meter learning rather than teach it; and
+leagues, leaderboards and streak pressure, which reward showing up over knowing
+things. The daily streak stays because it celebrates without threatening.
 
 After College graduation the course sends learners off to build a small real project of their own — the school is deliberately self-contained.
 
@@ -75,10 +114,29 @@ HANDOFF: serve locally, click every lesson's "Show me" (all must pass) and
 "Start over" (none may pass), and verify stripped-output solutions fail.
 
 Per-lesson extras (`PRED`, `TRYIT`, `SHUF`, `TRACE`, `PICS`, `TILES`, `CLOZE`,
-`BUGS`, `RECALL`, `TWIST`, plus `RN`, `MORE`, `OLDS`, `RW`) are keyed by lesson
-index. Append new lessons at the end of their grade block rather than inserting
-mid-array, or every downstream index shifts. `TWIST` checks must be satisfiable
-while the lesson's own check still passes (ask for additions, not swaps).
+`BUGS`, `RECALL`, `TWIST`, `SHAPE`, `SAYIT`, plus `RN`, `MORE`, `OLDS`, `RW`)
+are keyed by lesson index. Append new lessons at the end of their grade block
+rather than inserting mid-array, or every downstream index shifts. `TWIST`
+checks must be satisfiable while the lesson's own check still passes (ask for
+additions, not swaps).
+
+Beyond lessons carry `beyond: true`, live in their own `beyondDone` set, and are
+excluded from `coreOf` / `coreTotal` so they never move the graduation
+goalposts. Their `rn` / `rw` fields are carried on the lesson object because
+`RN` and `RW` are declared after the lesson array is built.
+
+**Writing a checker.** Where the point of a lesson is that something is
+*removed*, the requirement must be a negative lookahead over the whole file
+(`^(?![\s\S]*OLDTHING)`). A regex that only looks for the new thing will happily
+pass a learner who added it and left the old thing sitting underneath — and in a
+chain of `if`s, the old line is still the one that runs. Write the requirements
+last, then test them against wrong answers, not just against your own solution.
+
+**The test suites** live outside the repo but the recipe is worth keeping:
+every non-project lesson must have its solution pass and its starting code fail;
+every Beyond lesson additionally runs a list of wrong-but-plausible submissions
+that must be rejected and alternative correct solutions that must be accepted.
+That second list is what catches a checker that is merely regex-shaped.
 
 ## For skeptics
 

@@ -1897,6 +1897,109 @@ const MR_WILD = {
  'Pick the right tool':'This conversation - "should this be a list or an object?" - happens in code review at every company, every week.'
 };
 
+/* ============================ BEYOND (post-graduation) ======================
+   The school ends at graduation. Work does not. Everything here is about code
+   you did not write, people you have to talk to, and machines that now write
+   drafts for you.
+
+   These lessons sit OUTSIDE the graduation count on purpose: finishing the
+   school still means 88 lessons, and Beyond is what you do afterwards, not a
+   moved goalpost.
+
+   Every checker here is written to be loophole-resistant: where the point of
+   the lesson is that something is REMOVED, the requirement is a negative
+   lookahead over the whole file, because a regex that only looks for the new
+   thing will happily pass a learner who added it and left the old thing sitting
+   underneath.                                                              */
+GRADES.push({id:'B', name:'Beyond', sub:'Real work, and machines that write code', lv:2});
+function BEY(title, lang, teach, goal, start, sol, hint, reqs, passMsg, failMsg, rn, rw){
+  const check = (c)=> all(c, reqs) ? {ok:true, msg:passMsg} : {ok:false, msg:failMsg};
+  const les = lang==='html' ? HL(title, teach, goal, start, sol, hint, check)
+                            : JL(title, teach, goal, start, sol, hint, check);
+  les.g = 'B'; les.beyond = true; les.rn = rn; les.rw = rw;
+  L.push(les);
+}
+
+BEY('Read before you touch', 'js',
+ '<p>Most working days start the same way: somebody hands you code you did not write and asks for one small change. The names are not yours, the style is not yours, and nobody is going to thank you for rewriting it.</p>'
+ +'<p>So read it first, top to bottom, saying what each line actually does rather than what you assume. Then find the <b>one line that owns the behaviour you were asked to change</b>. Not the file. Not the function. The line.</p>'
+ +'<p>Change that line and nothing else. A change you can point at is a change you can explain, and a small change is a small thing to go wrong.</p>',
+ 'The top grade now starts at 93 instead of 90. Change the one line that decides it, and leave every other line exactly as you found it.',
+ 'function gradeOne(score) {\n  if (score >= 90) { return \'A\'; }\n  if (score >= 80) { return \'B\'; }\n  if (score >= 70) { return \'C\'; }\n  return \'F\';\n}\n\nfunction gradeAll(list) {\n  let out = \'\';\n  for (const n of list) {\n    out = out + n + \'=\' + gradeOne(n) + \'  \';\n  }\n  return out;\n}\n\nscreen.textContent = gradeAll([95, 91, 83, 71, 54]);',
+ 'function gradeOne(score) {\n  if (score >= 93) { return \'A\'; }\n  if (score >= 80) { return \'B\'; }\n  if (score >= 70) { return \'C\'; }\n  return \'F\';\n}\n\nfunction gradeAll(list) {\n  let out = \'\';\n  for (const n of list) {\n    out = out + n + \'=\' + gradeOne(n) + \'  \';\n  }\n  return out;\n}\n\nscreen.textContent = gradeAll([95, 91, 83, 71, 54]);',
+ 'Exactly one line in this file decides who gets an A. Read the three tests in <code>gradeOne</code> in order and put your finger on the one that owns the boundary.',
+ [[/(>=\s*93|>\s*92)/, 'The top test now asking for <code>93</code>'],
+  [/^(?![\s\S]*(>=\s*90|>\s*89))/, 'The old <code>90</code> GONE &mdash; adding a new line above it is not changing it, and the old line would still be reached'],
+  [/>=\s*80[\s\S]*>=\s*70/, 'The B and C tests left exactly as you found them']],
+ '91 drops to a B and everything else stayed put. You made a surgical change to somebody else&rsquo;s code, which is most of the job on most days.',
+ 'One line owns the A. Change its number, and make sure the old test is gone rather than buried under a new one &mdash; a chain stops at the first door that opens.',
+ 'The smaller your change, the easier it is to review and the less there is to break. A one-line change is a <b>minimal diff</b>, and the amount of code your change could possibly affect is its <b>blast radius</b>. Keeping both small is a habit, not a talent.',
+ 'Your first ticket at a new job is almost always one line hiding inside forty thousand you have never read.');
+
+BEY('The bug you did not write', 'js',
+ '<p>This one is broken, and it is not your fault. It is still your problem.</p>'
+ +'<p>The hunt has three moves. <b>Reproduce</b> it, so you know exactly what wrong looks like. <b>Narrow</b> it, using the line number in the error as a starting point rather than a verdict. <b>Read the guilty line out loud</b>, slowly, saying what it does rather than what you meant.</p>'
+ +'<p>That last move matters here. The error will point at the line that <i>died</i>, which is often one line after the line that <i>lied</i>. The crash site and the cause are different places.</p>',
+ 'Fix this function so it stops crashing and shows the longest name.',
+ 'function longestName(names) {\n  let best = \'\';\n  for (let i = 0; i <= names.length; i = i + 1) {\n    if (names[i].length > best.length) {\n      best = names[i];\n    }\n  }\n  return best;\n}\n\nscreen.textContent = \'Longest: \' + longestName([\'Ana\', \'Benjamin\', \'Cara\']);',
+ 'function longestName(names) {\n  let best = \'\';\n  for (let i = 0; i < names.length; i = i + 1) {\n    if (names[i].length > best.length) {\n      best = names[i];\n    }\n  }\n  return best;\n}\n\nscreen.textContent = \'Longest: \' + longestName([\'Ana\', \'Benjamin\', \'Cara\']);',
+ 'In a list of three, the last real slot is <code>2</code>. Look hard at the test in the loop and ask what the biggest value of <code>i</code> is allowed to be.',
+ [[/^(?![\s\S]*<=\s*\w+\.length(?!\s*-))/, 'The loop no longer allowed to walk one slot PAST the end'],
+  [/(for\s*\([\s\S]*<\s*\w+\.length|\.length\s*-\s*1|for\s*\(\s*(const|let|var)\s+\w+\s+of\s+)/, 'A loop that still visits every real name'],
+  [/if\s*\([\s\S]*\.length[\s\S]*\)/, 'The comparison that picks the winner left intact']],
+ 'Benjamin. You reproduced a failure, read the line that lied rather than the line that died, and fixed it without disturbing anything that already worked.',
+ 'The loop still runs one lap too many, or the comparison that picks the winner has gone. Reaching past the last slot hands you nothing, and asking nothing for its length is what kills it.',
+ 'This is an <b>off-by-one error</b>. Old hands call it a <b>fence-post error</b>: ten panels of fence need eleven posts, and people miscount that every single time. And <code>Cannot read properties of undefined</code> is not an insult &mdash; it is the machine telling you, politely, that you asked for something that was never there.',
+ 'Off-by-one has broken payroll runs, page numbers and countdowns. It is nobody&rsquo;s fault and everybody&rsquo;s bug.');
+
+BEY('The machine wrote this', 'js',
+ '<p>Here is a function a machine wrote. It is tidy, it has a sensible name, and it runs without a single error message.</p>'
+ +'<p>It is also wrong, and it is wrong in the way generated code is usually wrong: it does something reasonable that is not the thing you asked for. Nothing about running cleanly makes code correct. A draft from a stranger is exactly what this is, and you are the reviewer.</p>'
+ +'<p>There is one reliable move. Take a case small enough to do in your head, work out the answer yourself first, and then compare. Eighty pounds with twenty-five percent off is sixty pounds. Ask the function and see what it says.</p>',
+ 'Fix the function so it returns the price you actually pay, then put your hand-worked answer on screen next to what the function returns.',
+ 'function priceAfterDiscount(price, percentOff) {\n  return price * (percentOff / 100);\n}\n\nscreen.textContent = \'The function says: \' + priceAfterDiscount(80, 25);',
+ 'function priceAfterDiscount(price, percentOff) {\n  return price - (price * percentOff / 100);\n}\n\nscreen.textContent = \'By hand: 60. The function says: \' + priceAfterDiscount(80, 25);',
+ 'Read the return line as a sentence. It hands back the money you <i>save</i>. You were asked for the money you <i>pay</i>.',
+ [[/^(?![\s\S]*return\s+price\s*\*\s*\(\s*percentOff\s*\/\s*100\s*\)\s*;)/, 'The machine&rsquo;s line gone, not commented out or left below your fix'],
+  [/(price\s*-|100\s*-|1\s*-)/, 'A return that takes the discount OFF the price instead of handing back the discount'],
+  [/\b60\b[\s\S]*priceAfterDiscount\s*\(/, 'Your hand-worked <code>60</code> on screen, next to what the function returns']],
+ 'They match, and you are the reason they match. Working one case out by hand before you look is the cheapest review there is, and it is the one skill that does not get less useful as the machines get better.',
+ 'Either the machine&rsquo;s line is still there, or the function still hands back the discount rather than the price, or your own answer is not on screen beside it.',
+ 'What you just did has a name: <b>verification</b>. Checking a result against something you worked out independently. The general habit of picking a small input and predicting the output before running is a <b>test case</b>, and writing those down is how professionals stop trusting their own eyes.',
+ 'Generated code is now a normal part of the job at a lot of places. What varies enormously is how much review it gets before it ships.');
+
+BEY('A question that gets answered', 'js',
+ '<p>You will get stuck on code somebody else wrote, and you will have to ask. The difference between a question that sits unanswered for three days and one answered in four minutes is not politeness. It is shape.</p>'
+ +'<p>A question that gets answered carries four things: what you <b>did</b>, what you <b>expected</b>, what <b>actually happened</b>, and the <b>smallest piece of code</b> that shows it. The last one does most of the work, because cutting your code down to the smallest version that still breaks very often tells you the answer before you finish.</p>'
+ +'<p>So build the shape. Write the function that assembles it, and the shape is yours forever.</p>',
+ 'Finish askWell so it glues all four of its ingredients into one question, then show a real question on screen.',
+ 'function askWell(did, expected, actual, code) {\n  return \'\';\n}\n\nscreen.textContent = askWell(\'\', \'\', \'\', \'\');',
+ 'function askWell(did, expected, actual, code) {\n  return \'I did: \' + did + \'. I expected: \' + expected + \'. Instead: \' + actual + \'. Smallest code: \' + code;\n}\n\nscreen.textContent = askWell(\'called total([])\', \'0 back\', \'undefined\', \'return prices[0];\');',
+ 'Glue a short quoted label in front of each ingredient, and use the ingredient names bare so the real values land in the sentence.',
+ [[/\+\s*did[\s\S]*\+\s*expected[\s\S]*\+\s*actual[\s\S]*\+\s*code/, 'All four ingredients GLUED IN by name, in order &mdash; not typed out by hand, or the function only ever asks one question'],
+  [/'[^']*'\s*\+[\s\S]*'[^']*'\s*\+[\s\S]*'[^']*'\s*\+/, 'A quoted label in front of each piece, so a reader can tell them apart'],
+  [/askWell\s*\(\s*'[^']+'/, 'A real question asked at the bottom, with something actually in it']],
+ 'That is the shape. Send a question in this form and you will get answers from strangers who owe you nothing &mdash; because you did the thinking first and made helping you cheap.',
+ 'The four ingredients have to be glued in by name with a label in front of each, and the call at the bottom needs real content rather than empty quotes.',
+ 'This shape has a name: a <b>minimal reproducible example</b>, usually shortened to <b>repro</b>. Asking for one is not a brush-off. It is the single most common reply on every bug tracker in the world, because without it nobody can help you.',
+ 'Cutting your code down to the smallest version that still breaks is called <b>reducing</b>, and it solves the problem outright often enough to be worth doing before you ask anyone.');
+
+BEY('Never in the code', 'js',
+ '<p>Your settings split into two piles, and telling them apart is a career skill.</p>'
+ +'<p><b>Configuration</b> is the boring pile: the site title, the port number, how many results per page. It can sit in the code and nothing bad happens.</p>'
+ +'<p><b>Secrets</b> are the other pile: passwords, API keys, anything that lets the holder act as you. Anything typed into a file you share is readable by everyone who ever gets that file &mdash; and deleting it later does not help, because the old versions keep a copy. Real projects keep secrets outside the code entirely and hand them in when the program starts.</p>',
+ 'Take both secrets out of the file completely, keep a note of what the program still needs, and show only the safe settings.',
+ 'const settings = {\n  siteTitle: \'My Shop\',\n  port: 8080,\n  apiKey: \'sk_live_9f3a2b7c\',\n  dbPassword: \'hunter2\'\n};\n\nscreen.textContent = \'Settings: \' + settings.siteTitle + \' \' + settings.port + \' \' + settings.apiKey;',
+ 'const config = {\n  siteTitle: \'My Shop\',\n  port: 8080\n};\n\nconst secretsNeeded = [\'apiKey\', \'dbPassword\'];\n\nscreen.textContent = config.siteTitle + \' on port \' + config.port + \' (needs \' + secretsNeeded.length + \' secrets, supplied from outside)\';',
+ 'The fix is not hiding the key behind stars. It is that the key is not in the file at all. Keep its NAME, lose its VALUE.',
+ [[/^(?![\s\S]*sk_live)/, 'The live API key gone from the file entirely &mdash; masking it on screen still leaves it in the file'],
+  [/^(?![\s\S]*hunter2)/, 'The password gone too'],
+  [/screen\.textContent\s*=[\s\S]*(siteTitle|Title)[\s\S]*(port|Port)/, 'The safe settings still shown, because hiding everything is not the goal']],
+ 'Nothing in this file can open anything now, and the program still says what it needs. That is the whole discipline: names in the code, values from outside.',
+ 'Both secret VALUES have to be gone from the file, and the safe settings still have to reach the screen. Stars on the screen do not help if the key is still typed above them.',
+ 'The outside place is usually an <b>environment variable</b> or a secrets manager, and the file that lists which ones are needed without their values is conventionally called <code>.env.example</code>. A key that has been shared by accident is <b>leaked</b>, and the only real fix is to <b>rotate</b> it &mdash; issue a new one and kill the old.',
+ 'Scanners crawl public code looking for exactly the pattern you just deleted, and a leaked cloud key can run up thousands in charges before anyone notices.');
+
 const ORDER = [];
 for (const g of GRADES) for (let i=0;i<L.length;i++) if (L[i].g===g.id && !L[i].chal && !L[i].proj && !L[i].pract) ORDER.push(i);
 
@@ -2806,7 +2909,7 @@ function runCheck(){
     }
   }
   if (res.ok) sayShow(idx);
-  statusEl.innerHTML = (res.ok ? '✓ ' : '') + res.msg + (res.ok && RW[idx] ? '<span class="wild">🌍 <b>In the wild:</b> ' + RW[idx] + '</span>' : '') + styleHtml + twistHtml(code, res.ok);
+  statusEl.innerHTML = (res.ok ? '✓ ' : '') + res.msg + (res.ok && (RW[idx]||L[idx].rw) ? '<span class="wild">🌍 <b>In the wild:</b> ' + (RW[idx]||L[idx].rw) + '</span>' : '') + styleHtml + twistHtml(code, res.ok);
   btnNext.style.display = res.ok ? 'inline-block' : 'none';
   if (res.ok && !done.has(idx) && solShown && edEl.value === L[idx].sol){
     statusEl.innerHTML = '✓ ' + 'That IS the answer — but shown is not earned. Hit <b>↺ Start over</b> and type it yourself: the ✓ (and the XP) go to your fingers, not your eyes. Typing it is faster than you think.';
@@ -2841,7 +2944,7 @@ function runCheck(){
     document.body.appendChild(el); setTimeout(()=>el.remove(),2700);
     checkMilestones();
   }
-  else if (res.ok && !L[idx].chal && !done.has(idx)){
+  else if (res.ok && !L[idx].chal && !L[idx].beyond && !done.has(idx)){
     done.add(idx); bumpStreak();
     const g=L[idx].g, ls=coreOf(g);
     if (L[idx].title.includes('Review') && ls.some(x=>!done.has(x.i))){
@@ -3241,7 +3344,7 @@ function loadLesson(i){
   const pos = gl.findIndex(x=>x.n===i);
   const op = ORDER.indexOf(i);
   const crumb = '<div class="crumb"><button id="crPrev" title="Previous lesson" aria-label="Previous lesson"'+(op<=0?' disabled':'')+'>&larr;</button><span>' + g.name + ' · ' + g.sub + ' — lesson ' + (pos+1) + ' of ' + gl.length + '</span><button id="crNext" title="Next lesson" aria-label="Next lesson"'+(op>=ORDER.length-1?' disabled':'')+'>&rarr;</button></div>';
-  teachEl.innerHTML = crumb + '<h2>' + les.title + '</h2>' + les.teach + shapeHtml(i) + widgetsFor(i) + decoderFor(les) + (RN[i] ? '<div class="realname"><b>Real name</b>' + RN[i] + '</div>' : '') + (MORE[i] ? '<div class="morebox"><b>More to chew on</b>' + MORE[i] + '</div>' : '') + (OLDS[i] ? '<div class="elders"><b class="el">📜 Lineage</b>' + OLDS[i] + '</div>' : '');
+  teachEl.innerHTML = crumb + '<h2>' + les.title + '</h2>' + les.teach + shapeHtml(i) + widgetsFor(i) + decoderFor(les) + ((RN[i]||les.rn) ? '<div class="realname"><b>Real name</b>' + (RN[i]||les.rn) + '</div>' : '') + (MORE[i] ? '<div class="morebox"><b>More to chew on</b>' + MORE[i] + '</div>' : '') + (OLDS[i] ? '<div class="elders"><b class="el">📜 Lineage</b>' + OLDS[i] + '</div>' : '');
   recallShow(i);
   goalEl.innerHTML = '<b>DO THIS:</b> ' + les.goal;
   remindTxt.innerHTML = REMIND[les.lang];

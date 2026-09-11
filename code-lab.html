@@ -1938,8 +1938,8 @@ BEY('Read before you touch', 'js',
 
 BEY('The bug you did not write', 'js',
  '<p>This one is broken, and it is not your fault. It is still your problem.</p>'
- +'<p>The hunt has three moves. <b>Reproduce</b> it, so you know exactly what wrong looks like. <b>Narrow</b> it, using the line number in the error as a starting point rather than a verdict. <b>Read the guilty line out loud</b>, slowly, saying what it does rather than what you meant.</p>'
- +'<p>That last move matters here. The error will point at the line that <i>died</i>, which is often one line after the line that <i>lied</i>. The crash site and the cause are different places.</p>',
+ +'<p>The hunt has three moves. <b>Reproduce</b> it, so you know exactly what wrong looks like &mdash; press Run and the red strip under the page tells you what the machine choked on. <b>Narrow</b> it: the message names what went wrong, so work out which line could possibly have caused that. <b>Read that line out loud</b>, slowly, saying what it does rather than what you meant.</p>'
+ +'<p>Here the strip says something was <code>undefined</code> when its length was asked for. So one line reached for a name that was not there. The line that <i>died</i> and the line that <i>lied</i> are usually different lines, and it is the liar you are hunting.</p>',
  'Fix this function so it stops crashing and shows the longest name.',
  'function longestName(names) {\n  let best = \'\';\n  for (let i = 0; i <= names.length; i = i + 1) {\n    if (names[i].length > best.length) {\n      best = names[i];\n    }\n  }\n  return best;\n}\n\nscreen.textContent = \'Longest: \' + longestName([\'Ana\', \'Benjamin\', \'Cara\']);',
  'function longestName(names) {\n  let best = \'\';\n  for (let i = 0; i < names.length; i = i + 1) {\n    if (names[i].length > best.length) {\n      best = names[i];\n    }\n  }\n  return best;\n}\n\nscreen.textContent = \'Longest: \' + longestName([\'Ana\', \'Benjamin\', \'Cara\']);',
@@ -2686,7 +2686,14 @@ function buildDoc(les, code){
       '$& if(++__laps>200000){ __loopStop(); }');
     js = 'const screen=document.getElementById("screen");const btn=document.getElementById("btn");'
       + 'let __laps=0;function __loopStop(){ if(screen){ screen.textContent="\u26a0 This loop never ends - nothing inside it pushes it toward the exit. Check the KEEP-GOING test and the change step: does the change ever make the test false?"; } throw new Error("loop guard"); }'
-      + mr + '\ntry{\n' + guarded + '\n}catch(e){}';
+      /* A thrown error used to vanish into an empty catch, so a learner whose code
+         died mid-run saw a half-drawn page and no reason. Every real browser shows
+         you the message; so does this one now, in the preview, where they are
+         already looking. The loop guard is excluded - it has already said its piece
+         on screen and its throw is only there to stop the lap. */
+      + mr + '\ntry{\n' + guarded + '\n}catch(e){ if(!e||e.message!=="loop guard"){ var __er=document.createElement("div"); __er.className="runerr";'
+      + '__er.style.cssText="margin-top:14px;padding:10px 12px;border:2px solid #c2542e;border-left:6px solid #c2542e;border-radius:8px;background:#faeae5;color:#5a2417;font:600 13px/1.5 Menlo,Consolas,monospace;white-space:pre-wrap";'
+      + '__er.textContent="⚠ The page stopped here: "+((e&&e.message)||e); document.body.appendChild(__er); } }';
   }
   let doc = '<!DOCTYPE html><html><head><meta charset="utf-8"><style>' + css + '</style></head><body>' + body;
   if (js) doc += '<scr'+'ipt>' + js + '<\/scr'+'ipt>';

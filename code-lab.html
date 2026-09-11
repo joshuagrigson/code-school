@@ -10,6 +10,9 @@
   --line:#d8dee7; --accent:#0f9d6e; --accent2:#1d5c8f; --warn:#c2542e;
   --good:#e2f3ec; --goodline:#8fd0b3; --bad:#faeae5; --badline:#e6b8a6;
   --code:#e7ebf1; --sb:#c2cbd6; --sbh:#9aa8b8;
+  /* white text needs 4.5:1 and white-on-accent is only 3.5:1, so solid buttons
+     and accent-coloured text get their own darker tokens. Borders keep --accent. */
+  --btn:#0b6b4b; --acct:#0a7550;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 *{scrollbar-width:thin;scrollbar-color:var(--sb) var(--bg)}
@@ -25,7 +28,7 @@ header h1{font-size:1.1rem;letter-spacing:.5px}
 #progBar{flex:1;max-width:260px;height:10px;background:var(--code);border-radius:5px;overflow:hidden}
 #progFill{height:100%;width:0;background:var(--accent);transition:width .3s}
 header .hbtn{margin-left:auto}
-#xpTxt{font-family:Menlo,Consolas,monospace;font-size:.85rem;color:var(--accent);white-space:nowrap}
+#xpTxt{font-family:Menlo,Consolas,monospace;font-size:.85rem;color:var(--acct);white-space:nowrap}
 .confetti{position:fixed;inset:0;pointer-events:none;z-index:99;overflow:hidden}
 .confetti i{position:absolute;top:-18px;font-family:Menlo,Consolas,monospace;font-weight:700;line-height:1;white-space:pre;opacity:.95;text-shadow:0 1px 2px rgba(0,0,0,.30);animation:cfall 3s ease-in forwards}
 @keyframes cfall{to{transform:translate(var(--dx,0px),105vh) rotate(var(--rot,540deg));opacity:.45}}
@@ -47,7 +50,7 @@ body.navhid .scaffold{max-height:90px}
 .navitem{display:flex;gap:8px;align-items:center;width:100%;text-align:left;border:none;background:none;padding:6px 12px 6px 20px;font-size:.85rem;cursor:pointer;font-family:inherit;color:var(--ink)}
 .navitem:hover{background:var(--code)}
 .navitem.cur{background:var(--good);font-weight:bold}
-.tick{width:16px;flex:0 0 auto;color:var(--accent);font-weight:bold}
+.tick{width:16px;flex:0 0 auto;color:var(--acct);font-weight:bold}
 .work{flex:1;display:flex;min-width:0}
 .left{flex:.82;display:flex;flex-direction:column;min-width:0;border-right:2px solid var(--line)}
 .teach{padding:16px 20px;overflow-y:auto;flex:1;background:var(--panel)}
@@ -67,7 +70,7 @@ body.dark .elders{background:#24272d;border-color:#42474f}
 details.ft{margin:10px 0;font-size:.9rem;color:var(--soft)}
 details.ft summary{cursor:pointer;font-size:.78rem;text-transform:uppercase;letter-spacing:1px;color:#a09488}
 details.ft p{margin:6px 0 0;line-height:1.5}
-.realname b{color:var(--accent);font-size:.7rem;text-transform:uppercase;letter-spacing:1px;margin-right:6px}
+.realname b{color:var(--acct);font-size:.7rem;text-transform:uppercase;letter-spacing:1px;margin-right:6px}
 .morebox{margin-top:18px;background:#f2f4f7;border:2px solid var(--line);border-radius:10px;padding:12px 16px}
 .decoder{margin-top:18px;background:var(--panel);border:2px solid var(--line);border-left:5px solid var(--accent);border-radius:10px;padding:12px 16px}
 .decoder>b{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--soft);margin-bottom:8px}
@@ -83,8 +86,8 @@ details.ft p{margin:6px 0 0;line-height:1.5}
 .scaffold .sclabel{position:sticky;top:0;font-size:.65rem;text-transform:uppercase;letter-spacing:1px;color:#8a8a8a;background:#161616;padding:5px 14px 2px}
 .scaffold pre{margin:0;padding:4px 14px 10px;font-family:Menlo,Consolas,monospace;font-size:.85rem;line-height:1.5;color:#d4d4d4;white-space:pre}
 .tryit{border-top:1px dashed var(--line);padding-top:8px;margin-top:8px}
-.tryit>b{color:var(--accent)}
-.gradbtn{display:inline-block;background:var(--accent);color:#fff;padding:10px 18px;border-radius:10px;text-decoration:none;font-size:1.05rem;margin:4px 0}
+.tryit>b{color:var(--acct)}
+.gradbtn{display:inline-block;background:var(--btn);color:#fff;padding:10px 18px;border-radius:10px;text-decoration:none;font-size:1.05rem;margin:4px 0}
 .gradbtn:hover{background:var(--accent2)}
 .right{flex:1;display:flex;flex-direction:column;min-width:0;padding:10px;gap:7px;overflow-y:auto;overflow-x:hidden}
 .remind{flex:0 0 auto;background:#f6f4e4;border:2px solid #ded9b8;border-radius:10px;padding:6px 12px;font-size:.8rem;font-family:Menlo,Consolas,monospace;display:flex;gap:8px;align-items:center}
@@ -105,7 +108,7 @@ body.grabbing{cursor:ns-resize;user-select:none}
 .btnrow{flex:0 0 auto;display:flex;gap:6px;padding:6px 9px;background:var(--panel);border:2px solid var(--line);border-radius:10px;flex-wrap:wrap}
 .btnrow button, header .hbtn{font-family:inherit;font-size:.83rem;padding:6px 11px;border-radius:9px;border:2px solid var(--line);background:var(--panel);cursor:pointer;color:var(--ink)}
 .btnrow button:hover, header .hbtn:hover{border-color:var(--accent)}
-#btnRun{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700}
+#btnRun{background:var(--btn);color:#fff;border-color:var(--btn);font-weight:700}
 #btnRun:hover{background:var(--accent2);border-color:var(--accent2)}
 #duckbar{display:none;align-items:center;gap:10px;padding:8px 12px;background:#eef3f8;border:2px solid var(--line);border-radius:10px;font-size:.88rem;line-height:1.4}
 body.dark #duckbar{background:#2a2f38;color:var(--ink)}
@@ -115,7 +118,7 @@ body.dark #duckbar{background:#2a2f38;color:var(--ink)}
 #duckbar button{font-family:inherit;font-size:.8rem;padding:4px 10px;border-radius:6px;border:2px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
 #duckbar button:hover{border-color:var(--accent)}
 #errlay .duckhl{background:rgba(214,164,32,.28);border-radius:3px;outline:1px solid rgba(214,164,32,.55)}
-#btnNext{background:var(--accent);color:#fff;border-color:var(--accent);display:none;animation:npulse .8s ease 2}
+#btnNext{background:var(--btn);color:#fff;border-color:var(--btn);display:none;animation:npulse .8s ease 2}
 @keyframes npulse{50%{transform:scale(1.08);box-shadow:0 0 0 6px rgba(47,125,92,.25)}}
 #status{flex:0 0 auto;padding:8px 12px;font-size:.9rem;border:2px solid var(--line);border-radius:10px;background:var(--bad);border-color:var(--badline)}
 #status.ok{background:var(--good)}
@@ -167,13 +170,13 @@ body.dark .brief{background:#24272d;border-color:#42474f}
 body.dark .pay{background:#28332c;border-color:#3a4f40}
 #status.projlist{padding:10px 14px;max-height:34vh;overflow-y:auto}
 #status.projlist .hd{display:flex;align-items:center;font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--soft);margin-bottom:8px}
-#status.projlist .pct{margin-left:auto;font-family:Menlo,Consolas,monospace;color:var(--accent);font-weight:bold}
+#status.projlist .pct{margin-left:auto;font-family:Menlo,Consolas,monospace;color:var(--acct);font-weight:bold}
 #status.projlist .bar{height:8px;background:var(--code);border-radius:4px;overflow:hidden;margin-bottom:8px}
 #status.projlist .bar i{display:block;height:100%;background:var(--accent);transition:width .3s}
 #status.projlist .story{display:flex;gap:10px;align-items:flex-start;padding:4px 0;font-size:.92rem;border-bottom:1px dashed var(--line)}
 #status.projlist .story:last-child{border-bottom:none}
 #status.projlist .story .ic{width:18px;flex:0 0 auto;text-align:center;font-weight:bold}
-#status.projlist .pass .ic{color:var(--accent)}
+#status.projlist .pass .ic{color:var(--acct)}
 #status.projlist .fail .ic{color:#b3542e}
 #status.projlist .fail .stx{color:var(--soft)}
 #status.projlist .hintb{margin-left:auto;border:1px solid var(--line);background:none;border-radius:6px;font-size:.7rem;padding:1px 8px;color:var(--soft);cursor:pointer;font-family:inherit;flex:0 0 auto}
@@ -207,7 +210,7 @@ body.sensei #btnTheme{border-color:#8a1c1c}
 .wcard h2{margin-bottom:12px}
 .wcard p{margin:0 0 10px;line-height:1.5}
 .wcard ol{margin:0 0 12px 22px;line-height:1.7}
-#welcome .wcard button{background:var(--accent);color:#fff;border:none;font-family:inherit;font-size:1.05rem;padding:12px 22px;border-radius:10px;cursor:pointer;width:100%}
+#welcome .wcard button{background:var(--btn);color:#fff;border:none;font-family:inherit;font-size:1.05rem;padding:12px 22px;border-radius:10px;cursor:pointer;width:100%}
 #welcome .wcard button:hover{background:var(--accent2)}
 #qaPanel{position:fixed;inset:auto 16px 16px auto;width:340px;max-height:70vh;background:var(--panel);border:2px solid var(--line);border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.15);display:none;flex-direction:column;overflow:hidden;z-index:50}
 #qaPanel.open{display:flex}
@@ -219,7 +222,7 @@ body.sensei #btnTheme{border-color:#8a1c1c}
 #qaOut{padding:10px 12px;overflow-y:auto;font-size:.88rem;line-height:1.5}
 #qaOut p{margin-bottom:8px}
 .hint-on #status{background:#eef;border-color:#ccd}
-body.dark{font-weight:400;--bg:#16181c;--panel:#1e2126;--ink:#e3e5e8;--soft:#9aa1a9;--line:#34393f;--code:#25292f;--sb:#31363d;--sbh:#454c56;--good:#22362c;--goodline:#40604f;--bad:#3d2c29;--badline:#63423a}
+body.dark{font-weight:400;--acct:#4fd3a0;--bg:#16181c;--panel:#1e2126;--ink:#e3e5e8;--soft:#9aa1a9;--line:#34393f;--code:#25292f;--sb:#31363d;--sbh:#454c56;--good:#22362c;--goodline:#40604f;--bad:#3d2c29;--badline:#63423a}
 body.dark .goalbox{background:#2a333d;border-color:#5f87a8}
 body.dark .goalbox b{color:#8fc1e8}
 body.dark #status.wait{background:#23262c;color:var(--soft)}
@@ -233,9 +236,9 @@ body.dark .wcard{background:var(--panel)}
 .navitem,.btnrow button,header .hbtn,.ghead{transition:background .12s,border-color .12s,color .12s}
 .tick.pop{animation:tickpop .45s ease}
 @keyframes tickpop{40%{transform:scale(1.7)}}
-.xpfloat{position:fixed;font-family:Menlo,Consolas,monospace;font-weight:bold;color:var(--accent);z-index:120;pointer-events:none;animation:xprise 1.2s ease forwards}
+.xpfloat{position:fixed;font-family:Menlo,Consolas,monospace;font-weight:bold;color:var(--acct);z-index:120;pointer-events:none;animation:xprise 1.2s ease forwards}
 .ghost{color:var(--soft);opacity:.55}
-.guidechip{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-weight:700;letter-spacing:.3px;background:var(--accent);color:#fff;border-radius:999px;padding:4px 12px;margin:0 0 8px;animation:gcpulse 1.8s ease infinite}
+.guidechip{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-weight:700;letter-spacing:.3px;background:var(--btn);color:#fff;border-radius:999px;padding:4px 12px;margin:0 0 8px;animation:gcpulse 1.8s ease infinite}
 .guide-now{outline:2px solid var(--accent);outline-offset:3px;border-radius:12px;animation:gopulse 1.8s ease infinite}
 .predcard.guide-now{outline-offset:-3px;border-radius:0}
 .predcard .guidechip{align-self:flex-start;margin:0}
@@ -250,7 +253,7 @@ body.dark .wcard{background:var(--panel)}
 .predcard .pc.hit{border-color:var(--goodline);background:var(--good)}
 .predcard .pc.miss{border-color:var(--badline);background:var(--bad)}
 .predcard .pwhy{font-size:.9rem;line-height:1.45}
-.predcard .prun{align-self:flex-start;font-family:inherit;font-size:.95rem;font-weight:700;padding:9px 16px;border:none;border-radius:9px;background:var(--accent);color:#fff;cursor:pointer}
+.predcard .prun{align-self:flex-start;font-family:inherit;font-size:.95rem;font-weight:700;padding:9px 16px;border:none;border-radius:9px;background:var(--btn);color:#fff;cursor:pointer}
 .tibox{margin:14px 0;padding:12px 14px;border:2px solid var(--line);border-left:6px solid var(--accent);border-radius:10px;background:var(--code)}
 .tibox .tih{font-size:.7rem;letter-spacing:1px;text-transform:uppercase;color:var(--soft);margin-bottom:8px}
 .tibox code.tic{display:block;font-size:.95rem;margin:8px 0;font-family:'JetBrains Mono',Consolas,monospace}
@@ -277,7 +280,7 @@ body.dark .wcard{background:var(--panel)}
 .tracebox tr.cur td{background:var(--good);border-color:var(--goodline);font-weight:700}
 .tracebox .trbtns{margin-top:9px;display:flex;gap:8px}
 .tracebox .trbtns button{font-family:inherit;font-size:.85rem;padding:6px 13px;border:2px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink);cursor:pointer}
-.tracebox .trbtns .trstep{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700}
+.tracebox .trbtns .trstep{background:var(--btn);color:#fff;border-color:var(--btn);font-weight:700}
 .tracebox .trout{margin-top:8px;font-size:.9rem;display:none}
 .tracebox .trsay{margin:0 0 10px;padding:8px 12px;border-left:4px solid var(--accent2);border-radius:8px;background:var(--panel);font-size:.92rem;line-height:1.5}
 /* six more ways of teaching: picture, tiles, gap, bug hunt, recall, twist */
@@ -348,7 +351,7 @@ body.dark .wcard{background:var(--panel)}
 .ring circle.rf{stroke:var(--accent);stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dasharray .5s}
 .ring text{text-anchor:middle;font-family:Menlo,Consolas,monospace;font-size:19px;font-weight:700;fill:var(--ink)}
 .ring text.rs{font-size:10px;font-weight:400;fill:var(--soft)}
-.hubnext{display:block;width:100%;text-align:left;border:none;border-radius:14px;background:var(--accent);color:#fff;padding:16px 20px;cursor:pointer;font-family:inherit;box-shadow:0 4px 16px rgba(15,157,110,.30)}
+.hubnext{display:block;width:100%;text-align:left;border:none;border-radius:14px;background:var(--btn);color:#fff;padding:16px 20px;cursor:pointer;font-family:inherit;box-shadow:0 4px 16px rgba(15,157,110,.30)}
 .hubnext:hover{filter:brightness(1.06)}
 .hubnext .hnl{display:block;font-size:1.2rem;font-weight:700}
 .hubnext .hnw{display:block;font-size:.88rem;opacity:.92;margin-top:4px;line-height:1.4}
@@ -373,7 +376,7 @@ body.dark .wcard{background:var(--panel)}
 .hubskip input{margin-right:6px;vertical-align:middle}
 .hubrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
 .hubgo{font-family:inherit;font-size:.95rem;font-weight:700;padding:10px 16px;border:2px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink);cursor:pointer}
-.hubgo:first-child{background:var(--accent);color:#fff;border-color:var(--accent)}
+.hubgo:first-child{background:var(--btn);color:#fff;border-color:var(--btn)}
 .hubgo:hover{filter:brightness(1.05)}
 .drillbar{display:flex;align-items:center;gap:10px;margin-bottom:14px;font-size:.8rem;color:var(--soft)}
 .drillbar b{font-family:Menlo,Consolas,monospace;color:var(--ink);white-space:nowrap}
@@ -387,11 +390,11 @@ body.dark .wcard{background:var(--panel)}
 .drillcard .rco{white-space:pre-wrap;font-size:.9rem}
 .drillcard .rco.dunno{font-family:inherit;font-style:italic;color:var(--soft)}
 .drillnext{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-.drillgo{font-family:inherit;font-size:.95rem;font-weight:700;padding:8px 16px;border:none;border-radius:9px;background:var(--accent);color:#fff;cursor:pointer}
+.drillgo{font-family:inherit;font-size:.95rem;font-weight:700;padding:8px 16px;border:none;border-radius:9px;background:var(--btn);color:#fff;cursor:pointer}
 .drillopen{font-family:inherit;font-size:.85rem;padding:8px 13px;border:1px solid var(--line);border-radius:9px;background:var(--panel);color:var(--soft);cursor:pointer}
 .drillopen:hover{border-color:var(--accent);color:var(--ink)}
 .drillscore{font-size:2rem;font-family:Menlo,Consolas,monospace;font-weight:700;margin-bottom:10px}
-.drillscore span{font-size:.9rem;color:var(--accent)}
+.drillscore span{font-size:.9rem;color:var(--acct)}
 .drillmiss{margin:0 0 10px 0;padding:0;list-style:none}
 .drillmiss li{margin:5px 0}
 .drillmiss button{font-family:inherit;font-size:.88rem;padding:5px 11px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink);cursor:pointer;text-align:left}
@@ -404,12 +407,14 @@ body.dark .wcard{background:var(--panel)}
 #palList{overflow-y:auto}
 .palrow{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:none;background:none;color:var(--ink);padding:8px 18px;font-family:inherit;font-size:.92rem;cursor:pointer}
 .palrow.on,.palrow:hover{background:var(--good)}
-.paltick{width:14px;flex:0 0 auto;color:var(--accent);font-weight:700}
+.paltick{width:14px;flex:0 0 auto;color:var(--acct);font-weight:700}
 .palt{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .palg{flex:0 0 auto;font-size:.7rem;color:var(--soft);text-transform:uppercase;letter-spacing:.5px}
 .palnone{padding:18px;color:var(--soft);font-size:.9rem}
+.sronly{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 body.dark .hubtile,body.dark .hubgo,body.dark .drillopen,body.dark .drillmiss button{background:#22262c}
 body.dark #palette{background:rgba(0,0,0,.6)}
+body.dark .hubtile.warn b{color:#e8845c}
 @media (max-width:700px){
   .hubtiles{grid-template-columns:repeat(2,1fr)}
   .hubhead>div{font-size:1.25rem}
@@ -419,7 +424,7 @@ body.dark #palette{background:rgba(0,0,0,.6)}
 .wdoors{display:flex;flex-direction:column;gap:8px;margin-top:16px}
 .wdoors button{font-family:inherit;font-size:1rem;font-weight:700;padding:12px 16px;border:2px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink);cursor:pointer;text-align:left;line-height:1.35}
 .wdoors button small{display:block;font-weight:400;font-size:.82rem;color:var(--soft);margin-top:3px}
-.wdoors button:first-child{background:var(--accent);color:#fff;border-color:var(--accent)}
+.wdoors button:first-child{background:var(--btn);color:#fff;border-color:var(--btn)}
 .wdoors button:first-child small{color:rgba(255,255,255,.9)}
 .wdoors button:hover{filter:brightness(1.05);border-color:var(--accent)}
 .shapebox{margin:14px 0;padding:12px 14px;border:2px solid var(--line);border-left:6px solid #2f7d5c;border-radius:10px;background:var(--code)}
@@ -433,7 +438,7 @@ body.dark #palette{background:rgba(0,0,0,.6)}
 .sayin{width:100%;font-family:inherit;font-size:.95rem;padding:8px 10px;border:2px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink);resize:vertical;line-height:1.45}
 .sayin:disabled{opacity:.75}
 .sayrow{display:flex;gap:8px;margin-top:8px}
-.saygo{font-family:inherit;font-size:.9rem;font-weight:700;padding:7px 14px;border:none;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer}
+.saygo{font-family:inherit;font-size:.9rem;font-weight:700;padding:7px 14px;border:none;border-radius:8px;background:var(--btn);color:#fff;cursor:pointer}
 .sayskip{font-family:inherit;font-size:.85rem;padding:7px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--soft);cursor:pointer}
 .sayskip:hover{color:var(--ink);border-color:var(--accent)}
 .saywhy{font-size:.92rem;line-height:1.5}
@@ -531,7 +536,7 @@ button:focus-visible,.navitem:focus-visible,#ed:focus-visible,input:focus-visibl
         <button id="btnTheme" title="Editor theme — more unlock as you level up">🎨</button>
         <button id="btnNext" title="Ctrl+Enter also works">Next lesson &rarr;</button>
       </div>
-      <div id="status">Start typing in the box above.</div>
+      <div id="status" role="status" aria-live="polite" aria-atomic="true">Start typing in the box above.</div>
       <div class="prevwrap">
         <div class="prevlabel"><span class="dots"><i></i><i></i><i></i></span> your page &mdash; what your code makes</div>
         <iframe id="out" sandbox="allow-scripts allow-modals"></iframe>
@@ -545,6 +550,7 @@ button:focus-visible,.navitem:focus-visible,#ed:focus-visible,input:focus-visibl
   <button data-tab="tab-code">⌨️ Code</button>
   <button data-tab="tab-result">▶ Result</button>
 </div>
+<div id="sr" class="sronly" role="status" aria-live="polite"></div>
 <div id="palette"><div class="palbox"><input id="palIn" placeholder="Jump to a lesson, or type what you want to do…" aria-label="Jump to a lesson or action"><div id="palList"></div></div></div>
 <div id="welcome"><div class="wcard">
   <h2>Welcome to Code Lab 👋</h2>
@@ -562,7 +568,7 @@ button:focus-visible,.navitem:focus-visible,#ed:focus-visible,input:focus-visibl
     <button id="wHub">Show me the hub first<small>One screen that always tells you what to do next.</small></button>
   </div>
 </div></div>
-<div id="certOv"><div class="wcard"><div class="cert" id="certBody"></div><div id="certBtns" style="display:flex;gap:8px;margin-top:14px"><button id="certPrint" style="flex:1;background:var(--accent);color:#fff;border:none;font-family:inherit;font-size:1rem;padding:10px;border-radius:8px;cursor:pointer">🖨 Print / save as PDF</button><button id="certClose" style="flex:0 0 auto;border:2px solid var(--line);background:none;border-radius:8px;padding:10px 14px;cursor:pointer;font-family:inherit;color:var(--ink)">Close</button></div></div></div>
+<div id="certOv"><div class="wcard"><div class="cert" id="certBody"></div><div id="certBtns" style="display:flex;gap:8px;margin-top:14px"><button id="certPrint" style="flex:1;background:var(--btn);color:#fff;border:none;font-family:inherit;font-size:1rem;padding:10px;border-radius:8px;cursor:pointer">🖨 Print / save as PDF</button><button id="certClose" style="flex:0 0 auto;border:2px solid var(--line);background:none;border-radius:8px;padding:10px 14px;cursor:pointer;font-family:inherit;color:var(--ink)">Close</button></div></div></div>
 <div id="statsOv"><div class="wcard"><h2>Your stats</h2><div id="statsBody"></div><button id="statsClose" style="width:100%;margin-top:12px;border:2px solid var(--line);background:none;border-radius:8px;padding:10px;cursor:pointer;font-family:inherit;color:var(--ink)">Close</button></div></div>
 <div id="themeOv"><div class="wcard"><h2>🎨 Looks</h2><div id="themeList"></div><div id="senseiRow"></div><button id="themeClose" style="width:100%;margin-top:12px;border:2px solid var(--line);background:none;border-radius:8px;padding:10px;cursor:pointer;font-family:inherit;color:var(--ink)">Close</button></div></div>
 <div id="qaPanel">
@@ -3912,6 +3918,10 @@ function drillStart(ids, mode, title) {
   renderNav();
   return true;
 }
+/* The drill replaces the whole panel each card, so a live region inside it would
+   be recreated rather than updated and a screen reader would say nothing. One
+   permanent off-screen region, written to by hand, is the reliable way. */
+function announce(msg) { const el = $('#sr'); if (el) { el.textContent = ''; setTimeout(() => { el.textContent = msg; }, 60); } }
 function drillShow() {
   const d = drill;
   if (d.at >= d.ids.length) return drillEnd();
@@ -3929,6 +3939,7 @@ function drillShow() {
     + '<div class="rcch">' + ord.map(k => '<button class="rco" data-n="' + k + '">' + hlEsc(card.ch[k].t) + '</button>').join('') + '</div>'
     + '<div class="rcwhy"></div></div>';
   teachEl.scrollTop = 0;
+  announce('Question ' + (d.at + 1) + ' of ' + d.ids.length + '. ' + card.q);
   const first = teachEl.querySelector('.rco'); if (first) first.focus();
 }
 function drillAnswer(k) {
@@ -3945,6 +3956,7 @@ function drillAnswer(k) {
     (c.ok ? '&#9989; <b>Yes.</b> ' : '&#10060; <b>Not this time.</b> ') + c.why
     + '<div class="drillnext"><button class="drillgo">' + (d.at + 1 >= d.ids.length ? 'See how you did &rarr;' : 'Next &rarr;') + '</button>'
     + '<button class="drillopen" data-go="' + card.les + '">Open that lesson</button></div>';
+  announce((c.ok ? 'Correct. ' : 'Not correct. ') + String(c.why).replace(/<[^>]+>/g, ''));
   const go = box.querySelector('.drillgo'); if (go) go.focus();
 }
 function drillEnd() {
@@ -3965,6 +3977,7 @@ function drillEnd() {
     + '<div class="hubrow"><button class="hubgo" data-act="hub">&larr; Back to the hub</button>'
     + '<button class="hubgo" data-act="next">Get on with the lesson &rarr;</button></div>';
   statusEl.className = 'ok'; statusEl.innerHTML = 'Warm-up finished. Your schedule is updated.';
+  announce('Warm-up finished. ' + d.right + ' out of ' + n + ' correct.');
   drill = null;
   renderNav();
 }
@@ -4038,6 +4051,7 @@ function openHub() {
   outEl.srcdoc = '';
   teachEl.scrollTop = 0;
   renderNav();
+  announce('The hub. Next up: ' + nt.label + '. ' + nt.why);
   const b = teachEl.querySelector('.hubnext'); if (b) b.focus();
 }
 function hubTrack(name, a, b, sub) {
@@ -4649,7 +4663,10 @@ loadLesson = function(i){ _origLoad(i);
     document.body.classList.remove('tab-nav','tab-code','tab-result'); document.body.classList.add('tab-lesson'); }
 };
 $('#btnExport').onclick = ()=>{
-  const code = btoa(unescape(encodeURIComponent(JSON.stringify({done:[...done], idx, tested:[...tested], chalDone:[...chalDone], projDone:[...projDone], practDone:[...practDone], ms:[...msSeen], edTheme, certName, stk}))));
+  /* everything that is genuinely yours travels: the ticks, the streak, AND the
+     memory schedule. A save code that resets your review dates would quietly
+     undo weeks of spacing on the new machine. */
+  const code = btoa(unescape(encodeURIComponent(JSON.stringify({done:[...done], idx, tested:[...tested], chalDone:[...chalDone], projDone:[...projDone], practDone:[...practDone], ms:[...msSeen], edTheme, certName, stk, beyond:[...beyondDone], srs:srs.q, said:saidOk, preds:[...predsDone], tx:tx}))));
   try{ navigator.clipboard.writeText(code); alert('Save code copied to clipboard! Paste it into Import on any other device or browser.'); }
   catch(e){ prompt('Copy this save code (Ctrl+C), then paste it into Import on the other device:', code); }
 };
@@ -4663,6 +4680,11 @@ $('#btnImport').onclick = ()=>{
     chalDone = new Set((p.chalDone||[]).filter(n=>n>=0&&n<L.length)); projDone = new Set((p.projDone||[]).filter(n=>n>=0&&n<L.length)); practDone = new Set((p.practDone||[]).filter(n=>n>=0&&n<L.length)); msSeen = new Set(p.ms||[]);
     if (p.edTheme!==undefined) edTheme=p.edTheme; if (p.certName) certName=p.certName;
     if (p.stk && typeof p.stk==='object') stk={last:p.stk.last||'', cur:p.stk.cur|0, best:p.stk.best|0, xp:p.stk.xp|0};
+    beyondDone = new Set((p.beyond||[]).filter(n=>n>=0&&n<L.length&&L[n].beyond));
+    if (p.srs && typeof p.srs==='object'){ srs={q:p.srs}; srsSave(); }
+    if (Array.isArray(p.said)){ saidOk=p.said; try{localStorage.setItem('saidok',JSON.stringify(saidOk));}catch(x){} }
+    if (Array.isArray(p.preds)){ predsDone=new Set(p.preds); try{localStorage.setItem('preds',JSON.stringify(p.preds));}catch(x){} }
+    if (p.tx && Array.isArray(p.tx.w)){ tx={w:p.tx.w, t:p.tx.t||[]}; txSave(); }
     idx = Math.min(Math.max(p.idx|0,0),L.length-1); saveP(); loadLesson(idx);
     alert('Progress restored: ' + done.size + ' / ' + L.length + ' lessons.');
   }catch(e){ alert('That code did not work — make sure you pasted the whole thing.'); }

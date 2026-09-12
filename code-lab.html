@@ -42,6 +42,16 @@ body.navhid .right{flex:2.2}
 /* collapsed is a typing mode: the reference panes yield to the editor */
 body.navhid .prevwrap{flex:0 0 25%}
 body.navhid .scaffold{max-height:90px}
+/* the lesson column gets narrow here, so anything that assumed a wide line has to stand down */
+body.navhid .crumb{flex-wrap:wrap;row-gap:6px}
+body.navhid .crumb span{flex:1 1 100%;order:-1}
+body.navhid .crumb #crNext{margin-left:auto}
+body.navhid .teach pre,body.navhid .tracebox pre{white-space:pre-wrap;overflow-wrap:break-word}
+body.navhid .teach>table,body.navhid .decoder table,body.navhid .morebox table{table-layout:fixed}
+body.navhid .decoder td:first-child,body.navhid .morebox td:first-child{white-space:normal;width:42%;overflow-wrap:anywhere}
+/* the ratio alone would squeeze this to 240px on a 900px screen, which is not a
+   lesson any more - typing room stops where the reading starts to break */
+body.navhid .left{min-width:320px}
 .ghead{display:flex;align-items:center;gap:6px;padding:8px 12px 4px;font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--soft)}
 .ghead .gsub{display:block;font-size:.68rem;text-transform:none;letter-spacing:0;color:#a09488}
 .gcount{margin-left:auto;font-size:.65rem;color:#a09488;padding-left:6px}
@@ -51,7 +61,9 @@ body.navhid .scaffold{max-height:90px}
 .navitem:hover{background:var(--code)}
 .navitem.cur{background:var(--good);font-weight:bold}
 .tick{width:16px;flex:0 0 auto;color:var(--acct);font-weight:bold}
-.work{flex:1;display:flex;min-width:0}
+/* min-height:0 or this refuses to shrink below its content, and on a phone the
+   bottom of the button row slides off the screen where nothing can reach it */
+.work{flex:1;display:flex;min-width:0;min-height:0}
 .left{flex:.82;display:flex;flex-direction:column;min-width:0;border-right:2px solid var(--line)}
 .teach{padding:16px 20px;overflow-y:auto;flex:1;background:var(--panel)}
 .teach h2{margin-bottom:10px;font-size:1.3rem}
@@ -61,6 +73,10 @@ body.navhid .scaffold{max-height:90px}
 .teach[data-lv="2"] p{font-size:.97rem}
 .teach code, .goalbox code, #qaOut code{font-family:Menlo,Consolas,monospace;background:var(--code);padding:1px 5px;border-radius:4px;font-size:.9em}
 .teach pre{background:var(--code);padding:10px 12px;border-radius:8px;margin:0 0 10px;overflow-x:auto;font-family:Menlo,Consolas,monospace;font-size:.88rem;line-height:1.5}
+/* the little reference tables in the lesson prose - the ones in .decoder,
+   .morebox and .tracebox bring their own styling and must not be caught here */
+.teach>table{border-collapse:collapse;width:100%;margin:6px 0 12px;font-size:.95rem}
+.teach>table td{border:1px solid var(--line);padding:5px 10px;vertical-align:top;overflow-wrap:break-word}
 .goalbox{flex:0 0 auto;background:#e3eefb;border:2px solid var(--accent2);border-left:6px solid var(--accent2);border-radius:12px;box-shadow:0 1px 6px rgba(15,23,42,.06);padding:12px 16px;font-size:1.05rem;line-height:1.45}
 .goalbox b{color:var(--accent2);font-size:1.05em;letter-spacing:.5px}
 .elders{margin:14px 0 0;background:#f2f0ea;border:1px solid #ddd6c2;border-left:5px solid #b08d4a;border-radius:8px;padding:10px 14px;font-size:.92rem;line-height:1.55}
@@ -327,7 +343,10 @@ body.dark .wcard{background:var(--panel)}
 .bgl.miss{border-color:var(--badline);background:var(--bad);opacity:.7}
 .bugbox .bgwhy{margin-top:8px;font-size:.9rem;line-height:1.45}
 .bugbox .bgfix{margin-top:6px;font-size:.88rem}
-.rcbox{margin:0 0 14px;padding:10px 14px;border:2px solid var(--line);border-left:6px solid var(--accent2);border-radius:10px;background:var(--code);position:relative}
+.rcbox{margin:0 0 14px;padding:10px 14px;border:2px solid var(--line);border-left:6px solid var(--accent2);border-radius:10px;background:var(--code)}
+/* the header is a row, not a backdrop for a floating button: narrow the panel and they must not collide */
+.rcbox .tih{display:flex;align-items:flex-start;gap:10px}
+.rcbox .tih .rctitle{flex:1 1 auto;min-width:0}
 .rcbox .rcq{font-weight:700;margin-bottom:8px;line-height:1.4}
 .rcbox .rcch{display:flex;flex-direction:column;gap:5px}
 .rco{font-family:'JetBrains Mono',Consolas,monospace;text-align:left;font-size:.86rem;padding:6px 10px;border:2px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink);cursor:pointer;white-space:pre-wrap}
@@ -337,7 +356,7 @@ body.dark .wcard{background:var(--panel)}
 .rcbox .rcwhy{margin-top:8px;font-size:.9rem;line-height:1.45}
 .rcbox .rcwhy:empty{display:none}
 .rcgo{font-family:inherit;font-size:.82rem;font-weight:700;padding:5px 11px;border:none;border-radius:8px;background:var(--accent2);color:#fff;cursor:pointer;margin-left:6px}
-.rcskip{position:absolute;top:8px;right:10px;border:1px solid var(--line);background:none;color:var(--soft);border-radius:6px;font-size:.68rem;padding:1px 7px;cursor:pointer;font-family:inherit}
+.rcskip{flex:0 0 auto;border:1px solid var(--line);background:none;color:var(--soft);border-radius:6px;font-size:.68rem;padding:2px 8px;cursor:pointer;font-family:inherit;letter-spacing:1px}
 .rcskip:hover{color:var(--ink);border-color:var(--accent)}
 #status .twist{color:var(--ink);border-top-color:var(--accent2)}
 #status .twist.done{color:var(--soft)}
@@ -477,14 +496,29 @@ button:focus-visible,.navitem:focus-visible,#ed:focus-visible,input:focus-visibl
 @media (max-width:700px){
   .main{flex-direction:column;padding-bottom:52px}
   nav,.left,.right,.prevwrap{display:none}
-  body.tab-nav nav{display:block;width:100%;flex:1}
   #btnNav{display:none}
-  body.navhid nav{display:block}
-  body.tab-lesson .left{display:flex;border-right:none}
+  /* the tab bar owns visibility here, so the desktop collapse flag has to stand
+     down completely - otherwise anyone who ever pressed "Lessons" on a laptop
+     opens the phone on a lesson list wedged into a 205px column. */
+  body.navhid nav{display:none;width:100%}
+  body.navhid .right{flex:1}
+  body.navhid .left{min-width:0}
+  body.navhid .crumb{flex-wrap:wrap;row-gap:6px}
+  body.navhid .scaffold{max-height:none}
+  /* .work is empty on this tab but still claims half the column, which strands the
+     lesson list in the top half with its save buttons floating across it */
+  body.tab-nav nav{display:block;width:100%;flex:1}
+  body.tab-nav .work{display:none}
+  /* .left is flex:.82 so it can share a row with the editor - on a phone it is the whole row */
+  body.tab-lesson .left{display:flex;border-right:none;flex:1}
   body.tab-code .right{display:flex}
   body.tab-code .prevwrap{display:none}
   body.tab-result .right{display:flex}
-  body.tab-result .goalbox,body.tab-result .remind,body.tab-result .scaffold,body.tab-result .edwrap,body.tab-result .btnrow{display:none}
+  /* loadLesson sets display on .remind and .scaffold inline, so nothing short of
+     !important gets the result tab down to just the page the learner made */
+  body.tab-result .goalbox,body.tab-result .remind,body.tab-result .scaffold,
+  body.tab-result .edwrap,body.tab-result .edgrip,body.tab-result .btnrow,
+  body.tab-result #duckbar{display:none!important}
   body.tab-result .prevwrap{display:flex;flex:1;border-top:none}
   body.tab-result #status{display:block}
   .right{padding:8px;gap:8px}
@@ -492,8 +526,26 @@ button:focus-visible,.navitem:focus-visible,#ed:focus-visible,input:focus-visibl
   #tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;background:var(--panel);border-top:2px solid var(--line);z-index:60}
   #tabbar button{flex:1;border:none;background:none;font-family:inherit;font-size:.78rem;padding:8px 2px;cursor:pointer;color:var(--soft)}
   #tabbar button.on{color:var(--accent);font-weight:bold;border-top:3px solid var(--accent);margin-top:-2px}
-  header{flex-wrap:wrap;gap:8px}
+  header{flex-wrap:wrap;gap:8px 10px;padding:8px 12px}
+  /* every .hbtn carries margin-left:auto, which is one nudge on a single row and
+     a row of ragged gaps once the header wraps - so the buttons just flow here */
+  header .hbtn{margin-left:0}
+  #progBar{max-width:120px}
   #xpTxt{display:none}
+  .teach{padding:14px}
+  /* a finger is not a mouse pointer: nothing tappable gets to be 19px tall */
+  .crumb button,.rcskip,.ghreset,.navfoot button{min-height:32px;padding-left:12px;padding-right:12px}
+  .crumb{flex-wrap:wrap}
+  .crumb span{flex:1 1 100%;order:-1}
+  .crumb button{flex:1 1 0}
+  /* a code sample you have to drag sideways to read is a code sample half of them never read */
+  .teach pre,.tracebox pre{white-space:pre-wrap;overflow-wrap:break-word}
+  .teach>table,.decoder table,.morebox table{table-layout:fixed}
+  .decoder td:first-child,.morebox td:first-child{white-space:normal;width:42%;overflow-wrap:anywhere}
+  .teach>table td,.morebox td,.decoder td,.tracebox td,.tracebox th{padding:4px 7px}
+  .navtip{max-width:calc(100vw - 24px)}
+  /* a keyboard shortcut is not advice a phone can act on */
+  .kbdtip{display:none}
 }
 </style>
 </head>
@@ -3953,7 +4005,7 @@ function scrambleIdx(n){
 function widgets2For(i){
   let h='';
   const pc=PICS[i];
-  if (pc) h+='<div class="picbox"><div class="tih">&#128444; In one picture</div><svg width="0" height="0" style="position:absolute"><defs><marker id="arh" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f9d6e"/></marker></defs></svg>'+pc.svg+'<p class="piccap">'+pc.cap+'</p></div>';
+  if (pc) h+='<div class="picbox"><div class="tih">&#128444; In one picture</div><svg width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true"><defs><marker id="arh" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f9d6e"/></marker></defs></svg>'+pc.svg+'<p class="piccap">'+pc.cap+'</p></div>';
   const tl=TILES[i];
   if (tl && !done.has(i)){
     const pool=tl.t.concat(tl.x||[]);
@@ -3991,10 +4043,11 @@ function recallShow(i){
   if (!q.length) return;
   const id=q[0], k=itemLesson(id), rq=RECALL[k];
   const box=document.createElement('div'); box.className='rcbox'; box.dataset.k=k; box.dataset.id=id;
-  box.innerHTML='<div class="tih">&#129504; Quick recall &middot; from &ldquo;'+L[k].title+'&rdquo;</div>'
+  box.innerHTML='<div class="tih"><span class="rctitle">&#129504; Quick recall &middot; from &ldquo;'+L[k].title+'&rdquo;</span>'
+    +'<button class="rcskip" title="Ask me another time">skip</button></div>'
     +'<div class="rcq">'+rq.q+'</div>'
     +'<div class="rcch">'+rq.ch.map((c,n)=>'<button class="rco" data-n="'+n+'">'+hlEsc(c[0])+'</button>').join('')+'</div>'
-    +'<div class="rcwhy"></div><button class="rcskip" title="Ask me another time">skip</button>';
+    +'<div class="rcwhy"></div>';
   const h2=teachEl.querySelector('h2');
   if (h2) h2.insertAdjacentElement('afterend', box); else teachEl.prepend(box);
 }
@@ -4317,7 +4370,7 @@ function openHub() {
       + (bTotal ? hubTrack('Beyond', bDone, bTotal, 'Real work: other people’s code, shipping, safety, and machines that write code') : '')
       + hubTrack('Portfolio', projDone.size, L.filter(l => l.proj).length, 'Finished pieces you could show someone')
     + '</div>'
-    + '<p class="hubtip"><b>In a hurry?</b> Press <kbd>Ctrl</kbd>+<kbd>K</kbd> anywhere to jump to any lesson or action. '
+    + '<p class="hubtip"><span class="kbdtip"><b>In a hurry?</b> Press <kbd>Ctrl</kbd>+<kbd>K</kbd> anywhere to jump to any lesson or action. </span>'
       + '<label class="hubskip"><input type="checkbox" id="hubSkip"' + (localStorage.getItem('hubskip') === '1' ? ' checked' : '') + '> Skip this screen and drop me straight into the lesson next time</label></p>';
   goalEl.innerHTML = '<b>THE HUB.</b> One screen that always knows what you should do next.';
   remindBox.style.display = 'none';
@@ -4821,13 +4874,16 @@ function killGhost(){
 function ghostTip(){
   let t=false; try{ t = localStorage.getItem('ghosttaught')==='1'; }catch(e){}
   if (t) return;
+  const r=edEl.getBoundingClientRect();
+  /* on a phone the editor lives behind another tab - a note pointing at nothing lands on the header */
+  if (!r.width || !r.height) return;
   try{ localStorage.setItem('ghosttaught','1'); }catch(e){}
   const tip=document.createElement('div'); tip.className='navtip';
   tip.innerHTML='&#128123; <b>The code types along with you</b> on this first lap &mdash; follow the faint text. Then you&rsquo;ll do a lap on your own; that one earns the &#10003;.';
   tip.onclick=()=>tip.remove(); document.body.appendChild(tip);
-  const r=edEl.getBoundingClientRect();
-  tip.style.left = Math.max(8, r.left + 12) + 'px';
-  tip.style.top = Math.max(60, r.top - tip.offsetHeight - 12) + 'px';
+  const hb=document.querySelector('header').getBoundingClientRect().bottom + 8;
+  tip.style.left = Math.max(8, Math.min(innerWidth - tip.offsetWidth - 8, r.left + 12)) + 'px';
+  tip.style.top = Math.max(hb, r.top - tip.offsetHeight - 12) + 'px';
   setTimeout(()=>tip.remove(), 9000);
 }
 function updateGhost(){

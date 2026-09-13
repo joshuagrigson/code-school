@@ -1,13 +1,16 @@
 # Code School — `code-lab.html`
 
+> **Want to understand what you just created, past vibe-coding? Want full
+> control over AI-assisted creations? #Code-School**
+
 The complete Kindergarten-through-College coding class in one self-contained,
 offline HTML file. Download it (or copy it to `C:\code-school\`), double-click,
 and it runs in any browser with **zero network access and zero API usage**.
 
-## What's inside — 133 lessons
+## What's inside — 143 lessons
 
 Graduation is the 107 required lessons — every lesson and every practice rep.
-Challenges, portfolio pieces and the Beyond track sit outside that count.
+Challenges, portfolio pieces, Beyond and the Review Desk sit outside that count.
 
 | Track | Territory |
 |---|---|
@@ -25,12 +28,38 @@ Challenges, portfolio pieces and the Beyond track sit outside that count.
 | Machine Room | Why one way beats another: counting work, search, hashing, sorting, Big-O |
 | Portfolio | Five client jobs graded by a sign-off checklist, unlocked by the grades they need |
 | **Beyond** | **15 lessons after graduation: reading and fixing code you did not write, verifying what a machine wrote, writing a spec, asking a question that gets answered, commit messages, READMEs, shipping, secrets, untrusted input, accessibility, transferring to the next language, and performance** |
+| **Review Desk** | **10 lessons on reading code a machine wrote — see below** |
 
 Reviews double as test-out exams (⚡): pass one first and it ticks the whole
 grade. Challenges are hint-free. Reps (🏋) are required: they count toward the
 grade and toward graduation, because the practice most likely to make something
-stick was the practice easiest to skip. Beyond sits outside the graduation count
-on purpose — it is what you do after finishing, not a moved goalpost.
+stick was the practice easiest to skip. Beyond and the Review Desk sit outside
+the graduation count on purpose — they are what you do after finishing, not a
+moved goalpost.
+
+## The Review Desk: reading code a machine wrote
+
+Generating code is easy now. Reading it is the skill that decides whether you
+own what you shipped or merely possess it. Every lesson in this track is a
+**review**, not a build: a generated draft arrives, and the learner reads it
+before running it, then decides whether to keep it, fix it, or bin it.
+
+| # | The draft | What it teaches |
+|---|---|---|
+| 1 | Sums `qty` where the name promises money | The name and the code disagree, and nothing will tell you |
+| 2 | Calls `list.max()` | An invented method — the loud failure |
+| 3 | `average([])` returns `NaN` | The edge case the request never mentioned |
+| 4 | A greeting with a settings object and a shouting flag | Cutting what nobody asked for |
+| 5 | A missing price comes back as `0` | Sentinel values, and the truthiness trap that hides free water |
+| 6 | A visitor's comment reaches `innerHTML` two functions away | Following untrusted text to its sink |
+| 7 | Two drafts pasted in, one unreachable | Dead code and an orphan with a different boundary |
+| 8 | `getUserName` also stamps `lastSeen` | The hidden side effect |
+| 9 | Uses `TAX_RATE` and `formatMoney`, neither of which exists | Code written for somebody else's repository |
+| 10 | `isEven` by checking the last digit against a list | Being willing to bin the whole draft |
+
+The hint buttons are still there, but the worked-example ghost coach is not:
+Beyond and the Review Desk are reading-and-deciding work, and a coach that fades
+in the answer one word at a time does the deciding for you.
 
 Every editor theme is available from the first minute of Kindergarten. Making a
 learner earn a colour scheme gates comfort, not difficulty, and the person most
@@ -128,10 +157,16 @@ rather than inserting mid-array, or every downstream index shifts. `TWIST`
 checks must be satisfiable while the lesson's own check still passes (ask for
 additions, not swaps).
 
-Beyond lessons carry `beyond: true`, live in their own `beyondDone` set, and are
-excluded from `coreOf` / `coreTotal` so they never move the graduation
-goalposts. Their `rn` / `rw` fields are carried on the lesson object because
-`RN` and `RW` are declared after the lesson array is built.
+Post-graduation lessons carry `beyond: true`, live in their own `beyondDone`
+set, and are excluded from `coreOf` / `coreTotal` so they never move the
+graduation goalposts. Their `rn` / `rw` fields are carried on the lesson object
+because `RN` and `RW` are declared after the lesson array is built.
+
+There are two such grades now — Beyond and the Review Desk — and nothing keys
+off either id. `beyondGrade(gid)` asks whether a grade is made entirely of
+post-graduation lessons, and the sidebar, the hub's track rows, the hub's
+next-thing, placement and the ghost coach all go through it. Adding a third is a
+`GRADES.push` plus a builder that sets `beyond: true`, and nothing else.
 
 **Writing a checker.** Where the point of a lesson is that something is
 *removed*, the requirement must be a negative lookahead over the whole file
@@ -142,9 +177,23 @@ last, then test them against wrong answers, not just against your own solution.
 
 **The test suites** live outside the repo but the recipe is worth keeping:
 every non-project lesson must have its solution pass and its starting code fail;
-every Beyond lesson additionally runs a list of wrong-but-plausible submissions
-that must be rejected and alternative correct solutions that must be accepted.
-That second list is what catches a checker that is merely regex-shaped.
+every Beyond and Review Desk lesson additionally runs a list of
+wrong-but-plausible submissions that must be rejected and alternative correct
+solutions that must be accepted. That second list is what catches a checker that
+is merely regex-shaped — it rejected `Math.max.apply(null, list)` and an arrow
+`formatMoney` on the Review Desk's first run, both of them correct answers.
+
+**Fact-check the prose against the running lab, not against your memory of
+JavaScript.** Where a lesson claims what appears on screen or what error the
+page stops with, load its start and solution into the real preview and read the
+result off the iframe. The Review Desk's ninth lesson claimed the page dies at
+`TAX_RATE is not defined`; it actually dies at `formatMoney is not defined`,
+because a call's own name resolves before the arguments it is handed.
+
+**Layout has a suite too,** because the two places it broke were the collapsed
+sidebar and the phone. It sweeps every lesson at 1400 and 900 collapsed and at
+390 and 360, checking every element against its panel's right edge, and it
+asserts the typing column leaves no dead strip at four window heights.
 
 ## For skeptics
 

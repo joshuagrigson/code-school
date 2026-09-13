@@ -40,7 +40,7 @@ nav{width:205px;flex:0 0 auto;overflow-y:auto;background:var(--panel);border-rig
 body.navhid nav{display:none}
 body.navhid .right{flex:2.2}
 /* collapsed is a typing mode: the reference panes yield to the editor */
-body.navhid .prevwrap{flex:0 0 25%}
+body.navhid .prevwrap{flex:.55 1 0}
 body.navhid .scaffold{max-height:90px}
 /* the lesson column gets narrow here, so anything that assumed a wide line has to stand down */
 body.navhid .crumb{flex-wrap:wrap;row-gap:6px}
@@ -108,7 +108,11 @@ details.ft p{margin:6px 0 0;line-height:1.5}
 .right{flex:1;display:flex;flex-direction:column;min-width:0;padding:10px;gap:7px;overflow-y:auto;overflow-x:hidden}
 .remind{flex:0 0 auto;background:#f6f4e4;border:2px solid #ded9b8;border-radius:10px;padding:6px 12px;font-size:.8rem;font-family:Menlo,Consolas,monospace;display:flex;gap:8px;align-items:center}
 .remind button{margin-left:auto;border:none;background:none;cursor:pointer;font-size:.75rem;color:var(--soft)}
-.edwrap{position:relative;flex:1 1 auto;min-height:150px;background:#1e1e1e;border:2px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:0 2px 10px rgba(15,23,42,.10)}
+/* The typing box and the preview are the two that stretch, and between them
+   they take every pixel the fixed rows above leave over - so a tall window
+   turns into a tall editor rather than a strip of dead space at the bottom.
+   1.6 against 1 means the editor gets about 62% of what is going spare. */
+.edwrap{position:relative;flex:1.6 1 0;min-height:150px;background:#1e1e1e;border:2px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:0 2px 10px rgba(15,23,42,.10)}
 .edgrip{flex:0 0 auto;height:14px;margin:-4px 0 -4px;display:flex;align-items:center;justify-content:center;cursor:ns-resize;touch-action:none}
 .edgrip i{display:block;width:44px;height:4px;border-radius:3px;background:var(--line);transition:background .15s,width .15s}
 .edgrip:hover i,.edgrip.drag i{background:var(--accent);width:70px}
@@ -141,7 +145,7 @@ body.dark #duckbar{background:#2a2f38;color:var(--ink)}
 #status.wait{background:#eef1f5;color:var(--soft)}
 #status.coach{background:#fdf6df;border-color:#e3d391}
 #status .wild{display:block;margin-top:5px;font-size:.85rem;color:var(--soft);border-top:1px dashed var(--goodline);padding-top:5px}
-.prevwrap{flex:0 0 33%;display:flex;flex-direction:column;border:2px solid var(--line);border-radius:10px;overflow:hidden}
+.prevwrap{flex:1 1 0;min-height:160px;display:flex;flex-direction:column;border:2px solid var(--line);border-radius:10px;overflow:hidden}
 .prevlabel{flex:0 0 auto;font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--soft);padding:5px 12px;background:var(--code);display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--line)}
 .dots{display:inline-flex;gap:4px}
 .dots i{width:9px;height:9px;border-radius:50%;background:#e0b6ad}
@@ -3412,6 +3416,12 @@ function gradeToast(gname, allDone){
    which meant the practice most likely to make something stick was the practice
    easiest to skip. They are ordinary lessons now: in the order, in the grade, and
    in the graduation total. */
+/* A "beyond" grade is one made entirely of post-graduation lessons - Beyond and
+   the Review Desk today, whatever comes next tomorrow. Nothing keys off the
+   grade's id, so adding another one is a GRADES.push and nothing else. */
+function beyondGrade(gid){ const ls = L.filter(l=>l.g===gid); return ls.length>0 && ls.every(l=>l.beyond); }
+function beyondGrades(){ return GRADES.filter(g=>beyondGrade(g.id)); }
+function gradeName(gid){ const g = GRADES.find(x=>x.id===gid); return g ? g.name : gid; }
 function coreOf(gid){ return L.map((l,i)=>({l,i})).filter(x=>x.l.g===gid && !x.l.chal && !x.l.proj && !x.l.beyond); }
 function coreTotal(){ return L.filter(l=>!l.chal && !l.proj && !l.beyond).length; }
 function lessonDone(i){ const l=L[i]; return l.chal?chalDone.has(i) : l.proj?projDone.has(i) : l.beyond?beyondDone.has(i) : done.has(i); }
@@ -3451,8 +3461,8 @@ function renderNav(){
   listEl.innerHTML = '';
   const curG = (sandbox||hub||drillOn) ? null : L[idx].g;
   for (const g of GRADES){
-    if (g.id==='B'){
-      const bs = L.map((l,i)=>({l,i})).filter(x=>x.l.g==='B');
+    if (beyondGrade(g.id)){
+      const bs = L.map((l,i)=>({l,i})).filter(x=>x.l.g===g.id);
       if (!bs.length) continue;
       const bd = bs.filter(x=>beyondDone.has(x.i)).length;
       const bh = document.createElement('div'); bh.className='ghead';
@@ -4326,7 +4336,7 @@ function nextThing() {
   if (nx != null) return { act: 'lesson', i: nx, label: (done.size ? 'Carry on: ' : 'Start: ') + txtTitle(nx),
     why: done.size ? 'Where you left off.' : 'The first lesson. You will be typing within a minute.' };
   const nb = ORDER.filter(i => L[i].beyond).find(i => !beyondDone.has(i));
-  if (nb != null) return { act: 'lesson', i: nb, label: 'Beyond: ' + txtTitle(nb),
+  if (nb != null) return { act: 'lesson', i: nb, label: gradeName(L[nb].g) + ': ' + txtTitle(nb),
     why: 'You finished the school. This is the part about real work.' };
   const np = L.map((l, i) => ({ l, i })).find(x => x.l.proj && !projDone.has(x.i) && gradeDone(x.l.gate));
   if (np) return { act: 'lesson', i: np.i, label: txtTitle(np.i), why: 'A portfolio piece with your name on it.' };
@@ -4350,7 +4360,6 @@ function openHub() {
   teachEl.dataset.lv = 2;
   const nt = nextThing(), mist = mistakeItems().length, due = dueItems().length;
   const total = coreTotal(), dn = done.size;
-  const bTotal = L.filter(l => l.beyond).length, bDone = beyondDone.size;
   const hour = new Date().getHours();
   const hi = hour < 12 ? 'Morning' : hour < 18 ? 'Afternoon' : 'Evening';
   teachEl.innerHTML =
@@ -4367,7 +4376,10 @@ function openHub() {
     + '</div>'
     + '<div class="hubtracks">'
       + hubTrack('The school', dn, total, 'K through College, plus the Hustle and the Machine Room')
-      + (bTotal ? hubTrack('Beyond', bDone, bTotal, 'Real work: other people’s code, shipping, safety, and machines that write code') : '')
+      + beyondGrades().map(g => {
+          const ls = L.map((l, i) => ({ l, i })).filter(x => x.l.g === g.id);
+          return hubTrack(g.name, ls.filter(x => beyondDone.has(x.i)).length, ls.length, g.sub);
+        }).join('')
       + hubTrack('Portfolio', projDone.size, L.filter(l => l.proj).length, 'Finished pieces you could show someone')
     + '</div>'
     + '<p class="hubtip"><span class="kbdtip"><b>In a hurry?</b> Press <kbd>Ctrl</kbd>+<kbd>K</kbd> anywhere to jump to any lesson or action. </span>'
@@ -4397,7 +4409,7 @@ function hubTrack(name, a, b, sub) {
 function placementIds() {
   const out = [];
   for (const g of GRADES) {
-    if (g.id === 'P' || g.id === 'B') continue;
+    if (g.id === 'P' || beyondGrade(g.id)) continue;
     const ks = Object.keys(RECALL).map(Number).filter(n => L[n] && L[n].g === g.id).sort((a, b) => a - b);
     if (ks.length) out.push({ g: g.id, id: 'r' + ks[ks.length - 1] });
   }
@@ -5201,31 +5213,58 @@ document.addEventListener('keydown', (e)=>{
   if ((e.ctrlKey||e.metaKey) && e.key==='Enter' && btnNext.style.display!=='none' && !sandbox){ e.preventDefault(); btnNext.click(); }
 });
 $('#btnSandbox').onclick = ()=>{ if (sandbox) loadLesson(idx); else openSandbox(); };
-/* ---- The typing box sizes itself to the lesson, and to your grip ----------
-   Short lessons get a small box, long ones open tall enough to show the whole
-   answer without scrolling inside it. Drag the handle to overrule; your choice
-   is remembered for the session. ------------------------------------------ */
+/* ---- The typing box takes the room, and then takes your grip --------------
+   Left alone it gets its share of whatever the fixed rows do not use, so a
+   tall window means a tall editor instead of a strip of dead space under the
+   preview. A lesson whose answer is longer than that share raises the floor,
+   so nobody types a twenty-line answer through a letterbox. Drag the handle
+   to overrule; your choice is remembered for the session, and from then on
+   the preview is the one that absorbs the slack. --------------------------- */
 let edPref = 0;
 function edFit(les){
   const wrap=$('.edwrap'); if (!wrap) return;
-  if (edPref){ wrap.style.flex='0 0 '+edPref+'px'; return; }
-  const lines=Math.max((les&&les.sol?les.sol:'').split('\n').length, (edEl.value||'').split('\n').length);
-  const px=Math.round(lines*parseFloat(getComputedStyle(edEl).lineHeight||18) + 78);
+  if (edPref){ wrap.style.flex='0 0 '+edPref+'px'; wrap.style.minHeight=''; return; }
+  wrap.style.flex='';                      /* back to the share the stylesheet gives it */
   const room=$('.right').clientHeight;
-  const want=Math.max(190, Math.min(px, Math.round(room*0.52)));
-  wrap.style.flex='0 0 '+want+'px';
+  if (!room){ wrap.style.minHeight=''; return; }
+  const lines=Math.max((les&&les.sol?les.sol:'').split('\n').length, (edEl.value||'').split('\n').length);
+  const needs=Math.round(lines*parseFloat(getComputedStyle(edEl).lineHeight||18) + 78);
+  const floor=Math.min(needs, Math.round(room*0.62));
+  /* only ever raise the floor - leaving it clear lets the stylesheet's own
+     minimum stand, which is what keeps the phone's 38vh editor honest */
+  wrap.style.minHeight = floor > 150 ? floor+'px' : '';
 }
+/* the share is a share of the window, so it has to be recomputed when the
+   window changes - otherwise a resized browser leaves the gap back */
+let edFitTimer=null;
+addEventListener('resize', ()=>{
+  clearTimeout(edFitTimer);
+  edFitTimer=setTimeout(()=>{
+    /* a height you dragged on a big window has to give ground on a small one */
+    const right=$('.right');
+    if (edPref && right){
+      const over=right.scrollHeight - right.clientHeight;
+      if (over>0) edPref=Math.max(150, edPref-over);
+    }
+    edFit(sandbox||hub||drillOn ? null : L[idx]);
+    syncHl();
+  }, 120);
+});
 (function(){
   const grip=$('#edGrip'); if (!grip) return;
-  let startY=0, startH=0, on=false;
+  let startY=0, startH=0, maxH=0, on=false;
   const down=(e)=>{ on=true; startY=(e.touches?e.touches[0].clientY:e.clientY);
+    const prev=$('.prevwrap');
     startH=$('.edwrap').getBoundingClientRect().height;
+    /* you may take what the preview can spare and not one pixel more, or the
+       buttons underneath slide off the bottom of the column */
+    const pMin=parseFloat(getComputedStyle(prev).minHeight)||140;
+    maxH=startH + Math.max(0, prev.getBoundingClientRect().height - pMin);
     grip.classList.add('drag'); document.body.classList.add('grabbing'); e.preventDefault(); };
   const move=(e)=>{ if(!on) return;
     const y=(e.touches?e.touches[0].clientY:e.clientY);
-    const room=$('.right').clientHeight;
-    edPref=Math.max(150, Math.min(startH + (y-startY), room-150));
-    $('.edwrap').style.flex='0 0 '+edPref+'px';
+    edPref=Math.round(Math.max(150, Math.min(startH + (y-startY), maxH)));
+    const wrap=$('.edwrap'); wrap.style.flex='0 0 '+edPref+'px'; wrap.style.minHeight='';
     syncHl(); };
   const up=()=>{ if(!on) return; on=false; grip.classList.remove('drag'); document.body.classList.remove('grabbing'); };
   grip.addEventListener('mousedown',down); grip.addEventListener('touchstart',down,{passive:false});

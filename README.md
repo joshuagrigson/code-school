@@ -88,6 +88,45 @@ jumps to any lesson or action from anywhere.
   asks one question per grade and ticks off whatever you can prove, stopping at
   the first miss so nobody is skipped past a gap.
 
+## The look
+
+Two themes, both designed rather than inverted from each other, and both built
+to be taken seriously by the adult typing alongside the nine-year-old.
+
+- **Warm paper in light, warm graphite in dark.** Not blue-grey; not pure black.
+  Surfaces separate by tone (`--panel` over `--bg` over `--panel2`), so the
+  structure survives even where a border would be invisible.
+- **One accent, spent sparingly.** Deep green for what you act on, deep navy for
+  what you are being told. Everything else is neutral.
+- **Hairlines and three depths.** Every card border is 1px; separation comes
+  from `--sh1` / `--sh2` / `--sh3` and nothing invents a fourth. The coloured
+  bar on a teaching card is a 3px marker, not a stripe.
+- **A serif for the things that matter** — lesson titles, the hub's greeting,
+  the certificate. It reads as a storybook to a child and as an editorial to
+  their parent. No webfonts: this file makes zero network calls, so the stacks
+  (`--serif`, `--sans`, `--mono`) have to be good on their own.
+- **Tabular numerals** on every counter, so progress never makes the line jump.
+
+Contrast is not a matter of taste here: the suite computes real WCAG ratios from
+rendered styles across both themes, so a palette change that fails AA fails the
+build. Every sampled ratio currently clears 4.5:1 with margin.
+
+## On a phone
+
+The phone is a first-class layout, not a narrowed desktop.
+
+- Two deliberate header rows — who you are and how far you have got, then the
+  actions sharing the width evenly — instead of a ragged wrap.
+- The tab bar pads past the home indicator (`env(safe-area-inset-bottom)`),
+  frosts what scrolls under it, and marks the active tab with a rule rather than
+  a colour change alone. `viewport-fit=cover` and a `theme-color` that follows
+  the light/dark toggle, so the browser's own chrome matches the page.
+- The action row sticks to the bottom of the editor column: **Run** is always
+  under a thumb, on every lesson, without scrolling.
+- Nothing tappable is under 34px. The lesson crumb drops its repeated grade
+  subtitle to earn its one line. Code samples wrap instead of hiding behind a
+  sideways scroll.
+
 ## Features
 
 - Live preview on every keystroke; JS lessons enforce the house rule —

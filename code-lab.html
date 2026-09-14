@@ -4,9 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
-<meta name="theme-color" id="themeColor" content="#f5f4f0">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>Code Lab — K through College</title>
 <style>
 :root{
@@ -5606,22 +5603,14 @@ $('#btnCert').onclick = ()=>{
 $('#certClose').onclick = ()=>$('#certOv').classList.remove('open');
 $('#certPrint').onclick = ()=>window.print();
 
-/* the phone paints its own chrome above and below the page, so the theme colour
-   has to follow the toggle or the notch stays the wrong shade all evening */
-function paintChrome(){
-  const m=document.getElementById('themeColor'); if (!m) return;
-  m.setAttribute('content', document.body.classList.contains('dark') ? '#191b1e' : '#ffffff');
-}
 $('#btnDark').onclick = ()=>{
   document.body.classList.toggle('dark');
   const on = document.body.classList.contains('dark');
   $('#btnDark').textContent = on ? '☀️' : '🌙';
   $('#btnDark').title = on ? 'Switch to the light theme' : 'Switch to the dark theme';
   try{ localStorage.setItem('darkmode', on?'1':'0'); }catch(e){}
-  paintChrome();
 };
 try{ if (localStorage.getItem('darkmode')==='1'){ document.body.classList.add('dark'); $('#btnDark').textContent='☀️'; } }catch(e){}
-paintChrome();
 function setNav(hidden){
   document.body.classList.toggle('navhid', hidden);
   const btn=$('#btnNav');

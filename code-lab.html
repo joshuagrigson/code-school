@@ -46,6 +46,8 @@ header h1{font-family:var(--serif);font-size:1.22rem;font-weight:600;letter-spac
 .hact{margin-left:auto;display:flex;align-items:center;flex-wrap:wrap;justify-content:flex-end;gap:8px;flex:0 1 auto;min-width:0}
 header .hbtn{min-height:34px;display:inline-flex;align-items:center;justify-content:center}
 #btnNav,#btnDark{width:34px;height:34px;padding:0;flex:0 0 auto;font-size:.95rem;line-height:1}
+/* ...except when it is wearing its "Lessons" label, which needs the room */
+body.navhid #btnNav{width:auto;padding:0 12px;gap:6px;font-size:.83rem}
 #btnNav{margin-right:2px}
 /* the two that start something get a little more presence than the rest */
 #btnHub{font-weight:600}
@@ -147,6 +149,14 @@ details.ft p{margin:6px 0 0;line-height:1.5}
 .edgrip i{display:block;width:44px;height:4px;border-radius:3px;background:var(--line);transition:background .15s,width .15s}
 .edgrip:hover i,.edgrip.drag i{background:var(--accent);width:70px}
 body.grabbing{cursor:ns-resize;user-select:none}
+/* On the hub and inside a drill the editor is not wired to anything: the input
+   handler returns on the first line, and so do runCheck and previewOnly. A box
+   that looks live and silently swallows what you type reads as a broken theme,
+   so here it stops looking live. */
+body.noedit .edwrap{opacity:.45;filter:saturate(.45)}
+body.noedit .edgrip{visibility:hidden}
+body.noedit #ed{cursor:default}
+body.noedit #btnRun,body.noedit #btnReDo,body.noedit #btnDuck{display:none!important}
 #ed,#hl,#errlay{position:absolute;inset:0;margin:0;border:none;padding:12px 14px 3.2em;font-family:var(--mono);font-size:.95rem;line-height:1.55;white-space:pre;tab-size:2;overflow:auto}
 #errlay{color:transparent;background:transparent;pointer-events:none;overflow:hidden;z-index:1}
 #errlay .redpen{background:rgba(205,50,50,.22);border-radius:3px;text-decoration:underline wavy #d43c3c 2px;text-underline-offset:4px}
@@ -786,7 +796,7 @@ button:focus-visible,.navitem:focus-visible,#ed:focus-visible,input:focus-visibl
         <button id="btnSol" title="Shows the full answer">👀 Show me</button>
         <button id="btnReDo" title="Back to the starting code">↺ Start over</button>
         <button id="btnDuck" title="Rubber-duck debugging: explain your code out loud, one line at a time — you will usually catch your own bug">🦆 Duck</button>
-        <button id="btnTheme" title="Editor theme — more unlock as you level up">🎨</button>
+        <button id="btnTheme" title="Looks — fifteen editor themes, all of them yours from the start">🎨</button>
         <button id="btnNext" title="Ctrl+Enter also works">Next lesson &rarr;</button>
       </div>
       <div id="status" role="status" aria-live="polite" aria-atomic="true">Start typing in the box above.</div>
@@ -3937,6 +3947,7 @@ function renderNav(){
 
 function loadLesson(i){
   sandbox = false; hub = false; drillOn = false; drill = null; placing = null; idx = i;
+  syncEditorMode();
   $('#btnSandbox').textContent = 'Free play';
   $('#btnSandbox').title = 'An uncheckable scratch page - write anything, break nothing'; leadStep = 0; solShown = false;
   assistedKeys = 0; ghostOn = true; ghostLap = false; typedThisLesson = false; ghostFrom = 0; ghostSpoken = new Set(); ghostTalkOff(); killGhost();
@@ -4076,7 +4087,7 @@ function answer(q){
 const SANDBOX_START = '<h1>Free play<\/h1>\n<p>This page is all yours. No goals, no checks.<\/p>\n<button id="btn">A button<\/button>\n<p id="screen">a screen box<\/p>';
 let KITS=[];  /* filled by openSandbox; read by the kit buttons' click handler */
 function openSandbox(){
-  sandbox = true; hub = false; drillOn = false;
+  sandbox = true; hub = false; drillOn = false; syncEditorMode();
   ghostTalkOff(); killGhost();
   document.querySelectorAll('.navtip').forEach(t=>t.remove());
   $('#btnSandbox').textContent = '\u2190 Back to lessons';
@@ -4633,7 +4644,7 @@ function drillCard(id) {
 let drill = null;   /* {ids, at, right, wrong:[], mode, title, onDone} */
 function drillStart(ids, mode, title) {
   if (!ids.length) return false;
-  hub = false; drillOn = true; sandbox = false;
+  hub = false; drillOn = true; sandbox = false; syncEditorMode();
   ghostTalkOff(); killGhost();
   drill = { ids: ids.slice(), at: 0, right: 0, wrong: [], mode: mode, title: title };
   $('#scaffold').style.display = 'none';
@@ -4739,7 +4750,7 @@ function hubRing(dn, total) {
     + '<text x="40" y="38">' + dn + '</text><text x="40" y="54" class="rs">of ' + total + '</text></svg>';
 }
 function openHub() {
-  hub = true; sandbox = false; drillOn = false; drill = null;
+  hub = true; sandbox = false; drillOn = false; drill = null; syncEditorMode();
   ghostTalkOff(); killGhost();
   document.querySelectorAll('.predcard,.navtip').forEach(x => x.remove());
   $('#btnSandbox').textContent = 'Free play';
@@ -4804,7 +4815,7 @@ function placementIds() {
 let placing = null;
 function placeStart() {
   placing = { probes: placementIds(), at: 0, passed: [] };
-  hub = false; drillOn = true; sandbox = false;
+  hub = false; drillOn = true; sandbox = false; syncEditorMode();
   killGhost(); ghostTalkOff();
   $('#scaffold').style.display = 'none'; remindBox.style.display = 'none'; btnNext.style.display = 'none';
   $('#btnHelp').style.display = 'none'; $('#btnLead').style.display = 'none'; $('#btnSol').style.display = 'none';
@@ -5263,7 +5274,16 @@ function ghostable(){
   if (L[idx].beyond) return false;
   return !lessonDone(idx);
 }
+/* One place decides whether the editor is connected, and every screen that
+   changes mode calls it. */
+function syncEditorMode(){
+  const live = !(hub || drillOn);
+  document.body.classList.toggle('noedit', !live);
+  edEl.readOnly = !live;
+  if (!live) edEl.placeholder = phFor('js');
+}
 function phFor(lang){
+  if (hub || drillOn) return 'This box wakes up inside a lesson — pick one on the left.';
   return lang==='html' ? 'Type your HTML here - the page below updates with every keystroke'
     : lang==='css' ? 'Type your CSS rules here - the page below re-dresses as you type'
     : 'Type your JavaScript here - remember: screen.textContent = shows things';

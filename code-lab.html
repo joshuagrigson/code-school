@@ -51,6 +51,8 @@ body.navhid #btnNav{width:auto;padding:0 12px;gap:6px;font-size:.83rem}
 #btnNav{margin-right:2px}
 /* the two that start something get a little more presence than the rest */
 #btnHub{font-weight:600}
+header .hbtn[aria-current]{background:var(--good);border-color:var(--goodline);color:var(--acct);font-weight:600;cursor:default}
+header .hbtn[aria-current]:hover{background:var(--good);border-color:var(--goodline);box-shadow:none}
 #progTxt{font-family:var(--mono);font-size:.82rem;color:var(--soft);font-variant-numeric:tabular-nums;letter-spacing:0}
 #progBar{flex:1;max-width:220px;height:6px;background:var(--code);border-radius:999px;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(0,0,0,.03)}
 #progFill{height:100%;width:0;background:var(--accent);border-radius:999px;transition:width .45s cubic-bezier(.4,0,.2,1)}
@@ -770,7 +772,7 @@ button:focus-visible,.navitem:focus-visible,#ed:focus-visible,input:focus-visibl
     <button class="hbtn" id="btnNav" title="Hide the lesson list for more typing room" aria-label="Hide the lesson list">☰</button>
     <button class="hbtn" id="btnDark" title="Toggle dark mode" aria-label="Toggle dark mode">🌙</button>
     <button class="hbtn" id="btnReplay" style="display:none">🏆 Do it all again</button>
-    <button class="hbtn" id="btnHub" title="The hub: what should I do next?">🏠 Hub</button>
+    <button class="hbtn" id="btnHub" title="The hub: one screen that always knows what you should do next">🏠 Hub</button>
     <button class="hbtn" id="btnSandbox">Free play</button>
     <button class="hbtn" id="btnQA">Ask a question</button>
   </div>
@@ -3947,7 +3949,7 @@ function renderNav(){
 
 function loadLesson(i){
   sandbox = false; hub = false; drillOn = false; drill = null; placing = null; idx = i;
-  syncEditorMode();
+  syncModeUI();
   $('#btnSandbox').textContent = 'Free play';
   $('#btnSandbox').title = 'An uncheckable scratch page - write anything, break nothing'; leadStep = 0; solShown = false;
   assistedKeys = 0; ghostOn = true; ghostLap = false; typedThisLesson = false; ghostFrom = 0; ghostSpoken = new Set(); ghostTalkOff(); killGhost();
@@ -4087,10 +4089,11 @@ function answer(q){
 const SANDBOX_START = '<h1>Free play<\/h1>\n<p>This page is all yours. No goals, no checks.<\/p>\n<button id="btn">A button<\/button>\n<p id="screen">a screen box<\/p>';
 let KITS=[];  /* filled by openSandbox; read by the kit buttons' click handler */
 function openSandbox(){
-  sandbox = true; hub = false; drillOn = false; syncEditorMode();
+  sandbox = true; hub = false; drillOn = false; syncModeUI();
   ghostTalkOff(); killGhost();
   document.querySelectorAll('.navtip').forEach(t=>t.remove());
   $('#btnSandbox').textContent = '\u2190 Back to lessons';
+  syncModeUI();
   $('#btnSandbox').title = 'Return to the lesson you were on';
   teachEl.dataset.lv = 2;
   KITS=[
@@ -4644,7 +4647,7 @@ function drillCard(id) {
 let drill = null;   /* {ids, at, right, wrong:[], mode, title, onDone} */
 function drillStart(ids, mode, title) {
   if (!ids.length) return false;
-  hub = false; drillOn = true; sandbox = false; syncEditorMode();
+  hub = false; drillOn = true; sandbox = false; syncModeUI();
   ghostTalkOff(); killGhost();
   drill = { ids: ids.slice(), at: 0, right: 0, wrong: [], mode: mode, title: title };
   $('#scaffold').style.display = 'none';
@@ -4750,7 +4753,7 @@ function hubRing(dn, total) {
     + '<text x="40" y="38">' + dn + '</text><text x="40" y="54" class="rs">of ' + total + '</text></svg>';
 }
 function openHub() {
-  hub = true; sandbox = false; drillOn = false; drill = null; syncEditorMode();
+  hub = true; sandbox = false; drillOn = false; drill = null; syncModeUI();
   ghostTalkOff(); killGhost();
   document.querySelectorAll('.predcard,.navtip').forEach(x => x.remove());
   $('#btnSandbox').textContent = 'Free play';
@@ -4815,7 +4818,7 @@ function placementIds() {
 let placing = null;
 function placeStart() {
   placing = { probes: placementIds(), at: 0, passed: [] };
-  hub = false; drillOn = true; sandbox = false; syncEditorMode();
+  hub = false; drillOn = true; sandbox = false; syncModeUI();
   killGhost(); ghostTalkOff();
   $('#scaffold').style.display = 'none'; remindBox.style.display = 'none'; btnNext.style.display = 'none';
   $('#btnHelp').style.display = 'none'; $('#btnLead').style.display = 'none'; $('#btnSol').style.display = 'none';
@@ -5276,11 +5279,18 @@ function ghostable(){
 }
 /* One place decides whether the editor is connected, and every screen that
    changes mode calls it. */
-function syncEditorMode(){
+function syncModeUI(){
   const live = !(hub || drillOn);
   document.body.classList.toggle('noedit', !live);
   edEl.readOnly = !live;
   if (!live) edEl.placeholder = phFor('js');
+  /* Free play swaps its label to show you are in it; the hub button had no such
+     tell, so pressing it while already on the hub re-rendered the same screen
+     and read as a dead button. */
+  const here = (btn, on) => { if (!btn) return;
+    if (on) btn.setAttribute('aria-current', 'page'); else btn.removeAttribute('aria-current'); };
+  here($('#btnHub'), hub);
+  here($('#btnSandbox'), sandbox);
 }
 function phFor(lang){
   if (hub || drillOn) return 'This box wakes up inside a lesson — pick one on the left.';

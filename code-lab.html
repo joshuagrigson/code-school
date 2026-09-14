@@ -21,7 +21,7 @@
   --code:#f1efea; --sb:#cecabf; --sbh:#a8a397;
   /* white text needs 4.5:1 and white-on-accent is only 3.5:1, so solid buttons
      and accent-coloured text get their own darker tokens. Borders keep --accent. */
-  --btn:#0c5f4a; --acct:#0a6a51;
+  --btn:#0c5f4a; --acct:#0a6a51; --btn2:#1e4f7a;
   /* three depths, and no component invents a fourth */
   --sh1:0 1px 2px rgba(24,22,18,.05);
   --sh2:0 1px 2px rgba(24,22,18,.04), 0 6px 16px rgba(24,22,18,.07);
@@ -110,11 +110,11 @@ body.navhid .left{min-width:320px}
 .goalbox{flex:0 0 auto;background:#eaf1f8;border:1px solid #c4d7e8;border-left:4px solid var(--accent2);border-radius:14px;box-shadow:var(--sh1);padding:13px 18px;font-size:1.04rem;line-height:1.5}
 .goalbox b{color:var(--accent2);font-size:.72em;letter-spacing:.14em;text-transform:uppercase;font-weight:700;display:inline-block;margin-right:4px;vertical-align:.08em}
 .elders{margin:18px 0 0;background:#f7f4ec;border:1px solid #e5dcc6;border-left:3px solid #b08d4a;border-radius:12px;padding:12px 16px;font-size:.92rem;line-height:1.55}
-.elders b.el{color:#8a6d33;font-size:.7rem;text-transform:uppercase;letter-spacing:1px;margin-right:6px}
+.elders b.el{color:#7a5f26;font-size:.7rem;text-transform:uppercase;letter-spacing:1px;margin-right:6px}
 body.dark .elders{background:#26231c;border-color:#3d3728}
 .realname{margin:18px 0 0;background:var(--good);border:1px solid var(--goodline);border-left:3px solid var(--accent);border-radius:12px;padding:11px 16px;font-size:.92rem;line-height:1.55}
 details.ft{margin:10px 0;font-size:.9rem;color:var(--soft)}
-details.ft summary{cursor:pointer;font-size:.78rem;text-transform:uppercase;letter-spacing:1px;color:#a09488}
+details.ft summary{cursor:pointer;font-size:.78rem;text-transform:uppercase;letter-spacing:.13em;font-weight:600;color:var(--soft)}
 details.ft p{margin:6px 0 0;line-height:1.5}
 .realname b{color:var(--acct);font-size:.7rem;text-transform:uppercase;letter-spacing:1px;margin-right:6px}
 .morebox{margin-top:22px;background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:14px 18px}
@@ -134,7 +134,7 @@ details.ft p{margin:6px 0 0;line-height:1.5}
 .tryit{border-top:1px dashed var(--line);padding-top:8px;margin-top:8px}
 .tryit>b{color:var(--acct)}
 .gradbtn{display:inline-block;background:var(--btn);color:#fff;padding:10px 18px;border-radius:10px;text-decoration:none;font-size:1.05rem;margin:4px 0}
-.gradbtn:hover{background:var(--accent2)}
+.gradbtn:hover{background:var(--btn2)}
 .right{flex:1;display:flex;flex-direction:column;min-width:0;padding:10px;gap:7px;overflow-y:auto;overflow-x:hidden}
 .remind{flex:0 0 auto;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:8px 14px;font-size:.78rem;font-family:var(--mono);color:var(--soft);display:flex;gap:8px;align-items:center}
 .remind button{margin-left:auto;border:none;background:none;cursor:pointer;font-size:.75rem;color:var(--soft)}
@@ -152,7 +152,10 @@ body.grabbing{cursor:ns-resize;user-select:none}
 #errlay .redpen{background:rgba(205,50,50,.22);border-radius:3px;text-decoration:underline wavy #d43c3c 2px;text-underline-offset:4px}
 #hl{color:#d4d4d4;background:#1e1e1e;pointer-events:none;overflow:hidden}
 #ed{resize:none;outline:none;background:transparent;color:transparent;caret-color:#e8e8e8;z-index:2}
-#ed::placeholder{color:#7a7a7a}
+/* four of the five editor themes are dark and one is not, so the placeholder
+   cannot follow the app's token - it follows the editor */
+#ed::placeholder{color:#a0a0a0;opacity:1}
+.edwrap.th-paper #ed::placeholder{color:#6a655f}
 #ed::selection{background:rgba(38,79,120,.85);color:transparent}
 .t-k{color:#c586c0}.t-kw{color:#569cd6}.t-s{color:#ce9178}.t-n{color:#b5cea8}.t-c{color:#6a9955}.t-f{color:#dcdcaa}.t-t{color:#569cd6}.t-a{color:#9cdcfe}.t-p{color:#9cdcfe}.t-sel{color:#d7ba7d}
 .btnrow{flex:0 0 auto;display:flex;gap:7px;padding:8px 10px;background:var(--panel);border:1px solid var(--line);border-radius:14px;flex-wrap:wrap;box-shadow:var(--sh1)}
@@ -160,7 +163,7 @@ body.grabbing{cursor:ns-resize;user-select:none}
 .btnrow button:hover, header .hbtn:hover{border-color:var(--line2);background:var(--panel2);box-shadow:var(--sh1)}
 .btnrow button:active, header .hbtn:active{transform:translateY(1px)}
 #btnRun{background:var(--btn);color:#fff;border-color:transparent;font-weight:600;box-shadow:var(--sh1)}
-#btnRun:hover{background:var(--accent2);border-color:transparent;box-shadow:var(--sh2)}
+#btnRun:hover{background:var(--btn2);border-color:transparent;box-shadow:var(--sh2)}
 #duckbar{display:none;align-items:center;gap:10px;padding:10px 14px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;font-size:.88rem;line-height:1.4}
 body.dark #duckbar{background:var(--panel2);border-color:var(--line);color:var(--ink)}
 #duckbar.on{display:flex}
@@ -218,11 +221,16 @@ body.dark .navitem.pract{color:#b89fe0}
 .navitem.proj{color:#1d5c8f;font-weight:bold}
 body.dark .navitem.proj{color:#7db8e8}
 .brief{background:#f7f4ec;border:1px solid #e5dcc6;border-left:3px solid #b08d4a;border-radius:12px;padding:14px 18px;margin:16px 0}
-.brief>b{font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:#8a6d33;display:block;margin-bottom:6px}
+.brief>b{font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:#7a5f26;display:block;margin-bottom:6px}
 body.dark .brief{background:#26231c;border-color:#3d3728}
+.brief .bysig{color:#7a5f26}
+body.dark .elders b.el,body.dark .brief>b,body.dark .brief .bysig{color:#d9b775}
 .pay{background:var(--good);border:1px solid var(--goodline);border-left:3px solid var(--accent);border-radius:12px;padding:12px 16px;margin:16px 0;font-size:.92rem}
 body.dark .pay{background:var(--good);border-color:var(--goodline)}
-#status.projlist{padding:10px 14px;max-height:34vh;overflow-y:auto}
+#status.projlist{padding:12px 16px;max-height:34vh;overflow-y:auto}
+body.dark #status.projlist{background:var(--panel);border-color:var(--line)}
+body.dark #status.projlist .fail .ic{color:#e8845c}
+body.dark #status.projlist .coachline{background:#2b2820;border-color:#4a432f;color:var(--ink)}
 #status.projlist .hd{display:flex;align-items:center;font-size:.65rem;text-transform:uppercase;letter-spacing:.13em;font-weight:700;color:var(--soft);margin-bottom:9px}
 #status.projlist .pct{margin-left:auto;font-family:var(--mono);color:var(--acct);font-weight:bold}
 #status.projlist .bar{height:8px;background:var(--code);border-radius:4px;overflow:hidden;margin-bottom:8px}
@@ -252,6 +260,8 @@ body.sensei #btnTheme{border-color:#8a1c1c}
 .edwrap.th-paper #ed{background:transparent}
 .edwrap.th-paper #ed::selection{background:rgba(100,150,220,.35);color:transparent}
 .edwrap.th-paper #hl{color:#3a332c}.edwrap.th-paper .t-s{color:#a4571f}.edwrap.th-paper .t-kw,.edwrap.th-paper .t-k{color:#1d5c8f}.edwrap.th-paper .t-f{color:#7d5a9e}.edwrap.th-paper .t-n{color:#2f7d5c}
+/* the other five tokens were left at their VS-Code-dark values */
+.edwrap.th-paper .t-t{color:#1d5c8f}.edwrap.th-paper .t-a,.edwrap.th-paper .t-p{color:#8a4a86}.edwrap.th-paper .t-c{color:#4a6b3a}.edwrap.th-paper .t-sel{color:#8a5a1f}
 .edwrap.th-paper #ed{caret-color:#3a332c}.edwrap.th-paper ~ * {}
 .edwrap.th-synth,.edwrap.th-synth #hl{background:#241b2f}
 .edwrap.th-synth #ed{background:transparent}
@@ -259,20 +269,82 @@ body.sensei #btnTheme{border-color:#8a1c1c}
 .edwrap.th-matrix,.edwrap.th-matrix #hl{background:#0a0f0a}
 .edwrap.th-matrix #ed{background:transparent}
 .edwrap.th-matrix #hl{color:#9fdc9f}.edwrap.th-matrix .t-s{color:#d8f7c0}.edwrap.th-matrix .t-kw,.edwrap.th-matrix .t-k{color:#4dc36b}.edwrap.th-matrix .t-f{color:#c6e88a}.edwrap.th-matrix .t-p{color:#7fbf8f}.edwrap.th-matrix .t-n{color:#e0ffe0}
+/* ---- the classic looks ------------------------------------------------ */
+.edwrap.th-sol,.edwrap.th-sol #hl{background:#002b36}
+.edwrap.th-sol #ed{background:transparent;caret-color:#93a1a1}
+.edwrap.th-sol #hl{color:#93a1a1}
+.edwrap.th-sol .t-s{color:#3fc0b4}.edwrap.th-sol .t-kw{color:#4fa3e0}.edwrap.th-sol .t-k{color:#d56da0}.edwrap.th-sol .t-f{color:#d0a83a}
+.edwrap.th-sol .t-n{color:#a8c74a}.edwrap.th-sol .t-c{color:#809498}.edwrap.th-sol .t-t{color:#4fa3e0}.edwrap.th-sol .t-a{color:#8f96d8}.edwrap.th-sol .t-p{color:#8f96d8}.edwrap.th-sol .t-sel{color:#d3a44a}
+.edwrap.th-sol .ghost{color:#8a9a9b;opacity:1}.edwrap.th-sol #ed::placeholder{color:#7f9494}
+.edwrap.th-sollight,.edwrap.th-sollight #hl{background:#fdf6e3}
+.edwrap.th-sollight #ed{background:transparent;caret-color:#4a5658}
+.edwrap.th-sollight #hl{color:#4a5658}
+.edwrap.th-sollight .t-s{color:#1a7a6e}.edwrap.th-sollight .t-kw{color:#1b6ea8}.edwrap.th-sollight .t-k{color:#9c2f7a}.edwrap.th-sollight .t-f{color:#8a6200}
+.edwrap.th-sollight .t-n{color:#5c7010}.edwrap.th-sollight .t-c{color:#627072}.edwrap.th-sollight .t-t{color:#1b6ea8}.edwrap.th-sollight .t-a{color:#5257a8}.edwrap.th-sollight .t-p{color:#5257a8}.edwrap.th-sollight .t-sel{color:#96442b}
+.edwrap.th-sollight .ghost{color:#5f6969;opacity:1}.edwrap.th-sollight #ed::placeholder{color:#637072}
+.edwrap.th-sollight #ed::selection{background:rgba(100,150,220,.35);color:transparent}
+.edwrap.th-dracula,.edwrap.th-dracula #hl{background:#282a36}
+.edwrap.th-dracula #ed{background:transparent;caret-color:#f8f8f2}
+.edwrap.th-dracula #hl{color:#f8f8f2}
+.edwrap.th-dracula .t-s{color:#f1fa8c}.edwrap.th-dracula .t-kw{color:#8be9fd}.edwrap.th-dracula .t-k{color:#ff79c6}.edwrap.th-dracula .t-f{color:#50fa7b}
+.edwrap.th-dracula .t-n{color:#bd93f9}.edwrap.th-dracula .t-c{color:#8f9dd4}.edwrap.th-dracula .t-t{color:#ff79c6}.edwrap.th-dracula .t-a{color:#50fa7b}.edwrap.th-dracula .t-p{color:#8be9fd}.edwrap.th-dracula .t-sel{color:#ffb86c}
+.edwrap.th-dracula .ghost{color:#98999c;opacity:1}.edwrap.th-dracula #ed::placeholder{color:#9aa5cf}
+.edwrap.th-nord,.edwrap.th-nord #hl{background:#2e3440}
+.edwrap.th-nord #ed{background:transparent;caret-color:#d8dee9}
+.edwrap.th-nord #hl{color:#d8dee9}
+.edwrap.th-nord .t-s{color:#a3be8c}.edwrap.th-nord .t-kw{color:#8fbcbb}.edwrap.th-nord .t-k{color:#c690c8}.edwrap.th-nord .t-f{color:#95c2e8}
+.edwrap.th-nord .t-n{color:#d3b08a}.edwrap.th-nord .t-c{color:#93a2b5}.edwrap.th-nord .t-t{color:#8fbcbb}.edwrap.th-nord .t-a{color:#a9c3e0}.edwrap.th-nord .t-p{color:#a9c3e0}.edwrap.th-nord .t-sel{color:#ebcb8b}
+.edwrap.th-nord .ghost{color:#a2a8b3;opacity:1}.edwrap.th-nord #ed::placeholder{color:#9aa6b8}
+.edwrap.th-gruv,.edwrap.th-gruv #hl{background:#282828}
+.edwrap.th-gruv #ed{background:transparent;caret-color:#ebdbb2}
+.edwrap.th-gruv #hl{color:#ebdbb2}
+.edwrap.th-gruv .t-s{color:#b8bb26}.edwrap.th-gruv .t-kw{color:#83a598}.edwrap.th-gruv .t-k{color:#fb5b48}.edwrap.th-gruv .t-f{color:#fabd2f}
+.edwrap.th-gruv .t-n{color:#d3869b}.edwrap.th-gruv .t-c{color:#a89984}.edwrap.th-gruv .t-t{color:#8ec07c}.edwrap.th-gruv .t-a{color:#83a598}.edwrap.th-gruv .t-p{color:#83a598}.edwrap.th-gruv .t-sel{color:#fe8019}
+.edwrap.th-gruv .ghost{color:#a1977e;opacity:1}.edwrap.th-gruv #ed::placeholder{color:#a89984}
+.edwrap.th-monokai,.edwrap.th-monokai #hl{background:#272822}
+.edwrap.th-monokai #ed{background:transparent;caret-color:#f8f8f2}
+.edwrap.th-monokai #hl{color:#f8f8f2}
+.edwrap.th-monokai .t-s{color:#e6db74}.edwrap.th-monokai .t-kw{color:#66d9ef}.edwrap.th-monokai .t-k{color:#fa518e}.edwrap.th-monokai .t-f{color:#a6e22e}
+.edwrap.th-monokai .t-n{color:#ae81ff}.edwrap.th-monokai .t-c{color:#a29d86}.edwrap.th-monokai .t-t{color:#fa518e}.edwrap.th-monokai .t-a{color:#a6e22e}.edwrap.th-monokai .t-p{color:#66d9ef}.edwrap.th-monokai .t-sel{color:#fd971f}
+.edwrap.th-monokai .ghost{color:#989892;opacity:1}.edwrap.th-monokai #ed::placeholder{color:#a29d86}
+.edwrap.th-onedark,.edwrap.th-onedark #hl{background:#282c34}
+.edwrap.th-onedark #ed{background:transparent;caret-color:#abb2bf}
+.edwrap.th-onedark #hl{color:#abb2bf}
+.edwrap.th-onedark .t-s{color:#98c379}.edwrap.th-onedark .t-kw{color:#61afef}.edwrap.th-onedark .t-k{color:#c678dd}.edwrap.th-onedark .t-f{color:#61afef}
+.edwrap.th-onedark .t-n{color:#d19a66}.edwrap.th-onedark .t-c{color:#8d95a5}.edwrap.th-onedark .t-t{color:#e2757d}.edwrap.th-onedark .t-a{color:#d19a66}.edwrap.th-onedark .t-p{color:#56b6c2}.edwrap.th-onedark .t-sel{color:#e5c07b}
+.edwrap.th-onedark .ghost{color:#969da9;opacity:1}.edwrap.th-onedark #ed::placeholder{color:#8d95a5}
+.edwrap.th-cobalt,.edwrap.th-cobalt #hl{background:#193549}
+.edwrap.th-cobalt #ed{background:transparent;caret-color:#e8f4ff}
+.edwrap.th-cobalt #hl{color:#e8f4ff}
+.edwrap.th-cobalt .t-s{color:#a5ff90}.edwrap.th-cobalt .t-kw{color:#9effff}.edwrap.th-cobalt .t-k{color:#ff6b93}.edwrap.th-cobalt .t-f{color:#ffc600}
+.edwrap.th-cobalt .t-n{color:#ff9d00}.edwrap.th-cobalt .t-c{color:#8fa9ba}.edwrap.th-cobalt .t-t{color:#9effff}.edwrap.th-cobalt .t-a{color:#ffc600}.edwrap.th-cobalt .t-p{color:#9effff}.edwrap.th-cobalt .t-sel{color:#ff9d00}
+.edwrap.th-cobalt .ghost{color:#95a8b6;opacity:1}.edwrap.th-cobalt #ed::placeholder{color:#97b3c6}
+.edwrap.th-amber,.edwrap.th-amber #hl{background:#1a1200}
+.edwrap.th-amber #ed{background:transparent;caret-color:#ffb000}
+.edwrap.th-amber #hl{color:#ffb000}
+.edwrap.th-amber .t-s{color:#ffe08a}.edwrap.th-amber .t-kw{color:#ffb000}.edwrap.th-amber .t-k{color:#ffcf5c}.edwrap.th-amber .t-f{color:#ffdd99}
+.edwrap.th-amber .t-n{color:#ffd166}.edwrap.th-amber .t-c{color:#c98d1a}.edwrap.th-amber .t-t{color:#ffb000}.edwrap.th-amber .t-a{color:#ffc94d}.edwrap.th-amber .t-p{color:#ffc94d}.edwrap.th-amber .t-sel{color:#ffe9b0}
+.edwrap.th-amber .ghost{color:#b17a00;opacity:1}.edwrap.th-amber #ed::placeholder{color:#c98d1a}
+.edwrap.th-c64,.edwrap.th-c64 #hl{background:#3b32a0}
+.edwrap.th-c64 #ed{background:transparent;caret-color:#b9b0ff}
+.edwrap.th-c64 #hl{color:#b9b0ff}
+.edwrap.th-c64 .t-s{color:#a5ffb0}.edwrap.th-c64 .t-kw{color:#9effff}.edwrap.th-c64 .t-k{color:#ff9db3}.edwrap.th-c64 .t-f{color:#ffe08a}
+.edwrap.th-c64 .t-n{color:#ffd166}.edwrap.th-c64 .t-c{color:#b4aee7}.edwrap.th-c64 .t-t{color:#9effff}.edwrap.th-c64 .t-a{color:#c9c0ff}.edwrap.th-c64 .t-p{color:#c9c0ff}.edwrap.th-c64 .t-sel{color:#ffc94d}
+.edwrap.th-c64 .ghost{color:#b9b0ff;opacity:1}.edwrap.th-c64 #ed::placeholder{color:#b4aee7}
 @media print{ body>*{display:none!important} #certOv{display:flex!important;position:static;background:#fff} #certOv .wcard{box-shadow:none;max-width:100%} #certBtns{display:none!important} }
 .wcard{background:var(--panel);max-width:540px;margin:16px;border-radius:20px;padding:32px 36px;box-shadow:var(--sh3);border:1px solid var(--line)}
 .wcard h2{font-family:var(--serif);font-weight:600;font-size:1.72rem;line-height:1.2;letter-spacing:-.012em;margin-bottom:14px}
 .wcard p{margin:0 0 12px;line-height:1.6}
 .wcard ol{margin:0 0 12px 22px;line-height:1.7}
 #welcome .wcard button{background:var(--btn);color:#fff;border:none;font-family:inherit;font-size:1.05rem;padding:13px 22px;border-radius:12px;cursor:pointer;width:100%}
-#welcome .wcard button:hover{background:var(--accent2)}
+#welcome .wcard button:hover{background:var(--btn2)}
 #qaPanel{position:fixed;inset:auto 16px 16px auto;width:340px;max-height:70vh;background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.15);display:none;flex-direction:column;overflow:hidden;z-index:50}
 #qaPanel.open{display:flex}
 #qaPanel .qhead{padding:8px 12px;background:var(--code);display:flex;align-items:center}
 #qaPanel .qhead button{margin-left:auto;border:none;background:none;cursor:pointer;font-size:1rem;color:var(--ink)}
 .qachip{display:block;width:100%;text-align:left;margin:6px 0;padding:8px 10px;font-family:inherit;font-size:.82rem;border:1px solid var(--line);border-radius:8px;background:var(--code);color:var(--ink);cursor:pointer;line-height:1.35}
 .qachip:hover{border-color:var(--accent)}
-#qaIn{border:none;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:8px 12px;font-family:inherit;font-size:.9rem;outline:none}
+#qaIn{border:none;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:10px 14px;font-family:inherit;font-size:.9rem;outline:none;background:var(--panel);color:var(--ink)}
 #qaOut{padding:10px 12px;overflow-y:auto;font-size:.88rem;line-height:1.5}
 #qaOut p{margin-bottom:8px}
 .hint-on #status{background:#eef;border-color:#ccd}
@@ -284,6 +356,8 @@ body.dark{font-weight:400;
   --ink:#e9e7e2; --soft:#9aa0a6;
   --line:#282b30; --line2:#373b41;
   --accent:#2fae86; --acct:#59d6a6; --btn:#0f7a5e;
+  /* the blue reads as text here and still carries white on a button there */
+  --accent2:#6aa6d8; --btn2:#1d5f94; --warn:#e08a5f;
   --good:#1c2f27; --goodline:#35513f; --bad:#3a2a26; --badline:#5e3f37;
   --code:#1f2226; --sb:#2f343a; --sbh:#434a52;
   --sh1:0 1px 2px rgba(0,0,0,.45);
@@ -304,7 +378,10 @@ body.dark .wcard{background:var(--panel)}
 .tick.pop{animation:tickpop .45s ease}
 @keyframes tickpop{40%{transform:scale(1.7)}}
 .xpfloat{position:fixed;font-family:var(--mono);font-weight:bold;color:var(--acct);z-index:120;pointer-events:none;animation:xprise 1.2s ease forwards}
-.ghost{color:var(--soft);opacity:.55}
+/* faint is the point; illegible is not. Measured >=4.5:1 on all five editor
+   themes, which a single var(--soft) at .55 opacity never was. */
+.ghost{color:#a6acb2;opacity:.85}
+.edwrap.th-paper .ghost{color:#5f5a54;opacity:.9}
 .guidechip{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-weight:700;letter-spacing:.3px;background:var(--btn);color:#fff;border-radius:999px;padding:4px 12px;margin:0 0 8px;animation:gcpulse 1.8s ease infinite}
 .guide-now{outline:2px solid var(--accent);outline-offset:3px;border-radius:12px;animation:gopulse 1.8s ease infinite}
 .predcard.guide-now{outline-offset:-3px;border-radius:0}
@@ -408,7 +485,7 @@ body.dark .wcard{background:var(--panel)}
 .rco.miss{border-color:var(--badline);background:var(--bad)}
 .rcwhy{margin-top:11px;font-size:.9rem;line-height:1.5}
 .rcwhy:empty{display:none}
-.rcgo{font-family:inherit;font-size:.82rem;font-weight:700;padding:5px 11px;border:none;border-radius:8px;background:var(--accent2);color:#fff;cursor:pointer;margin-left:6px}
+.rcgo{font-family:inherit;font-size:.82rem;font-weight:700;padding:5px 11px;border:none;border-radius:8px;background:var(--btn2);color:#fff;cursor:pointer;margin-left:6px}
 .rcskip{flex:0 0 auto;border:1px solid var(--line);background:none;color:var(--soft);border-radius:6px;font-size:.68rem;padding:2px 8px;cursor:pointer;font-family:inherit;letter-spacing:1px}
 .rcskip:hover{color:var(--ink);border-color:var(--accent)}
 #status .twist{color:var(--ink);border-top-color:var(--accent2)}
@@ -426,7 +503,7 @@ body.dark .wcard{background:var(--panel)}
 .hubnext:hover{transform:translateY(-1px);box-shadow:0 1px 2px rgba(12,95,74,.3),0 16px 40px rgba(12,95,74,.28)}
 .hubnext:active{transform:translateY(0)}
 .hubnext .hnl{display:block;font-family:var(--serif);font-size:1.4rem;font-weight:600;letter-spacing:-.01em;line-height:1.2}
-.hubnext .hnw{display:block;font-size:.89rem;opacity:.88;margin-top:7px;line-height:1.5;max-width:56ch}
+.hubnext .hnw{display:block;font-size:.89rem;opacity:.94;margin-top:7px;line-height:1.5;max-width:56ch}
 .hubtiles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0 26px}
 .hubtile{border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--ink);padding:15px 10px;cursor:pointer;font-family:inherit;text-align:center;transition:border-color .15s,box-shadow .15s,transform .1s}
 .hubtile:hover{border-color:var(--line2);box-shadow:var(--sh2);transform:translateY(-1px)}
@@ -538,6 +615,8 @@ body.dark .saybox{background:var(--good);border-color:var(--goodline)}
 .navtip:after{content:'';position:absolute;top:-9px;left:24px;border:8px solid transparent;border-top:none;border-bottom-color:var(--accent)}
 @keyframes xprise{to{transform:translateY(-42px);opacity:0}}
 #status{transition:background .25s,color .25s}
+a{color:var(--acct);text-underline-offset:2px}
+a:hover{color:var(--ink)}
 button:focus-visible,.navitem:focus-visible,#ed:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:8px}
 /* on the solid buttons the ring goes inside, in white, or it disappears into its own fill */
 .hubnext:focus-visible,#btnRun:focus-visible,#btnNext:focus-visible,.hubgo:first-child:focus-visible,.wdoors button:first-child:focus-visible{outline:2px solid rgba(255,255,255,.9);outline-offset:-5px}
@@ -546,6 +625,7 @@ button:focus-visible,.navitem:focus-visible,#ed:focus-visible,input:focus-visibl
 .navfoot button:hover{border-color:var(--accent);color:var(--ink)}
 #navSearch{width:calc(100% - 20px);margin:4px 10px 8px;padding:8px 12px;border:1px solid var(--line);border-radius:10px;font-family:inherit;font-size:.85rem;background:var(--panel);color:var(--ink);box-shadow:var(--sh1);transition:border-color .15s,box-shadow .15s}
 #navSearch:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(18,112,90,.12)}
+#navSearch::placeholder,#palIn::placeholder,#qaIn::placeholder,.sayin::placeholder{color:var(--soft);opacity:1}
 .ghead{cursor:pointer;user-select:none}
 .ghead .garrow{font-size:.6rem;margin-right:2px;transition:transform .15s;display:inline-block}
 .ghead.closed .garrow{transform:rotate(-90deg)}
@@ -734,7 +814,7 @@ button:focus-visible,.navitem:focus-visible,#ed:focus-visible,input:focus-visibl
     <li><b>Watch</b> your result appear below as you type. When you are ready, press <b>▶ Run</b> to get graded &mdash; real programmers work in a loop: write &rarr; run &rarr; read &rarr; fix. The bar turns <b style="color:var(--accent)">green</b> when you nail it.</li>
   </ol>
   <p>Stuck? <b>Help me</b> gives a hint, and the built-in teacher explains any mistake in plain English. Most people finish a grade in one relaxed evening &mdash; there is no clock and no falling behind.</p>
-  <p style="font-size:.85rem;color:#6b6058">Experienced developer? <a href="https://github.com/joshuagrigson/code-school#for-skeptics" target="_blank" rel="noopener">Read the pedagogy, then view-source and judge us.</a> Reviews double as test-out exams (⚡).</p>
+  <p style="font-size:.85rem;color:var(--soft)">Experienced developer? <a href="https://github.com/joshuagrigson/code-school#for-skeptics" target="_blank" rel="noopener">Read the pedagogy, then view-source and judge us.</a> Reviews double as test-out exams (⚡).</p>
   <div class="wdoors">
     <button id="wStart">I have never written code<small>Start at the very beginning. You will be typing within a minute.</small></button>
     <button id="wPlace">I already know some of this<small>A two-minute placement: one question per grade, and we tick off whatever you can prove.</small></button>
@@ -1818,7 +1898,7 @@ PRACT('C','js','rename rescue','<p>Someone left you a mess. Same behaviour, hone
 GRADES.push({id:'P', name:'Portfolio', sub:'Client work', lv:2});
 function PROJ(gate, lang, title, client, briefHtml, value, goal, start, stories, pageHtml){
   const teach = '<p><b>This is a project, not a lesson.</b> No single answer exists and there is no Show me — just a client, a brief, and requirements that check themselves live below the editor as you build. This is how professional work is judged: not &ldquo;is it the answer?&rdquo; but &ldquo;does it meet every requirement?&rdquo;</p>'
-    + '<div class="brief"><b>📋 Client brief</b><p style="margin-bottom:6px"><i>&ldquo;'+briefHtml+'&rdquo;</i></p><p style="margin:0;font-size:.85rem;color:#8a6d33">— '+client+'</p></div>'
+    + '<div class="brief"><b>📋 Client brief</b><p style="margin-bottom:6px"><i>&ldquo;'+briefHtml+'&rdquo;</i></p><p class="bysig" style="margin:0;font-size:.85rem">— '+client+'</p></div>'
     + '<div class="pay">💵 <b>Real-world value:</b> '+value+'</div>'
     + '<p style="font-size:.9rem;color:var(--soft)">Stuck on a requirement? Its 💡 hint points without solving. Requirements can be built in any order.</p>';
   const les = lang==='html'
@@ -5409,6 +5489,16 @@ const THEMES=[
  {id:'th-paper', name:'Paper (light)'},
  {id:'th-synth', name:'Synthwave'},
  {id:'th-matrix', name:'Phosphor'},
+ {id:'th-sol', name:'Solarized Dark'},
+ {id:'th-sollight', name:'Solarized Light'},
+ {id:'th-dracula', name:'Dracula'},
+ {id:'th-nord', name:'Nord'},
+ {id:'th-gruv', name:'Gruvbox'},
+ {id:'th-monokai', name:'Monokai'},
+ {id:'th-onedark', name:'One Dark'},
+ {id:'th-cobalt', name:'Cobalt'},
+ {id:'th-amber', name:'Amber CRT'},
+ {id:'th-c64', name:'Commodore'},
 ];
 function applyTheme(){
   const w=document.querySelector('.edwrap');
@@ -5416,7 +5506,17 @@ function applyTheme(){
   const t=THEMES.find(x=>x.id===edTheme);
   if (t && t.id) w.classList.add(t.id);
 }
-const SWATCH={'':['#1e1e1e','#569cd6','#ce9178','#dcdcaa'],'th-midnight':['#0d1b2a','#6ab0f3','#7fd1b9','#e0c285'],'th-paper':['#faf8f2','#1d5c8f','#a4571f','#7d5a9e'],'th-synth':['#241b2f','#72e0d1','#ff8fa3','#ffd166'],'th-matrix':['#0a0f0a','#4dc36b','#d8f7c0','#c6e88a']};
+const SWATCH={'':['#1e1e1e','#569cd6','#ce9178','#dcdcaa'],'th-midnight':['#0d1b2a','#6ab0f3','#7fd1b9','#e0c285'],'th-paper':['#faf8f2','#1d5c8f','#a4571f','#7d5a9e'],'th-synth':['#241b2f','#72e0d1','#ff8fa3','#ffd166'],'th-matrix':['#0a0f0a','#4dc36b','#d8f7c0','#c6e88a'],
+ 'th-sol':['#002b36','#4fa3e0','#3fc0b4','#d0a83a'],
+ 'th-sollight':['#fdf6e3','#1b6ea8','#1a7a6e','#8a6200'],
+ 'th-dracula':['#282a36','#8be9fd','#f1fa8c','#50fa7b'],
+ 'th-nord':['#2e3440','#8fbcbb','#a3be8c','#95c2e8'],
+ 'th-gruv':['#282828','#83a598','#b8bb26','#fabd2f'],
+ 'th-monokai':['#272822','#66d9ef','#e6db74','#a6e22e'],
+ 'th-onedark':['#282c34','#61afef','#98c379','#61afef'],
+ 'th-cobalt':['#193549','#9effff','#a5ff90','#ffc600'],
+ 'th-amber':['#1a1200','#ffb000','#ffe08a','#ffdd99'],
+ 'th-c64':['#3b32a0','#9effff','#a5ffb0','#ffe08a']};
 function renderThemeTray(){
   $('#themeList').innerHTML = THEMES.map(t=>{
     const sw = SWATCH[t.id].map(c=>'<i style="background:'+c+'"></i>').join('');

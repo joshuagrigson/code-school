@@ -61,10 +61,10 @@ The hint buttons are still there, but the worked-example ghost coach is not:
 Beyond and the Review Desk are reading-and-deciding work, and a coach that fades
 in the answer one word at a time does the deciding for you.
 
-Every editor theme is available from the first minute of Kindergarten. Making a
-learner earn a colour scheme gates comfort, not difficulty, and the person most
-likely to need the light or high-contrast theme is the beginner who has not
-earned anything yet.
+All fifteen editor themes are available from the first minute of Kindergarten.
+Making a learner earn a colour scheme gates comfort, not difficulty, and the
+person most likely to need the light or high-contrast theme is the beginner who
+has not earned anything yet.
 
 Real progress lives in `localStorage` under `codeschool`, with the review
 schedule under `srs`. A save code carries all of it to another device.
@@ -107,9 +107,35 @@ to be taken seriously by the adult typing alongside the nine-year-old.
   (`--serif`, `--sans`, `--mono`) have to be good on their own.
 - **Tabular numerals** on every counter, so progress never makes the line jump.
 
-Contrast is not a matter of taste here: the suite computes real WCAG ratios from
-rendered styles across both themes, so a palette change that fails AA fails the
-build. Every sampled ratio currently clears 4.5:1 with margin.
+### Fifteen looks for the editor, none of them earned
+
+Classic Dark, Midnight, Paper, Synthwave and Phosphor, plus Solarized Dark and
+Light, Dracula, Nord, Gruvbox, Monokai, One Dark, Cobalt, Amber CRT and
+Commodore. All available from the first minute — a colour scheme is comfort, not
+a reward, and the learner most likely to need the light or high-contrast one is
+the beginner who has not earned anything yet.
+
+Where an authentic palette put a token below AA on its own background — Monokai's
+comment grey, Dracula's `#6272a4`, One Dark's `#5c6370` — the hue is kept and
+only the lightness is raised, solved numerically against that theme's background
+rather than by eye. The faint "ghost" text the coach types ahead is placed on the
+line between the theme's foreground and its background at whatever point clears
+5:1, so it still reads as faint without becoming unreadable. These are read by
+nine-year-olds on laptop screens in daylight.
+
+### Contrast is not a matter of taste here
+
+The suite computes real WCAG ratios from rendered styles, so a palette change
+that fails AA fails the build. There are two levels: `suite.js` samples about
+nineteen representative points, and `contrast_sweep.js` walks **every element
+with a direct text child** across fourteen screens in both themes, composites
+every translucent layer down to the first opaque ancestor, folds each element's
+own opacity into its text colour, and additionally checks that both token blocks
+declare the same names and that all fifteen editor themes read.
+
+The sampled version passed while ten real failures were live, including the
+ghost coach at 1.59:1 and the Paper theme rendering HTML attributes at 1.40:1.
+The sweep is the one that finds them.
 
 ## On a phone
 

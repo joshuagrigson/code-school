@@ -171,6 +171,15 @@ body.grabbing{cursor:ns-resize;user-select:none}
 .arcrow .arct b i{font-style:normal;font-size:.76rem;font-family:var(--sans);color:var(--acct);letter-spacing:.02em}
 .arcrow .arct span{display:block;font-size:.85rem;color:var(--soft);line-height:1.45}
 .arcrow .arcn{flex:0 0 auto;font-size:.8rem;color:var(--soft);font-variant-numeric:tabular-nums;padding-top:3px}
+.arcrow .arcneed{display:block;font-size:.78rem;margin-top:6px;color:var(--acct);line-height:1.45}
+.arcrow .arcneed.warn{color:var(--warn)}
+.arcrow.early{border-style:dashed}
+.readynote{border:1px solid var(--line2);border-left:3px solid var(--warn);border-radius:12px;
+  background:var(--panel2);padding:13px 16px;margin:0 0 18px;font-size:.92rem;line-height:1.6}
+.readygo{display:block;width:100%;margin-top:11px;text-align:left;border:1px solid var(--line);
+  background:var(--panel);color:var(--ink);border-radius:9px;padding:9px 12px;cursor:pointer;
+  font-family:inherit;font-size:.88rem;font-weight:600}
+.readygo:hover{border-color:var(--accent)}
 .arcwho{font-size:.9rem;margin:10px 0 0}
 .arclink{background:none;border:none;padding:0;font:inherit;font-size:.9rem;color:var(--accent2);text-decoration:underline;cursor:pointer}
 #btnAdv{display:flex;align-items:center;gap:6px;padding:0 10px 0 5px}
@@ -3065,10 +3074,10 @@ SN('Eight bars of your own',
    to a new programmer, so the tests are chosen to make it happen: the empty
    input, the single item, the negative number, the value that is already
    correct. That is where real code dies, every time. */
-function KA(title, kyu, spec, teach, goal, start, sol, hint, passMsg, failMsg, rn, rw){
+function KA(title, kyu, spec, teach, goal, start, sol, hint, passMsg, failMsg, rn, rw, shape){
   spec.kyu = kyu;
   const les = {
-    lang:'arc', kind:'kata', spec, title:title, kyu, teach, goal, start, sol, hint,
+    lang:'arc', kind:'kata', spec, title:title, kyu, teach, goal, start, sol, hint, shape,
     g:'KT', beyond:true, rn, rw, html:'', css:'', js:'',
     check:(c)=>{
       const K = kataRun(spec, c);
@@ -3103,7 +3112,17 @@ KA('Count the vowels', 8, {
  'All six, including the four you were not shown. The one that catches almost everybody is capitals &mdash; and notice the fix was not a special case bolted on, it was lower-casing the input at the top so the rest of the function only ever sees one kind of letter. Narrowing what your code has to handle beats handling more.',
  'Read the failing rows below &mdash; each one shows the call, what you returned and what was wanted.',
  'Turning input into one consistent shape before working on it is <b>normalisation</b>, and it is one of the highest-value habits there is. The inputs that break things &mdash; empty, one item, the maximum, the negative &mdash; are <b>edge cases</b>, and the practice of listing them before writing is <b>boundary analysis</b>.',
- 'Every search box on earth normalises before it compares. If it did not, searching for "London" would not find "london", and every user on earth would think the site was broken.');
+ 'Every search box on earth normalises before it compares. If it did not, searching for "London" would not find "london", and every user on earth would think the site was broken.',
+ /* The on-ramp to the table gets the shape spelled out, because a kata you
+    cannot start is not a test of anything. The other six do not: working out
+    the shape yourself IS the exercise by then. */
+ {steps:[
+   'Make a box for the count and start it at <b>0</b>. It goes <i>above</i> the loop, or it resets on every letter.',
+   'Walk the text one letter at a time: <code>for (const letter of text) {</code> &mdash; and the <code>{</code> needs a matching <code>}</code> before the function\u2019s own.',
+   'Inside the loop, ask whether this letter is one of the vowels. A string of all five, and <code>.includes(letter)</code>, is the short way to ask.',
+   'If it is, add one to the count.',
+   'After the loop has finished, <code>return</code> the count. Inside the loop and you return on the first letter.'
+ ], note:'That is the counting loop you built in Grade 9, pointed at a string instead of a list. The only thing this kata adds is the capitals problem \u2014 and the tidiest answer to that is not an extra test inside the loop, it is lower-casing the text once, on the way in.'});
 
 KA('The second largest', 7, {
   fn:'secondLargest',
@@ -6586,6 +6605,16 @@ function pyDoc(les, code){
 }
 
 function arcDoc(les, code){
+  /* the board, the deck and the test table all need code that parses; when it
+     does not, they show the same sentence the coach shows */
+  if (code.trim()){
+    const serr = jsSyntaxError(code);
+    if (serr){
+      const say = friendlySyntax(serr, code);
+      return arcPage(CONSOLE_CSS, arcVerdict('lose', '\u274C This cannot be read yet',
+        String(say).replace(/<[^>]+>/g, '')));
+    }
+  }
   if (les.kind === 'quest') return questDoc(les, code);
   if (les.kind === 'sound') return soundDoc(les, code);
   return kataDoc(les, code);
@@ -6628,6 +6657,21 @@ function jsSyntaxError(code){
 function friendlySyntax(msg, code){
   lintRange = null;
   const t = code.trimEnd();
+  /* A string that was opened and never closed swallows everything after the
+     quote, so the "ends mid-thought" test below blames whatever character
+     happens to sit inside it - on a rhythm string like "0---0 that is a dash,
+     and the learner is sent looking at the wrong thing. Ask about the quote
+     first, and ask about both kinds: this used to look for ' only. */
+  if (/unterminated|Invalid or unexpected token/i.test(msg)){
+    const last = t.split('\n').pop();
+    for (const q of ['"', "'"]){
+      if ((last.split(q).length - 1) % 2 === 1){
+        const at = t.lastIndexOf(q);
+        if (at > -1) lintRange = {a:at, b:at+1};
+        return 'A quote was opened but never closed. Every opening ' + q + ' needs a closing ' + q + ' on the same line.';
+      }
+    }
+  }
   if (/[+\-*/=,({[.]$/.test(t) || /(&&|\|\|)\s*$/.test(t)){
     lintRange = {a:t.length-1, b:t.length};
     return 'It looks like a line isn’t finished &mdash; the code ends mid-thought (after a ' + t.slice(-1) + '). Complete that last line.';
@@ -6797,9 +6841,13 @@ function runCheck(){
     res = {ok:false, cls:'wait', msg:'Start typing whenever you are ready &mdash; the goal is in the blue bar above.'};
   } else if (les.lang === 'py' || les.lang === 'arc'){
     /* The engine is the judge here: it runs the code and reports what happened,
-       which is a better error than anything a regex could say about it. */
-    lintRange = null;
-    res = normRes(les, code);
+       which is a better error than anything a regex could say about it. The one
+       exception is code that will not parse at all - the engine can only pass
+       the parser's own words on, and the coach has been saying that particular
+       thing in English since Kindergarten. */
+    const serr = les.lang === 'arc' ? jsSyntaxError(code) : null;
+    if (serr) res = {ok:false, cls:'coach', msg:'\uD83E\uDDD1\u200D\uD83C\uDFEB ' + friendlySyntax(serr, code)};
+    else { lintRange = null; res = normRes(les, code); }
   } else if (les.lang === 'js'){
     const err = jsSyntaxError(code);
     const nm = err ? null : nearMissJS(code);
@@ -7304,7 +7352,7 @@ function loadLesson(i){
   const pos = gl.findIndex(x=>x.n===i);
   const op = ORDER.indexOf(i);
   const crumb = '<div class="crumb"><button id="crPrev" title="Previous lesson" aria-label="Previous lesson"'+(op<=0?' disabled':'')+'>&larr;</button><span>' + g.name + '<span class="crsub"> · ' + g.sub + '</span> — lesson ' + (pos+1) + ' of ' + gl.length + '</span><button id="crNext" title="Next lesson" aria-label="Next lesson"'+(op>=ORDER.length-1?' disabled':'')+'>&rarr;</button></div>';
-  teachEl.innerHTML = crumb + '<h2>' + les.title + '</h2>' + les.teach + shapeHtml(i) + widgetsFor(i) + decoderFor(les) + ((RN[i]||les.rn) ? '<div class="realname"><b>Real name</b>' + (RN[i]||les.rn) + '</div>' : '') + (MORE[i] ? '<div class="morebox"><b>More to chew on</b>' + MORE[i] + '</div>' : '') + (OLDS[i] ? '<div class="elders"><b class="el">📜 Lineage</b>' + OLDS[i] + '</div>' : '');
+  teachEl.innerHTML = crumb + '<h2>' + les.title + '</h2>' + readyNote(les) + les.teach + shapeHtml(i) + widgetsFor(i) + decoderFor(les) + ((RN[i]||les.rn) ? '<div class="realname"><b>Real name</b>' + (RN[i]||les.rn) + '</div>' : '') + (MORE[i] ? '<div class="morebox"><b>More to chew on</b>' + MORE[i] + '</div>' : '') + (OLDS[i] ? '<div class="elders"><b class="el">📜 Lineage</b>' + OLDS[i] + '</div>' : '');
   recallShow(i);
   goalEl.innerHTML = '<b>DO THIS:</b> ' + les.goal;
   const remind = remindFor(les);
@@ -8152,6 +8200,23 @@ function openHub() {
    door is a screen rather than a jump: it shows all four, says what each one
    is for, and marks the one your class was made for. */
 const ARC_GRADES = ['QS','SR','KT','PY'];
+/* What a track takes for granted, said out loud. Quest, the Sound Room and
+   Python genuinely start from nothing - their first lessons are one line each,
+   and each teaches the loop when it gets to it. The Kata Table does not: a kata
+   is a test, and these are testing things the school teaches in Grades 5, 7 and
+   9. Nothing here locks a door. It stops the door pretending. */
+const ARC_NEEDS = {
+  QS: {gate:null, need:'Starts from nothing \u2014 the first levels are one command a line.'},
+  SR: {gate:null, need:'Starts from nothing \u2014 the first lessons are one line each.'},
+  KT: {gate:'G9',  need:'Assumes the school: functions, loops, and working with strings.'},
+  PY: {gate:null, need:'Starts from nothing \u2014 a second language that does not assume the first.'}
+};
+function arcReady(gid){
+  const g = ARC_NEEDS[gid];
+  if (!g) return {ready:true, need:''};
+  if (!g.gate) return {ready:true, need:g.need};
+  return {ready: gradeDone(g.gate), need:g.need, gate:g.gate};
+}
 const ARC_PITCH = {
   QS:['⚔️','Your code drives a character across a board. Move, look, decide, fight — and by the last level you are writing the rule rather than the route.'],
   SR:['🎵','Your code is the instrument. Rhythm strings, tracks, tempo and effects, every sound built out of an oscillator rather than loaded from a file.'],
@@ -8175,10 +8240,13 @@ function openArcade(){
     const items = L.map((l,i)=>({l,i})).filter(x => x.l.g === gid);
     const dn = items.filter(x => beyondDone.has(x.i)).length;
     const p = ARC_PITCH[gid];
-    return '<button class="arcrow' + (gid === mine ? ' mine' : '') + '" data-act="arcgo" data-g="' + gid + '">'
+    const rd = arcReady(gid);
+    return '<button class="arcrow' + (gid === mine ? ' mine' : '') + (rd.ready ? '' : ' early') + '" data-act="arcgo" data-g="' + gid + '">'
       + '<span class="arci">' + p[0] + '</span>'
       + '<span class="arct"><b>' + g.name + (gid === mine ? ' <i>— your class starts here</i>' : '') + '</b>'
-      + '<span>' + p[1] + '</span></span>'
+      + '<span>' + p[1] + '</span>'
+      + '<span class="arcneed' + (rd.ready ? '' : ' warn') + '">' + (rd.ready ? '\u2713 ' : '\u26A0 ') + rd.need
+      + (rd.ready ? '' : ' You are ' + done.size + ' lessons in, so expect a fight. It is not locked.') + '</span></span>'
       + '<span class="arcn">' + dn + '/' + items.length + '</span></button>';
   }).join('');
   teachEl.innerHTML =
@@ -8654,8 +8722,27 @@ const SAYIT = {
  110:{"ask":"In one sentence, what does putting one loop inside another do to the amount of work?","need":[["multiply","multiplies","multiplied","times","squared","square","grows","grow","explodes","blows up","doubles","shoots up"],["25","twenty-five","five","hundred","100","pair","pairs","every pair","each","everything","combination","combinations"],["slow","slower","slows","crawl","crawls","expensive","cost","costs","costly","worse","bad","a lot","loads"]],"model":"The work multiplies instead of adding - five names inside five names is twenty-five pieces of work, which is why real data makes this crawl.","nudge":"Do not describe the two loops. Say what happens to the step count when the list gets twice as long."},
  113:{"ask":"In one sentence, why is there no loop anywhere in your answer?","need":[["know","knows","knew","knowing","already","name","named","key","cara","where","which"],["loop","loops","search","searches","searching","look through","checking","check","hunt","hunting","waste","wasted","pointless","no need","unnecessary"],["one","step","steps","straight","direct","directly","instantly","immediately","right to","at once"]],"model":"You already know the name, so the object hands the number over in one step and any searching would be work for nothing.","nudge":"The counter says one step. Say what you already knew before you started that made searching pointless."}
 };
+/* A grade that leans on the school says so on every one of its lessons, not
+   only the first, because the jump box can drop you on any of them. It stops
+   saying it the moment you have the grade it wanted. */
+function readyNote(les){
+  if (!les.g || !ARC_NEEDS[les.g]) return '';
+  const rd = arcReady(les.g);
+  if (rd.ready) return '';
+  const g = GRADES.find(x => x.id === rd.gate);
+  const first = coreOf(rd.gate).find(x => !done.has(x.i));
+  return '<div class="readynote"><b>\u26A0 This one leans on the school.</b> ' + esc(rd.need)
+    + ' You are ' + done.size + ' of ' + coreTotal() + ' lessons in, so it will feel like guessing rather than thinking. '
+    + 'Nothing is stopping you, and <b>\uD83D\uDCA1 Help me</b> and <b>\uD83E\uDE9C Give me a lead</b> exist for exactly this \u2014 '
+    + 'but the fast way through is the other way round.'
+    + (first ? '<button class="readygo" data-act="lesson" data-i="' + first.i + '">Learn it first \u2014 '
+        + esc(g ? g.name : rd.gate) + ', \u201C' + esc(first.l.title) + '\u201D \u2192</button>' : '')
+    + '</div>';
+}
 function shapeHtml(i) {
-  const s = SHAPE[i];
+  /* a post-graduation lesson carries its own shape, because SHAPE is keyed by
+     index and those indexes shift whenever a grade gains a lesson */
+  const s = SHAPE[i] || (L[i] && L[i].shape);
   if (!s) return '';
   return '<div class="shapebox"><div class="tih">&#129517; The shape of it</div>'
     + '<ol class="shapesteps">' + s.steps.map(x => '<li>' + x + '</li>').join('') + '</ol>'

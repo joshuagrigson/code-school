@@ -69,6 +69,15 @@ body.navhid nav{display:none}
 body.navhid .right{flex:2.2}
 /* collapsed is a typing mode: the reference panes yield to the editor */
 body.navhid .prevwrap{flex:.55 1 0}
+/* A flex item whose grow factor is under 1 takes only that fraction of the free
+   space and leaves the rest as a hole. That is harmless while the editor is
+   growing too - the two factors add up past 1 and between them they use the
+   column - but the moment the editor is PINNED to a fixed height there is
+   nothing else to take up the slack, and 45% of the column goes nowhere. The
+   editor gets pinned two ways: you drag the grip, or an arcade lesson hands its
+   room to the board. Either way the preview becomes the only thing that can
+   grow, so it grows properly. */
+body.edfixed .prevwrap{flex:1 1 0}
 body.navhid .scaffold{max-height:90px}
 /* the lesson column gets narrow here, so anything that assumed a wide line has to stand down */
 body.navhid .crumb{flex-wrap:wrap;row-gap:6px}
@@ -4164,7 +4173,16 @@ const REMIND = {
   html: '<b>&lt;tag&gt;</b>opens · <b>&lt;/tag&gt;</b>closes · every element needs its closing tag',
   css:  'selector { property: value; } · every line ends with ;',
   js:   'screen.textContent = ...  · working it out is NOT showing it · quotes = words, no quotes = box name',
+  py:   'print(...) shows it · four spaces to indent · a line ending in : opens a block · input() always hands back text',
+  quest:'hero.moveRight(3) · hero.attack() · hero.look("right") · one line, one order, top to bottom',
+  sound:'makeBeat(KICK, 1, 1, "0---0---0---0---") · 0 hits, - waits, + holds · sound names take no quotes',
+  kata: 'return the answer, do not print it · you are marked on tests you cannot see · the empty case is one of them',
 };
+/* Arcade lessons all share one lang but not one reminder, so the kind decides.
+   An unknown lang used to reach the bar as the literal word "undefined". */
+function remindFor(les){
+  return (les.lang === 'arc' ? REMIND[les.kind] : REMIND[les.lang]) || '';
+}
 
 function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
 function safeJs(s){ return s.replace(/<\/(scr)/gi, '<\\/$1'); }
@@ -7289,8 +7307,9 @@ function loadLesson(i){
   teachEl.innerHTML = crumb + '<h2>' + les.title + '</h2>' + les.teach + shapeHtml(i) + widgetsFor(i) + decoderFor(les) + ((RN[i]||les.rn) ? '<div class="realname"><b>Real name</b>' + (RN[i]||les.rn) + '</div>' : '') + (MORE[i] ? '<div class="morebox"><b>More to chew on</b>' + MORE[i] + '</div>' : '') + (OLDS[i] ? '<div class="elders"><b class="el">📜 Lineage</b>' + OLDS[i] + '</div>' : '');
   recallShow(i);
   goalEl.innerHTML = '<b>DO THIS:</b> ' + les.goal;
-  remindTxt.innerHTML = REMIND[les.lang];
-  remindBox.style.display = localStorage.getItem('remindHidden')==='1' ? 'none' : 'flex';
+  const remind = remindFor(les);
+  remindTxt.innerHTML = remind;
+  remindBox.style.display = (!remind || localStorage.getItem('remindHidden')==='1') ? 'none' : 'flex';
   const sc=$('#scaffold');
   if (les.lang!=='html' && les.html){
     sc.style.display='block';
@@ -9270,8 +9289,12 @@ $('#btnSandbox').onclick = ()=>{ if (sandbox) loadLesson(idx); else openSandbox(
 let edPref = 0;
 function edFit(les){
   const wrap=$('.edwrap'); if (!wrap) return;
-  if (edPref){ wrap.style.flex='0 0 '+edPref+'px'; wrap.style.minHeight=''; return; }
+  /* Pinning the editor takes its grow factor away, which leaves the preview as
+     the only thing that can claim the leftover height - see body.edfixed. */
+  const pin = (px) => { wrap.style.flex='0 0 '+px+'px'; wrap.style.minHeight=''; document.body.classList.add('edfixed'); };
+  if (edPref){ pin(edPref); return; }
   wrap.style.flex='';                      /* back to the share the stylesheet gives it */
+  document.body.classList.remove('edfixed');
   const room=$('.right').clientHeight;
   if (!room){ wrap.style.minHeight=''; return; }
   /* An arcade lesson is not read in the typing box - it is watched underneath
@@ -9280,8 +9303,7 @@ function edFit(les){
   if (les && (les.lang==='arc' || les.lang==='py')){
     const lh = parseFloat(getComputedStyle(edEl).lineHeight) || 18;
     const want = Math.max(6, (les.sol||'').split('\n').length + 1) * lh + 40;
-    wrap.style.flex = '0 0 ' + Math.round(Math.min(want, room*0.47)) + 'px';
-    wrap.style.minHeight = '';
+    pin(Math.round(Math.min(want, room*0.47)));
     return;
   }
   const lines=Math.max((les&&les.sol?les.sol:'').split('\n').length, (edEl.value||'').split('\n').length);
@@ -9322,6 +9344,7 @@ addEventListener('resize', ()=>{
     const y=(e.touches?e.touches[0].clientY:e.clientY);
     edPref=Math.round(Math.max(150, Math.min(startH + (y-startY), maxH)));
     const wrap=$('.edwrap'); wrap.style.flex='0 0 '+edPref+'px'; wrap.style.minHeight='';
+    document.body.classList.add('edfixed');
     syncHl(); };
   const up=()=>{ if(!on) return; on=false; grip.classList.remove('drag'); document.body.classList.remove('grabbing'); };
   grip.addEventListener('mousedown',down); grip.addEventListener('touchstart',down,{passive:false});

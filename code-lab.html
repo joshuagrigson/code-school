@@ -210,6 +210,35 @@ body.grabbing{cursor:ns-resize;user-select:none}
    handler returns on the first line, and so do runCheck and previewOnly. A box
    that looks live and silently swallows what you type reads as a broken theme,
    so here it stops looking live. */
+/* ===== screens with no typing on them get the whole window ===============
+   The hub, the arcade and a drill all set body.noedit, because on all three
+   the editor is switched off: it takes no keystrokes and Run does nothing.
+   Leaving it on screen spent half the window on a dead control and squeezed
+   the thing you were actually reading into a column.
+
+   So on those screens the column layout becomes a stack: the goal bar and the
+   status line keep their place as a strip across the top, and everything below
+   is the screen itself. The phone already worked this way - its tab bar only
+   ever shows one pane - so this is scoped above the phone breakpoint and the
+   two do not meet. */
+@media (min-width:701px){
+  body.noedit .work{flex-direction:column}
+  body.noedit .right{order:1;flex:0 0 auto;flex-flow:row wrap;align-items:stretch;
+    gap:8px;overflow:visible;padding:10px 10px 0;width:100%;max-width:1100px;margin:0 auto}
+  body.noedit .goalbox{flex:1 0 100%}
+  /* the status line reads first, the Looks button sits at the end of its row */
+  body.noedit #status{order:1;flex:1 1 340px;margin:0}
+  body.noedit .btnrow{order:2;flex:0 0 auto;align-items:center}
+  body.noedit .edwrap,body.noedit .edgrip,body.noedit .prevwrap,
+  body.noedit #ghosttalk,body.noedit #duckbar{display:none!important}
+  body.noedit .left{order:2;flex:1;min-height:0;min-width:0;border-right:none}
+  /* full width is not the same as readable: a hub tile row stretched across a
+     27-inch monitor is worse than the column it replaced, so the content stays
+     a comfortable measure and centres itself in the room it now has */
+  body.noedit .teach{padding-left:32px;padding-right:32px}
+  body.noedit .teach>*{max-width:1080px;margin-left:auto;margin-right:auto}
+  body.noedit .hubtiles{grid-template-columns:repeat(5,1fr)}
+}
 body.noedit .edwrap{opacity:.45;filter:saturate(.45)}
 body.noedit .edgrip{visibility:hidden}
 body.noedit #ed{cursor:default}
@@ -8845,7 +8874,11 @@ function syncModeUI(){
   const live = !(hub || drillOn);
   document.body.classList.toggle('noedit', !live);
   edEl.readOnly = !live;
-  if (!live) edEl.placeholder = phFor('js');
+  if (!live){
+    edEl.placeholder = phFor('js');
+    /* a note pointing at the typing box has nothing to point at now */
+    document.querySelectorAll('.navtip').forEach(x => x.remove());
+  }
   /* Free play swaps its label to show you are in it; the hub button had no such
      tell, so pressing it while already on the hub re-rendered the same screen
      and read as a dead button. */

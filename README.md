@@ -7,7 +7,7 @@ The complete Kindergarten-through-College coding class in one self-contained,
 offline HTML file. Download it (or copy it to `C:\code-school\`), double-click,
 and it runs in any browser with **zero network access and zero API usage**.
 
-## What's inside — 143 lessons
+## What's inside — 179 lessons
 
 Graduation is the 107 required lessons — every lesson and every practice rep.
 Challenges, portfolio pieces, Beyond and the Review Desk sit outside that count.
@@ -29,6 +29,10 @@ Challenges, portfolio pieces, Beyond and the Review Desk sit outside that count.
 | Portfolio | Five client jobs graded by a sign-off checklist, unlocked by the grades they need |
 | **Beyond** | **15 lessons after graduation: reading and fixing code you did not write, verifying what a machine wrote, writing a spec, asking a question that gets answered, commit messages, READMEs, shipping, secrets, untrusted input, accessibility, transferring to the next language, and performance** |
 | **Review Desk** | **10 lessons on reading code a machine wrote — see below** |
+| **Quest** | **8 levels where your code drives a hero across a board** |
+| **The Sound Room** | **8 lessons where your code is the instrument** |
+| **The Kata Table** | **7 puzzles marked on tests you were never shown** |
+| **Python** | **13 lessons: a second language, from `print` to a working report** |
 
 Reviews double as test-out exams (⚡): pass one first and it ticks the whole
 grade. Challenges are hint-free. Reps (🏋) are required: they count toward the
@@ -68,6 +72,78 @@ has not earned anything yet.
 
 Real progress lives in `localStorage` under `codeschool`, with the review
 schedule under `srs`. A save code carries all of it to another device.
+
+## The Arcade
+
+Four grades that sit outside the school the way Beyond and the Review Desk do:
+nothing here is needed to graduate, and none of it is a quiz. Each one is
+lifted from a place that already worked out how to make programming feel like
+something rather than like homework — and what was taken is the mechanic, not
+the artwork.
+
+**Quest** (from CodeCombat) is eight levels where your code drives a character
+across a board. `hero.moveRight(4)`, `hero.attack()`, `hero.look("right")`.
+Level one is five lines in a row; level eight takes the controls away and asks
+you to write a `turn(hero)` function that something else calls sixty times,
+which is the Screeps idea and a genuinely different way to think. In between:
+an off-by-one that eats a corridor, an enemy that hits back if your maths is
+wrong, and a switch that has to be stood on before a door three screens away
+will open.
+
+**The Sound Room** (from EarSketch) is eight lessons where the output is music.
+`makeBeat(KICK, 1, 1, "0---0---0---0---")` — sixteen characters, sixteen slices
+of a bar, `0` hits and `-` waits and `+` holds. There are no audio files in
+this repository and there is no network, so every sound is *built*: a kick is a
+sine wave falling from 150Hz to 45Hz in fifty-five thousandths of a second, a
+hi-hat is filtered noise. The last lesson asks for eight bars with an
+arrangement, which turns out to be a loop with an `if` on the bar number.
+
+**The Kata Table** (from Codewars and CheckiO) is seven puzzles, ranked 8kyu to
+5kyu, where you are shown two examples and marked on six or eight. The hidden
+ones are deliberately the boring inputs — the empty string, the single item,
+the all-negative list, the zero in the middle — because that is where real code
+dies. Passing every example in the brief and failing the tests behind it is the
+most useful hour in the whole place. The tests also catch a function that
+quietly edits the list it was handed.
+
+**Python** (from Sololearn) is thirteen short lessons and a real interpreter.
+Not a transpiler and not a pretend one: a tokeniser that synthesises
+INDENT/DEDENT from columns, a Pratt parser, and a tree-walker, all of it in the
+same file. `7 / 2` is `3.5` and `7 // 2` is `3`; `print(1.0)` says `1.0` and
+`print(1)` says `1`; `round(2.675, 2)` is `2.67`, because it rounds the decimal
+expansion of the double rather than multiplying by a hundred first. It has
+`UnboundLocalError`, because a lesson that lets you read a global you later
+assign is a lesson teaching a falsehood.
+
+**The Adventurer** (from Codédex) is the character all of it belongs to: a name,
+a face, and one of four classes — Builder, Sleuth, Architect, Bard — which are
+dispositions towards programming rather than costumes. The class picks your
+badge track and which arcade door opens first. The figure walking the Quest
+board is the face you chose. Twelve badges, each one earned by something that
+ran.
+
+The two ideas taken from **Brilliant** and **CodinGame** are already everywhere
+in the school rather than parked in a grade: one concept then immediately a
+question you cannot skip (the recall cards and the predict-the-output gates),
+and a visible replay of what your code did rather than a verdict about it —
+which is why Quest animates the run command by command, and why the Sound Room
+draws the score it is about to play. **CodingForKids**' block-to-text bridge is
+the strip of coloured command blocks under the Quest board: your program, as
+blocks, highlighting the one currently running.
+
+### One engine, two jobs
+
+Quest, the Sound Room and the Kata Table each have exactly one simulator, and
+it is a pure function. The coach grades its result; the preview animates the
+same result. There is no second copy for the two to disagree about, which is
+the failure that makes a game like this feel rigged — a board showing the hero
+on the flag while the marker says you missed it. `questRun` is written
+self-contained on purpose: the preview gets it by calling `.toString()` on it
+and injecting it into the iframe.
+
+Python and the katas do not need a script in the preview at all — the
+interpreter and the test runner live in the page, and the preview is handed the
+finished console or the finished table as static HTML.
 
 ## The hub: never having to decide what to do next
 
@@ -239,6 +315,60 @@ next-thing, placement and the ghost coach all go through it. Adding a third is a
 pass a learner who added it and left the old thing sitting underneath — and in a
 chain of `if`s, the old line is still the one that runs. Write the requirements
 last, then test them against wrong answers, not just against your own solution.
+
+**The arcade's two new languages.** `lang:'arc'` (Quest, the Sound Room, the
+Kata Table) and `lang:'py'` bypass the JavaScript branch of `runCheck`
+entirely, because that branch insists on a `screen.textContent =` line, which is
+right for a page and wrong for a level, a song, a kata and a `print()`. They are
+graded by running them: the engine's own result is a better error than anything
+a regex could say about it. `normRes` skips the DOMParser for both, and
+`stylePass` is replaced by `pyStyle` for Python, because the brace-counting
+indent check calls every correctly indented Python program badly indented.
+
+**The engines are written as self-contained functions on purpose.** `questRun`
+and `soundRun` are serialised with `.toString()` into the preview iframe, so
+they must not close over anything outside themselves. `ARC_CSS` and its
+siblings are JSON-encoded JS strings inside the script, so a rule added to one
+needs `\n` escapes, not real newlines — a comment with a real line break in it
+breaks the file, and only a parse check catches it.
+
+**A runaway loop is guarded in the loop's condition, not its body**, because
+`while (true);` has no body to put a counter in. Both the arcade engines rewrite
+`while (` to `while(__tick(),` and the middle clause of a three-part `for`, so a
+loop with no braces is still stopped.
+
+**Every lesson's own answer is tested against its own checker,** and its
+starting code against the same. Three of the eight Quest levels failed that on
+their first run — the boards were unbeatable by the solutions printed
+underneath them, including one where a memoryless `turn()` rule oscillated
+between two squares forever. Trace a level in Node before writing prose about
+it.
+
+**The prose makes falsifiable promises, so they get tested.** The Python track
+makes forty claims about what the interpreter does — that `input()` always
+hands back text, that `[::-1]` reverses, that `round(2.675, 2)` is `2.67` — and
+each one is a case in `py_claims.js`, run against the interpreter in the page.
+The kata lessons promise that particular naive answers fail particular hidden
+tests; those are `kata_claims.js`. One claim was wrong on the first run: the
+unguarded `titleCase` was said to hand back `undefined`, and it actually stops
+with a TypeError. The prose changed, not the code.
+
+**Use a real click in a Playwright harness, not `element.click()` inside
+`page.evaluate`.** A synthetic click in the same tick as a layout change leaves
+the preview iframe unlaid-out, so every lesson — including a Kindergarten one
+that predates all of this — reports an inner body height of zero and screenshots
+blank. That is the harness, not the page. It is the second time a measurement
+artifact in this file has nearly been "fixed" as a defect; the first was
+sampling during a CSS transition.
+
+**Contrast in the preview needs its own sweep.** The main sweep skips `#out`
+deliberately, because that frame is normally the learner's own page. In the
+arcade it is ours — verdict banners, a HUD, a test table, a console — so
+`arc_contrast.js` sweeps inside the frame with the same maths, on eleven screens
+in both themes. It found the celebration banner at 2.79:1 in dark mode, which
+had been there all along and which the arcade now fires forty-four more times.
+It also reports emoji, whose CSS colour is not what you see; the sweep skips
+text with no alphanumerics in it.
 
 **The test suites** live outside the repo but the recipe is worth keeping:
 every non-project lesson must have its solution pass and its starting code fail;

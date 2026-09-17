@@ -2828,7 +2828,7 @@ QU('The corridor that repeats',
 QU('The thing in the way',
  {w:7, h:1, hero:[0,0], exit:[6,0], foes:[{at:[2,0], hp:2, name:'Grubb'}, {at:[4,0], hp:1, name:'Mott'}], win:'exit+foes', hp:6, budget:22},
  '<p>Two of them, standing in a corridor with no way round. You cannot walk through an enemy &mdash; try it and the replay shows the bump.</p>'
- + '<p><code>hero.attack()</code> hits whatever is standing next to you. One call, one hit. Grubb takes two hits before going down; Mott takes one. And here is the part worth reading twice: <b>if your hit does not finish them, they hit you back</b>. You have six hearts. Grubb costs you one.</p>'
+ + '<p><code>hero.attack()</code> hits whatever is standing next to you. One call, one hit &mdash; and unlike <code>moveRight</code>, it takes <b>no number</b>. <code>moveRight(4)</code> means four squares, but <code>attack(4)</code> is not four swings: a swing is a swing. Two hits is two lines of <code>attack()</code>, or a loop. Put a number in those brackets and the level will say so rather than quietly swinging once &mdash; which is worth knowing in general, because a real function that ignores what you hand it is a much harder bug than one that complains.</p><p>Grubb takes two hits before going down; Mott takes one. And here is the part worth reading twice: <b>if your hit does not finish them, they hit you back</b>. You have six hearts. Grubb costs you one.</p>'
  + '<p>So the level is arithmetic, not bravery. Walk up beside Grubb, hit twice, walk on, hit Mott once, walk to the flag. Count the moves before you type: the board allows twenty-two, and the shortest honest route is well inside that.</p>'
  + '<p>The habit here is not swinging &mdash; it is knowing the cost before you commit. Every call your code makes costs something: time, memory, a heart, a dollar to some API. Programmers who ask "what does this cost, times how many?" before writing the line are the ones whose systems stay up.</p>',
  'Clear both enemies and finish on the flag.',
@@ -5924,8 +5924,12 @@ function questRun(SPEC, CODE){
   }
 
   function move(dx, dy, name, n){
-    n = (n === undefined || n === null) ? 1 : Math.floor(Number(n));
-    if (!(n >= 0)) throw {quest:'msg', msg:name + '() wants a whole number of squares, and it got ' + JSON.stringify(n)};
+    /* This said "wants a whole number of squares" and then quietly floored 2.5
+       to 2, which is the message lying about what the code does. */
+    n = (n === undefined || n === null) ? 1 : Number(n);
+    if (!(n >= 0) || n !== Math.floor(n))
+      throw {quest:'msg', msg:name + '() wants a whole number of squares, and it got ' + JSON.stringify(arguments[3])
+        + '. There is no half a square to stand on.'};
     if (n > 40) n = 40;
     dir = dx > 0 ? 'right' : dx < 0 ? 'left' : dy > 0 ? 'down' : 'up';
     for (var i = 0; i < n; i++){
@@ -5947,6 +5951,13 @@ function questRun(SPEC, CODE){
     moveUp:    function(n){ move(0, -1, 'moveUp', n); sync(); },
     moveDown:  function(n){ move(0, 1, 'moveDown', n); sync(); },
     attack: function(who){
+      /* moveRight(4) takes a count, so attack(4) is the reasonable next guess -
+         and silently swinging once while ignoring the 4 is the worst possible
+         answer to it: the board goes wrong and nothing says why. */
+      if (typeof who === 'number')
+        throw {quest:'msg', msg:'attack() does not take a number. A count makes sense for moving - moveRight(4) is four squares - but a swing is a swing: attack() is one hit, every time. Two hits is two lines of attack(), or a loop. Take the ' + who + ' out of the brackets.'};
+      if (who !== undefined && typeof who !== 'string')
+        throw {quest:'msg', msg:'attack() takes nothing at all, or the name of who to hit in quotes - attack() or attack("Grubb").'};
       spend('attack');
       var target = null, order = [[1,0],[-1,0],[0,1],[0,-1]];
       if (typeof who === 'string'){
@@ -6036,12 +6047,19 @@ function questRun(SPEC, CODE){
   for (var b = frames.length - 1; b >= 0; b--)
     if (/^bumped into /.test(frames[b].note || '')){ lastBump = frames[b].note.replace(/ — the hero did not move$/, ''); break; }
 
-  var why = '';
-  if (error) why = error;
-  else if (!atExit) why = 'the hero finished at ' + hx + ',' + hy + ' instead of on the exit at ' + SPEC.exit[0] + ',' + SPEC.exit[1]
-        + (lastBump ? ' — it ' + lastBump + ' on the way' : '');
-  else if (need.indexOf('gems') >= 0 && !allGems) why = gemList.filter(function(g){ return !g.got; }).length + ' gem(s) left behind';
-  else if (need.indexOf('foes') >= 0 && !allFoes) why = foeList.filter(function(f){ return f.alive; }).length + ' enemy still standing';
+  /* Everything still outstanding, not just the first thing. A level asking for
+     two enemies AND the flag used to report only the flag, so clearing one
+     enemy and stopping short looked like a pure navigation mistake. */
+  var missing = [];
+  if (!atExit) missing.push('the hero finished at ' + hx + ',' + hy + ' instead of on the exit at ' + SPEC.exit[0] + ',' + SPEC.exit[1]
+        + (lastBump ? ' — it ' + lastBump + ' on the way' : ''));
+  if (need.indexOf('gems') >= 0 && !allGems)
+    missing.push(gemList.filter(function(g){ return !g.got; }).length + ' gem(s) still on the board');
+  if (need.indexOf('foes') >= 0 && !allFoes){
+    var up = foeList.filter(function(f){ return f.alive; });
+    missing.push((up.length === 1 ? up[0].name + ' is' : up.length + ' enemies are') + ' still standing');
+  }
+  var why = error || missing.join(', and ');
 
   return {won:won, why:why, error:error, frames:frames, acts:acts, gems:gems, hp:hp, maxhp:maxhp,
           atExit:atExit, allGems:allGems, allFoes:allFoes, lines:(CODE.trim() ? CODE.trim().split('\n').length : 0)};

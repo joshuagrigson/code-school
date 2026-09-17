@@ -2862,7 +2862,7 @@ QU('Ask before you swing',
  'A self-driving car runs this loop about sixty times a second. The hard part was never the loop &mdash; it is that <code>look()</code> comes back wrong or unsure, which is a problem this board does not have and the real road never stops having.');
 
 QU('The switch and the door',
- {w:8, h:3, hero:[0,0], exit:[7,0], doors:[{at:[4,0], id:'gate'}], switches:[{at:[2,2], opens:'gate'}], walls:[[4,1]], gems:[[6,2]], win:'exit+gems', budget:30},
+ {w:8, h:3, hero:[0,0], exit:[7,0], doors:[{at:[4,0], id:'gate'}], switches:[{at:[2,2], opens:'gate'}], walls:[[4,1],[4,2]], gems:[[6,2]], win:'exit+gems', budget:30},
  '<p>A door blocks the corridor and it is shut. Somewhere on the board is a switch that opens it, and it is not on the way.</p>'
  + '<p>Nothing new to learn here &mdash; no new command, no new syntax. What this level asks is whether you can hold a two-part plan in your head: go somewhere useless first, so that somewhere else becomes possible. Stand on the switch (marked with a ring) and it flips. The door opens and stays open.</p>'
  + '<p>There is a gem on the board as well, and it is past the door, which means the order is forced: switch, then door, then gem, then flag. Work that order out before you type a line. Then write it.</p>'

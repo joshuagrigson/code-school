@@ -132,7 +132,10 @@ every Enter re-runs the whole session from the lesson's starting filesystem
 through the same `shellRun` the coach grades with, so the screen cannot drift
 from what is being marked. Every line that runs is posted up to the editor, so
 the box above fills with the script you just wrote by using the shell, and
-**Run** grades that whole session when it is done.
+**Run** grades that whole session when it is done. That box is read-only on
+these lessons and a click in it puts the caret at the prompt: while it stayed
+editable, a line typed there ran on every keystroke with no Enter involved,
+which is two contradictory rules on one screen.
 
 The coach does not grade the words typed; it grades the world left behind — is
 the folder there, does the file say what it should, is the commit in, was the

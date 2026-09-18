@@ -7508,6 +7508,8 @@ function shellView(){
   /* clicking anywhere in the black puts the caret where it belongs, unless
      you were selecting something to copy */
   term.addEventListener('click', function(){ if (!String(window.getSelection())) inp.focus(); });
+  /* the page above sends the caret down when someone clicks the record */
+  window.addEventListener('message', function(e){ if (e.data && e.data.shfocus) inp.focus(); });
   paint();
   if (FOCUS) { try { inp.focus({preventScroll:true}); } catch (e){ inp.focus(); } }
 }
@@ -7732,7 +7734,7 @@ let graded = false;
 /* Whether the caret belongs in the terminal: true while the person is typing
    down there, false the moment they type in the editor instead. */
 let shellFocus = false;
-const SHELL_TIP = '\u2328\uFE0F Type a command in the terminal below and press <b>Enter</b> \u2014 one line at a time, at a real prompt. What you run collects in the box above. When the session is done, press <b>\u25B6 Run</b> (or Ctrl+Enter) and the coach reads the whole thing.';
+const SHELL_TIP = '\u2328\uFE0F Type a command in the terminal below and press <b>Enter</b> \u2014 one line at a time, at a real prompt. What you run collects in the box above as a record of the session; there is nothing to type up there. When the session is done, press <b>\u25B6 Run</b> (or Ctrl+Enter) and the coach reads the whole thing.';
 function previewOnly(){
   if (hub || drillOn) return;
   syncHl(); errEl.innerHTML=''; graded = false;
@@ -9935,7 +9937,13 @@ function ghostable(){
 function syncModeUI(){
   const live = !(hub || drillOn);
   document.body.classList.toggle('noedit', !live);
-  edEl.readOnly = !live;
+  /* On a Terminal lesson the typing happens at the prompt in the preview, and
+     this box is the record of that session rather than a second place to type.
+     Left editable it ran a line on every keystroke with no Enter involved -
+     two contradictory rules on one screen, and the screen won. */
+  const atPrompt = live && !sandbox && L[idx] && L[idx].kind === 'shell';
+  edEl.readOnly = !live || !!atPrompt;
+  document.body.classList.toggle('atprompt', !!atPrompt);
   if (!live){
     edEl.placeholder = phFor('js');
     /* a note pointing at the typing box has nothing to point at now */
@@ -9955,7 +9963,7 @@ function phFor(lang, kind){
   return lang==='html' ? 'Type your HTML here - the page below updates with every keystroke'
     : lang==='css' ? 'Type your CSS rules here - the page below re-dresses as you type'
     : lang==='py' ? 'Type your Python here - print(...) is how it shows you anything'
-    : kind==='shell' ? 'The lines you run in the terminal below collect here - this box is the script you are writing'
+    : kind==='shell' ? 'The session you type in the terminal below collects here - the script you are writing, not a place to type'
     : kind==='quest' ? 'Type your orders here - hero.moveRight(3), one per line, top to bottom'
     : kind==='sound' ? 'Type your score here - makeBeat(KICK, 1, 1, "0---0---0---0---")'
     : kind==='kata' ? 'Write the function here - return the answer, do not print it'
@@ -10056,6 +10064,13 @@ edEl.addEventListener('input', ()=>{
    so Run has the whole session to grade and the person can see the script
    they just wrote by hand. Assigning .value fires no input event, which is
    the point: the frame is never rebuilt underneath someone typing into it. */
+/* Clicking the record is a reasonable thing to do when you want to type, so
+   it sends you where the typing happens instead of swallowing the keystroke. */
+edEl.addEventListener('focus', ()=>{
+  if (sandbox || hub || drillOn || !L[idx] || L[idx].kind !== 'shell') return;
+  shellFocus = true;
+  try { outEl.contentWindow.postMessage({shfocus:true}, '*'); } catch(e){}
+});
 window.addEventListener('message', (e)=>{
   if (!e.data || typeof e.data.sh !== 'string') return;
   if (outEl && e.source !== outEl.contentWindow) return;

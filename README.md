@@ -130,7 +130,9 @@ repository started *inside* `site` rather than one level up. The preview is the
 transcript, with the prompt showing which folder each command was typed in, so
 `cd` can be seen doing something even though it prints nothing. Its errors are
 in house style: `ls-l` is told about the space, `dir` and `cls` are told they
-are the Windows words, `rm -r /` is refused, and the last lesson is a brief with
+are the Windows words, `rm -r /` is refused, and a sentence (`Where am i?`) is
+told it is a sentence and which program says that thing, because the first
+goal line used to read like an invitation to type one, and the last lesson is a brief with
 no walkthrough — scaffold a site and put it under version control — because
 that is how the work arrives.
 

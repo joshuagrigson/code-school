@@ -3578,7 +3578,7 @@ SH('Where am I, and what is here',
  + '<p>Two commands to start. <code>pwd</code> asks <i>where am I?</i> &mdash; it prints the folder you are standing in. <code>ls</code> asks <i>what is here?</i> &mdash; it lists what that folder holds. Folders end with a <code>/</code> in the listing; files do not.</p>'
  + '<p>Notice what the terminal does not do. It does not explain itself, it does not suggest, and it does not ask if you are sure. It does exactly what you typed, and if you typed it wrong it says so and stops. That sounds harsh and it is the reason people trust it: a tool that guesses what you meant is a tool you can never quite predict.</p>'
  + '<p>One command per line. Press Run and read the transcript below &mdash; the line with the <code>$</code> is what you typed, the lines under it are what came back.</p>',
- 'Ask where you are, then ask what is here.',
+ 'Ask where you are with <code>pwd</code>, then ask what is here with <code>ls</code> &mdash; two lines, one word each.',
  '',
  'pwd\nls',
  'Two lines: <code>pwd</code> on the first, <code>ls</code> on the second. Nothing after either of them.',
@@ -3596,7 +3596,7 @@ SH('Go somewhere, and come back',
  '<p><code>cd</code> is <i>change directory</i> &mdash; step into a folder. <code>cd project</code> puts you inside <code>project</code>, and from then on <code>ls</code> shows what is in there, not what is in the folder you came from. Where you stand changes what every other command means.</p>'
  + '<p>Coming back has two spellings. <code>cd ..</code> goes up one level &mdash; the two dots always mean <i>the folder this one is inside</i>. And <code>cd</code> with nothing after it goes straight home, wherever you are. Home is <code>/home/you</code> here, and the terminal writes it as <code>~</code> to save space.</p>'
  + '<p>There is no undo for a <code>cd</code> and you do not need one: you can always ask <code>pwd</code>. People who are new to the terminal get lost because they stop asking. Ask often.</p>',
- 'Step into <code>project</code>, list what is in it, come back up, and prove you are home with <code>pwd</code>.',
+ 'Step into <code>project</code> with <code>cd</code>, list what is in it with <code>ls</code>, come back up with <code>cd ..</code>, and prove you are home with <code>pwd</code>.',
  '',
  'cd project\nls\ncd ..\npwd',
  'Four lines: <code>cd project</code>, then <code>ls</code>, then <code>cd ..</code> (a space, then two dots), then <code>pwd</code>.',
@@ -3614,7 +3614,7 @@ SH('A place to put things',
  '<p><code>mkdir</code> makes a folder &mdash; <i>make directory</i>. <code>mkdir notes</code> makes one called <code>notes</code> in the folder you are standing in. It says nothing when it works, and that is normal: the terminal is quiet on success and loud on failure, so silence is the good outcome.</p>'
  + '<p>Try making the same folder twice and it refuses, because a folder that already exists is not something it will quietly overwrite. Try making <code>a/b/c</code> in one go and it refuses too, because <code>a</code> does not exist yet &mdash; unless you add <code>-p</code>, which means <i>make the whole path, parents included</i>. The dash-letter after a command is an <b>option</b>: a switch that changes how it behaves. You will meet a lot of them.</p>'
  + '<p>Make <code>notes</code> inside <code>project</code>, step into it, and prove you got there.</p>',
- 'Inside <code>project</code>, make a folder called <code>notes</code>, step into it, and finish with <code>pwd</code>.',
+ 'Inside <code>project</code>, make a folder called <code>notes</code> with <code>mkdir</code>, step into it with <code>cd</code>, and finish with <code>pwd</code>.',
  'cd project\n',
  'cd project\nmkdir notes\ncd notes\npwd',
  'After <code>cd project</code>: <code>mkdir notes</code>, then <code>cd notes</code>, then <code>pwd</code>. The last line of the transcript should end in <code>/project/notes</code>.',
@@ -3651,7 +3651,7 @@ SH('Add, do not replace',
  + '<p>The arrow that adds is doubled: <code>&gt;&gt;</code>. <code>echo eggs &gt;&gt; shopping.txt</code> puts <code>eggs</code> on a new line at the end and leaves <code>milk</code> alone.</p>'
  + '<p>One character between keeping your data and losing it. That is not a design flaw; it is what a tool looks like when it takes you at your word. The terminal will let you replace a file you spent an hour on with one word, and it will do it without a dialog box, because you asked. So the habit is: before any <code>&gt;</code>, ask yourself whether the file already has something in it.</p>'
  + '<p><code>shopping.txt</code> already says <code>milk</code>. Add two more things to it without losing that.</p>',
- 'Add <code>eggs</code> and then <code>bread</code> to the end of <code>shopping.txt</code>, keeping <code>milk</code> first. Then show the file.',
+ 'Add <code>eggs</code> and then <code>bread</code> to the end of <code>shopping.txt</code> with <code>echo</code> and <code>&gt;&gt;</code>, keeping <code>milk</code> first. Then show the file with <code>cat</code>.',
  '',
  'echo eggs >> shopping.txt\necho bread >> shopping.txt\ncat shopping.txt',
  'Two arrows, not one: <code>echo eggs &gt;&gt; shopping.txt</code>. Same again for bread. Then <code>cat shopping.txt</code> and check that milk is still at the top.',
@@ -3671,7 +3671,7 @@ SH('Copy, move, rename',
  + '<p><code>mv</code> moves: <code>mv old.js app.js</code> takes the file and puts it at the new name. The old name stops existing. Notice that <i>renaming</i> and <i>moving</i> are the same command, because to the filesystem they are the same thing &mdash; a file&rsquo;s name is its address, and changing the address is moving.</p>'
  + '<p>Both take <i>what</i> first and <i>where</i> second, always. Get them backwards and <code>mv</code> will move the wrong thing over the right one, quietly. Say it in your head as <i>move this, to there</i> before you press Enter.</p>'
  + '<p>Both accept a folder as the destination: <code>mv old.js notes</code> puts <code>old.js</code> inside <code>notes</code>, keeping its name.</p>',
- 'Inside <code>project</code>: make a copy of <code>draft.txt</code> called <code>draft-backup.txt</code>, and rename <code>old.js</code> to <code>app.js</code>. Finish with <code>ls</code>.',
+ 'Inside <code>project</code>: make a copy of <code>draft.txt</code> called <code>draft-backup.txt</code> with <code>cp</code>, and rename <code>old.js</code> to <code>app.js</code> with <code>mv</code>. Finish with <code>ls</code>.',
  'cd project\n',
  'cd project\ncp draft.txt draft-backup.txt\nmv old.js app.js\nls',
  '<code>cp draft.txt draft-backup.txt</code> &mdash; what, then where. <code>mv old.js app.js</code> &mdash; same order. Then <code>ls</code>.',
@@ -3692,7 +3692,7 @@ SH('Delete is forever',
  + '<p>It will not remove a folder on its own, and that refusal is deliberate &mdash; a folder can hold anything, and the terminal wants you to say you mean it. <code>rm -r scratch</code> means <i>remove it and everything inside, all the way down</i>. The <code>-r</code> is <i>recursive</i>.</p>'
  + '<p>Two things it will not do even with <code>-r</code>: remove the folder you are standing in, and remove your home folder. On a real machine those are not always protected. Here they are, because this is the place to build the habit, not the place to learn what a blog post is about.</p>'
  + '<p>Remove the log file inside <code>project</code> and the whole <code>scratch</code> folder. Leave <code>project</code> standing.</p>',
- 'Remove <code>project/tmp.log</code> and the entire <code>scratch</code> folder, and leave everything else exactly as it was. Finish with <code>ls</code>.',
+ 'Remove <code>project/tmp.log</code> with <code>rm</code> and the entire <code>scratch</code> folder with <code>rm -r</code>, and leave everything else exactly as it was. Finish with <code>ls</code>.',
  '',
  'rm project/tmp.log\nrm -r scratch\nls',
  '<code>rm project/tmp.log</code> for the file. <code>rm -r scratch</code> for the folder &mdash; the <code>-r</code> is what lets it take a folder. Then <code>ls</code>.',
@@ -3710,7 +3710,7 @@ SH('Find the needle',
  '<p><code>grep</code> searches for text inside files, and it is the command people miss most when they are away from a terminal. <code>grep TODO notes.txt</code> prints every line of <code>notes.txt</code> that contains <code>TODO</code>. The word first, the file second.</p>'
  + '<p>Add <code>-r</code> and it searches a whole folder and everything under it, printing the file name in front of each line: <code>grep -r TODO project</code>. That is how you find every unfinished note in a codebase in one go, and it is the reason people leave the word <code>TODO</code> in their code &mdash; not as a reminder to themselves, but so this command finds it later.</p>'
  + '<p>Two options you will use constantly: <code>-i</code> ignores capital letters, and <code>-n</code> prints the line number beside each match.</p>',
- 'Find every line containing <code>TODO</code> anywhere inside <code>project</code>, in one command.',
+ 'Find every line containing <code>TODO</code> anywhere inside <code>project</code>, in one <code>grep</code>.',
  '',
  'grep -r TODO project',
  'One line: <code>grep -r TODO project</code>. The <code>-r</code> is what makes it look inside every file under the folder.',
@@ -3729,7 +3729,7 @@ SH('The output of one is the input of the next',
  + '<p>A <b>pipe</b> &mdash; the vertical bar, <code>|</code> &mdash; takes whatever the command on its left prints and hands it to the command on its right as if it had been a file. <code>cat server.log | grep ERROR</code> prints the log and then keeps only the lines with <code>ERROR</code>. Add <code>| wc -l</code> on the end and <code>wc</code> counts how many lines it was handed. Three small programs, none of which know about the others, doing a job none of them could do alone.</p>'
  + '<p>That is the philosophy: every command does one thing, prints its result, and expects to be plumbed into another. You do not need a program that counts errors in a log. You need a program that reads, one that filters, one that counts, and a pipe.</p>'
  + '<p>How many lines in <code>project/server.log</code> say <code>ERROR</code>? Get the terminal to tell you the number, not the lines.</p>',
- 'Count the lines in <code>project/server.log</code> that contain <code>ERROR</code>, using a pipe into <code>wc -l</code>. The number should be the last thing on screen.',
+ 'Count the lines in <code>project/server.log</code> that contain <code>ERROR</code>: a <code>grep</code>, piped with <code>|</code> into <code>wc -l</code>. The number should be the last thing on screen.',
  '',
  'cat project/server.log | grep ERROR | wc -l',
  'One line, three pieces: <code>cat project/server.log</code>, then <code>| grep ERROR</code>, then <code>| wc -l</code>.',
@@ -3747,7 +3747,7 @@ SH('Stars',
  + '<p>It only works if there is something to match. A star that matches nothing stays a star, and the command is handed the literal <code>*.js</code>, which it then cannot find. That is why the terminal seems to complain about a file called <code>*.zip</code>: nothing matched, so nothing was replaced.</p>'
  + '<p>And it never crosses a quote. <code>"*.js"</code> is the four characters, not a pattern. Keep that in mind on the day you actually want a literal star.</p>'
  + '<p>The <code>project</code> folder has three <code>.js</code> files mixed in with everything else. Put them all in a new folder called <code>src</code>, without naming any of them.</p>',
- 'Inside <code>project</code>, make a folder called <code>src</code> and move every <code>.js</code> file into it with one <code>mv</code>. Finish with <code>ls src</code>.',
+ 'Inside <code>project</code>, make a folder called <code>src</code> with <code>mkdir</code> and move every <code>.js</code> file into it with one <code>mv</code> and a <code>*</code>. Finish with <code>ls src</code>.',
  'cd project\n',
  'cd project\nmkdir src\nmv *.js src\nls src',
  '<code>mkdir src</code> first &mdash; the destination has to exist. Then <code>mv *.js src</code> moves all three at once. Then <code>ls src</code> to see them there.',
@@ -3767,7 +3767,7 @@ SH('git: remember this moment',
  + '<p>Three steps, and they are always the same three. <code>git init</code> once, inside the folder, to say <i>start remembering this</i>. <code>git add .</code> to put everything here on the table for the next commit &mdash; the dot means <i>this folder</i>. And <code>git commit -m "a message"</code> to take the snapshot, with a message saying what it is.</p>'
  + '<p>The message is not paperwork. In a month the only way to know what a commit was for is that sentence. <code>-m "stuff"</code> is a message you will curse yourself for. Say what and why, in words a stranger could read.</p>'
  + '<p><code>git status</code> at any point tells you where things stand: what is new, what is changed, what is on the table. When in doubt, run it.</p>',
- 'Inside <code>project</code>: start a repository, stage everything, and make one commit with a message that says what it is.',
+ 'Inside <code>project</code>: <code>git init</code>, <code>git add .</code>, and one <code>git commit -m</code> with a message that says what it is.',
  'cd project\n',
  'cd project\ngit init\ngit add .\ngit commit -m "First commit: the app, its notes and a readme"',
  'Three git lines after <code>cd project</code>: <code>git init</code>, <code>git add .</code> (with the dot), <code>git commit -m "..."</code> with a real sentence inside the quotes.',
@@ -3808,7 +3808,7 @@ SH('A project from nothing',
  + '<p>Build a small website&rsquo;s skeleton from an empty home folder: a <code>site</code> folder with <code>css</code> and <code>js</code> inside it, an <code>index.html</code> in <code>site</code> that contains a heading, an empty <code>style.css</code> in <code>css</code> and an empty <code>app.js</code> in <code>js</code>. Then make <code>site</code> a repository and commit all of it with a message.</p>'
  + '<p>Everything you need is in this track: <code>mkdir -p</code> for nested folders in one go, <code>echo</code> with <code>&gt;</code> for a file with something in it, <code>touch</code> for empty ones, and the three git lines. Quote the heading &mdash; <code>"&lt;h1&gt;Hello&lt;/h1&gt;"</code> &mdash; because to the shell an unquoted <code>&gt;</code> is an arrow, not a bracket.</p>'
  + '<p>Plan it before you type it. This is eight lines if you plan and twenty if you feel your way, and either way it is the last time anyone will build this by hand: the next time you need it, you will have saved these lines and run them.</p>',
- 'Make <code>site</code> with <code>css</code> and <code>js</code> inside; <code>site/index.html</code> containing <code>&lt;h1&gt;Hello&lt;/h1&gt;</code>; empty <code>css/style.css</code> and <code>js/app.js</code>; then init, add and commit inside <code>site</code>.',
+ 'Make <code>site</code> with <code>css</code> and <code>js</code> inside; <code>site/index.html</code> containing <code>&lt;h1&gt;Hello&lt;/h1&gt;</code>; empty <code>css/style.css</code> and <code>js/app.js</code>; then <code>git init</code>, <code>git add .</code> and <code>git commit</code> inside <code>site</code>.',
  '',
  'mkdir -p site/css site/js\necho "<h1>Hello</h1>" > site/index.html\ntouch site/css/style.css site/js/app.js\ncd site\ngit init\ngit add .\ngit commit -m "Scaffold the site: index, styles and script"',
  '<code>mkdir -p site/css site/js</code> makes all three folders. <code>echo "&lt;h1&gt;Hello&lt;/h1&gt;" &gt; site/index.html</code> &mdash; quotes around the heading. <code>touch</code> both empty files. <code>cd site</code>, then <code>git init</code>, <code>git add .</code>, <code>git commit -m "..."</code>.',
@@ -7027,6 +7027,12 @@ function shellRun(SPEC, CODE){
     if (!argv.length) return {out:[]};
     var name = argv[0], args = argv.slice(1);
     if (!CMDS.hasOwnProperty(name)){
+      /* A sentence. The first lesson's own goal line invited one ("ask where
+         you are"), and "command not found" answered it without saying what a
+         command is. So a sentence is told it is a sentence, and told which
+         program says the thing it was trying to say. */
+      var said = english(name, args);
+      if (said) fail(said);
       var near = Object.keys(CMDS).filter(function(k){ return k.length > 1 && (k.indexOf(name) === 0 || name.indexOf(k) === 0 || lev(k, name) <= 1); })[0];
       if (name === 'dir') fail('dir: that is the Windows word. Here it is ls.');
       if (name === 'del' || name === 'erase') fail(name + ': that is the Windows word. Here it is rm.');
@@ -7053,6 +7059,35 @@ function shellRun(SPEC, CODE){
       return {out:[]};
     }
     return {out:out};
+  }
+  /* is this line English rather than a command, and if so what did it want */
+  var OPENERS = ['where','what','how','who','show','list','please','tell','go','make','create','delete','remove','find','search','print','display','open','i','can','let','take','put','look','give','run','count','see','check','change','read','write','add','save','get','which','is','are','do','does','the','a','my'];
+  var WANTS = [
+    [/^(where|whereami|location)$/, 'pwd', 'pwd asks where you are'],
+    [/^(list|show|see|what|whats|here|contents|files|folders|display)$/, 'ls', 'ls asks what is here'],
+    [/^(go|into|enter|open|step|switch|navigate|inside)$/, 'cd', 'cd goes somewhere'],
+    [/^(folder|directory|dir)$/, 'mkdir', 'mkdir makes a folder'],
+    [/^(file)$/, 'touch', 'touch makes an empty file, echo with > makes one with something in it'],
+    [/^(delete|remove|erase|trash|destroy)$/, 'rm', 'rm removes'],
+    [/^(copy|duplicate)$/, 'cp', 'cp copies'],
+    [/^(move|rename)$/, 'mv', 'mv moves and renames'],
+    [/^(find|search|contain|containing|grep|look)$/, 'grep', 'grep finds lines'],
+    [/^(count|many|lines)$/, 'wc', 'wc counts'],
+    [/^(read|print|cat|show|display)$/, 'cat', 'cat shows a file'],
+    [/^(commit|save|remember|snapshot)$/, 'git commit', 'git commit remembers'],
+    [/^(back|up|home)$/, 'cd', 'cd .. goes up, cd on its own goes home']
+  ];
+  function english(name, args){
+    var raw = [name].concat(args).join(' ');
+    var words = raw.toLowerCase().replace(/[^a-z0-9 .\/_-]/g, ' ').split(/\s+/).filter(Boolean);
+    if (words.length < 2) return null;
+    var looks = /\?$/.test(raw.trim()) || /^[A-Z][a-z]/.test(name) || OPENERS.indexOf(words[0]) >= 0;
+    if (!looks) return null;
+    var want = null;
+    for (var i = 0; i < words.length && !want; i++)
+      for (var j = 0; j < WANTS.length; j++) if (WANTS[j][0].test(words[i])){ want = WANTS[j]; break; }
+    return 'that is a sentence, and the terminal does not read sentences. It reads the exact name of a program, one per line, and does that one thing'
+      + (want ? ' — the one you want is ' + want[1] + ': ' + want[2] + '.' : '. The lesson names the program to type.');
   }
   function lev(a, b){
     var m = a.length, n = b.length, prev = [], cur;

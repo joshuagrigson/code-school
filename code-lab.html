@@ -3596,7 +3596,7 @@ SH('Go somewhere, and come back',
  '<p><code>cd</code> is <i>change directory</i> &mdash; step into a folder. <code>cd project</code> puts you inside <code>project</code>, and from then on <code>ls</code> shows what is in there, not what is in the folder you came from. Where you stand changes what every other command means.</p>'
  + '<p>Coming back has two spellings. <code>cd ..</code> goes up one level &mdash; the two dots always mean <i>the folder this one is inside</i>. And <code>cd</code> with nothing after it goes straight home, wherever you are. Home is <code>/home/you</code> here, and the terminal writes it as <code>~</code> to save space.</p>'
  + '<p>There is no undo for a <code>cd</code> and you do not need one: you can always ask <code>pwd</code>. People who are new to the terminal get lost because they stop asking. Ask often.</p>',
- 'Step into <code>project</code> with <code>cd</code>, list what is in it with <code>ls</code>, come back up with <code>cd ..</code>, and prove you are home with <code>pwd</code>.',
+ 'Step into <code>project</code> with <code>cd project</code>, list what is in it with <code>ls</code>, come back up with <code>cd ..</code>, and prove you are home with <code>pwd</code>.',
  '',
  'cd project\nls\ncd ..\npwd',
  'Four lines: <code>cd project</code>, then <code>ls</code>, then <code>cd ..</code> (a space, then two dots), then <code>pwd</code>.',
@@ -3614,7 +3614,7 @@ SH('A place to put things',
  '<p><code>mkdir</code> makes a folder &mdash; <i>make directory</i>. <code>mkdir notes</code> makes one called <code>notes</code> in the folder you are standing in. It says nothing when it works, and that is normal: the terminal is quiet on success and loud on failure, so silence is the good outcome.</p>'
  + '<p>Try making the same folder twice and it refuses, because a folder that already exists is not something it will quietly overwrite. Try making <code>a/b/c</code> in one go and it refuses too, because <code>a</code> does not exist yet &mdash; unless you add <code>-p</code>, which means <i>make the whole path, parents included</i>. The dash-letter after a command is an <b>option</b>: a switch that changes how it behaves. You will meet a lot of them.</p>'
  + '<p>Make <code>notes</code> inside <code>project</code>, step into it, and prove you got there.</p>',
- 'Inside <code>project</code>, make a folder called <code>notes</code> with <code>mkdir</code>, step into it with <code>cd</code>, and finish with <code>pwd</code>.',
+ 'Inside <code>project</code>, make a folder called <code>notes</code> with <code>mkdir notes</code>, step into it with <code>cd notes</code>, and finish with <code>pwd</code>.',
  'cd project\n',
  'cd project\nmkdir notes\ncd notes\npwd',
  'After <code>cd project</code>: <code>mkdir notes</code>, then <code>cd notes</code>, then <code>pwd</code>. The last line of the transcript should end in <code>/project/notes</code>.',
@@ -3632,7 +3632,7 @@ SH('A file out of nothing',
  + '<p>Put <code>&gt;</code> after any command and a file name after that, and the output goes into the file instead of onto the screen. <code>echo milk &gt; shopping.txt</code> makes a file called <code>shopping.txt</code> with <code>milk</code> in it. If the file did not exist, it does now. Nothing is printed, because the printing went into the file.</p>'
  + '<p><code>cat</code> shows a file. Not <i>opens</i> &mdash; there is nothing to open; it just prints what is inside and moves on. <code>cat shopping.txt</code> is how you check the last line worked.</p>'
  + '<p>That arrow is the first genuinely powerful thing in this track. Anything that prints can be pointed at a file. Keep that in your pocket.</p>',
- 'Write the word <code>milk</code> into a new file called <code>shopping.txt</code> using <code>echo</code> and <code>&gt;</code>, then show the file with <code>cat</code>.',
+ 'Write the word <code>milk</code> into a new file with <code>echo milk &gt; shopping.txt</code>, then show the file with <code>cat shopping.txt</code>.',
  '',
  'echo milk > shopping.txt\ncat shopping.txt',
  'Two lines. <code>echo milk &gt; shopping.txt</code> puts the word in the file. <code>cat shopping.txt</code> shows it.',
@@ -3651,7 +3651,7 @@ SH('Add, do not replace',
  + '<p>The arrow that adds is doubled: <code>&gt;&gt;</code>. <code>echo eggs &gt;&gt; shopping.txt</code> puts <code>eggs</code> on a new line at the end and leaves <code>milk</code> alone.</p>'
  + '<p>One character between keeping your data and losing it. That is not a design flaw; it is what a tool looks like when it takes you at your word. The terminal will let you replace a file you spent an hour on with one word, and it will do it without a dialog box, because you asked. So the habit is: before any <code>&gt;</code>, ask yourself whether the file already has something in it.</p>'
  + '<p><code>shopping.txt</code> already says <code>milk</code>. Add two more things to it without losing that.</p>',
- 'Add <code>eggs</code> and then <code>bread</code> to the end of <code>shopping.txt</code> with <code>echo</code> and <code>&gt;&gt;</code>, keeping <code>milk</code> first. Then show the file with <code>cat</code>.',
+ 'Add <code>eggs</code> to the end of <code>shopping.txt</code> with <code>echo eggs &gt;&gt; shopping.txt</code>, then <code>bread</code> the same way, keeping <code>milk</code> first. Then show the file with <code>cat shopping.txt</code>.',
  '',
  'echo eggs >> shopping.txt\necho bread >> shopping.txt\ncat shopping.txt',
  'Two arrows, not one: <code>echo eggs &gt;&gt; shopping.txt</code>. Same again for bread. Then <code>cat shopping.txt</code> and check that milk is still at the top.',
@@ -3671,7 +3671,7 @@ SH('Copy, move, rename',
  + '<p><code>mv</code> moves: <code>mv old.js app.js</code> takes the file and puts it at the new name. The old name stops existing. Notice that <i>renaming</i> and <i>moving</i> are the same command, because to the filesystem they are the same thing &mdash; a file&rsquo;s name is its address, and changing the address is moving.</p>'
  + '<p>Both take <i>what</i> first and <i>where</i> second, always. Get them backwards and <code>mv</code> will move the wrong thing over the right one, quietly. Say it in your head as <i>move this, to there</i> before you press Enter.</p>'
  + '<p>Both accept a folder as the destination: <code>mv old.js notes</code> puts <code>old.js</code> inside <code>notes</code>, keeping its name.</p>',
- 'Inside <code>project</code>: make a copy of <code>draft.txt</code> called <code>draft-backup.txt</code> with <code>cp</code>, and rename <code>old.js</code> to <code>app.js</code> with <code>mv</code>. Finish with <code>ls</code>.',
+ 'Inside <code>project</code>: make a copy with <code>cp draft.txt draft-backup.txt</code>, and rename with <code>mv old.js app.js</code>. Finish with <code>ls</code>.',
  'cd project\n',
  'cd project\ncp draft.txt draft-backup.txt\nmv old.js app.js\nls',
  '<code>cp draft.txt draft-backup.txt</code> &mdash; what, then where. <code>mv old.js app.js</code> &mdash; same order. Then <code>ls</code>.',
@@ -3692,7 +3692,7 @@ SH('Delete is forever',
  + '<p>It will not remove a folder on its own, and that refusal is deliberate &mdash; a folder can hold anything, and the terminal wants you to say you mean it. <code>rm -r scratch</code> means <i>remove it and everything inside, all the way down</i>. The <code>-r</code> is <i>recursive</i>.</p>'
  + '<p>Two things it will not do even with <code>-r</code>: remove the folder you are standing in, and remove your home folder. On a real machine those are not always protected. Here they are, because this is the place to build the habit, not the place to learn what a blog post is about.</p>'
  + '<p>Remove the log file inside <code>project</code> and the whole <code>scratch</code> folder. Leave <code>project</code> standing.</p>',
- 'Remove <code>project/tmp.log</code> with <code>rm</code> and the entire <code>scratch</code> folder with <code>rm -r</code>, and leave everything else exactly as it was. Finish with <code>ls</code>.',
+ 'Remove the file with <code>rm project/tmp.log</code> and the entire folder with <code>rm -r scratch</code>, and leave everything else exactly as it was. Finish with <code>ls</code>.',
  '',
  'rm project/tmp.log\nrm -r scratch\nls',
  '<code>rm project/tmp.log</code> for the file. <code>rm -r scratch</code> for the folder &mdash; the <code>-r</code> is what lets it take a folder. Then <code>ls</code>.',
@@ -3710,7 +3710,7 @@ SH('Find the needle',
  '<p><code>grep</code> searches for text inside files, and it is the command people miss most when they are away from a terminal. <code>grep TODO notes.txt</code> prints every line of <code>notes.txt</code> that contains <code>TODO</code>. The word first, the file second.</p>'
  + '<p>Add <code>-r</code> and it searches a whole folder and everything under it, printing the file name in front of each line: <code>grep -r TODO project</code>. That is how you find every unfinished note in a codebase in one go, and it is the reason people leave the word <code>TODO</code> in their code &mdash; not as a reminder to themselves, but so this command finds it later.</p>'
  + '<p>Two options you will use constantly: <code>-i</code> ignores capital letters, and <code>-n</code> prints the line number beside each match.</p>',
- 'Find every line containing <code>TODO</code> anywhere inside <code>project</code>, in one <code>grep</code>.',
+ 'Find every line containing <code>TODO</code> anywhere inside <code>project</code>, in one line: <code>grep -r TODO project</code> &mdash; the <code>-r</code> searches a whole folder, and the word comes before the folder.',
  '',
  'grep -r TODO project',
  'One line: <code>grep -r TODO project</code>. The <code>-r</code> is what makes it look inside every file under the folder.',
@@ -3729,7 +3729,7 @@ SH('The output of one is the input of the next',
  + '<p>A <b>pipe</b> &mdash; the vertical bar, <code>|</code> &mdash; takes whatever the command on its left prints and hands it to the command on its right as if it had been a file. <code>cat server.log | grep ERROR</code> prints the log and then keeps only the lines with <code>ERROR</code>. Add <code>| wc -l</code> on the end and <code>wc</code> counts how many lines it was handed. Three small programs, none of which know about the others, doing a job none of them could do alone.</p>'
  + '<p>That is the philosophy: every command does one thing, prints its result, and expects to be plumbed into another. You do not need a program that counts errors in a log. You need a program that reads, one that filters, one that counts, and a pipe.</p>'
  + '<p>How many lines in <code>project/server.log</code> say <code>ERROR</code>? Get the terminal to tell you the number, not the lines.</p>',
- 'Count the lines in <code>project/server.log</code> that contain <code>ERROR</code>: a <code>grep</code>, piped with <code>|</code> into <code>wc -l</code>. The number should be the last thing on screen.',
+ 'Count the lines in <code>project/server.log</code> that contain <code>ERROR</code>: a <code>grep ERROR</code> on the file, piped with <code>|</code> into <code>wc -l</code>. The number should be the last thing on screen.',
  '',
  'cat project/server.log | grep ERROR | wc -l',
  'One line, three pieces: <code>cat project/server.log</code>, then <code>| grep ERROR</code>, then <code>| wc -l</code>.',
@@ -3747,7 +3747,7 @@ SH('Stars',
  + '<p>It only works if there is something to match. A star that matches nothing stays a star, and the command is handed the literal <code>*.js</code>, which it then cannot find. That is why the terminal seems to complain about a file called <code>*.zip</code>: nothing matched, so nothing was replaced.</p>'
  + '<p>And it never crosses a quote. <code>"*.js"</code> is the four characters, not a pattern. Keep that in mind on the day you actually want a literal star.</p>'
  + '<p>The <code>project</code> folder has three <code>.js</code> files mixed in with everything else. Put them all in a new folder called <code>src</code>, without naming any of them.</p>',
- 'Inside <code>project</code>, make a folder called <code>src</code> with <code>mkdir</code> and move every <code>.js</code> file into it with one <code>mv</code> and a <code>*</code>. Finish with <code>ls src</code>.',
+ 'Inside <code>project</code>, make a folder with <code>mkdir src</code> and move every <code>.js</code> file into it in one line, <code>mv *.js src</code> &mdash; the <code>*</code> stands for every name that fits. Finish with <code>ls src</code>.',
  'cd project\n',
  'cd project\nmkdir src\nmv *.js src\nls src',
  '<code>mkdir src</code> first &mdash; the destination has to exist. Then <code>mv *.js src</code> moves all three at once. Then <code>ls src</code> to see them there.',
@@ -3767,7 +3767,7 @@ SH('git: remember this moment',
  + '<p>Three steps, and they are always the same three. <code>git init</code> once, inside the folder, to say <i>start remembering this</i>. <code>git add .</code> to put everything here on the table for the next commit &mdash; the dot means <i>this folder</i>. And <code>git commit -m "a message"</code> to take the snapshot, with a message saying what it is.</p>'
  + '<p>The message is not paperwork. In a month the only way to know what a commit was for is that sentence. <code>-m "stuff"</code> is a message you will curse yourself for. Say what and why, in words a stranger could read.</p>'
  + '<p><code>git status</code> at any point tells you where things stand: what is new, what is changed, what is on the table. When in doubt, run it.</p>',
- 'Inside <code>project</code>: <code>git init</code>, <code>git add .</code>, and one <code>git commit -m</code> with a message that says what it is.',
+ 'Inside <code>project</code>: <code>git init</code>, <code>git add .</code>, and one <code>git commit</code> with <code>-m</code> and a message that says what it is.',
  'cd project\n',
  'cd project\ngit init\ngit add .\ngit commit -m "First commit: the app, its notes and a readme"',
  'Three git lines after <code>cd project</code>: <code>git init</code>, <code>git add .</code> (with the dot), <code>git commit -m "..."</code> with a real sentence inside the quotes.',

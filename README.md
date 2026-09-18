@@ -422,6 +422,17 @@ had been there all along and which the arcade now fires forty-four more times.
 It also reports emoji, whose CSS colour is not what you see; the sweep skips
 text with no alphanumerics in it.
 
+**Publishing.** `.github/workflows/pages.yml` builds and deploys the site on
+every push to `main` (and on demand, via *Run workflow*). It runs the same
+github-pages Jekyll build over the repository root that GitHub's own generated
+job ran, so `course/*.md` keeps rendering into the `course/*.html` pages that
+are linked — a plain static upload would serve those as raw markdown. The
+workflow exists because GitHub's internal push hook for Pages went quiet on
+this repository: pushes landed and no build was ever queued, and the only way
+to publish was to re-save the source in Settings. A deploy you can see, re-run
+and read the logs of is worth more than one that happens invisibly until it
+doesn't. Pages **Source** must be set to *GitHub Actions* for it to deploy.
+
 **The test suites** live outside the repo but the recipe is worth keeping:
 every non-project lesson must have its solution pass and its starting code fail;
 every Beyond and Review Desk lesson additionally runs a list of

@@ -1,0 +1,53 @@
+# Publish the lab on every push to main.
+#
+# GitHub used to do this by itself: the "pages build and deployment" job you
+# see in Actions is one GitHub generates from the Pages settings, triggered by
+# an internal hook on each push. That hook went quiet for this repository on
+# 18 Sep 2026 - pushes landed, no build was ever queued, and the only way to
+# publish was to re-save the source in Settings, which is not a deploy process.
+#
+# This is the same build, made explicit: the github-pages Jekyll gem over the
+# repository root, exactly as before, so course/*.md keeps rendering into the
+# course/*.html pages that are already linked. What changes is only what starts
+# it - a workflow on push, which is a mechanism you can see, re-run and read
+# the logs of. workflow_dispatch gives a "Run workflow" button for the days
+# when you want to publish without pushing anything.
+name: Deploy the lab
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never let two deploys race; let a queued one wait rather than cancelling it,
+# because the thing it is publishing is someone's finished work.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./
+          destination: ./_site
+      - uses: actions/upload-pages-artifact@v3
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

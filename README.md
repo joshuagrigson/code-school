@@ -402,7 +402,7 @@ sampling during a CSS transition.
 **Contrast in the preview needs its own sweep.** The main sweep skips `#out`
 deliberately, because that frame is normally the learner's own page. In the
 arcade it is ours — verdict banners, a HUD, a test table, a console — so
-`arc_contrast.js` sweeps inside the frame with the same maths, on eleven screens
+`arc_contrast.js` sweeps inside the frame with the same maths, on fourteen screens
 in both themes. It found the celebration banner at 2.79:1 in dark mode, which
 had been there all along and which the arcade now fires forty-four more times.
 It also reports emoji, whose CSS colour is not what you see; the sweep skips

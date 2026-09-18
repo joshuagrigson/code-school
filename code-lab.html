@@ -2733,6 +2733,7 @@ GRADES.push({id:'QS', name:'Quest',           sub:'Code that moves a hero',     
 GRADES.push({id:'SR', name:'The Sound Room',  sub:'Code that makes music',       lv:1});
 GRADES.push({id:'KT', name:'The Kata Table',  sub:'Puzzles with hidden tests',   lv:2});
 GRADES.push({id:'PY', name:'Python',          sub:'A second language, from zero',lv:1});
+GRADES.push({id:'SH', name:'The Terminal',    sub:'The machine, in its own words',lv:1});
 
 /* ---- Quest -------------------------------------------------------------
    reqs are about HOW, the simulation is about WHETHER. Both have to hold: a
@@ -3523,6 +3524,305 @@ PL('A program that does something',
         [/:\.2f/, 'money printed with a <code>:.2f</code> format spec']]},
  'A value carried across laps to build a result is an <b>accumulator</b>; keeping the best-so-far alongside it is a <b>running maximum</b>. Taking a list of records and producing a summary is an <b>aggregation</b>, and it is most of what business software does all day.',
  'Every invoice, statement and dashboard you have ever received came out of a loop like that one. The money format spec is not a nicety either &mdash; a report showing $24.000000000000004 gets the whole system distrusted, however correct the arithmetic underneath was.');
+/* ---- The Terminal ------------------------------------------------------
+   The one track that needs no code first. Every lesson starts from a fresh
+   copy of a small filesystem, the learner types commands one per line, and
+   the coach asks about the world afterwards - is the folder there, does the
+   file say what it should, is there a commit - rather than about the words
+   that were typed. shfs() builds a starting filesystem from a flat map of
+   paths, because a nested tree literal is unreadable for anything real. */
+function shfs(map){
+  const root = {type:'dir', children:{}};
+  const home = {type:'dir', children:{}};
+  root.children.home = {type:'dir', children:{you:home}};
+  for (const path in map){
+    const parts = path.split('/'), val = map[path];
+    let cur = home;
+    for (let i = 0; i < parts.length - 1; i++){
+      if (!cur.children[parts[i]]) cur.children[parts[i]] = {type:'dir', children:{}};
+      cur = cur.children[parts[i]];
+    }
+    const last = parts[parts.length - 1];
+    if (val === null) cur.children[last] = {type:'dir', children:{}};
+    else cur.children[last] = {type:'file', content:String(val)};
+  }
+  return root;
+}
+function SH(title, spec, teach, goal, start, sol, hint, tests, passMsg, failMsg, rn, rw, shape){
+  const les = {
+    lang:'arc', kind:'shell', spec, title, teach, goal, start, sol, hint, shape,
+    g:'SH', beyond:true, rn, rw, html:'', css:'', js:'',
+    check:(c)=>{
+      const st = shellRun(spec, c);
+      const pairs = [[()=>!st.error, st.error
+        ? 'every line runs without a complaint &mdash; right now: <b>' + esc(st.error) + '</b>'
+        : 'every line runs without a complaint']];
+      for (const t of tests(st)) pairs.push([()=>t[0], t[1]]);
+      return all(c, pairs) ? {ok:true, msg:passMsg} : {ok:false, msg:failMsg};
+    }
+  };
+  L.push(les);
+}
+/* the small world most of these lessons start in */
+const SH_HOME = () => shfs({
+  'project/app.js': '// TODO: wire up the button\nlet clicks = 0;\n',
+  'project/notes.txt': 'TODO buy milk\nremember the dentist\nTODO call back the client\n',
+  'project/readme.md': '# My project\n',
+  'scratch/junk.tmp': '',
+  'scratch/old-draft.txt': 'nothing here\n'
+});
+
+SH('Where am I, and what is here',
+ {fs: SH_HOME()},
+ '<p>This is a terminal. There is no page, no mouse, no buttons &mdash; you type a word, press Enter, and the machine does that one thing and waits for the next. It is the oldest way of talking to a computer and it is still how most real work gets done, because it is the only way that can be written down, repeated, and handed to another machine.</p>'
+ + '<p>Two commands to start. <code>pwd</code> asks <i>where am I?</i> &mdash; it prints the folder you are standing in. <code>ls</code> asks <i>what is here?</i> &mdash; it lists what that folder holds. Folders end with a <code>/</code> in the listing; files do not.</p>'
+ + '<p>Notice what the terminal does not do. It does not explain itself, it does not suggest, and it does not ask if you are sure. It does exactly what you typed, and if you typed it wrong it says so and stops. That sounds harsh and it is the reason people trust it: a tool that guesses what you meant is a tool you can never quite predict.</p>'
+ + '<p>One command per line. Press Run and read the transcript below &mdash; the line with the <code>$</code> is what you typed, the lines under it are what came back.</p>',
+ 'Ask where you are, then ask what is here.',
+ '',
+ 'pwd\nls',
+ 'Two lines: <code>pwd</code> on the first, <code>ls</code> on the second. Nothing after either of them.',
+ (st)=>[[st.ran.includes('pwd'), 'a <code>pwd</code>'],
+        [st.out.includes('/home/you'), 'the terminal telling you that you are in <code>/home/you</code>'],
+        [st.ran.includes('ls'), 'an <code>ls</code>'],
+        [st.out.some(l => /project\//.test(l)), 'the listing showing the <code>project/</code> folder']],
+ 'You are in <code>/home/you</code>, and there are two folders and a file in it. That is the whole loop of the terminal: ask, read, ask again. Everything else in this track is a different word to ask with.',
+ 'Not yet. <code>pwd</code> on one line, <code>ls</code> on the next. Check the transcript for a complaint &mdash; the terminal always says what it did not like.',
+ 'The line where you type is the <b>prompt</b> (the <code>$</code>). The program reading your commands is the <b>shell</b> &mdash; this one behaves like <b>bash</b>, which is what a Mac, a Linux machine and Windows&rsquo; own Linux layer all give you. The folder you are standing in is the <b>working directory</b>; <i>directory</i> and <i>folder</i> are the same thing.',
+ 'Every deploy you have ever benefited from ran as commands like these, typed once by a person and then run ten thousand times by a machine. The terminal is where the repeatable version of a job lives.');
+
+SH('Go somewhere, and come back',
+ {fs: SH_HOME()},
+ '<p><code>cd</code> is <i>change directory</i> &mdash; step into a folder. <code>cd project</code> puts you inside <code>project</code>, and from then on <code>ls</code> shows what is in there, not what is in the folder you came from. Where you stand changes what every other command means.</p>'
+ + '<p>Coming back has two spellings. <code>cd ..</code> goes up one level &mdash; the two dots always mean <i>the folder this one is inside</i>. And <code>cd</code> with nothing after it goes straight home, wherever you are. Home is <code>/home/you</code> here, and the terminal writes it as <code>~</code> to save space.</p>'
+ + '<p>There is no undo for a <code>cd</code> and you do not need one: you can always ask <code>pwd</code>. People who are new to the terminal get lost because they stop asking. Ask often.</p>',
+ 'Step into <code>project</code>, list what is in it, come back up, and prove you are home with <code>pwd</code>.',
+ '',
+ 'cd project\nls\ncd ..\npwd',
+ 'Four lines: <code>cd project</code>, then <code>ls</code>, then <code>cd ..</code> (a space, then two dots), then <code>pwd</code>.',
+ (st)=>[[st.ran.filter(x => x === 'cd').length >= 2, 'two <code>cd</code>s &mdash; one in, one out'],
+        [st.out.some(l => /app\.js/.test(l)), 'a listing taken from inside <code>project</code> (it should show <code>app.js</code>)'],
+        [st.cwd === '/home/you', 'finishing back in <code>/home/you</code> &mdash; you are in <code>' + esc(st.pretty(st.cwd)) + '</code>'],
+        [st.out[st.out.length - 1] === '/home/you', 'a <code>pwd</code> at the end that says so']],
+ 'In, look, out, check. That <code>..</code> is going to be in your fingers for the rest of your life &mdash; every path that climbs back toward the top is made of them.',
+ 'Not yet. Read the transcript: if a <code>cd</code> complained, the folder name is spelled differently from what <code>ls</code> showed. <code>cd ..</code> needs the space.',
+ 'A path that starts from where you are (<code>project</code>, <code>../notes</code>) is <b>relative</b>; one that starts from the top (<code>/home/you/project</code>) is <b>absolute</b>. <code>.</code> is <i>this folder</i>, <code>..</code> is <i>the one above</i>, and <code>~</code> is <i>home</i>. Those three are the whole grammar of getting around.',
+ 'Nearly every "it works on my machine" is a relative path that pointed somewhere different on the other machine. The fix, most of the time, is one <code>pwd</code>.');
+
+SH('A place to put things',
+ {fs: SH_HOME()},
+ '<p><code>mkdir</code> makes a folder &mdash; <i>make directory</i>. <code>mkdir notes</code> makes one called <code>notes</code> in the folder you are standing in. It says nothing when it works, and that is normal: the terminal is quiet on success and loud on failure, so silence is the good outcome.</p>'
+ + '<p>Try making the same folder twice and it refuses, because a folder that already exists is not something it will quietly overwrite. Try making <code>a/b/c</code> in one go and it refuses too, because <code>a</code> does not exist yet &mdash; unless you add <code>-p</code>, which means <i>make the whole path, parents included</i>. The dash-letter after a command is an <b>option</b>: a switch that changes how it behaves. You will meet a lot of them.</p>'
+ + '<p>Make <code>notes</code> inside <code>project</code>, step into it, and prove you got there.</p>',
+ 'Inside <code>project</code>, make a folder called <code>notes</code>, step into it, and finish with <code>pwd</code>.',
+ 'cd project\n',
+ 'cd project\nmkdir notes\ncd notes\npwd',
+ 'After <code>cd project</code>: <code>mkdir notes</code>, then <code>cd notes</code>, then <code>pwd</code>. The last line of the transcript should end in <code>/project/notes</code>.',
+ (st)=>[[st.isDir('project/notes'), 'a folder called <code>notes</code> inside <code>project</code>'],
+        [st.cwd === '/home/you/project/notes', 'finishing inside it &mdash; you are in <code>' + esc(st.pretty(st.cwd)) + '</code>'],
+        [st.out[st.out.length - 1] === '/home/you/project/notes', 'a <code>pwd</code> at the end proving it']],
+ 'A folder that did not exist, and now does, with you standing in it. Notice that <code>mkdir</code> said nothing at all. That is the terminal being pleased.',
+ 'Not yet. <code>mkdir notes</code> makes it, <code>cd notes</code> enters it, <code>pwd</code> proves it. If <code>mkdir</code> complained that it already exists, you are running the lesson twice in one go &mdash; every Run starts fresh, so just Run again.',
+ 'A dash-letter like <code>-p</code> is an <b>option</b> or <b>flag</b>; a word after the command that names what to act on is an <b>argument</b>. Making parent folders as needed is what <code>-p</code> stands for: <i>parents</i>.',
+ 'A build script that starts with <code>mkdir -p dist/assets</code> is one that works on a fresh machine as well as yours. The <code>-p</code> is the difference.');
+
+SH('A file out of nothing',
+ {fs: SH_HOME()},
+ '<p><code>echo</code> repeats whatever you give it: <code>echo hello</code> prints <code>hello</code>. On its own that is a parlour trick. It matters because of what comes next.</p>'
+ + '<p>Put <code>&gt;</code> after any command and a file name after that, and the output goes into the file instead of onto the screen. <code>echo milk &gt; shopping.txt</code> makes a file called <code>shopping.txt</code> with <code>milk</code> in it. If the file did not exist, it does now. Nothing is printed, because the printing went into the file.</p>'
+ + '<p><code>cat</code> shows a file. Not <i>opens</i> &mdash; there is nothing to open; it just prints what is inside and moves on. <code>cat shopping.txt</code> is how you check the last line worked.</p>'
+ + '<p>That arrow is the first genuinely powerful thing in this track. Anything that prints can be pointed at a file. Keep that in your pocket.</p>',
+ 'Write the word <code>milk</code> into a new file called <code>shopping.txt</code> using <code>echo</code> and <code>&gt;</code>, then show the file with <code>cat</code>.',
+ '',
+ 'echo milk > shopping.txt\ncat shopping.txt',
+ 'Two lines. <code>echo milk &gt; shopping.txt</code> puts the word in the file. <code>cat shopping.txt</code> shows it.',
+ (st)=>[[st.read('shopping.txt') !== null, 'a file called <code>shopping.txt</code> in your home folder'],
+        [st.read('shopping.txt') === 'milk\n', 'containing exactly <code>milk</code> &mdash; it contains <code>' + esc(JSON.stringify(st.read('shopping.txt') || '')) + '</code>'],
+        [st.ran.includes('cat'), 'a <code>cat</code> to show it'],
+        [st.out.includes('milk'), 'and <code>milk</code> arriving on the screen from it']],
+ 'A file made out of a sentence and an arrow. You will use <code>&gt;</code> to capture the output of programs that print far more than a word &mdash; a log, a list of files, the result of a test run &mdash; and it works exactly the same way.',
+ 'Not yet. The shape is <code>echo milk &gt; shopping.txt</code> &mdash; the arrow points at the file. Then <code>cat shopping.txt</code> on its own line.',
+ 'Sending output into a file instead of the screen is <b>redirection</b>; the screen it would have gone to is <b>standard output</b>. <code>cat</code> is short for <i>concatenate</i>, because its original job was joining several files together &mdash; showing one file is the special case everyone actually uses it for.',
+ 'A server&rsquo;s error log is nothing but redirection: the program prints, and something has pointed its printing at a file. Reading that file with <code>cat</code> is often the first thing you do when something breaks.');
+
+SH('Add, do not replace',
+ {fs: (()=>{ const f = SH_HOME(); f.children.home.children.you.children['shopping.txt'] = {type:'file', content:'milk\n'}; return f; })()},
+ '<p>Here is the trap in the last lesson, and it catches everyone once. <code>&gt;</code> does not add to a file. It <b>replaces</b> it. Run <code>echo eggs &gt; shopping.txt</code> and <code>milk</code> is gone &mdash; not moved, not backed up, gone.</p>'
+ + '<p>The arrow that adds is doubled: <code>&gt;&gt;</code>. <code>echo eggs &gt;&gt; shopping.txt</code> puts <code>eggs</code> on a new line at the end and leaves <code>milk</code> alone.</p>'
+ + '<p>One character between keeping your data and losing it. That is not a design flaw; it is what a tool looks like when it takes you at your word. The terminal will let you replace a file you spent an hour on with one word, and it will do it without a dialog box, because you asked. So the habit is: before any <code>&gt;</code>, ask yourself whether the file already has something in it.</p>'
+ + '<p><code>shopping.txt</code> already says <code>milk</code>. Add two more things to it without losing that.</p>',
+ 'Add <code>eggs</code> and then <code>bread</code> to the end of <code>shopping.txt</code>, keeping <code>milk</code> first. Then show the file.',
+ '',
+ 'echo eggs >> shopping.txt\necho bread >> shopping.txt\ncat shopping.txt',
+ 'Two arrows, not one: <code>echo eggs &gt;&gt; shopping.txt</code>. Same again for bread. Then <code>cat shopping.txt</code> and check that milk is still at the top.',
+ (st)=>[[(st.read('shopping.txt') || '').indexOf('milk') === 0, '<code>milk</code> still the first line &mdash; a single <code>&gt;</code> would have wiped it'],
+        [/(^|\n)eggs\n/.test(st.read('shopping.txt') || ''), 'an <code>eggs</code> line'],
+        [/(^|\n)bread\n/.test(st.read('shopping.txt') || ''), 'a <code>bread</code> line'],
+        [st.read('shopping.txt') === 'milk\neggs\nbread\n', 'exactly those three, in that order'],
+        [st.ran.includes('cat'), 'a <code>cat</code> at the end to check']],
+ 'Three lines, and the first one survived. If you had used a single <code>&gt;</code> the transcript would show a file with one line in it and no way to get the others back &mdash; the lesson would still have taught you something, but the expensive way.',
+ 'Not yet. Look at the file in the transcript. If <code>milk</code> is missing, a single <code>&gt;</code> replaced the file &mdash; use <code>&gt;&gt;</code> for both lines. Every Run starts with milk back in the file.',
+ 'Replacing a file&rsquo;s contents is <b>truncating</b> it; adding to the end is <b>appending</b>. Doing something destructive without asking is what tools call <b>silent</b>, and the terminal is silent on purpose &mdash; it assumes you are the one who should be careful, because it cannot know what you meant.',
+ 'Log files are appended to, never replaced, and a script that gets that one character wrong wipes the history every time it runs. It is one of the most common mistakes in a first shell script, and one of the quietest.');
+
+SH('Copy, move, rename',
+ {fs: shfs({'project/draft.txt': 'Dear team,\nsecond paragraph goes here\n', 'project/old.js': 'console.log("hi");\n', 'project/readme.md': '# My project\n'})},
+ '<p><code>cp</code> copies: <code>cp draft.txt draft-backup.txt</code> makes a second file with the same contents. The original is untouched.</p>'
+ + '<p><code>mv</code> moves: <code>mv old.js app.js</code> takes the file and puts it at the new name. The old name stops existing. Notice that <i>renaming</i> and <i>moving</i> are the same command, because to the filesystem they are the same thing &mdash; a file&rsquo;s name is its address, and changing the address is moving.</p>'
+ + '<p>Both take <i>what</i> first and <i>where</i> second, always. Get them backwards and <code>mv</code> will move the wrong thing over the right one, quietly. Say it in your head as <i>move this, to there</i> before you press Enter.</p>'
+ + '<p>Both accept a folder as the destination: <code>mv old.js notes</code> puts <code>old.js</code> inside <code>notes</code>, keeping its name.</p>',
+ 'Inside <code>project</code>: make a copy of <code>draft.txt</code> called <code>draft-backup.txt</code>, and rename <code>old.js</code> to <code>app.js</code>. Finish with <code>ls</code>.',
+ 'cd project\n',
+ 'cd project\ncp draft.txt draft-backup.txt\nmv old.js app.js\nls',
+ '<code>cp draft.txt draft-backup.txt</code> &mdash; what, then where. <code>mv old.js app.js</code> &mdash; same order. Then <code>ls</code>.',
+ (st)=>[[st.read('project/draft-backup.txt') !== null, 'a file called <code>draft-backup.txt</code>'],
+        [st.read('project/draft-backup.txt') === 'Dear team,\nsecond paragraph goes here\n', 'with the same contents as the draft'],
+        [st.read('project/draft.txt') !== null, 'the original <code>draft.txt</code> still there &mdash; a copy leaves the original alone'],
+        [st.read('project/app.js') === 'console.log("hi");\n', 'a file called <code>app.js</code> holding what <code>old.js</code> held'],
+        [st.read('project/old.js') === null, 'and no <code>old.js</code> any more &mdash; a move is not a copy'],
+        [st.ran.includes('ls'), 'an <code>ls</code> at the end']],
+ 'One file copied, one renamed, and the listing shows both. The order &mdash; what, then where &mdash; is the same for <code>cp</code>, <code>mv</code>, and almost everything else that takes two names.',
+ 'Not yet. Check the listing: is there a <code>draft-backup.txt</code> and an <code>app.js</code>, and has <code>old.js</code> gone? Both commands go what-first, where-second.',
+ 'The thing being acted on is the <b>source</b>; where it ends up is the <b>destination</b>. The terminal&rsquo;s convention that source comes first is so old that most graphical file managers quietly follow it in their code, even while showing you drag-and-drop.',
+ 'Every release script has a <code>cp</code> that puts the build somewhere and an <code>mv</code> that swaps the old version for the new one. The swap is an <code>mv</code> because it is instant &mdash; a copy would leave a moment where the file is half-written.');
+
+SH('Delete is forever',
+ {fs: shfs({'project/app.js': 'let x = 1;\n', 'project/tmp.log': 'debug debug debug\n', 'project/readme.md': '# My project\n', 'scratch/junk.tmp': '', 'scratch/old-draft.txt': 'nothing\n', 'scratch/more/deeper.txt': 'x\n'})},
+ '<p><code>rm</code> removes a file. There is no bin, no trash, no undo. It is gone the moment you press Enter. The terminal does not ask <i>are you sure?</i>, because you are supposed to be sure before you type it.</p>'
+ + '<p>It will not remove a folder on its own, and that refusal is deliberate &mdash; a folder can hold anything, and the terminal wants you to say you mean it. <code>rm -r scratch</code> means <i>remove it and everything inside, all the way down</i>. The <code>-r</code> is <i>recursive</i>.</p>'
+ + '<p>Two things it will not do even with <code>-r</code>: remove the folder you are standing in, and remove your home folder. On a real machine those are not always protected. Here they are, because this is the place to build the habit, not the place to learn what a blog post is about.</p>'
+ + '<p>Remove the log file inside <code>project</code> and the whole <code>scratch</code> folder. Leave <code>project</code> standing.</p>',
+ 'Remove <code>project/tmp.log</code> and the entire <code>scratch</code> folder, and leave everything else exactly as it was. Finish with <code>ls</code>.',
+ '',
+ 'rm project/tmp.log\nrm -r scratch\nls',
+ '<code>rm project/tmp.log</code> for the file. <code>rm -r scratch</code> for the folder &mdash; the <code>-r</code> is what lets it take a folder. Then <code>ls</code>.',
+ (st)=>[[st.read('project/tmp.log') === null, '<code>tmp.log</code> gone'],
+        [!st.exists('scratch'), 'the <code>scratch</code> folder gone, with everything in it'],
+        [st.read('project/app.js') === 'let x = 1;\n' && st.read('project/readme.md') === '# My project\n', '<code>project</code> untouched &mdash; you remove the thing, not the neighbourhood'],
+        [st.ran.includes('ls'), 'an <code>ls</code> at the end']],
+ 'Two things removed and nothing else. That is the whole discipline of <code>rm</code>: know exactly what the name you typed refers to, because the terminal will believe you.',
+ 'Not yet. A plain <code>rm</code> will not take a folder &mdash; it needs <code>-r</code>. And if <code>project</code> is missing from the listing, the name went to the wrong thing; every Run puts it all back, so read the transcript and try again.',
+ '<code>-r</code> is <b>recursive</b>: apply this to the folder, then to everything in it, then to everything in those. <code>-f</code> is <b>force</b>: do not complain if it is not there. <code>rm -rf</code> together is the most famous three characters in the terminal and the reason people type <code>ls</code> first.',
+ 'Cloud providers have shipped tools that ran <code>rm -rf</code> on a path that was empty by mistake, which evaluates to <i>everything</i>. The fix in every case was the same: check the name before you trust it.');
+
+SH('Find the needle',
+ {fs: shfs({'project/app.js': '// TODO: wire up the button\nlet clicks = 0;\nfunction go(){}\n', 'project/notes.txt': 'TODO buy milk\nremember the dentist\nTODO call back the client\n', 'project/readme.md': '# My project\nNothing to do here.\n', 'project/src/util.js': 'export const x = 1; // TODO name this\n'})},
+ '<p><code>grep</code> searches for text inside files, and it is the command people miss most when they are away from a terminal. <code>grep TODO notes.txt</code> prints every line of <code>notes.txt</code> that contains <code>TODO</code>. The word first, the file second.</p>'
+ + '<p>Add <code>-r</code> and it searches a whole folder and everything under it, printing the file name in front of each line: <code>grep -r TODO project</code>. That is how you find every unfinished note in a codebase in one go, and it is the reason people leave the word <code>TODO</code> in their code &mdash; not as a reminder to themselves, but so this command finds it later.</p>'
+ + '<p>Two options you will use constantly: <code>-i</code> ignores capital letters, and <code>-n</code> prints the line number beside each match.</p>',
+ 'Find every line containing <code>TODO</code> anywhere inside <code>project</code>, in one command.',
+ '',
+ 'grep -r TODO project',
+ 'One line: <code>grep -r TODO project</code>. The <code>-r</code> is what makes it look inside every file under the folder.',
+ (st)=>[[st.ran.includes('grep'), 'a <code>grep</code>'],
+        [st.out.filter(l => /TODO/.test(l)).length >= 3, 'every line with TODO on it &mdash; there are three, across three files; you found ' + st.out.filter(l => /TODO/.test(l)).length],
+        [st.out.some(l => /util\.js/.test(l)), 'including the one hiding in <code>src/util.js</code> &mdash; that is what <code>-r</code> is for'],
+        [!st.out.some(l => /dentist|Nothing to do/.test(l)), 'and nothing that does not say TODO']],
+ 'Three notes-to-self across three files, found without opening any of them. On a real project that number is in the hundreds, and this is still the command that finds them.',
+ 'Not yet. <code>grep -r TODO project</code> &mdash; the word, then the folder, with <code>-r</code> so it looks inside every file underneath. Without <code>-r</code> it refuses to search a folder, and says so.',
+ '<code>grep</code> is a name, not an abbreviation you would guess: it comes from an old editor command, <i>g/re/p</i> &mdash; globally search a regular expression and print. The pattern it searches for can be a <b>regular expression</b>, which is a small language for describing text; plain words are the simplest case.',
+ 'The first thing an engineer does in an unfamiliar codebase is <code>grep</code> for the error message they were handed. It is faster than any search box in any editor, and it works on a server with no editor at all.');
+
+SH('The output of one is the input of the next',
+ {fs: shfs({'project/server.log': 'INFO  server started\nINFO  request /\nERROR database timed out\nINFO  request /about\nWARN  slow query\nERROR database timed out\nINFO  request /\nERROR disk almost full\n'})},
+ '<p>This is the idea the whole terminal is built on, and it is one character.</p>'
+ + '<p>A <b>pipe</b> &mdash; the vertical bar, <code>|</code> &mdash; takes whatever the command on its left prints and hands it to the command on its right as if it had been a file. <code>cat server.log | grep ERROR</code> prints the log and then keeps only the lines with <code>ERROR</code>. Add <code>| wc -l</code> on the end and <code>wc</code> counts how many lines it was handed. Three small programs, none of which know about the others, doing a job none of them could do alone.</p>'
+ + '<p>That is the philosophy: every command does one thing, prints its result, and expects to be plumbed into another. You do not need a program that counts errors in a log. You need a program that reads, one that filters, one that counts, and a pipe.</p>'
+ + '<p>How many lines in <code>project/server.log</code> say <code>ERROR</code>? Get the terminal to tell you the number, not the lines.</p>',
+ 'Count the lines in <code>project/server.log</code> that contain <code>ERROR</code>, using a pipe into <code>wc -l</code>. The number should be the last thing on screen.',
+ '',
+ 'cat project/server.log | grep ERROR | wc -l',
+ 'One line, three pieces: <code>cat project/server.log</code>, then <code>| grep ERROR</code>, then <code>| wc -l</code>.',
+ (st)=>[[st.transcript.some(t => /\|/.test(t.cmd)), 'a pipe <code>|</code> somewhere'],
+        [st.ran.includes('grep') && st.ran.includes('wc'), 'both <code>grep</code> and <code>wc</code> doing their part'],
+        [String(st.out[st.out.length - 1]).trim() === '3', 'the number 3 as the last thing printed &mdash; the last thing printed was <code>' + esc(String(st.out[st.out.length - 1] || '(nothing)')) + '</code>']],
+ 'Three. Read, filter, count &mdash; three programs and two pipes. You just built a tool that did not exist a minute ago, and you will build a different one tomorrow out of the same parts.',
+ 'Not yet. The shape is <code>cat FILE | grep WORD | wc -l</code>. If the last line on screen is the error lines themselves rather than a number, the <code>| wc -l</code> is missing from the end.',
+ 'Joining programs so one&rsquo;s output is another&rsquo;s input is a <b>pipeline</b>. The rule that a program should do one thing well and expect to be combined is the <b>Unix philosophy</b>, and it is fifty years old. <code>wc</code> is <i>word count</i>; <code>-l</code> asks for lines instead.',
+ 'Nearly every data-processing job before it becomes a real program starts life as a pipeline: pull the log, grep the thing, count it. Half of them never need to become anything else.');
+
+SH('Stars',
+ {fs: shfs({'project/main.js': 'x', 'project/helpers.js': 'y', 'project/render.js': 'z', 'project/notes.txt': 'n', 'project/readme.md': 'r'})},
+ '<p>A <code>*</code> in a name means <i>anything</i>. <code>*.js</code> is every file ending in <code>.js</code>; <code>draft*</code> is everything starting with <code>draft</code>. The shell expands the star into the real names before the command ever sees them, so <code>mv *.js src</code> becomes <code>mv main.js helpers.js render.js src</code> without you typing a single one.</p>'
+ + '<p>It only works if there is something to match. A star that matches nothing stays a star, and the command is handed the literal <code>*.js</code>, which it then cannot find. That is why the terminal seems to complain about a file called <code>*.zip</code>: nothing matched, so nothing was replaced.</p>'
+ + '<p>And it never crosses a quote. <code>"*.js"</code> is the four characters, not a pattern. Keep that in mind on the day you actually want a literal star.</p>'
+ + '<p>The <code>project</code> folder has three <code>.js</code> files mixed in with everything else. Put them all in a new folder called <code>src</code>, without naming any of them.</p>',
+ 'Inside <code>project</code>, make a folder called <code>src</code> and move every <code>.js</code> file into it with one <code>mv</code>. Finish with <code>ls src</code>.',
+ 'cd project\n',
+ 'cd project\nmkdir src\nmv *.js src\nls src',
+ '<code>mkdir src</code> first &mdash; the destination has to exist. Then <code>mv *.js src</code> moves all three at once. Then <code>ls src</code> to see them there.',
+ (st)=>[[st.isDir('project/src'), 'a folder called <code>src</code>'],
+        [['main.js','helpers.js','render.js'].every(f => st.read('project/src/' + f) !== null), 'all three <code>.js</code> files inside it'],
+        [['main.js','helpers.js','render.js'].every(f => st.read('project/' + f) === null), 'and not still sitting in <code>project</code> &mdash; moved, not copied'],
+        [st.read('project/notes.txt') !== null && st.read('project/readme.md') !== null, 'the <code>.txt</code> and <code>.md</code> left where they were'],
+        [st.transcript.some(t => /\*/.test(t.cmd)), 'a <code>*</code> doing the naming &mdash; that is the point']],
+ 'Three files moved and you named none of them. The star is why the terminal scales: the command for three files is the command for three thousand.',
+ 'Not yet. Make <code>src</code> before you move into it. The move is <code>mv *.js src</code> &mdash; and if <code>notes.txt</code> ended up in there too, the pattern was too wide.',
+ 'A name with a <code>*</code> in it is a <b>glob</b>, and the shell turning it into real names is <b>expansion</b>. It happens before the command runs, which is why a command cannot tell whether you typed the names or a star did &mdash; and why a star that matches nothing arrives as itself.',
+ 'Every <code>.gitignore</code>, every build tool&rsquo;s "include these files", every backup rule is a glob. <code>*.log</code> is how a server says <i>all the logs</i> without knowing how many there will be.');
+
+SH('git: remember this moment',
+ {fs: shfs({'project/app.js': 'let clicks = 0;\n', 'project/notes.txt': 'TODO buy milk\n', 'project/readme.md': '# My project\n'})},
+ '<p><code>git</code> is a program that remembers what a folder looked like at moments you choose. Each remembered moment is a <b>commit</b>. Once a commit exists you can always get back to it, compare against it, or see what changed since &mdash; which is why every serious project on earth lives in one.</p>'
+ + '<p>Three steps, and they are always the same three. <code>git init</code> once, inside the folder, to say <i>start remembering this</i>. <code>git add .</code> to put everything here on the table for the next commit &mdash; the dot means <i>this folder</i>. And <code>git commit -m "a message"</code> to take the snapshot, with a message saying what it is.</p>'
+ + '<p>The message is not paperwork. In a month the only way to know what a commit was for is that sentence. <code>-m "stuff"</code> is a message you will curse yourself for. Say what and why, in words a stranger could read.</p>'
+ + '<p><code>git status</code> at any point tells you where things stand: what is new, what is changed, what is on the table. When in doubt, run it.</p>',
+ 'Inside <code>project</code>: start a repository, stage everything, and make one commit with a message that says what it is.',
+ 'cd project\n',
+ 'cd project\ngit init\ngit add .\ngit commit -m "First commit: the app, its notes and a readme"',
+ 'Three git lines after <code>cd project</code>: <code>git init</code>, <code>git add .</code> (with the dot), <code>git commit -m "..."</code> with a real sentence inside the quotes.',
+ (st)=>[[!!st.git, 'a repository started with <code>git init</code>'],
+        [!!st.git && st.git.commits.length >= 1, 'at least one commit'],
+        [!!st.git && st.git.commits.length > 0 && st.git.commits[0].msg.trim().length >= 12, 'a message that actually says something &mdash; twelve characters or more'],
+        [!!st.git && ['app.js','notes.txt','readme.md'].every(f => f in st.git.tracked), 'all three files in it &mdash; <code>git add .</code> takes everything here']],
+ 'The folder has a memory now. Whatever happens to those three files from here, this moment can be got back. That is not a small thing to have &mdash; it is the difference between editing and experimenting.',
+ 'Not yet. The order is <code>git init</code>, then <code>git add .</code>, then <code>git commit -m "..."</code>. If commit complained that nothing is staged, the <code>add</code> is missing. If it complained about a message, the <code>-m</code> or the quotes are.',
+ 'The folder git watches is a <b>repository</b> (a <i>repo</i>). Putting a change on the table for the next commit is <b>staging</b> it, and the table is the <b>staging area</b> or <b>index</b>. A commit is a <b>snapshot</b>, and the message is the <b>commit message</b>. <code>git status</code> reads the <b>working tree</b> &mdash; the files as they are right now &mdash; against what was last committed.',
+ 'A commit message is read far more often than it is written. Teams that enforce good ones can trace a bug to the exact change and the reason for it years later; teams that allow "fix" cannot.');
+
+SH('git: what changed',
+ {fs: shfs({'project/app.js': 'let clicks = 0;\n', 'project/notes.txt': 'TODO buy milk\n'}), pre:'cd project\ngit init\ngit add .\ngit commit -m "First commit: the app and its notes"'},
+ '<p>This folder is already a repository with one commit in it. Now you change something, and git shows you the change before you decide whether to keep it.</p>'
+ + '<p>Add a line to <code>notes.txt</code> with <code>&gt;&gt;</code>. Then ask <code>git status</code> &mdash; it will say the file is <i>modified</i> and <i>not staged</i>. Then ask <code>git diff</code>, which shows exactly which lines are new, with a <code>+</code> in front. Read that before you commit. Every time. It is the single habit that separates people who know what they shipped from people who hope.</p>'
+ + '<p>Then the same two steps as before: <code>git add notes.txt</code> and <code>git commit -m "..."</code>. Finish with <code>git log --oneline</code>, which lists every commit, newest first, one line each. You should see two.</p>',
+ 'Add a line to <code>notes.txt</code>, look at the change with <code>git status</code> and <code>git diff</code>, stage it, commit it with a message, and finish with <code>git log --oneline</code>.',
+ '',
+ 'echo "TODO call the dentist" >> notes.txt\ngit status\ngit diff\ngit add notes.txt\ngit commit -m "Add the dentist to the notes"\ngit log --oneline',
+ 'Six lines: <code>echo "..." &gt;&gt; notes.txt</code>, <code>git status</code>, <code>git diff</code>, <code>git add notes.txt</code>, <code>git commit -m "..."</code>, <code>git log --oneline</code>.',
+ (st)=>[[(st.read('project/notes.txt') || '').split('\n').filter(Boolean).length >= 2, 'a new line added to <code>notes.txt</code> &mdash; with <code>&gt;&gt;</code>, so the old one survives'],
+        [(st.read('project/notes.txt') || '').indexOf('TODO buy milk') === 0, 'the original line still first'],
+        [st.ran.includes('git status'), 'a <code>git status</code> to see it as modified'],
+        [st.ran.includes('git diff'), 'a <code>git diff</code> to read the actual change'],
+        [!!st.git && st.git.commits.length >= 2, 'a second commit &mdash; you have ' + (st.git ? st.git.commits.length : 0)],
+        [!!st.git && st.git.commits.length >= 2 && st.git.commits[1].msg.trim().length >= 10, 'with a message that says what changed'],
+        [!!st.git && st.git.tracked['notes.txt'] === st.read('project/notes.txt'), 'and the committed version matching the file &mdash; the change is actually in'],
+        [st.ran.includes('git log'), 'a <code>git log</code> at the end showing both']],
+ 'Two commits, and you read the diff before making the second one. That read is the habit. A commit you did not read the diff of is a commit you are hoping about.',
+ 'Not yet. If the second commit is missing, check that <code>git add notes.txt</code> came before <code>git commit</code>. If the file lost its first line, the <code>echo</code> used <code>&gt;</code> instead of <code>&gt;&gt;</code>.',
+ 'A file changed since its last commit is <b>modified</b>; showing the changed lines is a <b>diff</b>, and the lines with <code>+</code> and <code>-</code> are the <b>hunks</b>. The list of commits is the <b>history</b> or the <b>log</b>. <code>--oneline</code> is a <b>long option</b> &mdash; a whole word after two dashes, where single-letter ones take one.',
+ 'Code review is <code>git diff</code> with another person reading it. Every pull request you will ever see is that command, with comments.');
+
+SH('A project from nothing',
+ {fs: shfs({})},
+ '<p>Last one. Nothing new, and no walkthrough &mdash; a brief, the way real work arrives.</p>'
+ + '<p>Build a small website&rsquo;s skeleton from an empty home folder: a <code>site</code> folder with <code>css</code> and <code>js</code> inside it, an <code>index.html</code> in <code>site</code> that contains a heading, an empty <code>style.css</code> in <code>css</code> and an empty <code>app.js</code> in <code>js</code>. Then make <code>site</code> a repository and commit all of it with a message.</p>'
+ + '<p>Everything you need is in this track: <code>mkdir -p</code> for nested folders in one go, <code>echo</code> with <code>&gt;</code> for a file with something in it, <code>touch</code> for empty ones, and the three git lines. Quote the heading &mdash; <code>"&lt;h1&gt;Hello&lt;/h1&gt;"</code> &mdash; because to the shell an unquoted <code>&gt;</code> is an arrow, not a bracket.</p>'
+ + '<p>Plan it before you type it. This is eight lines if you plan and twenty if you feel your way, and either way it is the last time anyone will build this by hand: the next time you need it, you will have saved these lines and run them.</p>',
+ 'Make <code>site</code> with <code>css</code> and <code>js</code> inside; <code>site/index.html</code> containing <code>&lt;h1&gt;Hello&lt;/h1&gt;</code>; empty <code>css/style.css</code> and <code>js/app.js</code>; then init, add and commit inside <code>site</code>.',
+ '',
+ 'mkdir -p site/css site/js\necho "<h1>Hello</h1>" > site/index.html\ntouch site/css/style.css site/js/app.js\ncd site\ngit init\ngit add .\ngit commit -m "Scaffold the site: index, styles and script"',
+ '<code>mkdir -p site/css site/js</code> makes all three folders. <code>echo "&lt;h1&gt;Hello&lt;/h1&gt;" &gt; site/index.html</code> &mdash; quotes around the heading. <code>touch</code> both empty files. <code>cd site</code>, then <code>git init</code>, <code>git add .</code>, <code>git commit -m "..."</code>.',
+ (st)=>[[st.isDir('site') && st.isDir('site/css') && st.isDir('site/js'), 'the three folders: <code>site</code>, <code>site/css</code>, <code>site/js</code>'],
+        [/<h1>Hello<\/h1>/.test(st.read('site/index.html') || ''), '<code>site/index.html</code> containing the heading &mdash; it contains <code>' + esc(JSON.stringify(st.read('site/index.html') || '(no file)')) + '</code>'],
+        [st.read('site/css/style.css') === '' && st.read('site/js/app.js') === '', 'an empty <code>style.css</code> and an empty <code>app.js</code>, in the right folders'],
+        [!!st.git && st.git.root === '/home/you/site', 'a repository started <i>inside</i> <code>site</code>' + (st.git ? ' &mdash; yours is in <code>' + esc(st.pretty(st.git.root)) + '</code>' : '')],
+        [!!st.git && st.git.commits.length >= 1 && st.git.commits[0].msg.trim().length >= 12, 'one commit with a message that says what it is'],
+        [!!st.git && ['index.html','css/style.css','js/app.js'].every(f => f in st.git.tracked), 'and all three files in it']],
+ 'That is the Terminal track finished. You built a project, wrote a file, and put the whole thing under version control without a mouse, a dialog box, or a program asking whether you were sure. Save those lines somewhere: the next site starts by running them.',
+ 'Not yet. The checklist says which part is missing. The two that usually go wrong are the heading &mdash; quote it, or the shell reads the <code>&gt;</code> as an arrow &mdash; and running <code>git init</code> from the wrong folder: <code>cd site</code> first.',
+ 'A set of commands that builds a project from nothing is a <b>scaffold</b>, and saving them to run again is a <b>script</b> &mdash; the moment a sequence of terminal commands lands in a file, it is a program. Doing it the same way every time is <b>reproducibility</b>, and it is the property the terminal has that a mouse never will.',
+ 'Every framework&rsquo;s "create new project" command is a script that does what you just did by hand, plus a few hundred more files. Now you know what is inside it.');
+
 const ORDER = [];
 for (const g of GRADES) for (let i=0;i<L.length;i++) if (L[i].g===g.id && !L[i].chal && !L[i].proj) ORDER.push(i);
 
@@ -4196,6 +4496,7 @@ const REMIND = {
   quest:'hero.moveRight(3) · hero.attack() · hero.look("right") · one line, one order, top to bottom',
   sound:'makeBeat(KICK, 1, 1, "0---0---0---0---") · 0 hits, - waits, + holds · sound names take no quotes',
   kata: 'return the answer, do not print it · you are marked on tests you cannot see · the empty case is one of them',
+  shell:'one command per line · pwd where am I · ls what is here · cd go there · a space between the command and what it acts on',
 };
 /* Arcade lessons all share one lang but not one reminder, so the kind decides.
    An unknown lang used to reach the bar as the literal word "undefined". */
@@ -6325,6 +6626,494 @@ function kataShow(v){
   return String(v);
 }
 
+/* ============================================================================
+   THE TERMINAL - a shell you cannot break anything with.
+
+   A real terminal is the one place in this school where a mistake can cost a
+   person something they cannot get back, which is precisely why nobody wants
+   to learn it on their own machine. So this one runs on a filesystem that
+   lives for exactly one run. rm -rf whatever you like; press Run again and
+   it is all back.
+
+   Same shape as the other engines: shellRun() is pure. It takes a starting
+   filesystem and the lines you typed, runs them one after another the way a
+   terminal would, and hands back the filesystem as it ended up, every line of
+   output, and any complaint - so the coach can ask "does the folder exist
+   now?" rather than "did you type the word mkdir?".
+
+   The subset is the everyday one: pwd ls cd mkdir touch echo cat head tail wc
+   cp mv rm grep find, with quotes, > and >>, pipes, && and ;, and * globs.
+   Plus enough of git to learn what a commit is: init, status, add, commit,
+   log, diff. Nothing is faked with regex on the command text - every command
+   actually does its job on the tree.
+   ========================================================================= */
+function shellRun(SPEC, CODE){
+  var HOME = '/home/you';
+  var fs = clone(SPEC.fs || {type:'dir', children:{}});
+  var cwd = SPEC.cwd || HOME;
+  var trans = [];           /* the transcript: {cmd, out:[], err:''} per line */
+  var ran = [];             /* every command name that actually ran           */
+  var error = null;         /* the first complaint, for the coach             */
+  var git = null;           /* {root, staged:{}, tracked:{}, commits:[]}      */
+  var pre = String(SPEC.pre || '').replace(/\r\n?/g, '\n').split('\n').filter(function(l){ return l.trim(); });
+  var lines = pre.concat(String(CODE).replace(/\r\n?/g, '\n').split('\n'));
+  var MAXLINES = 200 + pre.length;
+
+  function clone(n){
+    if (n.type === 'file') return {type:'file', content:String(n.content == null ? '' : n.content)};
+    var out = {type:'dir', children:{}};
+    for (var k in (n.children || {})) out.children[k] = clone(n.children[k]);
+    return out;
+  }
+  /* ----------------------------------------------------------- paths ---- */
+  function resolve(p){
+    if (!p) return cwd;
+    if (p === '~') p = HOME;
+    else if (p.indexOf('~/') === 0) p = HOME + p.slice(1);
+    var parts = (p[0] === '/' ? p : cwd + '/' + p).split('/');
+    var stack = [];
+    for (var i = 0; i < parts.length; i++){
+      var s = parts[i];
+      if (s === '' || s === '.') continue;
+      if (s === '..'){ stack.pop(); continue; }
+      stack.push(s);
+    }
+    return '/' + stack.join('/');
+  }
+  function node(abs){
+    if (abs === '/') return fs;
+    var cur = fs, parts = abs.split('/').filter(Boolean);
+    for (var i = 0; i < parts.length; i++){
+      if (cur.type !== 'dir' || !cur.children[parts[i]]) return null;
+      cur = cur.children[parts[i]];
+    }
+    return cur;
+  }
+  function parentOf(abs){ var i = abs.lastIndexOf('/'); return i <= 0 ? '/' : abs.slice(0, i); }
+  function baseOf(abs){ return abs.slice(abs.lastIndexOf('/') + 1); }
+  function pretty(abs){ return abs === HOME ? '~' : abs.indexOf(HOME + '/') === 0 ? '~' + abs.slice(HOME.length) : abs; }
+  function shown(p){ return p; }   /* the name exactly as the learner typed it */
+  function listDir(n, all){ return Object.keys(n.children).filter(function(k){ return all || k[0] !== '.'; }).sort(); }
+  function walk(abs, fn){
+    var n = node(abs); if (!n) return;
+    fn(abs, n);
+    if (n.type === 'dir') Object.keys(n.children).sort().forEach(function(k){ walk(abs === '/' ? '/' + k : abs + '/' + k, fn); });
+  }
+
+  /* ---------------------------------------------------------- parsing --- */
+  /* split on a separator that sits outside quotes */
+  function splitOutside(s, seps){
+    var out = [], cur = '', q = null;
+    for (var i = 0; i < s.length; i++){
+      var c = s[i];
+      if (q){ cur += c; if (c === q) q = null; continue; }
+      if (c === '"' || c === "'"){ q = c; cur += c; continue; }
+      var hit = null;
+      for (var j = 0; j < seps.length; j++) if (s.startsWith(seps[j], i)){ hit = seps[j]; break; }
+      if (hit){ out.push({text:cur, sep:hit}); cur = ''; i += hit.length - 1; continue; }
+      cur += c;
+    }
+    out.push({text:cur, sep:null});
+    return out;
+  }
+  function tokens(s){
+    var out = [], cur = '', q = null, had = false, quoted = false;
+    for (var i = 0; i < s.length; i++){
+      var c = s[i];
+      if (q){ if (c === q){ q = null; continue; } cur += c; continue; }
+      if (c === '"' || c === "'"){ q = c; had = true; quoted = true; continue; }
+      if (c === ' ' || c === '\t'){ if (had){ out.push({v:cur, quoted:quoted}); cur = ''; had = false; quoted = false; } continue; }
+      cur += c; had = true;
+    }
+    if (q) throw {sh:'a quote was opened and never closed — every opening ' + q + ' needs a closing ' + q};
+    if (had) out.push({v:cur, quoted:quoted});
+    return out;
+  }
+  function glob(tok){
+    if (tok.quoted || tok.v.indexOf('*') < 0) return [tok.v];
+    var dir = tok.v.indexOf('/') >= 0 ? tok.v.slice(0, tok.v.lastIndexOf('/')) : '';
+    var pat = tok.v.slice(dir ? dir.length + 1 : 0);
+    var d = node(resolve(dir || '.'));
+    if (!d || d.type !== 'dir') return [tok.v];
+    var re = new RegExp('^' + pat.split('*').map(function(x){ return x.replace(/[.+?^${}()|[\]\\]/g, '\\$&'); }).join('.*') + '$');
+    var hits = listDir(d, pat[0] === '.').filter(function(k){ return re.test(k); }).map(function(k){ return dir ? dir + '/' + k : k; });
+    return hits.length ? hits : [tok.v];
+  }
+
+  /* --------------------------------------------------------- commands --- */
+  function fail(msg){ throw {sh:msg}; }
+  function needDir(p, verb){
+    var abs = resolve(p), n = node(abs);
+    if (!n) fail(verb + ': there is no folder called ' + JSON.stringify(shown(p)) + ' here. ls shows what is here.');
+    if (n.type !== 'dir') fail(verb + ': ' + JSON.stringify(shown(p)) + ' is a file, not a folder.');
+    return abs;
+  }
+  function needFile(p, verb){
+    var abs = resolve(p), n = node(abs);
+    if (!n) fail(verb + ': there is no file called ' + JSON.stringify(shown(p)) + ' here. ls shows what is here — and check the spelling, the terminal does not guess.');
+    if (n.type !== 'dir') return abs;
+    fail(verb + ': ' + JSON.stringify(shown(p)) + ' is a folder, not a file.');
+  }
+  function flags(args){
+    var f = {}, rest = [];
+    args.forEach(function(a){
+      if (a[0] === '-' && a.length > 1 && a !== '-'){ for (var i = 1; i < a.length; i++) f[a[i]] = true; }
+      else rest.push(a);
+    });
+    return {f:f, rest:rest};
+  }
+  var CMDS = {
+    pwd: function(){ return [cwd]; },
+    ls: function(args){
+      var p = flags(args), out = [];
+      var targets = p.rest.length ? p.rest : ['.'];
+      targets.forEach(function(t){
+        var abs = resolve(t), n = node(abs);
+        if (!n) fail('ls: there is nothing called ' + JSON.stringify(t) + ' here.');
+        if (n.type === 'file'){ out.push(t); return; }
+        if (targets.length > 1) out.push(t + ':');
+        var names = listDir(n, p.f.a);
+        if (p.f.l) names.forEach(function(k){ var c = n.children[k]; out.push((c.type === 'dir' ? 'd' : '-') + 'rw-r--r--  ' + String(c.type === 'dir' ? 0 : c.content.length).padStart(6) + '  ' + k + (c.type === 'dir' ? '/' : '')); });
+        else out.push(names.map(function(k){ return n.children[k].type === 'dir' ? k + '/' : k; }).join('  '));
+      });
+      return out;
+    },
+    cd: function(args){
+      if (args.length > 1) fail('cd: one place at a time — a folder name with a space in it needs quotes around it.');
+      cwd = needDir(args[0] || '~', 'cd');
+      return [];
+    },
+    mkdir: function(args){
+      var p = flags(args);
+      if (!p.rest.length) fail('mkdir: needs the name of the folder to make.');
+      p.rest.forEach(function(t){
+        var abs = resolve(t);
+        if (node(abs)) fail('mkdir: ' + JSON.stringify(t) + ' already exists.');
+        var par = node(parentOf(abs));
+        if (!par){
+          if (!p.f.p) fail('mkdir: the folder that ' + JSON.stringify(t) + ' would go inside does not exist yet. Make it first, or use mkdir -p to make the whole path at once.');
+          var acc = '/'; abs.split('/').filter(Boolean).forEach(function(s){ acc = acc === '/' ? '/' + s : acc + '/' + s; if (!node(acc)) node(parentOf(acc)).children[s] = {type:'dir', children:{}}; });
+          return;
+        }
+        par.children[baseOf(abs)] = {type:'dir', children:{}};
+      });
+      return [];
+    },
+    touch: function(args){
+      if (!args.length) fail('touch: needs the name of the file to create.');
+      args.forEach(function(t){
+        var abs = resolve(t), par = node(parentOf(abs));
+        if (!par) fail('touch: the folder for ' + JSON.stringify(t) + ' does not exist.');
+        if (!node(abs)) par.children[baseOf(abs)] = {type:'file', content:''};
+      });
+      return [];
+    },
+    echo: function(args){ return [args.join(' ')]; },
+    cat: function(args, stdin){
+      if (!args.length) return stdin || [];
+      var out = [];
+      args.forEach(function(t){ out = out.concat(node(needFile(t, 'cat')).content.split('\n')); });
+      if (out.length && out[out.length - 1] === '') out.pop();
+      return out;
+    },
+    head: function(args, stdin){ return tailHead(args, stdin, 'head'); },
+    tail: function(args, stdin){ return tailHead(args, stdin, 'tail'); },
+    wc: function(args, stdin){
+      var p = flags(args);
+      var src = p.rest.length ? p.rest.map(function(t){ return {name:t, lines:node(needFile(t, 'wc')).content.replace(/\n$/, '').split('\n')}; })
+                              : [{name:'', lines:stdin || []}];
+      return src.map(function(s){
+        var l = s.lines.filter(function(x, i, a){ return !(a.length === 1 && x === ''); }).length;
+        var w = s.lines.join(' ').split(/\s+/).filter(Boolean).length;
+        var c = s.lines.join('\n').length + (s.lines.length ? 1 : 0);
+        var v = p.f.l ? l : p.f.w ? w : p.f.c ? c : (String(l).padStart(4) + String(w).padStart(5) + String(c).padStart(6));
+        return String(v) + (s.name ? ' ' + s.name : '');
+      });
+    },
+    cp: function(args){
+      var p = flags(args);
+      if (p.rest.length < 2) fail('cp: needs two things — what to copy, and where to put the copy.');
+      var dest = resolve(p.rest[p.rest.length - 1]), dn = node(dest);
+      p.rest.slice(0, -1).forEach(function(t){
+        var abs = resolve(t), n = node(abs);
+        if (!n) fail('cp: there is nothing called ' + JSON.stringify(t) + ' to copy.');
+        if (n.type === 'dir' && !p.f.r) fail('cp: ' + JSON.stringify(t) + ' is a folder. Copying a whole folder needs cp -r.');
+        var target = (dn && dn.type === 'dir') ? dest + '/' + baseOf(abs) : dest;
+        var par = node(parentOf(target)); if (!par) fail('cp: the folder for ' + JSON.stringify(p.rest[p.rest.length - 1]) + ' does not exist.');
+        par.children[baseOf(target)] = clone(n);
+      });
+      return [];
+    },
+    mv: function(args){
+      if (args.length < 2) fail('mv: needs two things — what to move, and where to move it to.');
+      var dest = resolve(args[args.length - 1]), dn = node(dest);
+      if (args.length > 2 && !(dn && dn.type === 'dir')) fail('mv: moving several things at once needs a folder to put them in, and ' + JSON.stringify(args[args.length - 1]) + ' is not one.');
+      args.slice(0, -1).forEach(function(t){
+        var abs = resolve(t), n = node(abs);
+        if (!n) fail('mv: there is nothing called ' + JSON.stringify(t) + ' to move.');
+        var target = (dn && dn.type === 'dir') ? dest + '/' + baseOf(abs) : dest;
+        if (target === abs || target.indexOf(abs + '/') === 0) fail('mv: cannot move ' + JSON.stringify(t) + ' inside itself.');
+        var par = node(parentOf(target)); if (!par) fail('mv: the folder for ' + JSON.stringify(args[args.length - 1]) + ' does not exist.');
+        delete node(parentOf(abs)).children[baseOf(abs)];
+        par.children[baseOf(target)] = n;
+        if (cwd === abs || cwd.indexOf(abs + '/') === 0) cwd = target + cwd.slice(abs.length);
+      });
+      return [];
+    },
+    rm: function(args){
+      var p = flags(args);
+      if (!p.rest.length) fail('rm: needs the name of what to remove.');
+      p.rest.forEach(function(t){
+        var abs = resolve(t), n = node(abs);
+        if (!n){ if (p.f.f) return; fail('rm: there is nothing called ' + JSON.stringify(t) + ' to remove.'); }
+        if (abs === '/' || abs === HOME) fail('rm: not that one. Removing ' + (abs === '/' ? 'the root of everything' : 'your home folder') + ' is the mistake people write blog posts about.');
+        if (n.type === 'dir' && !p.f.r) fail('rm: ' + JSON.stringify(t) + ' is a folder. rm on its own only removes files; a folder and everything in it needs rm -r, and that is deliberate — it is asking whether you mean it.');
+        if (cwd === abs || cwd.indexOf(abs + '/') === 0) fail('rm: you are standing inside ' + JSON.stringify(t) + '. Step out of it first (cd ..) — you cannot remove the floor you are on.');
+        delete node(parentOf(abs)).children[baseOf(abs)];
+      });
+      return [];
+    },
+    grep: function(args, stdin){
+      var p = flags(args);
+      if (!p.rest.length) fail('grep: needs the text to look for.');
+      var pat = p.rest[0], files = p.rest.slice(1), re;
+      try { re = new RegExp(pat.replace(/[.+?^${}()|[\]\\]/g, '\\$&'), p.f.i ? 'i' : ''); } catch(e){ fail('grep: could not read that pattern.'); }
+      var out = [];
+      function scan(name, content, showName){
+        content.replace(/\n$/, '').split('\n').forEach(function(line, i){
+          var hit = re.test(line); if (p.f.v) hit = !hit;
+          if (hit) out.push((showName ? name + ':' : '') + (p.f.n ? (i + 1) + ':' : '') + line);
+        });
+      }
+      if (!files.length){ if (stdin == null) fail('grep: needs a file to search, or something piped into it.'); scan('', stdin.join('\n'), false); return out; }
+      files.forEach(function(t){
+        var abs = resolve(t), n = node(abs);
+        if (!n) fail('grep: there is no file called ' + JSON.stringify(t) + ' here.');
+        if (n.type === 'dir'){
+          if (!p.f.r) fail('grep: ' + JSON.stringify(t) + ' is a folder. To search everything inside it, use grep -r.');
+          walk(abs, function(a, x){ if (x.type === 'file' && baseOf(a)[0] !== '.') scan(pretty(a).replace(pretty(cwd) + '/', ''), x.content, true); });
+        } else scan(t, n.content, files.length > 1);
+      });
+      return out;
+    },
+    find: function(args){
+      var p = flags(args);
+      var start = p.rest[0] && p.rest[0][0] !== '-' ? p.rest[0] : '.';
+      var name = null;
+      for (var i = 0; i < args.length; i++) if (args[i] === '-name') name = args[i + 1];
+      var re = name ? new RegExp('^' + name.split('*').map(function(x){ return x.replace(/[.+?^${}()|[\]\\]/g, '\\$&'); }).join('.*') + '$') : null;
+      var out = [], root = needDir(start, 'find');
+      walk(root, function(a){ var rel = start.replace(/\/$/, '') + a.slice(root.length); if (baseOf(a)[0] === '.' && a !== root) return; if (!re || re.test(baseOf(a))) out.push(rel); });
+      return out;
+    },
+    clear: function(){ return []; },
+    whoami: function(){ return ['you']; },
+    date: function(){ return ['Thu Sep 18 09:00:00 2026']; },
+    git: gitCmd
+  };
+  function tailHead(args, stdin, which){
+    var p = flags(args), n = 10, rest = [];
+    for (var i = 0; i < args.length; i++){
+      if (args[i] === '-n'){ n = parseInt(args[++i], 10); continue; }
+      if (/^-\d+$/.test(args[i])){ n = parseInt(args[i].slice(1), 10); continue; }
+      if (args[i][0] !== '-') rest.push(args[i]);
+    }
+    if (!(n >= 0)) fail(which + ': -n wants a number of lines.');
+    var lines = rest.length ? node(needFile(rest[0], which)).content.replace(/\n$/, '').split('\n') : (stdin || []);
+    return which === 'head' ? lines.slice(0, n) : lines.slice(Math.max(0, lines.length - n));
+  }
+
+  /* --------------------------------------------------------------- git -- */
+  function gitFiles(root){
+    var out = {};
+    walk(root, function(a, n){ if (n.type === 'file' && a.indexOf('/.git') < 0) out[a.slice(root.length + 1)] = n.content; });
+    return out;
+  }
+  function gitCmd(args){
+    var sub = args[0];
+    if (!sub) fail('git: needs to be told what to do — git init, git status, git add, git commit, git log.');
+    if (sub === 'init'){
+      if (git) fail('git init: this is already a repository.');
+      git = {root:cwd, staged:{}, tracked:{}, commits:[]};
+      node(cwd).children['.git'] = {type:'dir', children:{}};
+      return ['Initialized empty Git repository in ' + cwd + '/.git/'];
+    }
+    if (!git || (cwd !== git.root && cwd.indexOf(git.root + '/') !== 0))
+      fail('git ' + sub + ': not a git repository. Nothing here is being tracked yet — git init is what starts that.');
+    var work = gitFiles(git.root), rel = function(p){ var a = resolve(p); return a.slice(git.root.length + 1); };
+    if (sub === 'status'){
+      var out = ['On branch main'], staged = [], modified = [], untracked = [];
+      Object.keys(work).sort().forEach(function(f){
+        if (f in git.staged) staged.push((f in git.tracked ? 'modified:   ' : 'new file:   ') + f);
+        else if (!(f in git.tracked)) untracked.push(f);
+        else if (git.tracked[f] !== work[f]) modified.push('modified:   ' + f);
+      });
+      Object.keys(git.tracked).forEach(function(f){ if (!(f in work) && !(f in git.staged)) modified.push('deleted:    ' + f); });
+      if (!git.commits.length) out.push('', 'No commits yet');
+      if (staged.length){ out.push('', 'Changes to be committed:'); staged.forEach(function(x){ out.push('        ' + x); }); }
+      if (modified.length){ out.push('', 'Changes not staged for commit:', '  (use "git add <file>" to include them)'); modified.forEach(function(x){ out.push('        ' + x); }); }
+      if (untracked.length){ out.push('', 'Untracked files:', '  (use "git add <file>" to start tracking them)'); untracked.forEach(function(x){ out.push('        ' + x); }); }
+      if (!staged.length && !modified.length && !untracked.length) out.push('', 'nothing to commit, working tree clean');
+      return out;
+    }
+    if (sub === 'add'){
+      var what = args.slice(1);
+      if (!what.length) fail('git add: needs to know what to stage — a file name, or . for everything here.');
+      what.forEach(function(t){
+        var abs = resolve(t), n = node(abs);
+        if (!n) fail('git add: there is nothing called ' + JSON.stringify(t) + ' here.');
+        if (n.type === 'dir') Object.keys(work).forEach(function(f){ if (abs === git.root || (git.root + '/' + f).indexOf(abs + '/') === 0) git.staged[f] = work[f]; });
+        else git.staged[rel(t)] = n.content;
+      });
+      return [];
+    }
+    if (sub === 'commit'){
+      var msg = null;
+      for (var i = 1; i < args.length; i++) if (args[i] === '-m') msg = args[i + 1];
+      if (args.indexOf('-m') < 0) fail('git commit: needs a message. git commit -m "what this change does" — the quotes matter, or only the first word arrives.');
+      if (msg == null || !msg.trim()) fail('git commit: the message is empty. Say what this change does and why.');
+      var names = Object.keys(git.staged);
+      if (!names.length) fail('git commit: nothing is staged. A commit only takes what git add has put on the table — git status shows what is waiting.');
+      names.forEach(function(f){ git.tracked[f] = git.staged[f]; });
+      git.commits.push({msg:msg, files:names.slice(), hash:hashOf(msg + git.commits.length)});
+      git.staged = {};
+      return ['[main ' + git.commits[git.commits.length - 1].hash + '] ' + msg, ' ' + names.length + ' file' + (names.length === 1 ? '' : 's') + ' changed'];
+    }
+    if (sub === 'log'){
+      if (!git.commits.length) fail('git log: there are no commits yet.');
+      var out2 = [], one = args.indexOf('--oneline') >= 0;
+      git.commits.slice().reverse().forEach(function(c){
+        if (one) out2.push(c.hash + ' ' + c.msg);
+        else out2.push('commit ' + c.hash + c.hash + c.hash + c.hash + c.hash, 'Author: you <you@codelab>', '', '    ' + c.msg, '');
+      });
+      return out2;
+    }
+    if (sub === 'diff'){
+      var out3 = [];
+      Object.keys(work).sort().forEach(function(f){
+        var base = f in git.staged ? git.staged[f] : git.tracked[f];
+        if (base == null || base === work[f]) return;
+        out3.push('--- a/' + f, '+++ b/' + f);
+        base.replace(/\n$/, '').split('\n').forEach(function(l){ if (work[f].indexOf(l) < 0) out3.push('-' + l); });
+        work[f].replace(/\n$/, '').split('\n').forEach(function(l){ if (base.indexOf(l) < 0) out3.push('+' + l); });
+      });
+      return out3;
+    }
+    fail('git ' + sub + ': this terminal knows init, status, add, commit, log and diff.');
+  }
+  function hashOf(s){ var h = 5381; for (var i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return ('0000000' + (h >>> 0).toString(16)).slice(-7); }
+
+  /* --------------------------------------------------------- one stage -- */
+  function runStage(text, stdin){
+    var toks = tokens(text);
+    if (!toks.length) return {out:[]};
+    /* redirection: > and >> may appear anywhere after the command */
+    var redir = null, target = null, argv = [];
+    for (var i = 0; i < toks.length; i++){
+      var t = toks[i];
+      if (!t.quoted && (t.v === '>' || t.v === '>>')){
+        redir = t.v; target = toks[i + 1]; i++;
+        if (!target) fail(redir + ' needs a file name after it — the file the output goes into.');
+        continue;
+      }
+      if (!t.quoted && /^[^>]*>>?[^>]+$/.test(t.v) && t.v.indexOf('>') > 0 && argv.length){
+        /* echo hi >file with no spaces */
+        var m = t.v.match(/^(.*?)(>>?)(.+)$/);
+        if (m[1]) argv.push(m[1]);
+        redir = m[2]; target = {v:m[3]}; continue;
+      }
+      argv = argv.concat(glob(t));
+    }
+    if (!argv.length) return {out:[]};
+    var name = argv[0], args = argv.slice(1);
+    if (!CMDS.hasOwnProperty(name)){
+      var near = Object.keys(CMDS).filter(function(k){ return k.length > 1 && (k.indexOf(name) === 0 || name.indexOf(k) === 0 || lev(k, name) <= 1); })[0];
+      if (name === 'dir') fail('dir: that is the Windows word. Here it is ls.');
+      if (name === 'del' || name === 'erase') fail(name + ': that is the Windows word. Here it is rm.');
+      if (name === 'copy') fail('copy: that is the Windows word. Here it is cp.');
+      if (name === 'move' || name === 'ren' || name === 'rename') fail(name + ': that is the Windows word. Here it is mv — moving and renaming are the same thing to a filesystem.');
+      if (name === 'md') fail('md: that is the Windows word. Here it is mkdir.');
+      if (name === 'type') fail('type: that is the Windows word for showing a file. Here it is cat.');
+      if (name === 'cls') fail('cls: that is the Windows word. Here it is clear.');
+      if (name === 'sudo') fail('sudo: not here. There is nothing on this machine you are not already allowed to touch.');
+      if (name === 'ls-l' || /^ls-/.test(name)) fail(name + ': the space matters — ls -l is the command ls with the option -l after it. Without the space, the terminal looks for a program called ' + name + '.');
+      if (name === 'cd..' || /^cd\.\./.test(name)) fail('cd..: the space matters — cd .. is the command cd with the place .. after it.');
+      fail(name + ': command not found' + (near ? ' — did you mean ' + near + '?' : '. The terminal only knows the exact names of programs on this machine.'));
+    }
+    ran.push(name === 'git' ? 'git ' + (args[0] || '') : name);
+    var out = CMDS[name](args, stdin);
+    if (redir){
+      var abs = resolve(target.v), par = node(parentOf(abs));
+      if (!par) fail(redir + ': the folder for ' + JSON.stringify(target.v) + ' does not exist.');
+      var ex = node(abs);
+      if (ex && ex.type === 'dir') fail(redir + ': ' + JSON.stringify(target.v) + ' is a folder; output can only go into a file.');
+      var text2 = out.length ? out.join('\n') + '\n' : '';
+      if (redir === '>>' && ex) ex.content += text2;
+      else par.children[baseOf(abs)] = {type:'file', content:text2};
+      return {out:[]};
+    }
+    return {out:out};
+  }
+  function lev(a, b){
+    var m = a.length, n = b.length, prev = [], cur;
+    for (var j = 0; j <= n; j++) prev[j] = j;
+    for (var i = 1; i <= m; i++){ cur = [i]; for (var k = 1; k <= n; k++) cur[k] = Math.min(prev[k] + 1, cur[k - 1] + 1, prev[k - 1] + (a[i - 1] === b[k - 1] ? 0 : 1)); prev = cur; }
+    return prev[n];
+  }
+
+  /* ------------------------------------------------------------- go ----- */
+  var count = 0, preRan = 0;
+  for (var li = 0; li < lines.length && !error; li++){
+    if (li === pre.length) preRan = ran.length;
+    var raw = lines[li];
+    var line = raw.replace(/(^|\s)#.*$/, '').trim();
+    if (!line) continue;
+    if (++count > MAXLINES){ error = 'that is more than ' + MAXLINES + ' commands; a real session is a handful.'; break; }
+    var isPre = li < pre.length;
+    var entry = {cmd:raw.trim(), out:[], err:'', cwd:cwd};   /* cwd as it was when typed */
+    if (!isPre) trans.push(entry);
+    try {
+      var chain = splitOutside(line, ['&&', ';']);
+      var lastOk = true;
+      for (var ci = 0; ci < chain.length; ci++){
+        var part = chain[ci].text.trim();
+        var prevSep = ci ? chain[ci - 1].sep : null;
+        if (prevSep === '&&' && !lastOk) continue;
+        if (!part) continue;
+        var stages = splitOutside(part, ['|']).map(function(x){ return x.text.trim(); });
+        var stdin = null, result = {out:[]};
+        for (var si = 0; si < stages.length; si++){
+          if (!stages[si]) fail('a pipe | needs a command on both sides of it.');
+          result = runStage(stages[si], stdin);
+          stdin = result.out;
+        }
+        entry.out = entry.out.concat(result.out);
+        lastOk = true;
+      }
+    } catch (e){
+      var msg = (e && e.sh) ? e.sh : ((e && e.message) || String(e));
+      entry.err = msg;
+      error = (isPre ? 'the lesson could not set itself up: ' : 'line ' + (li + 1 - pre.length) + ' (' + raw.trim() + '): ') + msg;
+    }
+  }
+
+  /* if the scene-setting itself failed we never reached the learner's lines */
+  ran = li < pre.length ? [] : ran.slice(preRan);
+  /* what the coach reads */
+  var files = {};
+  walk('/', function(a, n){ if (n.type === 'file') files[a] = n.content; });
+  return {
+    fs:fs, cwd:cwd, home:HOME, transcript:trans, ran:ran, error:error, files:files, git:git,
+    out:[].concat.apply([], trans.map(function(t){ return t.out; })),
+    exists:function(p){ return !!node(p[0] === '/' ? p : HOME + '/' + p); },
+    isDir:function(p){ var n = node(p[0] === '/' ? p : HOME + '/' + p); return !!n && n.type === 'dir'; },
+    read:function(p){ var n = node(p[0] === '/' ? p : HOME + '/' + p); return n && n.type === 'file' ? n.content : null; },
+    list:function(p){ var n = node(p[0] === '/' ? p : HOME + '/' + p); return n && n.type === 'dir' ? listDir(n, false) : null; },
+    pretty:pretty
+  };
+}
+
+
 const ARC_CSS = "\n*{box-sizing:border-box}\nbody{margin:0;font:14px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#11131a;color:#e8e6e1;padding:12px}\n.verdict{border-radius:9px;padding:9px 12px;margin:0 0 10px;font-weight:600;font-size:.86rem;line-height:1.45}\n.verdict.win{background:#12432f;color:#8fe7bd;border:1px solid #1d6a4b}\n.verdict.lose{background:#43241c;color:#f0b49c;border:1px solid #79402e}\n.verdict.idle{background:#1b1f28;color:#9aa2b0;border:1px solid #2a3040}\n.verdict small{display:block;font-weight:400;opacity:.85;margin-top:3px}\n.ttl{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:#7c8598;margin:12px 0 6px}\nbutton{font:inherit;font-weight:600;border:none;border-radius:8px;padding:7px 14px;cursor:pointer;background:#2b6b57;color:#eafff6}\nbutton:hover{background:#35836a}\n/* Dimming a button with opacity drags its label under the bar too: a\n   disabled control still has to be readable, so the ground dims and the\n   text does not. */\nbutton[disabled]{background:#39414f;color:#c3cad6;cursor:default}\n";
 const QUEST_CSS = "\n#board{position:relative;margin:0 auto;background:#171a22;border-radius:10px;padding:5px}\n.qc{position:absolute;border-radius:5px;background:#1f2430}\n.qc.wall{background:#3a4152;box-shadow:inset 0 -3px 0 #2c3242}\n.qc.fire{background:#4a2118}\n.qc.exit{background:#1c4437;box-shadow:inset 0 0 0 2px #2f7d5c}\n.sp{position:absolute;display:flex;align-items:center;justify-content:center;transition:transform .17s ease;z-index:2}\n.sp.gone{opacity:0;transform:scale(.3)}\n#hero{z-index:4}\n#hero.hurt{animation:shake .3s}\n@keyframes shake{25%{transform:translate(var(--tx),var(--ty)) rotate(-12deg)}75%{transform:translate(var(--tx),var(--ty)) rotate(12deg)}}\n.bub{position:absolute;z-index:6;background:#f3f1ec;color:#22262e;border-radius:9px;padding:3px 8px;font-size:11px;font-weight:600;white-space:nowrap;transform:translate(-50%,-115%);box-shadow:0 2px 8px rgba(0,0,0,.45)}\n#hud{display:flex;gap:14px;align-items:center;margin:10px 0 0;font-size:.8rem;color:#aab2c0;flex-wrap:wrap}\n#hud b{color:#e8e6e1}\n#trace{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}\n.blk{font:600 11px/1 ui-monospace,Menlo,Consolas,monospace;padding:5px 7px;border-radius:5px;background:#232936;color:#9fb4c9;border-left:3px solid #3d4b61}\n.blk.mv{border-left-color:#4f9ad8;color:#a9d1f0}\n.blk.at{border-left-color:#d8714f;color:#f0b8a4}\n.blk.sy{border-left-color:#c5a03f;color:#e8d29a}\n.blk.now{background:#31405a;color:#fff;box-shadow:0 0 0 1px #5a7ba8}\n.blk.bump{border-left-color:#8a5a2b;opacity:.75;text-decoration:line-through}\n.note{font-size:.76rem;color:#c3a06a;min-height:1.3em;margin-top:6px}\n";
 const SOUND_CSS = "\n#deck{background:#171a22;border-radius:10px;padding:10px;overflow-x:auto}\n.trk{display:flex;align-items:center;gap:7px;margin-bottom:5px}\n.tname{flex:0 0 74px;font:600 10px/1 ui-monospace,Menlo,monospace;color:#8b94a6;text-align:right;letter-spacing:.04em}\n.steps{position:relative;display:flex;gap:1px}\n.st{width:13px;height:21px;border-radius:2px;background:#232936;flex:0 0 auto}\n.st.bar{background:#283040}\n.st.on{box-shadow:inset 0 0 0 1px rgba(255,255,255,.22)}\n.st.hold{opacity:.42}\n#play{position:absolute;top:-3px;bottom:-3px;width:2px;background:#f0d98a;border-radius:2px;left:0;display:none;pointer-events:none;z-index:3}\n#bars{display:flex;gap:1px;margin:0 0 5px 81px}\n.bn{width:55px;font:600 9px/1 ui-monospace,monospace;color:#8b94a6;flex:0 0 auto}\n#sctl{display:flex;gap:9px;align-items:center;margin-top:11px;flex-wrap:wrap;font-size:.79rem;color:#aab2c0}\n#fx{margin-top:9px;font:600 11px/1.6 ui-monospace,Menlo,monospace;color:#8b94a6}\n";
@@ -6607,6 +7396,32 @@ function kataDoc(les, code){
     + '<table class="tt"><tr><th></th><th>call</th><th>your answer</th></tr>' + rows + '</table>');
 }
 
+/* ------------------------------------------------------------- TERMINAL */
+const SHELL_CSS = "\n.sh{background:#0d1017;border:1px solid #232936;border-radius:9px;padding:12px 14px;\n  font:13px/1.65 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word;color:#d7dbe2;min-height:60px}\n.sh .ps{color:#7fd1a8;font-weight:600}\n.sh .ps i{color:#8fb4e8;font-style:normal}\n.sh .cmd{color:#f3f1ec;font-weight:600}\n.sh .o{display:block;color:#c3cad6}\n.sh .e{display:block;color:#f4b9a2;background:#3a1f18;border-left:3px solid #c2542e;padding:4px 9px;border-radius:5px;margin:4px 0 6px}\n.sh .cursor{display:inline-block;width:8px;height:15px;background:#7fd1a8;vertical-align:-2px;animation:bl 1.1s steps(2) infinite}\n@keyframes bl{50%{opacity:0}}\n.sh .empty{color:#8b94a6;font-style:italic}\n.sh .d{color:#8fb4e8}\n";
+/* The transcript is the whole preview: what was typed, on a prompt that
+   shows where it was typed, and what came back. An error is shown where it
+   happened and nothing runs after it, because that is what a shell does. */
+function shellDoc(les, code){
+  const spec = les.spec || {fs:{type:'dir', children:{}}};
+  if (!code.trim())
+    return arcPage(SHELL_CSS, arcVerdict('idle', '\u2328\uFE0F Nothing typed yet', 'One command per line. The transcript appears here when you run.')
+      + '<div class="sh"><span class="ps">you@codelab:<i>~</i>$</span> <span class="cursor"></span></div>');
+  const st = shellRun(spec, code);
+  /* the prompt shows the folder each command was typed in, so a cd can be
+     seen doing something even though it prints nothing */
+  const rows = st.transcript.map(t => {
+    let row = '<div class="ln"><span class="ps">you@codelab:<i>' + esc(st.pretty(t.cwd)) + '</i>$</span> <span class="cmd">' + esc(t.cmd) + '</span>';
+    if (t.out.length) row += t.out.map(o => '<span class="o">' + esc(o).replace(/(^|\s)(\S+\/)(?=\s|$)/g, '$1<span class="d">$2</span>') + '</span>').join('');
+    if (t.err) row += '<span class="e">' + esc(t.err) + '</span>';
+    return row + '</div>';
+  }).join('');
+  const banner = st.error
+    ? arcVerdict('lose', '\u274C The shell stopped', st.error)
+    : arcVerdict('idle', '\u2328\uFE0F ' + st.transcript.length + (st.transcript.length === 1 ? ' command ran' : ' commands ran') + ', now in ' + esc(st.pretty(st.cwd)),
+        'Every line was understood. Whether it did the job is the coach\u2019s call, on the left.');
+  return arcPage(SHELL_CSS, banner + '<div class="sh">' + rows + '<span class="ps">you@codelab:<i>' + esc(st.pretty(st.cwd)) + '</i>$</span> <span class="cursor"></span></div>');
+}
+
 /* --------------------------------------------------------------- PYTHON */
 function pyDoc(les, code){
   if (!code.trim())
@@ -6623,6 +7438,8 @@ function pyDoc(les, code){
 }
 
 function arcDoc(les, code){
+  /* the terminal is not JavaScript, so the JavaScript parser has no say */
+  if (les.kind === 'shell') return shellDoc(les, code);
   /* the board, the deck and the test table all need code that parses; when it
      does not, they show the same sentence the coach shows */
   if (code.trim()){
@@ -6863,7 +7680,7 @@ function runCheck(){
        exception is code that will not parse at all - the engine can only pass
        the parser's own words on, and the coach has been saying that particular
        thing in English since Kindergarten. */
-    const serr = les.lang === 'arc' ? jsSyntaxError(code) : null;
+    const serr = les.lang === 'arc' && les.kind !== 'shell' ? jsSyntaxError(code) : null;
     if (serr) res = {ok:false, cls:'coach', msg:'\uD83E\uDDD1\u200D\uD83C\uDFEB ' + friendlySyntax(serr, code)};
     else { lintRange = null; res = normRes(les, code); }
   } else if (les.lang === 'js'){
@@ -7173,7 +7990,7 @@ const CODE_TOKENS={
   base:['{','}',';','( )','[ ]','=>','==','=',':',',','< >','/','&&','||','0','1','#id','.class','&lt;p&gt;','&lt;/p&gt;'],
   html:['&lt;h1&gt;','&lt;li&gt;','&lt;/ul&gt;','&lt;div&gt;','&lt;/div&gt;','&lt;em&gt;','href','alt','&lt;a&gt;','&lt;/li&gt;'],
   py:['print','def','if','for','in','len','range','return','elif','else',':','f&quot;&quot;','True','None','#'],
-  arc:['moveRight','attack','look','makeBeat','fitMedia','0---','setTempo','return','\u2694\uFE0F','\uD83C\uDFB5','\uD83D\uDC8E','\uD83C\uDFC1'],
+  arc:['moveRight','attack','look','makeBeat','fitMedia','0---','setTempo','return','ls','cd','git','$','\u2694\uFE0F','\uD83C\uDFB5','\uD83D\uDC8E','\uD83C\uDFC1'],
   css :['px','rem','#fff','margin','padding',':hover','color','2px','.card','}'],
   js  :['let','const','return','()=>','if','else','true','false','.length','+']
 };
@@ -7258,6 +8075,7 @@ const BEYOND_BANNER = {
   SR: ['\uD83C\uDFB5 That plays', 'code you can listen to'],
   KT: ['\uD83E\uDDE9 Kata cleared', 'including every test you were not shown'],
   PY: ['\uD83D\uDC0D Python', 'a second language is the one that proves the first was not magic'],
+  SH: ['\uD83D\uDCBB Terminal', 'you told the machine in its own words and it did exactly that'],
   RD: ['\uD83E\uDDED Signed off', 'you read a machine\u2019s draft before you trusted it']
 };
 function checkMilestones(){ try{ advCheck(); }catch(e){}
@@ -8215,9 +9033,9 @@ function openHub() {
 
 /* ---- the arcade door ---------------------------------------------------
    Four grades, and no sensible way to guess which one somebody wants. So the
-   door is a screen rather than a jump: it shows all four, says what each one
+   door is a screen rather than a jump: it shows all five, says what each one
    is for, and marks the one your class was made for. */
-const ARC_GRADES = ['QS','SR','KT','PY'];
+const ARC_GRADES = ['QS','SR','KT','PY','SH'];
 /* What a track takes for granted, said out loud. Quest, the Sound Room and
    Python genuinely start from nothing - their first lessons are one line each,
    and each teaches the loop when it gets to it. The Kata Table does not: a kata
@@ -8227,7 +9045,8 @@ const ARC_NEEDS = {
   QS: {gate:null, need:'Starts from nothing \u2014 the first levels are one command a line.'},
   SR: {gate:null, need:'Starts from nothing \u2014 the first lessons are one line each.'},
   KT: {gate:'G9',  need:'Assumes the school: functions, loops, and working with strings.'},
-  PY: {gate:null, need:'Starts from nothing \u2014 a second language that does not assume the first.'}
+  PY: {gate:null, need:'Starts from nothing \u2014 a second language that does not assume the first.'},
+  SH: {gate:null, need:'Starts from nothing \u2014 no code at all, just the machine\u2019s own language.'}
 };
 function arcReady(gid){
   const g = ARC_NEEDS[gid];
@@ -8239,7 +9058,8 @@ const ARC_PITCH = {
   QS:['⚔️','Your code drives a character across a board. Move, look, decide, fight — and by the last level you are writing the rule rather than the route.'],
   SR:['🎵','Your code is the instrument. Rhythm strings, tracks, tempo and effects, every sound built out of an oscillator rather than loaded from a file.'],
   KT:['🧩','Puzzles marked on tests you were not shown. The gap between "it works on my examples" and "it works" is the most useful hour in the whole school.'],
-  PY:['🐍','A second language, from print to a working report. Everything you already know, wearing different clothes — which is how you find out what you actually knew.']
+  PY:['🐍','A second language, from print to a working report. Everything you already know, wearing different clothes — which is how you find out what you actually knew.'],
+  SH:['💻','The terminal. Folders, files, pipes and git, typed one line at a time into a machine that does exactly what you said and nothing you meant. Every developer tool you will ever install assumes you can do this.']
 };
 function arcadeInto(gid){
   const items = L.map((l,i)=>({l,i})).filter(x => x.l.g === gid);
@@ -8275,8 +9095,8 @@ function openArcade(){
       : '<button class="hubnext" data-act="adv"><span class="hnl">Make a character first</span>'
         + '<span class="hnw">Twenty seconds. It decides which figure walks the Quest board, which badges you are collecting, and whose name goes on the certificate.</span></button>')
     + '<div class="arclist">' + rows + '</div>'
-    + '<p class="hubtip">Every one of these came from somewhere real: Quest from CodeCombat, the Sound Room from EarSketch, the Kata Table from Codewars and CheckiO, the character and the badges from Codédex, the Python track from Sololearn. What we took was the mechanic, not the artwork.</p>';
-  goalEl.innerHTML = '<b>THE ARCADE.</b> Four ways to write code that does something other than sit on a page.';
+    + '<p class="hubtip">Every one of these came from somewhere real: Quest from CodeCombat, the Sound Room from EarSketch, the Kata Table from Codewars and CheckiO, the character and the badges from Codédex, the Python track from Sololearn, the Terminal from the exercises every bootcamp runs in its first week. What we took was the mechanic, not the artwork.</p>';
+  goalEl.innerHTML = '<b>THE ARCADE.</b> Five ways to write code that does something other than sit on a page.';
   remindBox.style.display = 'none';
   $('#scaffold').style.display = 'none';
   btnNext.style.display = 'none';
@@ -8288,7 +9108,7 @@ function openArcade(){
   outEl.srcdoc = '';
   teachEl.scrollTop = 0;
   renderNav();
-  announce('The arcade. Four tracks: Quest, the Sound Room, the Kata Table and Python.');
+  announce('The arcade. Five tracks: Quest, the Sound Room, the Kata Table, Python and the Terminal.');
   const b = teachEl.querySelector('.arcrow, .hubnext'); if (b) b.focus();
 }
 
@@ -8415,12 +9235,13 @@ const PAL_ACTS = [
   { t: 'Mistakes book', f: () => { const q = mistakeItems().slice(0, 8); q.length ? drillStart(q, 'mistakes', 'Mistakes book: ' + q.length + ' to clear.') : openHub(); } },
   { t: 'Test out of what I already know (placement)', f: () => placeStart() },
   { t: 'Free play sandbox', f: () => { hub = false; drillOn = false; openSandbox(); } },
-  { t: 'The arcade \u2014 Quest, the Sound Room, katas, Python', f: () => openArcade() },
+  { t: 'The arcade \u2014 Quest, the Sound Room, katas, Python, the Terminal', f: () => openArcade() },
   { t: 'My character sheet', f: () => advOpen() },
   { t: 'Quest \u2014 code that moves a hero', f: () => arcadeInto('QS') },
   { t: 'The Sound Room \u2014 code that makes music', f: () => arcadeInto('SR') },
   { t: 'The Kata Table \u2014 puzzles with hidden tests', f: () => arcadeInto('KT') },
   { t: 'Python \u2014 a second language', f: () => arcadeInto('PY') },
+  { t: 'The Terminal \u2014 folders, files and git by hand', f: () => arcadeInto('SH') },
   { t: 'Run / check my code', f: () => $('#btnRun').click() },
   { t: 'Help me (hint for this lesson)', f: () => $('#btnHelp').click() },
   { t: 'Ask a question', f: () => $('#qaPanel').classList.add('open') },
@@ -8513,6 +9334,8 @@ const BADGES = [
   {id:'kata5',   icon:'🥋', name:'Five Kyu',       why:'Cleared five katas.'},
   {id:'py1',     icon:'🐍', name:'Hello, Python',  why:'Ran your first Python program.'},
   {id:'pyall',   icon:'🎓', name:'Two Languages',  why:'Finished the Python track.'},
+  {id:'shell1',  icon:'💻', name:'Prompt',         why:'Told the machine something in its own words.'},
+  {id:'shellall',icon:'🔧', name:'Toolsmith',      why:'Finished the Terminal track: files, pipes and git, by hand.'},
   {id:'streak7', icon:'🔥', name:'Seven Days',     why:'Seven days in a row.'},
   {id:'grad',    icon:'🏅', name:'Graduate',       why:'Finished the school.'}
 ];
@@ -8549,6 +9372,8 @@ function advCheck(){
   if (dn('KT') >= 5) badge('kata5');
   if (dn('PY') >= 1) badge('py1');
   if (by('PY').length && dn('PY') === by('PY').length) badge('pyall');
+  if (dn('SH') >= 1) badge('shell1');
+  if (by('SH').length && dn('SH') === by('SH').length) badge('shellall');
   if ((stk.best | 0) >= 7) badge('streak7');
   if (done.size >= coreTotal() && coreTotal() > 0) badge('grad');
 }
@@ -8606,7 +9431,7 @@ function advSheet(){
   const got = new Set(adv.badges);
   const by = (g) => L.map((l,i)=>({l,i})).filter(x => x.l.g === g);
   const dn = (g) => by(g).filter(x => beyondDone.has(x.i)).length;
-  const tracks = [['QS','Quest'],['SR','Sound Room'],['KT','Kata Table'],['PY','Python']]
+  const tracks = [['QS','Quest'],['SR','Sound Room'],['KT','Kata Table'],['PY','Python'],['SH','Terminal']]
     .filter(t => by(t[0]).length)
     .map(t => '<div><b>' + dn(t[0]) + '/' + by(t[0]).length + '</b><span>' + t[1] + '</span></div>').join('');
   return '<div class="sheet"><span class="big">' + adv.face + '</span><div>'
@@ -9011,10 +9836,16 @@ function syncModeUI(){
   here($('#btnHub'), hub);
   here($('#btnSandbox'), sandbox);
 }
-function phFor(lang){
+function phFor(lang, kind){
   if (hub || drillOn) return 'This box wakes up inside a lesson — pick one on the left.';
+  if (kind === undefined && !sandbox && L[idx] && L[idx].lang === lang) kind = L[idx].kind;
   return lang==='html' ? 'Type your HTML here - the page below updates with every keystroke'
     : lang==='css' ? 'Type your CSS rules here - the page below re-dresses as you type'
+    : lang==='py' ? 'Type your Python here - print(...) is how it shows you anything'
+    : kind==='shell' ? 'Type your commands here, one per line - the transcript below is what the machine says back'
+    : kind==='quest' ? 'Type your orders here - hero.moveRight(3), one per line, top to bottom'
+    : kind==='sound' ? 'Type your score here - makeBeat(KICK, 1, 1, "0---0---0---0---")'
+    : kind==='kata' ? 'Write the function here - return the answer, do not print it'
     : 'Type your JavaScript here - remember: screen.textContent = shows things';
 }
 function killGhost(){

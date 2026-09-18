@@ -7,7 +7,7 @@ The complete Kindergarten-through-College coding class in one self-contained,
 offline HTML file. Download it (or copy it to `C:\code-school\`), double-click,
 and it runs in any browser with **zero network access and zero API usage**.
 
-## What's inside — 179 lessons
+## What's inside — 192 lessons
 
 Graduation is the 107 required lessons — every lesson and every practice rep.
 Challenges, portfolio pieces, Beyond and the Review Desk sit outside that count.
@@ -33,6 +33,7 @@ Challenges, portfolio pieces, Beyond and the Review Desk sit outside that count.
 | **The Sound Room** | **8 lessons where your code is the instrument** |
 | **The Kata Table** | **7 puzzles marked on tests you were never shown** |
 | **Python** | **13 lessons: a second language, from `print` to a working report** |
+| **The Terminal** | **13 lessons: folders, files, pipes and git, typed by hand into a shell that lives in the page** |
 
 Reviews double as test-out exams (⚡): pass one first and it ticks the whole
 grade. Challenges are hint-free. Reps (🏋) are required: they count toward the
@@ -75,7 +76,7 @@ schedule under `srs`. A save code carries all of it to another device.
 
 ## The Arcade
 
-Four grades that sit outside the school the way Beyond and the Review Desk do:
+Five grades that sit outside the school the way Beyond and the Review Desk do:
 nothing here is needed to graduate, and none of it is a quiz. Each one is
 lifted from a place that already worked out how to make programming feel like
 something rather than like homework — and what was taken is the mechanic, not
@@ -115,6 +116,24 @@ expansion of the double rather than multiplying by a hundred first. It has
 `UnboundLocalError`, because a lesson that lets you read a global you later
 assign is a lesson teaching a falsehood.
 
+**The Terminal** is the one track that needs no code first. Thirteen lessons,
+each starting from a fresh copy of a small filesystem — a `project` folder with
+an `app.js` and a `notes.txt`, a `scratch` folder with junk in it — and the
+learner types commands, one per line: `pwd`, `ls`, `cd`, `mkdir`, `touch`,
+`echo` with `>` and `>>`, `cp`/`mv`/`rm`, `grep`, pipes, `*` globs, and the
+three lines of git that every project starts with. The shell is real in the way
+the Python interpreter is real: a tokeniser that respects quotes, redirection,
+`|`, `&&` and `#`, and a `git` that tracks a staging area and a commit history.
+The coach does not grade the words typed; it grades the world left behind — is
+the folder there, does the file say what it should, is the commit in, was the
+repository started *inside* `site` rather than one level up. The preview is the
+transcript, with the prompt showing which folder each command was typed in, so
+`cd` can be seen doing something even though it prints nothing. Its errors are
+in house style: `ls-l` is told about the space, `dir` and `cls` are told they
+are the Windows words, `rm -r /` is refused, and the last lesson is a brief with
+no walkthrough — scaffold a site and put it under version control — because
+that is how the work arrives.
+
 **The Adventurer** (from Codédex) is the character all of it belongs to: a name,
 a face, and one of four classes — Builder, Sleuth, Architect, Bard — which are
 dispositions towards programming rather than costumes. The class picks your
@@ -141,9 +160,12 @@ on the flag while the marker says you missed it. `questRun` is written
 self-contained on purpose: the preview gets it by calling `.toString()` on it
 and injecting it into the iframe.
 
-Python and the katas do not need a script in the preview at all — the
-interpreter and the test runner live in the page, and the preview is handed the
-finished console or the finished table as static HTML.
+Python, the katas and the Terminal do not need a script in the preview at all —
+the interpreter, the test runner and the shell live in the page, and the preview
+is handed the finished console, table or transcript as static HTML. `shellRun`
+records the working directory on every transcript line as it was *before* the
+command ran, which is what the prompt needs and what a post-hoc replay gets
+wrong.
 
 ## The hub: never having to decide what to do next
 
@@ -317,13 +339,29 @@ chain of `if`s, the old line is still the one that runs. Write the requirements
 last, then test them against wrong answers, not just against your own solution.
 
 **The arcade's two new languages.** `lang:'arc'` (Quest, the Sound Room, the
-Kata Table) and `lang:'py'` bypass the JavaScript branch of `runCheck`
-entirely, because that branch insists on a `screen.textContent =` line, which is
-right for a page and wrong for a level, a song, a kata and a `print()`. They are
-graded by running them: the engine's own result is a better error than anything
-a regex could say about it. `normRes` skips the DOMParser for both, and
-`stylePass` is replaced by `pyStyle` for Python, because the brace-counting
-indent check calls every correctly indented Python program badly indented.
+Kata Table, the Terminal) and `lang:'py'` bypass the JavaScript branch of
+`runCheck` entirely, because that branch insists on a `screen.textContent =`
+line, which is right for a page and wrong for a level, a song, a kata and a
+`print()`. They are graded by running them: the engine's own result is a better
+error than anything a regex could say about it. `normRes` skips the DOMParser
+for both, and `stylePass` is replaced by `pyStyle` for Python, because the
+brace-counting indent check calls every correctly indented Python program badly
+indented. The `arc` lessons also get a JavaScript parse before the engine sees
+them, so a missing bracket is explained in the coach's English — except
+`kind:'shell'`, which is not JavaScript and skips it: `echo "<h1>Hi</h1>" >
+page.html` is a perfectly good line of shell and a syntax error in anything
+else.
+
+**A Terminal lesson is a filesystem plus a question about the filesystem.**
+`SH(...)` takes a `spec` — `{fs, cwd?, pre?}` — where `fs` comes from
+`shfs({'project/app.js': '...', 'scratch': null})`, a flat path map because a
+nested tree literal is unreadable for anything real, and `pre` is a list of
+commands run silently before the learner's so a git lesson can start in a
+repository that already has a commit. The tests are a function of the finished
+state: `st.isDir('site/css')`, `st.read('notes.txt')`, `st.git.commits.length`,
+`st.git.root === '/home/you/site'`. Errors are numbered from the learner's first
+line, not from the first `pre` line, and `st.ran` never includes the `pre`
+commands — a lesson must not pass because the setup typed `git init` for you.
 
 **The engines are written as self-contained functions on purpose.** `questRun`
 and `soundRun` are serialised with `.toString()` into the preview iframe, so

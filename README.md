@@ -124,6 +124,16 @@ learner types commands, one per line: `pwd`, `ls`, `cd`, `mkdir`, `touch`,
 three lines of git that every project starts with. The shell is real in the way
 the Python interpreter is real: a tokeniser that respects quotes, redirection,
 `|`, `&&` and `#`, and a `git` that tracks a staging area and a commit history.
+The terminal in the preview is interactive, because a terminal that is not is
+a picture of one: you click it, type a line, press **Enter**, and that command
+runs and answers before you type the next, with `↑` for the command before and
+a wrong line answered rather than fatal. What makes that safe is the replay —
+every Enter re-runs the whole session from the lesson's starting filesystem
+through the same `shellRun` the coach grades with, so the screen cannot drift
+from what is being marked. Every line that runs is posted up to the editor, so
+the box above fills with the script you just wrote by using the shell, and
+**Run** grades that whole session when it is done.
+
 The coach does not grade the words typed; it grades the world left behind — is
 the folder there, does the file say what it should, is the commit in, was the
 repository started *inside* `site` rather than one level up. The preview is the
@@ -167,7 +177,9 @@ the interpreter, the test runner and the shell live in the page, and the preview
 is handed the finished console, table or transcript as static HTML. `shellRun`
 records the working directory on every transcript line as it was *before* the
 command ran, which is what the prompt needs and what a post-hoc replay gets
-wrong.
+wrong. It also keeps running after a line fails, the way a real prompt does —
+only a broken lesson `pre` stops the session — while `error` stays the *first*
+complaint, so the coach's verdict does not move.
 
 ## The hub: never having to decide what to do next
 

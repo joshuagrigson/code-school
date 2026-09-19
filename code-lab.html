@@ -6531,25 +6531,30 @@ function soundRun(CODE){
 
 /* How each sound is actually made. Kept beside the scheduler because a learner
    who asks "what IS a kick drum" deserves to be able to read the answer. */
+/* A kit you can be proud of. The old one was polite: every sound kept small
+   in case four of them landed on the same sixteenth and clipped, which is the
+   wrong trade - it makes the quiet case sound thin so the loud case cannot
+   distort. The master bus takes that job now (drive, glue, a ceiling), so
+   each voice can hit as hard as the thing it is imitating. */
 var SOUND_RECIPES = {
-  KICK:    {kind:'tone', f0:150, f1:45,  dur:0.28, type:'sine',     gain:1.0, drop:0.055},
-  SNARE:   {kind:'noise', dur:0.18, hp:900,  gain:0.55, body:190},
-  HAT:     {kind:'noise', dur:0.045, hp:7000, gain:0.22},
-  OPENHAT: {kind:'noise', dur:0.30, hp:6000, gain:0.20},
-  CLAP:    {kind:'noise', dur:0.22, hp:1300, gain:0.40, spread:3},
-  TOM:     {kind:'tone', f0:220, f1:95,  dur:0.30, type:'sine',     gain:0.7, drop:0.12},
-  RIM:     {kind:'noise', dur:0.03, hp:2400, gain:0.35},
-  SHAKER:  {kind:'noise', dur:0.06, hp:5200, gain:0.14},
-  BASS:    {kind:'tone', f0:82,  f1:82,  dur:0.34, type:'triangle', gain:0.75},
-  SUBBASS: {kind:'tone', f0:55,  f1:55,  dur:0.50, type:'sine',     gain:0.85},
-  PLUCK:   {kind:'tone', f0:330, f1:330, dur:0.22, type:'sawtooth', gain:0.28, lp:2600},
-  PAD:     {kind:'tone', f0:220, f1:220, dur:1.10, type:'sine',     gain:0.22, lp:1500, attack:0.18, chord:[0,4,7]},
-  BELL:    {kind:'tone', f0:880, f1:880, dur:0.70, type:'sine',     gain:0.22, chord:[0,12]},
-  LEAD:    {kind:'tone', f0:440, f1:440, dur:0.26, type:'square',   gain:0.16, lp:3200},
-  ARP:     {kind:'tone', f0:660, f1:660, dur:0.14, type:'triangle', gain:0.24},
-  CHOIR:   {kind:'tone', f0:330, f1:330, dur:1.30, type:'sine',     gain:0.18, attack:0.30, chord:[0,3,7,12]},
-  STAB:    {kind:'tone', f0:294, f1:294, dur:0.18, type:'sawtooth', gain:0.20, lp:2000, chord:[0,3,7]},
-  BLIP:    {kind:'tone', f0:1320, f1:1980, dur:0.08, type:'square', gain:0.12}
+  KICK:    {kind:'tone', f0:200, f1:41,  dur:0.55, type:'sine',     gain:1.45, drop:0.055, click:0.55, sub:0.5},
+  SNARE:   {kind:'noise', dur:0.24, bp:1800, q:0.7, gain:1.05, body:[184, 330], snap:0.45},
+  HAT:     {kind:'noise', dur:0.05,  hp:8200, gain:0.52},
+  OPENHAT: {kind:'noise', dur:0.34,  hp:7000, gain:0.44},
+  CLAP:    {kind:'noise', dur:0.26, bp:1450, q:0.9, gain:0.88, spread:4},
+  TOM:     {kind:'tone', f0:265, f1:88,  dur:0.44, type:'sine',     gain:1.0,  drop:0.14, click:0.22},
+  RIM:     {kind:'noise', dur:0.045, bp:2700, q:2.4, gain:0.72},
+  SHAKER:  {kind:'noise', dur:0.08,  hp:6200, gain:0.36},
+  BASS:    {kind:'tone', f0:82,  f1:82,  dur:0.42, type:'sawtooth', gain:0.80, lp:460,  lpq:7, sweep:0.55, sub:0.6},
+  SUBBASS: {kind:'tone', f0:55,  f1:55,  dur:0.58, type:'sine',     gain:1.15},
+  PLUCK:   {kind:'tone', f0:330, f1:330, dur:0.28, type:'sawtooth', gain:0.52, lp:3400, lpq:4, sweep:0.8, unison:9},
+  PAD:     {kind:'tone', f0:220, f1:220, dur:1.20, type:'sawtooth', gain:0.34, lp:1700, attack:0.20, chord:[0,4,7], unison:7},
+  BELL:    {kind:'tone', f0:880, f1:880, dur:0.80, type:'sine',     gain:0.38, chord:[0,12,19]},
+  LEAD:    {kind:'tone', f0:440, f1:440, dur:0.30, type:'square',   gain:0.30, lp:3800, unison:8},
+  ARP:     {kind:'tone', f0:660, f1:660, dur:0.16, type:'triangle', gain:0.42},
+  CHOIR:   {kind:'tone', f0:330, f1:330, dur:1.40, type:'sawtooth', gain:0.28, attack:0.32, chord:[0,3,7,12], lp:2200, unison:6},
+  STAB:    {kind:'tone', f0:294, f1:294, dur:0.20, type:'sawtooth', gain:0.36, lp:2400, lpq:5, sweep:0.6, chord:[0,3,7], unison:7},
+  BLIP:    {kind:'tone', f0:1320, f1:1980, dur:0.09, type:'square', gain:0.26}
 };
 
 /* ---- The Kata Table, for the Codewars / CheckiO track --------------- */
@@ -7183,7 +7188,7 @@ function shellRun(SPEC, CODE){
 
 const ARC_CSS = "\n*{box-sizing:border-box}\nbody{margin:0;font:14px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#11131a;color:#e8e6e1;padding:12px}\n.verdict{border-radius:9px;padding:9px 12px;margin:0 0 10px;font-weight:600;font-size:.86rem;line-height:1.45}\n.verdict.win{background:#12432f;color:#8fe7bd;border:1px solid #1d6a4b}\n.verdict.lose{background:#43241c;color:#f0b49c;border:1px solid #79402e}\n.verdict.idle{background:#1b1f28;color:#9aa2b0;border:1px solid #2a3040}\n.verdict small{display:block;font-weight:400;opacity:.85;margin-top:3px}\n.ttl{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:#7c8598;margin:12px 0 6px}\nbutton{font:inherit;font-weight:600;border:none;border-radius:8px;padding:7px 14px;cursor:pointer;background:#2b6b57;color:#eafff6}\nbutton:hover{background:#35836a}\n/* Dimming a button with opacity drags its label under the bar too: a\n   disabled control still has to be readable, so the ground dims and the\n   text does not. */\nbutton[disabled]{background:#39414f;color:#c3cad6;cursor:default}\n";
 const QUEST_CSS = "\n#board{position:relative;margin:0 auto;background:#171a22;border-radius:10px;padding:5px}\n.qc{position:absolute;border-radius:5px;background:#1f2430}\n.qc.wall{background:#3a4152;box-shadow:inset 0 -3px 0 #2c3242}\n.qc.fire{background:#4a2118}\n.qc.exit{background:#1c4437;box-shadow:inset 0 0 0 2px #2f7d5c}\n.sp{position:absolute;display:flex;align-items:center;justify-content:center;transition:transform .17s ease;z-index:2}\n.sp.gone{opacity:0;transform:scale(.3)}\n#hero{z-index:4}\n#hero.hurt{animation:shake .3s}\n@keyframes shake{25%{transform:translate(var(--tx),var(--ty)) rotate(-12deg)}75%{transform:translate(var(--tx),var(--ty)) rotate(12deg)}}\n.bub{position:absolute;z-index:6;background:#f3f1ec;color:#22262e;border-radius:9px;padding:3px 8px;font-size:11px;font-weight:600;white-space:nowrap;transform:translate(-50%,-115%);box-shadow:0 2px 8px rgba(0,0,0,.45)}\n#hud{display:flex;gap:14px;align-items:center;margin:10px 0 0;font-size:.8rem;color:#aab2c0;flex-wrap:wrap}\n#hud b{color:#e8e6e1}\n#trace{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}\n.blk{font:600 11px/1 ui-monospace,Menlo,Consolas,monospace;padding:5px 7px;border-radius:5px;background:#232936;color:#9fb4c9;border-left:3px solid #3d4b61}\n.blk.mv{border-left-color:#4f9ad8;color:#a9d1f0}\n.blk.at{border-left-color:#d8714f;color:#f0b8a4}\n.blk.sy{border-left-color:#c5a03f;color:#e8d29a}\n.blk.now{background:#31405a;color:#fff;box-shadow:0 0 0 1px #5a7ba8}\n.blk.bump{border-left-color:#8a5a2b;opacity:.75;text-decoration:line-through}\n.note{font-size:.76rem;color:#c3a06a;min-height:1.3em;margin-top:6px}\n";
-const SOUND_CSS = "\n#deck{background:#171a22;border-radius:10px;padding:10px;overflow-x:auto}\n.trk{display:flex;align-items:center;gap:7px;margin-bottom:5px}\n.tname{flex:0 0 74px;font:600 10px/1 ui-monospace,Menlo,monospace;color:#8b94a6;text-align:right;letter-spacing:.04em}\n.steps{position:relative;display:flex;gap:1px}\n.st{width:13px;height:21px;border-radius:2px;background:#232936;flex:0 0 auto}\n.st.bar{background:#283040}\n.st.on{box-shadow:inset 0 0 0 1px rgba(255,255,255,.22)}\n.st.hold{opacity:.42}\n#play{position:absolute;top:-3px;bottom:-3px;width:2px;background:#f0d98a;border-radius:2px;left:0;display:none;pointer-events:none;z-index:3}\n#bars{display:flex;gap:1px;margin:0 0 5px 81px}\n.bn{width:55px;font:600 9px/1 ui-monospace,monospace;color:#8b94a6;flex:0 0 auto}\n#sctl{display:flex;gap:9px;align-items:center;margin-top:11px;flex-wrap:wrap;font-size:.79rem;color:#aab2c0}\n#fx{margin-top:9px;font:600 11px/1.6 ui-monospace,Menlo,monospace;color:#8b94a6}\n";
+const SOUND_CSS = "\n#deck{background:#171a22;border-radius:10px;padding:10px;overflow-x:auto}\n.trk{display:flex;align-items:center;gap:7px;margin-bottom:5px}\n.tname{flex:0 0 74px;font:600 10px/1 ui-monospace,Menlo,monospace;color:#8b94a6;text-align:right;letter-spacing:.04em}\n.steps{position:relative;display:flex;gap:1px}\n.st{width:13px;height:21px;border-radius:2px;background:#232936;flex:0 0 auto}\n.st.bar{background:#283040}\n.st.on{box-shadow:inset 0 0 0 1px rgba(255,255,255,.22)}\n.st.hold{opacity:.42}\n.st.lit{transform:scaleY(1.45);filter:brightness(1.9) saturate(1.3);box-shadow:0 0 12px currentColor}\n.st{transition:transform .07s ease-out,filter .07s ease-out}\n#hit{font-size:1rem;padding:11px 22px;border-radius:10px;font-weight:700;letter-spacing:.01em;box-shadow:0 2px 0 #1d4a3c}\n#hit:active{transform:translateY(1px);box-shadow:0 1px 0 #1d4a3c}\n#sctl.going #hit{background:#b8472f;box-shadow:0 2px 0 #7d2e1d}\n#play{position:absolute;top:-3px;bottom:-3px;width:2px;background:#f0d98a;border-radius:2px;left:0;display:none;pointer-events:none;z-index:3}\n#bars{display:flex;gap:1px;margin:0 0 5px 81px}\n.bn{width:55px;font:600 9px/1 ui-monospace,monospace;color:#8b94a6;flex:0 0 auto}\n#sctl{display:flex;gap:9px;align-items:center;margin-top:11px;flex-wrap:wrap;font-size:.79rem;color:#aab2c0}\n#fx{margin-top:9px;font:600 11px/1.6 ui-monospace,Menlo,monospace;color:#8b94a6}\n";
 const CONSOLE_CSS = "\n.term{background:#0d1017;border:1px solid #232936;border-radius:9px;padding:12px 14px;\n  font:13px/1.65 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word;color:#d7dbe2;min-height:60px}\n.term .pyerr{display:block;margin-top:10px;padding:9px 11px;border-radius:7px;background:#3a1f18;color:#f4b9a2;border-left:3px solid #c2542e;font-weight:600}\n.term .pyerr i{display:block;font-style:normal;font-weight:400;opacity:.8;font-size:.9em;margin-top:3px}\n.term .cursor{display:inline-block;width:7px;height:15px;background:#3f7d63;vertical-align:-2px;animation:bl 1.1s steps(2) infinite}\n@keyframes bl{50%{opacity:0}}\n.term .empty{color:#5f6879;font-style:italic}\ntable.tt{width:100%;border-collapse:collapse;font:12px/1.5 ui-monospace,Menlo,Consolas,monospace;margin-top:4px}\ntable.tt th{text-align:left;font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:#7c8598;padding:0 8px 5px;font-weight:600}\ntable.tt td{padding:6px 8px;border-top:1px solid #222834;vertical-align:top;word-break:break-word}\ntable.tt tr.p td:first-child{color:#6fd3a4}\ntable.tt tr.f td:first-child{color:#e8896a}\ntable.tt tr.f{background:#241a17}\ntable.tt .hid{color:#7c8598;font-style:italic}\ntable.tt .why{color:#e8896a;display:block;font-size:.92em;margin-top:2px}\n.rank{display:inline-block;background:#2a3142;color:#c6d0e0;border-radius:5px;padding:2px 7px;font-size:.68rem;font-weight:700;letter-spacing:.06em}\n";
 
 /* The hero on the board is YOUR character, if you made one. */
@@ -7293,6 +7298,155 @@ function questDoc(les, code){
 }
 
 /* ------------------------------------------------------- THE SOUND ROOM */
+/* The sound of the Sound Room. Written as one function so the preview gets it
+   by calling .toString() on it, and so a test can render the same graph into
+   an OfflineAudioContext and measure whether it is actually loud - "sounds
+   thin" is a measurable claim, and it was true. */
+function soundKit(){
+  /* soft clip: pushes peaks together instead of squaring them off, which is
+     the difference between loud and nasty */
+  function curve(k){
+    var n = 2048, c = new Float32Array(n), i, x;
+    for (i = 0; i < n; i++){ x = i * 2 / n - 1; c[i] = (1 + k) * x / (1 + k * Math.abs(x)); }
+    return c;
+  }
+  /* The last thing in the chain and the only one that is a promise: linear up
+     to -3dB and bending after, with the curve's own ends as the wall. A
+     WaveShaper clamps anything past its domain to the endpoint, so no sample
+     can leave here above 0.97 however hard the compressor is hit. The old kit
+     had no such thing and clipped while still being quiet. */
+  function ceil(){
+    var n = 4096, c = new Float32Array(n), i, x, a, y;
+    for (i = 0; i < n; i++){
+      x = i * 2 / n - 1; a = Math.abs(x);
+      y = a <= 0.7 ? a : 0.7 + (1 - Math.exp(-(a - 0.7) * 3)) * 0.45;
+      c[i] = (x < 0 ? -y : y);
+    }
+    return c;
+  }
+  /* The master bus is the whole reason a voice may hit hard: drive for weight,
+     a compressor to glue the kit, makeup gain to bring it up, and a fast
+     ceiling so four sounds on one sixteenth still never clip. */
+  function bus(c, dest){
+    var inp = c.createGain(); inp.gain.value = 1;
+    var drive = c.createWaveShaper(); drive.curve = curve(1.8);
+    if ('oversample' in drive) drive.oversample = '4x';
+    var glue = c.createDynamicsCompressor();
+    glue.threshold.value = -16; glue.knee.value = 8; glue.ratio.value = 4;
+    glue.attack.value = 0.004; glue.release.value = 0.18;
+    var makeup = c.createGain(); makeup.gain.value = 2.9;
+    var ceiling = c.createDynamicsCompressor();
+    ceiling.threshold.value = -3; ceiling.knee.value = 0; ceiling.ratio.value = 20;
+    ceiling.attack.value = 0.0007; ceiling.release.value = 0.06;
+    /* and no oversampling on this one: interpolating between curve points
+       overshoots the very ceiling it exists to guarantee */
+    var safety = c.createWaveShaper(); safety.curve = ceil();
+    if ('oversample' in safety) safety.oversample = 'none';
+    inp.connect(drive); drive.connect(glue); glue.connect(makeup);
+    makeup.connect(ceiling); ceiling.connect(safety); safety.connect(dest || c.destination);
+    return inp;
+  }
+  /* a room, built rather than loaded: noise that fades, convolved with the
+     music. It is the difference between a sound and a sound somewhere. */
+  function room(c, secs, decay){
+    var len = Math.max(1, Math.floor(c.sampleRate * (secs || 1.5))), b = c.createBuffer(2, len, c.sampleRate), ch, d, i;
+    for (ch = 0; ch < 2; ch++){
+      d = b.getChannelData(ch);
+      for (i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, decay || 2.5);
+    }
+    var cv = c.createConvolver(); cv.buffer = b; return cv;
+  }
+  function noise(c, dur){
+    var len = Math.max(1, Math.ceil(c.sampleRate * dur)), buf = c.createBuffer(1, len, c.sampleRate), d = buf.getChannelData(0), i;
+    for (i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len);
+    var src = c.createBufferSource(); src.buffer = buf; return src;
+  }
+  function env(c, when, peak, att, dur, out){
+    var g = c.createGain();
+    g.gain.setValueAtTime(0.0001, when);
+    g.gain.linearRampToValueAtTime(peak, when + att);
+    g.gain.exponentialRampToValueAtTime(0.0001, when + dur);
+    g.connect(out); return g;
+  }
+  /* drums: a burst of noise with a shape, plus a tuned body that gives it a
+     note to sit on - a snare with no body is a hiss, which is what it was */
+  function hit(c, r, when, out){
+    var bursts = r.spread || 1, i, k;
+    for (i = 0; i < bursts; i++){
+      var at = when + i * 0.012, lvl = r.gain * (i ? 0.55 / i : 1);
+      var g = env(c, at, lvl, 0.001, r.dur, out);
+      var src = noise(c, r.dur), node = src;
+      if (r.bp){
+        var bp = c.createBiquadFilter(); bp.type = 'bandpass';
+        bp.frequency.value = r.bp; bp.Q.value = r.q || 1;
+        src.connect(bp); node = bp;
+      } else {
+        var hp = c.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = r.hp || 1000;
+        src.connect(hp); node = hp;
+      }
+      node.connect(g); src.start(at); src.stop(at + r.dur);
+    }
+    if (r.body){
+      var bodies = [].concat(r.body);
+      for (k = 0; k < bodies.length; k++){
+        var o = c.createOscillator(); o.type = 'triangle';
+        o.frequency.setValueAtTime(bodies[k], when);
+        o.frequency.exponentialRampToValueAtTime(Math.max(30, bodies[k] * 0.72), when + 0.1);
+        var og = env(c, when, r.gain * 0.5 / (k + 1), 0.001, 0.13, out);
+        o.connect(og); o.start(when); o.stop(when + 0.15);
+      }
+    }
+    if (r.snap){   /* the crack on the front, which is what you actually hear */
+      var sg = env(c, when, r.snap, 0.0005, 0.03, out), sn = noise(c, 0.03);
+      var sh = c.createBiquadFilter(); sh.type = 'highpass'; sh.frequency.value = 5000;
+      sn.connect(sh); sh.connect(sg); sn.start(when); sn.stop(when + 0.03);
+    }
+  }
+  /* tones: unison for width, a filter that opens and shuts, a sub underneath
+     the kick so it is felt as well as heard */
+  function tone(c, r, when, out){
+    var tones = r.chord || [0], voices = r.unison ? 2 : 1, ti, vi;
+    for (ti = 0; ti < tones.length; ti++){
+      for (vi = 0; vi < voices; vi++){
+        var semi = tones[ti];
+        var f0 = r.f0 * Math.pow(2, semi / 12), f1 = r.f1 * Math.pow(2, semi / 12);
+        var o = c.createOscillator(); o.type = r.type;
+        if (r.unison && o.detune) o.detune.value = (vi ? r.unison : -r.unison);
+        o.frequency.setValueAtTime(f0, when);
+        if (f1 !== f0) o.frequency.exponentialRampToValueAtTime(Math.max(20, f1), when + (r.drop || r.dur));
+        var g = env(c, when, r.gain / (tones.length * voices) * (tones.length > 1 ? 1.4 : 1), r.attack || 0.004, r.dur, out);
+        var node = o;
+        if (r.lp){
+          var lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.Q.value = r.lpq || 1;
+          if (r.sweep){
+            lp.frequency.setValueAtTime(r.lp * (1 + r.sweep * 5), when);
+            lp.frequency.exponentialRampToValueAtTime(Math.max(80, r.lp), when + r.dur * 0.6);
+          } else lp.frequency.value = r.lp;
+          o.connect(lp); node = lp;
+        }
+        node.connect(g); o.start(when); o.stop(when + r.dur + 0.02);
+      }
+    }
+    if (r.sub){   /* an octave below, felt rather than heard */
+      var so = c.createOscillator(); so.type = 'sine';
+      so.frequency.setValueAtTime(r.f0 / 2, when);
+      if (r.f1 !== r.f0) so.frequency.exponentialRampToValueAtTime(Math.max(20, r.f1 / 2), when + (r.drop || r.dur));
+      var sg = env(c, when, r.gain * r.sub, 0.002, r.dur * 1.1, out);
+      so.connect(sg); so.start(when); so.stop(when + r.dur * 1.2);
+    }
+    if (r.click){  /* the beater on the skin: without it a kick is a boof */
+      var cg = env(c, when, r.click, 0.0004, 0.022, out), cn = noise(c, 0.022);
+      var cf = c.createBiquadFilter(); cf.type = 'bandpass'; cf.frequency.value = 2200; cf.Q.value = 0.8;
+      cn.connect(cf); cf.connect(cg); cn.start(when); cn.stop(when + 0.022);
+    }
+  }
+  function voice(c, name, when, out){
+    var r = SOUND_RECIPES[name]; if (!r) return;
+    if (r.kind === 'noise') hit(c, r, when, out); else tone(c, r, when, out);
+  }
+  return {bus:bus, room:room, voice:voice, noise:noise};
+}
+
 const SOUND_VIEW = [
 'var SC = soundRun(CODE);',
 'var deck = document.getElementById("deck");',
@@ -7320,57 +7474,29 @@ const SOUND_VIEW = [
 '      c.style.background = HUE[nn.sound] || "#4f9ad8"; c.title = nn.sound;',
 '    }',
 '  });',
-'  row.appendChild(steps); deck.appendChild(row);',
+'  row.appendChild(steps); deck.appendChild(row); ALLCELLS.push(cells);',
 '});',
+'var ALLCELLS = [];',
 'var head = document.getElementById("play");',
 'document.getElementById("deck").style.position = "relative";',
 'var fx = document.getElementById("fx");',
 'fx.innerHTML = SC.effects.length',
 '  ? SC.effects.map(function(e){ return "track " + e.track + " \u2192 " + e.effect + " " + e.value; }).join("<br>")',
 '  : "";',
-'var ctx = null, playing = false;',
-'function noise(c, dur){',
-'  var len = Math.ceil(c.sampleRate * dur), buf = c.createBuffer(1, len, c.sampleRate), d = buf.getChannelData(0);',
-'  for (var i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len);',
-'  var src = c.createBufferSource(); src.buffer = buf; return src;',
-'}',
-'function voice(c, name, when, out){',
-'  var r = SOUND_RECIPES[name]; if (!r) return;',
-'  var g = c.createGain(); g.connect(out);',
-'  var peak = r.gain, att = r.attack || 0.004;',
-'  g.gain.setValueAtTime(0.0001, when);',
-'  g.gain.linearRampToValueAtTime(peak, when + att);',
-'  g.gain.exponentialRampToValueAtTime(0.0001, when + r.dur);',
-'  if (r.kind === "noise"){',
-'    var src = noise(c, r.dur);',
-'    var hp = c.createBiquadFilter(); hp.type = "highpass"; hp.frequency.value = r.hp || 1000;',
-'    src.connect(hp); hp.connect(g); src.start(when); src.stop(when + r.dur);',
-'    if (r.body){',
-'      var o = c.createOscillator(); o.type = "triangle"; o.frequency.setValueAtTime(r.body, when);',
-'      var og = c.createGain(); og.gain.setValueAtTime(0.25, when); og.gain.exponentialRampToValueAtTime(0.0001, when + 0.09);',
-'      o.connect(og); og.connect(g); o.start(when); o.stop(when + 0.1);',
-'    }',
-'    return;',
-'  }',
-'  var tones = r.chord || [0];',
-'  tones.forEach(function(semi){',
-'    var o = c.createOscillator(); o.type = r.type;',
-'    var f0 = r.f0 * Math.pow(2, semi / 12), f1 = r.f1 * Math.pow(2, semi / 12);',
-'    o.frequency.setValueAtTime(f0, when);',
-'    if (f1 !== f0) o.frequency.exponentialRampToValueAtTime(Math.max(20, f1), when + (r.drop || r.dur));',
-'    var node = o;',
-'    if (r.lp){ var lp = c.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = r.lp; o.connect(lp); node = lp; }',
-'    node.connect(g); o.start(when); o.stop(when + r.dur + 0.02);',
-'  });',
-'}',
+'var ctx = null, playing = false, litCol = -1, KIT = soundKit();',
 'function play(){',
 '  if (playing) return;',
 '  ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();',
 '  if (ctx.state === "suspended") ctx.resume();',
 '  playing = true;',
 '  var btn = document.getElementById("hit"); btn.textContent = "\u25A0 Stop";',
+'  document.getElementById("sctl").classList.add("going");',
 '  var spb = 60 / SC.tempo, sps = spb / 4, t0 = ctx.currentTime + 0.08;',
-'  var master = ctx.createGain(); master.gain.value = 0.9; master.connect(ctx.destination);',
+'  var master = KIT.bus(ctx);',
+'  /* every track goes to the room a little, so even one kick sounds like it',
+'     happened somewhere rather than in a vacuum */',
+'  var verb = KIT.room(ctx, 1.5, 2.6), send = ctx.createGain();',
+'  send.gain.value = 0.14; send.connect(verb); verb.connect(master);',
 '  var outs = {};',
 '  used.forEach(function(t){',
 '    var g = ctx.createGain(); g.gain.value = 1; var last = g;',
@@ -7384,12 +7510,12 @@ const SOUND_VIEW = [
 '        last.connect(d); d.connect(fb); fb.connect(d); d.connect(master);',
 '      }',
 '    });',
-'    last.connect(master); outs[t] = g;',
+'    last.connect(master); last.connect(send); outs[t] = g;',
 '  });',
 '  used.forEach(function(t){',
 '    (SC.tracks[t] || []).forEach(function(nn){',
 '      var col = (nn.m - 1) * 16 + nn.step;',
-'      voice(ctx, nn.sound, t0 + col * sps, outs[t]);',
+'      KIT.voice(ctx, nn.sound, t0 + col * sps, outs[t]);',
 '    });',
 '  });',
 '  var total = COLS * sps;',
@@ -7400,12 +7526,26 @@ const SOUND_VIEW = [
 '    var p = (performance.now() - start) / (total * 1000);',
 '    if (p >= 1) { stop(); return; }',
 '    head.style.left = (81 + p * COLS * 14) + "px";',
+'    /* the note you wrote lights up on the beat it plays: the whole point of',
+'       the Sound Room is that the code and the sound are the same thing */',
+'    var col = Math.floor(p * COLS);',
+'    if (col !== litCol){',
+'      ALLCELLS.forEach(function(cells){ if (cells[litCol]) cells[litCol].classList.remove("lit"); });',
+'      litCol = col;',
+'      ALLCELLS.forEach(function(cells){',
+'        var c = cells[col];',
+'        if (c && c.classList.contains("on") && !c.classList.contains("hold")) c.classList.add("lit");',
+'      });',
+'    }',
 '    requestAnimationFrame(tickHead);',
 '  })();',
 '  setTimeout(stop, total * 1000 + 300);',
 '}',
 'function stop(){',
 '  playing = false; head.style.display = "none";',
+'  ALLCELLS.forEach(function(cells){ cells.forEach(function(c){ c.classList.remove("lit"); }); });',
+'  litCol = -1;',
+'  document.getElementById("sctl").classList.remove("going");',
 '  document.getElementById("hit").textContent = "\u25B6 Play it";',
 '  if (ctx) { try { ctx.close(); } catch(e){} ctx = null; }',
 '}',
@@ -7427,7 +7567,7 @@ function soundDoc(les, code){
     + '<div id="fx"></div>'
     + '<div id="sctl"><button id="hit">▶ Play it</button><span>Nothing here is a recording &mdash; every sound is built out of an oscillator and an envelope when you press play.</span></div>';
   const js = 'var CODE=' + JSON.stringify(code) + ';var SOUND_RECIPES=' + JSON.stringify(SOUND_RECIPES) + ';\n'
-    + soundRun.toString() + '\n' + SOUND_VIEW;
+    + soundRun.toString() + '\n' + soundKit.toString() + '\n' + SOUND_VIEW;
   return arcPage(SOUND_CSS, body, js);
 }
 

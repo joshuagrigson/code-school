@@ -449,6 +449,16 @@ to publish was to re-save the source in Settings. A deploy you can see, re-run
 and read the logs of is worth more than one that happens invisibly until it
 doesn't. Pages **Source** must be set to *GitHub Actions* for it to deploy.
 
+**The words you type are chips.** Inline `code` in a lesson has its own
+ground, edge and ink rather than being prose in a different font, and inside a
+chip the command itself is stronger again — in `echo milk > shopping.txt` one
+word is the machine's and three are yours, and nothing on the page said which
+until `markCode` marked them. The word lists are per track (`KEYWORDS`), the
+marking runs over the rendered lesson and goal rather than the source, so no
+lesson text had to be rewritten, and `chip_test.js` walks every lesson in the
+school to check that a chip is visibly a chip in both themes, clears AA on its
+own ground, and that the commands it knows about are marked.
+
 **The test suites** live outside the repo but the recipe is worth keeping:
 every non-project lesson must have its solution pass and its starting code fail;
 every Beyond and Review Desk lesson additionally runs a list of

@@ -16,6 +16,10 @@
   --accent:#12705a; --accent2:#1e4f7a; --warn:#b04a26;
   --good:#e9f2ed; --goodline:#bcd9ca; --bad:#f8ece6; --badline:#e6c4b1;
   --code:#f1efea; --sb:#cecabf; --sbh:#a8a397;
+  /* The words you actually type are the point of a lesson, so they are not
+     prose in a slightly different font: they are chips, with their own
+     ground, edge and ink. Inside one, the command itself is stronger again. */
+  --chip:#e6efea; --chipline:#bdd6c9; --chipink:#2b4e42; --cwink:#0a5c44;
   /* white text needs 4.5:1 and white-on-accent is only 3.5:1, so solid buttons
      and accent-coloured text get their own darker tokens. Borders keep --accent. */
   --btn:#0c5f4a; --acct:#0a6a51; --btn2:#1e4f7a;
@@ -114,7 +118,12 @@ body.navhid .left{min-width:320px}
 .teach[data-lv="2"] p{font-size:.97rem}
 /* break-word only gives way when the token cannot fit on a line by itself,
    which in a narrow column beats a chip hanging off the edge */
-.teach code, .goalbox code, #qaOut code{font-family:var(--mono);background:var(--code);padding:1px 5px;border-radius:5px;font-size:.9em;overflow-wrap:break-word}
+.teach code, .goalbox code, #qaOut code{font-family:var(--mono);background:var(--chip);color:var(--chipink);
+  border:1px solid var(--chipline);padding:0 5px;border-radius:5px;font-size:.88em;overflow-wrap:break-word;
+  box-decoration-break:clone;-webkit-box-decoration-break:clone}
+/* the command inside the chip: one word you must get exactly right, next to
+   three you get to choose */
+.teach code .cw, .goalbox code .cw, #qaOut code .cw{color:var(--cwink);font-weight:700}
 .teach pre{background:var(--code);padding:10px 12px;border-radius:8px;margin:0 0 10px;overflow-x:auto;font-family:var(--mono);font-size:.88rem;line-height:1.5}
 /* the little reference tables in the lesson prose - the ones in .decoder,
    .morebox and .tracebox bring their own styling and must not be caught here */
@@ -491,6 +500,7 @@ body.dark{font-weight:400;
   --accent2:#6aa6d8; --btn2:#1d5f94; --warn:#e08a5f;
   --good:#1c2f27; --goodline:#35513f; --bad:#3a2a26; --badline:#5e3f37;
   --code:#1f2226; --sb:#2f343a; --sbh:#434a52;
+  --chip:#172822; --chipline:#2d4e42; --chipink:#b9cfc6; --cwink:#7fd1a8;
   --sh1:0 1px 2px rgba(0,0,0,.45);
   --sh2:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.34);
   --sh3:0 20px 60px rgba(0,0,0,.62);
@@ -8323,6 +8333,7 @@ function loadLesson(i){
   teachEl.innerHTML = crumb + '<h2>' + les.title + '</h2>' + readyNote(les) + les.teach + shapeHtml(i) + widgetsFor(i) + decoderFor(les) + ((RN[i]||les.rn) ? '<div class="realname"><b>Real name</b>' + (RN[i]||les.rn) + '</div>' : '') + (MORE[i] ? '<div class="morebox"><b>More to chew on</b>' + MORE[i] + '</div>' : '') + (OLDS[i] ? '<div class="elders"><b class="el">📜 Lineage</b>' + OLDS[i] + '</div>' : '');
   recallShow(i);
   goalEl.innerHTML = '<b>DO THIS:</b> ' + les.goal;
+  markCode(teachEl, les); markCode(goalEl, les);
   const remind = remindFor(les);
   remindTxt.innerHTML = remind;
   remindBox.style.display = (!remind || localStorage.getItem('remindHidden')==='1') ? 'none' : 'flex';
@@ -9714,6 +9725,35 @@ function readyNote(les){
     + (first ? '<button class="readygo" data-act="lesson" data-i="' + first.i + '">Learn it first \u2014 '
         + esc(g ? g.name : rd.gate) + ', \u201C' + esc(first.l.title) + '\u201D \u2192</button>' : '')
     + '</div>';
+}
+/* Which words in a chip are the machine's own, per track. A lesson says
+   "echo milk > shopping.txt": one word of that is a command and the rest is
+   yours to choose, and a learner cannot tell which until someone says so. */
+const KEYWORDS = {
+  shell: ['pwd','ls','cd','mkdir','touch','echo','cat','head','tail','wc','cp','mv','rm','grep','find','clear','whoami','date','git','sudo'],
+  js:    ['let','const','function','return','if','else','for','while','of','in','new','class','true','false','typeof','console','push','length'],
+  py:    ['print','def','return','if','elif','else','for','while','in','import','True','False','None','len','range','input','int','str','float','append'],
+  quest: ['hero','moveRight','moveLeft','moveUp','moveDown','attack','look','say','turn','while','if','else','for'],
+  sound: ['makeBeat','fitMedia','setTempo','setEffect','KICK','SNARE','HAT','BASS','LEAD','PAD','for','if'],
+  kata:  ['function','return','for','if','else','const','let','of','length','push']
+};
+function markCode(root, les){
+  if (!root || !les) return;
+  const words = KEYWORDS[les.lang === 'arc' ? les.kind : les.lang];
+  if (!words) return;
+  const re = new RegExp('(^|[^A-Za-z0-9_$.])(' + words.join('|') + ')(?![A-Za-z0-9_$])', 'g');
+  root.querySelectorAll('code').forEach(c => {
+    const walk = document.createTreeWalker(c, NodeFilter.SHOW_TEXT);
+    const texts = []; let n;
+    while ((n = walk.nextNode())) texts.push(n);
+    texts.forEach(t => {
+      const was = esc(t.nodeValue), now = was.replace(re, '$1<b class="cw">$2</b>');
+      if (now === was) return;
+      const holder = document.createElement('span');
+      holder.innerHTML = now;
+      t.parentNode.replaceChild(holder, t);
+    });
+  });
 }
 function shapeHtml(i) {
   /* a post-graduation lesson carries its own shape, because SHAPE is keyed by

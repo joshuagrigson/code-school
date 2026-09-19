@@ -9,9 +9,9 @@ and it runs in any browser with **zero network access and zero API usage**.
 
 ## What's inside — 234 lessons
 
-Graduation is the 135 required lessons — every lesson, every practice rep, and
-the arcade prep lessons that sit inside the grades.
-Challenges, portfolio pieces, Beyond and the Review Desk sit outside that count.
+Graduation is the 155 required lessons — every lesson, every practice rep, every
+challenge, the arcade prep lessons inside the grades, and the boss at the end of
+each grade. Portfolio pieces, Beyond and the Review Desk sit outside that count.
 
 | Track | Territory |
 |---|---|
@@ -32,24 +32,33 @@ Challenges, portfolio pieces, Beyond and the Review Desk sit outside that count.
 | **Review Desk** | **10 lessons on reading code a machine wrote — see below** |
 | **Quest** | **13 levels where your code drives a hero across a board that fights back** |
 | **The Deep** | **650 generated Quest floors, each one proved winnable before you see it** |
-| **Grade bosses** | **14 Quest boards, one at the end of every grade from Kindergarten to College, each asking for that grade's idea somewhere it was never taught** |
+| **Grade bosses** | **14 Quest boards, one at the end of every grade from Kindergarten to College, each asking for that grade's idea somewhere it was never taught — and each one required to finish the grade** |
 | **The Sound Room** | **8 lessons where your code is the instrument** |
 | **The Kata Table** | **7 puzzles marked on tests you were never shown** |
 | **Python** | **13 lessons: a second language, from `print` to a working report** |
 | **The Terminal** | **13 lessons: folders, files, pipes and git, typed by hand into a shell that lives in the page** |
 | **Arcade prep** | **28 small Terminal, Python, Sound Room, Kata and Quest lessons inside the grades themselves — K through College — so each arcade room is somewhere you have already been** |
 
-Reviews double as test-out exams (⚡): pass one first and it ticks the whole
-grade. Challenges are hint-free. Reps (🏋) are required: they count toward the
-grade and toward graduation, because the practice most likely to make something
-stick was the practice easiest to skip. Beyond and the Review Desk sit outside
-the graduation count on purpose — they are what you do after finishing, not a
-moved goalpost. So do the grade bosses: the arrow out of a grade's last lesson
-walks into one, but the grade's own x/y and the 135 both ignore it.
+Reviews double as test-out exams (⚡): pass one first and it ticks the lessons
+it examined — not the challenge, the prep or the boss, which the walk then takes
+you to. Challenges are hint-free and pay +25 XP on top, but they are lessons of
+the grade like any other. Reps (🏋) count too, because the practice most likely
+to make something stick was the practice easiest to skip. Beyond and the Review
+Desk sit outside the graduation count on purpose — they are what you do after
+finishing, not a moved goalpost.
+
+**Nothing at the end of a grade is optional, and a pass moves you on.** Within
+a grade the walk is: the lessons, the reps, the challenge, the arcade prep, the
+boss — all of them in the sidebar from the start, all of them in the grade's
+x/y. When you pass a lesson the coach's verdict stays on screen for six
+seconds with the Next button counting down, and then the next lesson not yet
+done loads by itself. Clicking goes now. Typing again holds it — a twist or a
+second attempt is work, not a way out — and the countdown starts again on the
+next pass. A failing run never moves you. The Deep keeps its own *Descend*.
 
 ## The boss at the end of every grade
 
-Fourteen Quest boards, one per grade, none of them required. Each takes the
+Fourteen Quest boards, one per grade, each one required to finish its grade. Each takes the
 single idea that grade spent its lessons on and asks for it somewhere with
 nothing in common with where it was learned: a page becomes a dungeon, and the
 idea either travelled or it did not. Grade 1 taught that elements have names,
@@ -95,8 +104,11 @@ then re-homes the lesson — `g` becomes the grade, `beyond` becomes false — s
 the engine, the coach and the chips are exactly the room's. They are appended
 to `L` after everything else, because saved progress is a list of lesson
 indexes and inserting in the middle would point every save at a different
-lesson than yesterday; `ORDER` then puts them after the grade's lessons and
-before its boss whatever their index. The ghost coach is off for Terminal
+lesson than yesterday; `ORDER` ranks each grade's entries (lessons 0, reps 1,
+challenge 2, prep 3, boss 4, stable within a rank) whatever their index, and
+`walkOf(gid)` is what the sidebar and the crumb read, so the three agree.
+Old saves keep their credit: `chalDone` and the boss entries in `beyond` are
+folded into `done` on load. The ghost coach is off for Terminal
 lessons (the editor is behind the prompt there, so a ghost typing into it is a
 coach nobody can see), the crumb no longer counts the boss in "lesson n of m",
 and the level titles were recomputed so "Loop Rider" still lands on the loops

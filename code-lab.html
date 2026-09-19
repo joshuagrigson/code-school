@@ -445,6 +445,7 @@ body.dark #status.projlist .coachline{background:#2b2820;border-color:#4a432f;co
 #status.projlist .coachline{background:#fdf3d7;border:1px solid #e8d48a;border-radius:6px;padding:6px 10px;margin-bottom:8px;font-size:.88rem}
 .navitem.chal{color:#8a5a2e;font-weight:bold}
 body.dark .navitem.chal{color:#d9a45e}
+#btnNext.counting{min-width:12.5em;font-variant-numeric:tabular-nums}
 .navitem.boss{color:#7a2f48;font-weight:bold}
 body.dark .navitem.boss{color:#e9a0ba}
 .bossnote{background:var(--panel);border:1px solid var(--line);border-left:4px solid #7a2f48;border-radius:8px;padding:9px 12px;margin:0 0 14px;font-size:.92rem}
@@ -1981,7 +1982,7 @@ REV('M','js',
 
 /* optional hint-free challenges — appear once their grade is complete */
 function CHAL(gid, title, teach, goal, start, sol, check, pageHtml){
-  const les = JL('⚔️ '+title, teach + '<p><b>Challenge rules:</b> no Help, no Lead, no Show me. Just you, the goal, and the coach for structure. Worth +25 XP. You can leave and come back anytime.</p>', goal, start, sol, '', check, pageHtml);
+  const les = JL('⚔️ '+title, teach + '<p><b>Challenge rules:</b> no Help, no Lead, no Show me. Just you, the goal, and the coach for structure. It is one of the grade&rsquo;s lessons and pays +25 XP on top. You can leave and come back, and the grade waits for it.</p>', goal, start, sol, '', check, pageHtml);
   les.g=gid; les.chal=true; L.push(les);
 }
 CHAL('G6','Pick and tell',
@@ -4099,7 +4100,7 @@ function loadDeep(n){
 function QB(gid, title, spec, teach, goal, start, sol, hint, reqs, passMsg, failMsg, rn, rw){
   const les = {
     lang:'arc', kind:'quest', spec, title, teach, goal, start, sol, hint,
-    g:gid, beyond:true, boss:true, rn, rw, html:'', css:'', js:'',
+    g:gid, beyond:false, boss:true, rn, rw, html:'', css:'', js:'',
     check:(c)=>{
       const sim = questRun(spec, c);
       const pairs = (reqs || []).slice();
@@ -4114,8 +4115,8 @@ function QB(gid, title, spec, teach, goal, start, sol, hint, reqs, passMsg, fail
   };
   L.push(les);
 }
-const BOSS_HEAD = '<p class="bossnote"><b>⚔️ End of grade.</b> Nothing new here, and nothing you have to do &mdash; '
-  + 'graduation does not count this one. It is the idea you just spent a grade on, asked for somewhere it was never taught.</p>';
+const BOSS_HEAD = '<p class="bossnote"><b>⚔️ End of grade.</b> Nothing new here. It is the idea you just spent a grade on, '
+  + 'asked for somewhere it was never taught &mdash; and the grade is not finished until this board is cleared.</p>';
 
 QB('K', 'Boss: say it out loud',
  {w:5, h:1, hero:[0,0], exit:[4,0], budget:12},
@@ -4888,14 +4889,18 @@ PREP('G8', '⚔️', QU, ['If there is a wall',
  'Every robot that does not crash into things is running this <code>if</code> thousands of times a second. The sensor is fancier; the shape is the same.']);
 
 const ORDER = [];
-/* Within a grade the walk follows L's order, except that the grade's boss goes
-   last whatever its index: lessons appended later (the arcade prep) still
-   belong before the end-of-grade board. */
+/* Within a grade the walk is: the lessons, then the reps, then the challenge,
+   then the arcade prep, then the boss - whatever order they were appended to
+   L in. Everything at the end of a grade is on the walk and counts: nothing
+   there is optional, and the → out of one lands on the next. */
+const ORDER_RANK = (l) => l.boss ? 4 : l.prep ? 3 : l.chal ? 2 : l.pract ? 1 : 0;
 for (const g of GRADES){
   const run = [];
-  for (let i=0;i<L.length;i++) if (L[i].g===g.id && !L[i].chal && !L[i].proj) run.push(i);
-  run.filter(i => !L[i].boss).concat(run.filter(i => L[i].boss)).forEach(i => ORDER.push(i));
+  for (let i=0;i<L.length;i++) if (L[i].g===g.id && !L[i].proj) run.push(i);
+  run.map((i, k) => [i, k]).sort((a, b) => ORDER_RANK(L[a[0]]) - ORDER_RANK(L[b[0]]) || a[1] - b[1]).forEach(x => ORDER.push(x[0]));
 }
+/* the walk's own idea of the lessons in a grade, in the order it visits them */
+function walkOf(gid){ return ORDER.filter(i => L[i].g === gid); }
 
 /* ============================ QA BANK ============================ */
 const STOP = new Set(['the','a','an','is','are','was','do','does','i','my','me','it','to','of','in','on','and','or','what','how','why','when','can','cant','dont','this','that','you','your','would','use','used','using','real','life','for','back','need','needs','about','there','will','take','much','get','got','put','thing','things','be','been','being','if','but','so','just','any','all','into','very','really','actually','should','could','did','has','have','had','am','were','who','which','whose','from','with','at','as','by','not','please','tell','explain','happens','happen','ever','even','still','also','than','then','them','they','their','our','us','we','one']);
@@ -5547,11 +5552,16 @@ function loadP(){
   let p = null;
   try{ p = JSON.parse(localStorage.getItem('codeschool')); }catch(e){}
   if (!p || !Array.isArray(p.done)) p = (location.protocol === 'file:') ? CARRIED : {done:[], idx:0};
-  done = new Set(p.done.filter(n => n >= 0 && n < L.length && !L[n].chal && !L[n].proj && !L[n].beyond));
+  done = new Set(p.done.filter(n => n >= 0 && n < L.length && !L[n].proj && !L[n].beyond));
   beyondDone = new Set((p.beyond||[]).filter(n=>n>=0&&n<L.length&&L[n].beyond));
   tested = new Set(p.tested || []);
   styleDone = new Set(p.styleDone || []);
   chalDone = new Set((p.chalDone||[]).filter(n=>n>=0&&n<L.length));
+  /* challenges and the grade bosses used to be optional and kept their ticks
+     in sets of their own; now they are part of the grade, and anyone who
+     already cleared one keeps the credit where it now counts */
+  chalDone.forEach(n => { if (L[n] && L[n].chal) done.add(n); });
+  (p.beyond||[]).forEach(n => { if (L[n] && L[n].boss) done.add(n); });
   projDone = new Set((p.projDone||[]).filter(n=>n>=0&&n<L.length));
   practDone = new Set((p.practDone||[]).filter(n=>n>=0&&n<L.length));
   /* reps used to live in their own set; anyone who did one keeps the credit */
@@ -9572,6 +9582,7 @@ let graded = false;
 const SHELL_TIP = '\u2328\uFE0F The box above is a terminal. Type one command, press <b>Enter</b>, and it runs \u2014 the panel below shows what that did to the machine. When the session is done, press <b>\u25B6 Run</b> (or Ctrl+Enter) and the coach reads the whole thing.';
 function previewOnly(){
   if (hub || drillOn) return;
+  killNext();
   syncHl(); errEl.innerHTML=''; graded = false;
   if (sandbox){ outEl.srcdoc = edEl.value; return; }
   outEl.srcdoc = buildDoc(L[idx], edEl.value);
@@ -9701,18 +9712,20 @@ function runCheck(){
     document.body.appendChild(el); setTimeout(()=>el.remove(),2700);
     checkMilestones();
   }
-  else if (res.ok && L[idx].chal && !chalDone.has(idx)){
-    chalDone.add(idx); bumpStreak(); saveP(); renderNav(); confetti(120);
-    const el=document.createElement('div'); el.className='gbanner';
-    el.innerHTML='⚔️ Challenge conquered!<small>+25 XP — no hints, all you.</small>';
-    document.body.appendChild(el); setTimeout(()=>el.remove(),2700);
-    checkMilestones();
-  }
-  else if (res.ok && !L[idx].chal && !L[idx].beyond && !done.has(idx)){
+  else if (res.ok && !L[idx].beyond && !done.has(idx)){
     done.add(idx); bumpStreak();
+    /* a challenge is one of the grade's lessons now, and still the one with
+       no hints - so it still pays the bonus on top */
+    const bonus = L[idx].chal && !chalDone.has(idx);
+    if (bonus){
+      chalDone.add(idx);
+      const el=document.createElement('div'); el.className='gbanner';
+      el.innerHTML='⚔️ Challenge conquered!<small>+25 XP on top — no hints, all you.</small>';
+      document.body.appendChild(el); setTimeout(()=>el.remove(),2700);
+    }
     const g=L[idx].g, ls=coreOf(g);
-    if (L[idx].title.includes('Review') && ls.some(x=>!done.has(x.i))){
-      for (const x of ls) done.add(x.i);
+    if (L[idx].title.includes('Review') && examTicks(g).some(x=>!done.has(x.i))){
+      for (const x of examTicks(g)) done.add(x.i);
       tested.add(g);
     }
     saveP(); renderNav();
@@ -9724,10 +9737,45 @@ function runCheck(){
     const curNav = $('#navList') && $('#navList').querySelector('.navitem.cur .tick');
     if (curNav) curNav.classList.add('pop');
     const xr = $('#xpTxt').getBoundingClientRect();
-    const fl = document.createElement('div'); fl.className='xpfloat'; fl.textContent='+10 XP';
+    const fl = document.createElement('div'); fl.className='xpfloat'; fl.textContent = bonus ? '+35 XP' : '+10 XP';
     fl.style.left = xr.left+'px'; fl.style.top = (xr.top-4)+'px';
     document.body.appendChild(fl); setTimeout(()=>fl.remove(), 1300);
   }
+  /* A pass moves you on. The next lesson is not an offer to take up: after a
+     few seconds to read what the coach said, the walk continues by itself.
+     Typing again - a twist, a second go - holds it, because that is work. */
+  if (res.ok && !L[idx].deep && !L[idx].proj) armNext();
+}
+/* ---- the walk continues by itself ------------------------------------- */
+let nextTimer = null;
+const NEXT_WAIT = 6;
+/* the next lesson on the walk that is not done yet; if everything after this
+   one is done, simply the next one */
+function nextTarget(){
+  const p = ORDER.indexOf(idx);
+  if (p < 0) return -1;
+  for (let k = p + 1; k < ORDER.length; k++) if (!lessonDone(ORDER[k])) return ORDER[k];
+  return p < ORDER.length - 1 ? ORDER[p + 1] : -1;
+}
+function killNext(){
+  if (nextTimer){ clearInterval(nextTimer); nextTimer = null; }
+  btnNext.textContent = 'Next lesson →';
+  btnNext.classList.remove('counting');
+}
+function armNext(){
+  killNext();
+  const to = nextTarget();
+  if (to < 0 || sandbox || hub || drillOn) return;
+  let left = NEXT_WAIT;
+  btnNext.style.display = 'inline-block';
+  btnNext.classList.add('counting');
+  const tick = () => { btnNext.textContent = 'Next lesson in ' + left + '… →'; };
+  tick();
+  nextTimer = setInterval(() => {
+    left--;
+    if (left <= 0){ killNext(); loadLesson(to); }
+    else tick();
+  }, 1000);
 }
 /* ---- The Polish: style graded AFTER correctness, never blocking the tick.
    Correctness first, readability second - a green check that is also a mess
@@ -9937,7 +9985,7 @@ function normRes(les, code){
 /* Thresholds are positions along the walk, so every time a grade gains a
    lesson they are recomputed to land on the same lesson as before: Loop Rider
    is earned where loops are, whatever else was added in front of it. */
-const LEVELS=[[0,'Rookie'],[4,'Word Wrangler'],[8,'Tag Tamer'],[16,'Style Painter'],[23,'Name Tagger'],[26,'Button Whisperer'],[32,'Word Gluer'],[36,'List Keeper'],[38,'Trick Teacher'],[46,'Decision Maker'],[57,'Loop Rider'],[61,'Machine Builder'],[67,'Box Labeler'],[75,'Bug Detective'],[83,'Code Professional'],[89,'Graduate'],[97,'Paid Renegade'],[119,'Legend']];
+const LEVELS=[[0,'Rookie'],[4,'Word Wrangler'],[8,'Tag Tamer'],[17,'Style Painter'],[25,'Name Tagger'],[28,'Button Whisperer'],[35,'Word Gluer'],[40,'List Keeper'],[42,'Trick Teacher'],[51,'Decision Maker'],[65,'Loop Rider'],[69,'Machine Builder'],[77,'Box Labeler'],[87,'Bug Detective'],[97,'Code Professional'],[105,'Graduate'],[114,'Paid Renegade'],[139,'Legend']];
 function levelFor(n){ let name=LEVELS[0][1]; for (const [min,t] of LEVELS) if (n>=min) name=t; return name; }
 const CCOLORS=['#2f7d5c','#1d5c8f','#d4a017','#b3542e','#7b5cb8','#c94f7c'];
 /* Celebration confetti is made of the code you actually type. Saturated hues in
@@ -9997,9 +10045,13 @@ function gradeToast(gname, allDone){
 function beyondGrade(gid){ const ls = L.filter(l=>l.g===gid); return ls.length>0 && ls.every(l=>l.beyond); }
 function beyondGrades(){ return GRADES.filter(g=>beyondGrade(g.id)); }
 function gradeName(gid){ const g = GRADES.find(x=>x.id===gid); return g ? g.name : gid; }
-function coreOf(gid){ return L.map((l,i)=>({l,i})).filter(x=>x.l.g===gid && !x.l.chal && !x.l.proj && !x.l.beyond); }
-function coreTotal(){ return L.filter(l=>!l.chal && !l.proj && !l.beyond).length; }
-function lessonDone(i){ const l=L[i]; return l.chal?chalDone.has(i) : l.proj?projDone.has(i) : l.beyond?beyondDone.has(i) : done.has(i); }
+function coreOf(gid){ return L.map((l,i)=>({l,i})).filter(x=>x.l.g===gid && !x.l.proj && !x.l.beyond); }
+function coreTotal(){ return L.filter(l=>!l.proj && !l.beyond).length; }
+/* What a review pass or a placement test can vouch for: the lessons in the
+   grade's own language. The challenge, the arcade prep and the boss are not
+   in the exam, so an exam cannot tick them - the walk takes you there next. */
+function examTicks(gid){ return coreOf(gid).filter(x => !x.l.chal && !x.l.prep && !x.l.boss); }
+function lessonDone(i){ const l=L[i]; return l.proj?projDone.has(i) : l.beyond?beyondDone.has(i) : done.has(i); }
 function gradeDone(gid){ const ls=coreOf(gid); return ls.length>0 && ls.every(x=>done.has(x.i)); }
 function xpFor(){ let xp = done.size*10 + chalDone.size*25 + projDone.size*50 + beyondDone.size*15 + (stk.xp|0); for (const g of GRADES){ const ls=coreOf(g.id); if (ls.length && ls.every(x=>done.has(x.i))) xp+=25; } return xp; }
 function dayKey(d){ return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
@@ -10088,8 +10140,9 @@ function renderNav(){
       }
       continue;
     }
-    const lessons = coreOf(g.id);
-    const chals = L.map((l,i)=>({l,i})).filter(x=>x.l.g===g.id && x.l.chal);
+    /* listed in the order the walk visits them, so the sidebar and the arrow
+       never disagree about what comes next */
+    const lessons = walkOf(g.id).map(i => ({l:L[i], i}));
     const gdone = lessons.filter(x=>done.has(x.i)).length;
     const head = document.createElement('div');
     head.className='ghead';
@@ -10098,7 +10151,7 @@ function renderNav(){
     if (gdone > 0){
       const rb = document.createElement('button');
       rb.className='ghreset'; rb.textContent='redo'; rb.setAttribute('aria-label','Redo this grade'); rb.title='Clear this grade’s ticks and start it again';
-      rb.onclick = (ev)=>{ ev.stopPropagation(); if (!confirm('Clear your ✓ marks for ' + g.name + ' and start it fresh? (Only this grade — everything else stays.)')) return; for (const x of lessons) done.delete(x.i); tested.delete(g.id); saveP(); loadLesson(lessons[0].i); };
+      rb.onclick = (ev)=>{ ev.stopPropagation(); if (!confirm('Clear your ✓ marks for ' + g.name + ' and start it fresh? (Only this grade — everything else stays.)')) return; for (const x of lessons){ done.delete(x.i); chalDone.delete(x.i); } tested.delete(g.id); saveP(); loadLesson(lessons[0].i); };
       head.appendChild(rb);
     }
     listEl.appendChild(head);
@@ -10110,28 +10163,9 @@ function renderNav(){
     for (const x of lessons){
       if (q && !x.l.title.toLowerCase().includes(q)) continue;
       const b = document.createElement('button');
-      b.className = 'navitem' + (x.l.pract ? ' pract' : '') + (x.l.prep ? ' prep' : '') + (x.i===idx && !sandbox ? ' cur':'') + (isOpen ? '' : ' ghidden');
+      b.className = 'navitem' + (x.l.pract ? ' pract' : '') + (x.l.prep ? ' prep' : '') + (x.l.chal ? ' chal' : '') + (x.l.boss ? ' boss' : '')
+        + (x.i===idx && !sandbox ? ' cur':'') + (isOpen ? '' : ' ghidden');
       b.innerHTML = '<span class="tick">' + (done.has(x.i)?'✓':'') + '</span><span>' + x.l.title + '</span>';
-      b.onclick = ()=>loadLesson(x.i);
-      listEl.appendChild(b);
-    }
-    /* The grade's boss sits under its lessons, not hidden behind finishing
-       them: it is in the → walk for everyone, and a nav that disagreed with
-       the arrow would be a list that lies about what is in the sequence. It
-       carries beyond:true, so the x/y count above still ignores it. */
-    for (const x of L.map((l,i)=>({l,i})).filter(x=>x.l.g===g.id && x.l.boss)){
-      if (q && !x.l.title.toLowerCase().includes(q)) continue;
-      const b = document.createElement('button');
-      b.className = 'navitem boss' + (x.i===idx && !sandbox ? ' cur':'') + (isOpen ? '' : ' ghidden');
-      b.innerHTML = '<span class="tick">' + (beyondDone.has(x.i)?'✓':'') + '</span><span>' + x.l.title + '</span>';
-      b.onclick = ()=>loadLesson(x.i);
-      listEl.appendChild(b);
-    }
-    if (gComplete) for (const x of chals){
-      if (q && !x.l.title.toLowerCase().includes(q)) continue;
-      const b = document.createElement('button');
-      b.className = 'navitem chal' + (x.i===idx && !sandbox ? ' cur':'') + (isOpen ? '' : ' ghidden');
-      b.innerHTML = '<span class="tick">' + (chalDone.has(x.i)?'✓':'') + '</span><span>' + x.l.title + '</span>';
       b.onclick = ()=>loadLesson(x.i);
       listEl.appendChild(b);
     }
@@ -10147,6 +10181,7 @@ function renderNav(){
 }
 
 function loadLesson(i){
+  killNext();
   sandbox = false; hub = false; drillOn = false; drill = null; placing = null; idx = i;
   syncModeUI();
   $('#btnSandbox').textContent = 'Free play';
@@ -10159,9 +10194,8 @@ function loadLesson(i){
   document.querySelectorAll('.navtip,.predcard').forEach(x => x.remove());
   const les = L[i], g = GRADES.find(x=>x.id===les.g);
   teachEl.dataset.lv = g.lv;
-  /* the boss says "end of grade" for itself, so it is not one of the m in
-     "lesson n of m" for the lessons before it either */
-  const gl = L.map((l,n)=>({l,n})).filter(x=>x.l.g===les.g && !x.l.boss);
+  /* counted along the walk, so "lesson 9 of 11" and the sidebar's 11 agree */
+  const gl = walkOf(les.g).map(n => ({l:L[n], n}));
   const pos = gl.findIndex(x=>x.n===i);
   const op = ORDER.indexOf(i);
   const crumb = '<div class="crumb"><button id="crPrev" title="Previous lesson" aria-label="Previous lesson"'+(op<=0?' disabled':'')+'>&larr;</button><span>' + g.name + '<span class="crsub"> · ' + g.sub + '</span> — ' + (les.deep ? 'floor ' + (les.deepN || 1) + ' of ' + DEEP_FLOORS
@@ -10949,11 +10983,7 @@ function nextThing() {
   const nx = ORDER.filter(i => !L[i].beyond).find(i => !done.has(i));
   if (nx != null) return { act: 'lesson', i: nx, label: (done.size ? 'Carry on: ' : 'Start: ') + txtTitle(nx),
     why: done.size ? 'Where you left off.' : 'The first lesson. You will be typing within a minute.' };
-  /* The grade bosses are beyond lessons sitting inside the teaching grades, so
-     without this the first thing a graduate is handed is a Kindergarten boss
-     under the sentence "this is the part about real work". They are met in the
-     walk and listed under their grade; the hub's next-thing is the main line. */
-  const nb = ORDER.filter(i => L[i].beyond && !L[i].boss).find(i => !beyondDone.has(i));
+  const nb = ORDER.filter(i => L[i].beyond).find(i => !beyondDone.has(i));
   if (nb != null) return { act: 'lesson', i: nb, label: gradeName(L[nb].g) + ': ' + txtTitle(nb),
     why: 'You finished the school. This is the part about real work.' };
   const np = L.map((l, i) => ({ l, i })).find(x => x.l.proj && !projDone.has(x.i) && gradeDone(x.l.gate));
@@ -11161,7 +11191,7 @@ function placeAnswer(right) {
 function placeEnd() {
   const p = placing, credited = [];
   for (const gid of p.passed) {
-    const ls = coreOf(gid);
+    const ls = examTicks(gid);
     if (!ls.length) continue;
     for (const x of ls) done.add(x.i);
     tested.add(gid); credited.push(GRADES.find(g => g.id === gid).name);
@@ -11957,6 +11987,9 @@ function ghostable(){
 /* One place decides whether the editor is connected, and every screen that
    changes mode calls it. */
 function syncModeUI(){
+  /* every screen that changes mode passes through here, so a pending push
+     from the lesson you just left dies here too */
+  if (hub || sandbox || drillOn) killNext();
   const live = !(hub || drillOn);
   document.body.classList.toggle('noedit', !live);
   /* On a Terminal lesson the typing happens at the prompt in the preview, and
@@ -12221,7 +12254,7 @@ $('#btnReDo').onclick = ()=>{ if(sandbox){ edEl.value = SANDBOX_START; outEl.src
 btnNext.onclick = ()=>{
   /* in the Deep, "next" means one floor further down */
   if (L[idx] && L[idx].deep) return loadDeep((L[idx].deepN || 1) + 1);
-  const p=ORDER.indexOf(idx); if (p>-1 && p<ORDER.length-1) loadLesson(ORDER[p+1]);
+  const to = nextTarget(); if (to > -1) loadLesson(to);
 };
 $('#remindHide').onclick = ()=>{ remindBox.style.display='none'; try{localStorage.setItem('remindHidden','1');}catch(e){} };
 $('#btnReplay').onclick = ()=>{
@@ -12257,6 +12290,8 @@ $('#btnImport').onclick = ()=>{
     if (!Array.isArray(p.done)) throw 0;
     done = new Set(p.done.filter(n=>n>=0&&n<L.length)); tested = new Set(p.tested||[]);
     chalDone = new Set((p.chalDone||[]).filter(n=>n>=0&&n<L.length)); projDone = new Set((p.projDone||[]).filter(n=>n>=0&&n<L.length)); practDone = new Set((p.practDone||[]).filter(n=>n>=0&&n<L.length)); msSeen = new Set(p.ms||[]);
+    chalDone.forEach(n => { if (L[n] && L[n].chal) done.add(n); });
+    (p.beyond||[]).forEach(n => { if (L[n] && L[n].boss) done.add(n); });
     if (p.edTheme!==undefined) edTheme=p.edTheme; if (p.certName) certName=p.certName;
     if (p.stk && typeof p.stk==='object') stk={last:p.stk.last||'', cur:p.stk.cur|0, best:p.stk.best|0, xp:p.stk.xp|0};
     beyondDone = new Set((p.beyond||[]).filter(n=>n>=0&&n<L.length&&L[n].beyond));

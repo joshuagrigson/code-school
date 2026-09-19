@@ -4663,6 +4663,230 @@ PREP('C', '🐍', PL, ['One job, with a note on the door',
  'The quoted first line is a <b>docstring</b>; Python keeps it and shows it when someone asks <code>help(area)</code>. A function that does one thing has a <b>single responsibility</b>.',
  'The documentation you read on any Python library was generated from docstrings exactly like this one. Writing one is publishing.']);
 
+/* ===================================================== THE SOUND ROOM === */
+PREP('K', '🎵', SN, ['One line makes a drum',
+ '<p>Kindergarten was typing words and seeing them appear. This time the words make a <b>sound</b>. Type this one line exactly, then press <b>Play it</b> under the board:</p>'
+ + '<pre class="czcode">makeBeat(KICK, 1, 1, "0---0---0---0---");</pre>'
+ + '<p>Inside the quotes are sixteen characters. Every <code>0</code> is a drum hit and every <code>-</code> is a rest. Count them as you type: a <code>0</code>, then three dashes, four times over. The board underneath will read your line back to you and show where each hit landed.</p>'
+ + PREP_FOOT('the Sound Room'),
+ 'Type the kick line exactly and press Run.',
+ '',
+ 'makeBeat(KICK, 1, 1, "0---0---0---0---");',
+ 'One line, copied exactly: <code>makeBeat(KICK, 1, 1, "0---0---0---0---");</code> &mdash; a <code>0</code> then three dashes, four times, inside the quotes.',
+ (sc)=>[[sHits(sc, 1, 'KICK') === 4, 'four KICK hits on track 1 &mdash; you have ' + sHits(sc, 1, 'KICK')],
+        [(sc.tracks[1] || []).every(x => x.step % 4 === 0), 'one on every beat, none in between']],
+ 'A drum, out of one line of typing. Press play again: nothing was recorded, it is being made every time.',
+ 'Not yet. Sixteen characters inside the quotes: <code>0---</code> four times. Read the board&rsquo;s echo of your line &mdash; it counts them for you.',
+ 'A pattern written one character per time-slice is a <b>step sequencer</b>. The instrument names that need no quotes are <b>constants</b> the room already knows.',
+ 'The kick sound here is the same recipe as the Roland TR-808 from 1980: a sine wave falling in pitch. It defined forty years of music because it was cheap.']);
+
+PREP('G2', '🎵', SN, ['Colour in the slices',
+ '<p>Grade 2 was colouring things in. A rhythm string is sixteen empty boxes, and a <code>0</code> colours one in. The panel under this lesson numbers the boxes 1 to 16.</p>'
+ + '<p>Colour in box <b>1</b> and box <b>9</b> only. Start with sixteen dashes in four groups of four &mdash; <code>---- ---- ---- ----</code> &mdash; then put a <code>0</code> where the first box is, and a <code>0</code> where the ninth is: the first character of the third group. Take the spaces out and you have your string.</p>'
+ + '<p>Watch the board as you type. It says which slices your hits landed on. If it says 1 and 9, you are done; if it says 1 and 8, count the dashes in the second group again.</p>'
+ + PREP_FOOT('the Sound Room'),
+ 'A <code>KICK</code> on track 1 with hits on slices 1 and 9 only.',
+ '',
+ 'makeBeat(KICK, 1, 1, "0-------0-------");',
+ 'The string is a <code>0</code>, seven dashes, a <code>0</code>, seven dashes: <code>"0-------0-------"</code>. Sixteen characters.',
+ (sc)=>[[sHits(sc, 1, 'KICK') === 2, 'exactly two KICK hits on track 1 &mdash; you have ' + sHits(sc, 1, 'KICK')],
+        [(sc.tracks[1] || []).every(x => x.step === 0 || x.step === 8), 'on slices 1 and 9 &mdash; beats 1 and 3']],
+ 'Two boxes coloured in out of sixteen, and the board read the numbers back to you. That is every rhythm in this room: decide which boxes, then type the string.',
+ 'Not yet. Two hits only, on slices 1 and 9. The board tells you where yours landed &mdash; read it, then fix the dashes.',
+ 'Slices 1 and 9 are beats 1 and 3, the <b>downbeats</b> of a measure. Writing a rhythm by choosing which slots to fill is <b>programming</b> a sequencer, and it is the same word.',
+ 'A drum machine&rsquo;s row of sixteen buttons is exactly this string, with buttons instead of characters. You just typed what producers press.']);
+
+PREP('G5', '🎵', SN, ['The tempo is a number',
+ '<p>Grade 5 was words and numbers. The rhythm string is <b>words</b> &mdash; text you invented, in quotes. The tempo is a <b>number</b>, and it goes in with no quotes at all:</p>'
+ + '<pre class="czcode">setTempo(140);</pre>'
+ + '<p>That is beats per minute. Put it on the first line, then your kick line under it, and play it. Then change 140 to 70 and play again: same drum, half the speed. The string did not change. Only the number did.</p>'
+ + PREP_FOOT('the Sound Room'),
+ 'Set the tempo to 140, then a kick on every beat on track 1.',
+ '',
+ 'setTempo(140);\nmakeBeat(KICK, 1, 1, "0---0---0---0---");',
+ '<code>setTempo(140);</code> on the first line &mdash; the number bare, no quotes &mdash; then the kick line under it.',
+ (sc)=>[[sc.tempo === 140, 'the tempo set to 140 &mdash; it is ' + sc.tempo],
+        [sHits(sc, 1, 'KICK') === 4, 'four KICK hits on track 1']],
+ 'One number changed how fast everything happens, and the words did not change at all. That is Grade 5 in a drum: numbers do arithmetic, words are just words.',
+ 'Not yet. <code>setTempo(140);</code> needs the number with no quotes around it, and the kick line needs to be there too.',
+ 'Beats per minute is <b>BPM</b>, and it is a <b>parameter</b> of the whole piece rather than of one track. A value with no quotes that the room understands as a quantity is a <b>number literal</b>.',
+ 'House music sits near 125 BPM and hip-hop near 90. Nobody wrote that down as a rule; it is where bodies moving at each speed landed.']);
+
+PREP('G9', '🎵', SN, ['Let the loop lay the bars',
+ '<p>Grade 9 was loops. One bar of drums is one line; two bars is the same line with a different measure number &mdash; and that is a loop with the counter used as a value:</p>'
+ + '<pre class="czcode">for (let m = 1; m &lt; 3; m++) {\n  makeBeat(KICK, 1, m, "0---0---0---0---");\n}</pre>'
+ + '<p><code>m</code> is 1 the first time and 2 the second, and it sits where the measure number goes. Two bars on the board from one line of kick. Change the <code>3</code> to a <code>5</code> and you get four bars without typing another character.</p>'
+ + PREP_FOOT('the Sound Room'),
+ 'Use a loop to put a kick on every beat across measures 1 and 2.',
+ 'for (let m = 1; m < 3; m++) {\n  \n}',
+ 'for (let m = 1; m < 3; m++) {\n  makeBeat(KICK, 1, m, "0---0---0---0---");\n}',
+ 'Inside the loop: <code>makeBeat(KICK, 1, m, "0---0---0---0---");</code> &mdash; the <code>m</code> where the measure number goes.',
+ (sc)=>[[sc.measures === 2, 'two measures on the board &mdash; you have ' + sc.measures],
+        [sHits(sc, 1, 'KICK') === 8, 'eight kick hits in total, four a bar &mdash; you have ' + sHits(sc, 1, 'KICK')]],
+ 'Two bars out of one line. The counter was not just counting &mdash; it was the measure number. That is the step from a loop that repeats to a loop that builds.',
+ 'Not yet. The <code>makeBeat</code> line goes inside the braces, and its measure argument must be <code>m</code>, not <code>1</code>.',
+ 'Using the loop counter inside the body as a value is <b>parameterising by the index</b>. Output built by code rather than typed out is <b>generative</b>.',
+ 'Every eight-bar loop in every DAW is this: one bar, and a counter. The producer just does not see the <code>for</code>.']);
+
+/* ===================================================== THE KATA TABLE === */
+PREP('G7', '🧩', KA, ['Double it', 10, {
+  fn:'double',
+  tests:[{in:[2], out:4}, {in:[5], out:10}],
+  hidden:[{in:[0], out:0, note:'zero'}, {in:[-3], out:-6, note:'a negative'}, {in:[100], out:200, note:'a big one'}]
+ },
+ '<p>Grade 7 was teaching the computer a trick. Here is how tricks are checked at the Kata Table: you see two examples, and you are marked on five. The other three are hidden until you run &mdash; because when someone else uses your function, their input is not your input.</p>'
+ + '<p>The job is small on purpose: <code>double(n)</code> returns twice <code>n</code>. <code>return</code>, not <code>print</code> &mdash; there is no screen here, only a function and the tests that call it.</p>'
+ + PREP_FOOT('the Kata Table'),
+ 'Write <code>double(n)</code> so that every test passes, including the hidden ones.',
+ 'function double(n) {\n  \n}',
+ 'function double(n) {\n  return n * 2;\n}',
+ 'One line in the body: <code>return n * 2;</code>.',
+ 'Five for five, three of which you never saw. Zero and a negative number did not need special handling because the rule was general to begin with. That is what a good function is.',
+ 'Read the failing rows under the board &mdash; each one shows the call, what you returned, and what was wanted.',
+ 'A function checked by calling it with known inputs is <b>unit tested</b>. Inputs you did not think of &mdash; zero, negative, empty &mdash; are <b>edge cases</b>.',
+ 'Every library you install is a folder of functions like this one, with a folder of tests beside it. The tests are why you can trust code you have never read.',
+ {steps:['The function is already opened for you. Between its braces, one line.', 'The line begins with <code>return</code>, then the number times two.'], note:'The whole of Grade 7 is here: teach it once, and the tests call it five times.'}]);
+
+PREP('G8', '🧩', KA, ['Which way is it', 10, {
+  fn:'sign',
+  tests:[{in:[5], out:'positive'}, {in:[-2], out:'negative'}],
+  hidden:[{in:[0], out:'zero', note:'zero is neither'}, {in:[-100], out:'negative', note:'a big negative'}, {in:[1], out:'positive', note:'the smallest positive'}]
+ },
+ '<p>Grade 8 was making choices. <code>sign(n)</code> returns the word <code>"positive"</code>, <code>"negative"</code> or <code>"zero"</code>. Two examples are shown. Three are hidden, and one of them is the case the two examples never mention.</p>'
+ + '<p>Before you type, ask the question Grade 8 taught you to ask: what are <i>all</i> the cases? There are three, and an <code>if</code> with an <code>else</code> only covers two.</p>'
+ + PREP_FOOT('the Kata Table'),
+ 'Write <code>sign(n)</code> returning <code>"positive"</code>, <code>"negative"</code> or <code>"zero"</code>, so every test passes.',
+ 'function sign(n) {\n  \n}',
+ 'function sign(n) {\n  if (n > 0) {\n    return "positive";\n  } else if (n < 0) {\n    return "negative";\n  } else {\n    return "zero";\n  }\n}',
+ 'Three doors: <code>if (n &gt; 0)</code>, <code>else if (n &lt; 0)</code>, and an <code>else</code> for zero. Each one <code>return</code>s a word in quotes.',
+ 'Three cases, three doors, and the hidden test for zero walked straight through the one the examples never showed you. Counting the cases before typing is the skill; the code is the easy part.',
+ 'The failing rows under the board name the input and what was wanted. If zero fails, there is no third door.',
+ 'A chain of <code>if</code> / <code>else if</code> / <code>else</code> that covers every possibility is <b>exhaustive</b>. The input the examples did not mention is a <b>boundary</b>.',
+ 'The first bug in most real programs is a case nobody listed. Zero, empty, and "neither" are the three that bite most.',
+ {steps:['<code>if (n &gt; 0)</code> returns <code>"positive"</code>.', '<code>else if (n &lt; 0)</code> returns <code>"negative"</code>.', 'A plain <code>else</code> returns <code>"zero"</code> &mdash; the case with no number in the test.'], note:'Three cases means three doors. Two doors is a bug waiting for the input you did not think of.'}]);
+
+PREP('G9', '🧩', KA, ['Add them all up', 9, {
+  fn:'sumAll',
+  tests:[{in:[[1, 2, 3]], out:6}, {in:[[10]], out:10}],
+  hidden:[{in:[[]], out:0, note:'an empty list'}, {in:[[-1, 1]], out:0, note:'negatives cancel'}, {in:[[2, 2, 2, 2]], out:8, note:'four the same'}]
+ },
+ '<p>Grade 9 was loops, and this is the loop you will write more than any other: walk a list and keep a running total.</p>'
+ + '<p><code>sumAll(list)</code> returns every number added together. A box for the total, starting at <code>0</code>; a <code>for</code> that visits each item and adds it; then <code>return</code> the box <b>after</b> the loop. One hidden test hands you an empty list, and if your total starts at 0 that test passes without you doing anything special.</p>'
+ + PREP_FOOT('the Kata Table'),
+ 'Write <code>sumAll(list)</code> so that every test passes.',
+ 'function sumAll(list) {\n  \n}',
+ 'function sumAll(list) {\n  let total = 0;\n  for (const n of list) {\n    total = total + n;\n  }\n  return total;\n}',
+ '<code>let total = 0;</code>, then <code>for (const n of list) { total = total + n; }</code>, then <code>return total;</code> after the closing brace.',
+ 'A running total, and the empty list came out as 0 for free because the box started there. Starting values are not paperwork; they are the answer to the case with nothing in it.',
+ 'If the empty list fails, the total is not starting at 0. If everything is off by one item, the <code>return</code> is inside the loop.',
+ 'A value carried through a loop and updated each lap is an <b>accumulator</b>. Returning it after the loop rather than inside is the difference between the sum and the first item.',
+ 'Every total on every receipt, invoice and dashboard is this loop. Spreadsheets hide it behind SUM; here you can see it.',
+ {steps:['A box for the total, starting at <code>0</code>, above the loop.', '<code>for (const n of list)</code> &mdash; each item in turn.', 'Inside: add <code>n</code> to the total.', 'After the loop&rsquo;s closing brace: <code>return total;</code>.'], note:'Return inside the loop and you return on the first item. The <code>}</code> matters.'}]);
+
+PREP('G11', '🧩', KA, ['Read the label', 9, {
+  fn:'nameOf',
+  tests:[{in:[{name:'Ada'}], out:'Ada'}, {in:[{name:'Bo', age:3}], out:'Bo'}],
+  hidden:[{in:[{name:''}], out:'', note:'an empty name is still the name'}, {in:[{age:9, name:'Cy'}], out:'Cy', note:'the order of the labels does not matter'}]
+ },
+ '<p>Grade 11 was boxes with labels. <code>nameOf(pet)</code> is handed an object and returns whatever is under its <code>name</code> label. One line: <code>return pet.name;</code>.</p>'
+ + '<p>The hidden tests are about what a label is <i>not</i>: it is not a position, so the order of the labels in the object does not matter; and an empty name is still the name.</p>'
+ + PREP_FOOT('the Kata Table'),
+ 'Write <code>nameOf(pet)</code> returning the value under the <code>name</code> label.',
+ 'function nameOf(pet) {\n  \n}',
+ 'function nameOf(pet) {\n  return pet.name;\n}',
+ 'One line: <code>return pet.name;</code> &mdash; the dot reaches into the box for the label.',
+ 'The dot found the label whatever else was in the box and wherever it sat. A label is a name, not a place, and that is the whole point of objects.',
+ 'The failing rows say which object was handed in. If the empty-name test fails, something is being returned instead of the name itself.',
+ 'Reaching into an object with a dot is <b>property access</b>; the label is a <b>key</b>. A function that only reads is a <b>getter</b>.',
+ 'Every API response you will ever read is an object like this one, and every line that uses it is a dot reaching for a label.',
+ {steps:['One line in the body.', '<code>return</code>, then <code>pet</code>, a dot, and the label <code>name</code>.'], note:'No brackets, no quotes: the label is part of the code, the way a variable name is.'}]);
+
+PREP('G12', '🧩', KA, ['Fix the one that is wrong', 9, {
+  fn:'lastOf',
+  tests:[{in:[[1, 2, 3]], out:3}, {in:[['a', 'b']], out:'b'}],
+  hidden:[{in:[[7]], out:7, note:'one item'}, {in:[[0, 0, 5]], out:5, note:'zeros before it'}]
+ },
+ '<p>Grade 12 was when things go wrong. This function is already written and already wrong. <b>Run it first.</b> The table under the board shows every test returning <code>undefined</code>, and that word is the clue.</p>'
+ + '<p><code>lastOf(list)</code> should return the last item. It asks for <code>list[list.length]</code>, and in a list of three items the positions are 0, 1 and 2 &mdash; so position 3 is past the end, and past the end is <code>undefined</code>. The last item is at <code>length - 1</code>. Change that one line.</p>'
+ + PREP_FOOT('the Kata Table'),
+ 'Fix <code>lastOf(list)</code> so it returns the last item and every test passes.',
+ 'function lastOf(list) {\n  return list[list.length];\n}',
+ 'function lastOf(list) {\n  return list[list.length - 1];\n}',
+ 'Positions start at zero, so the last one is <code>list.length - 1</code>. Change the index; nothing else needs to move.',
+ 'One character of arithmetic, found by reading what the tests said rather than guessing. That is the off-by-one, and you will meet it for the rest of your life &mdash; now you know its face.',
+ 'Run and read the table: <code>undefined</code> means you asked for a position that does not exist. Count the positions from zero.',
+ 'Asking for one past the end is an <b>off-by-one error</b>, the most common bug in programming. A position that does not exist gives <b>undefined</b> in JavaScript rather than an error, which is why it is easy to miss.',
+ 'Off-by-one errors have crashed spacecraft and lost banks money. The fix is nearly always the same <code>- 1</code>; the skill is recognising the symptom.',
+ {steps:['Run it as it is and read the table.', 'The last position in a list of <code>length</code> items is <code>length - 1</code>.', 'Change the index inside the square brackets.'], note:'Reading the failure first is not optional. It is the lesson.'}]);
+
+PREP('C', '🧩', KA, ['One job, named as a question', 8, {
+  fn:'isEven',
+  tests:[{in:[4], out:true}, {in:[7], out:false}],
+  hidden:[{in:[0], out:true, note:'zero is even'}, {in:[-2], out:true, note:'negative and even'}, {in:[-3], out:false, note:'negative and odd'}]
+ },
+ '<p>College was taste. <code>isEven(n)</code> is the smallest function with taste in it: a name that reads as a question, one job, and a body that is the answer rather than a decision about the answer.</p>'
+ + '<p><code>n % 2 === 0</code> is already <code>true</code> or <code>false</code>. Return it directly. Writing <code>if (n % 2 === 0) { return true; } else { return false; }</code> works and is six lines saying what one line says &mdash; the tests will pass either way, and one of them is the version a reviewer would sign.</p>'
+ + PREP_FOOT('the Kata Table'),
+ 'Write <code>isEven(n)</code> returning <code>true</code> or <code>false</code>, so every test passes.',
+ 'function isEven(n) {\n  \n}',
+ 'function isEven(n) {\n  return n % 2 === 0;\n}',
+ 'One line: <code>return n % 2 === 0;</code>. The comparison is already a true-or-false value.',
+ 'A question in the name, an answer in the body, and zero and the negatives handled by the rule rather than by special cases. That is a function a stranger can read in one glance, which is the standard.',
+ 'If the negative tests fail, remember that <code>%</code> can give a negative remainder for negative numbers &mdash; but <code>-2 % 2</code> is still <code>0</code>, so the rule holds.',
+ 'A function that returns true or false is a <b>predicate</b>, and naming it <code>is...</code> or <code>has...</code> is a convention nearly every codebase follows. Returning the comparison itself rather than branching on it is the <b>direct return</b> idiom.',
+ 'Code review at most companies would send back the six-line version with one comment: <i>return the expression</i>. This is that comment, in advance.',
+ {steps:['One line in the body.', '<code>return</code> the test <code>n % 2 === 0</code> itself.'], note:'If you find yourself writing <code>if (x) return true; else return false;</code>, the answer was <code>x</code>.'}]);
+
+/* ============================================================= QUEST === */
+PREP('G1', '⚔️', QU, ['Walk to the flag',
+ {w:4, h:1, hero:[0,0], exit:[3,0], budget:6},
+ '<p>Grade 1 was things with names. The character on the board is called <code>hero</code>, and the move it can make is called <code>moveRight</code>. Put them together with a dot and give it a number:</p>'
+ + '<pre class="czcode">hero.moveRight(3);</pre>'
+ + '<p>Three squares to the flag, so the number is 3. Type it, press Run, and watch the hero walk. The name did the work: you did not press an arrow key, you said the move&rsquo;s name and how much of it.</p>'
+ + PREP_FOOT('Quest'),
+ 'Move the hero three squares right, onto the flag.',
+ '',
+ 'hero.moveRight(3);',
+ 'One line: <code>hero.moveRight(3);</code> &mdash; <code>hero</code>, a dot, the move&rsquo;s name, and <code>3</code> in the brackets.',
+ [[/hero\.moveRight\(\s*3\s*\)/, '<code>hero.moveRight(3)</code> &mdash; the move by name, with a 3']],
+ 'You said a name and a number, and something moved. Every command to every machine is that: a name, and how much.',
+ 'Not yet. <code>hero.moveRight(3);</code> exactly &mdash; the dot between the two names, and the 3 in brackets.',
+ 'The dot between <code>hero</code> and <code>moveRight</code> reaches into the hero for one of its <b>methods</b> &mdash; a trick the hero knows. The 3 is its <b>argument</b>.',
+ 'A robot vacuum takes commands shaped exactly like this one. The arrow keys on a game controller are a costume over a call like <code>moveRight</code>.']);
+
+PREP('G4', '⚔️', QU, ['Look before you step',
+ {w:5, h:1, hero:[0,0], exit:[4,0], gems:[[2,0]], win:'exit+gems', budget:10},
+ '<p>Grade 4 was making things happen &mdash; and finding out what happened. The hero can <b>look</b>: <code>hero.look("right")</code> hands back a word saying what is in the next square. Give that word to <code>say</code> and it appears in a speech bubble:</p>'
+ + '<pre class="czcode">hero.say(hero.look("right"));</pre>'
+ + '<p>One call inside another: the inside one asks, the outside one shows. Then walk right four squares. There is a gem on the way; walking over it picks it up, and the flag wants you to have it.</p>'
+ + PREP_FOOT('Quest'),
+ 'Say what is to the right, then walk four squares to the flag, picking up the gem on the way.',
+ '',
+ 'hero.say(hero.look("right"));\nhero.moveRight(4);',
+ 'Two lines: <code>hero.say(hero.look("right"));</code>, then <code>hero.moveRight(4);</code>.',
+ [[/hero\.say\(\s*hero\.look\(/, 'a <code>say</code> with a <code>look</code> inside it &mdash; showing the answer, not typing it']],
+ 'The board told you something and you showed it, in one line, before taking a step. Asking before acting is the reflex Grade 4 was building.',
+ 'Not yet. The <code>look</code> goes <i>inside</i> the <code>say</code> brackets, with no quotes around it. Then four squares right.',
+ 'A call whose result is handed straight to another call is <b>composition</b>. The word <code>look</code> hands back is its <b>return value</b>.',
+ 'A self-driving car is a loop of exactly this: look, decide, move. You just wrote the first two thirds.']);
+
+PREP('G8', '⚔️', QU, ['If there is a wall',
+ {w:5, h:2, hero:[0,0], exit:[4,1], walls:[[2,0]], budget:12},
+ '<p>Grade 8 was making choices. There is a wall in the top row, two squares ahead. Walk into it and the run stops. So take one step, then <b>ask</b> before the next:</p>'
+ + '<pre class="czcode">if (hero.look("right") === "wall") {\n  hero.moveDown(1);\n}</pre>'
+ + '<p>If the square ahead is a wall, step down a row. Then walk right to the flag, which is in the bottom row. The <code>if</code> is the whole lesson: a program that checks the board before it moves will still work when the wall is somewhere else.</p>'
+ + PREP_FOOT('Quest'),
+ 'Step right once, step down if the way is blocked, then walk to the flag.',
+ 'hero.moveRight(4);',
+ 'hero.moveRight(1);\nif (hero.look("right") === "wall") {\n  hero.moveDown(1);\n}\nhero.moveRight(3);',
+ '<code>hero.moveRight(1);</code>, then the <code>if</code> block that steps down when a wall is ahead, then <code>hero.moveRight(3);</code>.',
+ [[/if\s*\(\s*hero\.look\(/, 'an <code>if</code> that asks the board with <code>look</code>'],
+  [/moveDown\(\s*1\s*\)/, 'a step down inside it']],
+ 'You asked, and only stepped down because the answer was a wall. Run the starting code again to see what walking blind does. That difference is Grade 8.',
+ 'Not yet. One step right first, so the wall is directly ahead. Then the <code>if</code> with <code>=== "wall"</code>, and a <code>moveDown(1)</code> inside its braces.',
+ 'The test inside the <code>if</code> is a <b>condition</b>; the move inside its braces is <b>conditional</b>. Code that checks its surroundings before acting is <b>reactive</b>.',
+ 'Every robot that does not crash into things is running this <code>if</code> thousands of times a second. The sensor is fancier; the shape is the same.']);
+
 const ORDER = [];
 /* Within a grade the walk follows L's order, except that the grade's boss goes
    last whatever its index: lessons appended later (the arcade prep) still
@@ -9713,7 +9937,7 @@ function normRes(les, code){
 /* Thresholds are positions along the walk, so every time a grade gains a
    lesson they are recomputed to land on the same lesson as before: Loop Rider
    is earned where loops are, whatever else was added in front of it. */
-const LEVELS=[[0,'Rookie'],[4,'Word Wrangler'],[8,'Tag Tamer'],[15,'Style Painter'],[21,'Name Tagger'],[24,'Button Whisperer'],[29,'Word Gluer'],[33,'List Keeper'],[35,'Trick Teacher'],[42,'Decision Maker'],[52,'Loop Rider'],[56,'Machine Builder'],[61,'Box Labeler'],[67,'Bug Detective'],[73,'Code Professional'],[79,'Graduate'],[86,'Paid Renegade'],[106,'Legend']];
+const LEVELS=[[0,'Rookie'],[4,'Word Wrangler'],[8,'Tag Tamer'],[16,'Style Painter'],[23,'Name Tagger'],[26,'Button Whisperer'],[32,'Word Gluer'],[36,'List Keeper'],[38,'Trick Teacher'],[46,'Decision Maker'],[57,'Loop Rider'],[61,'Machine Builder'],[67,'Box Labeler'],[75,'Bug Detective'],[83,'Code Professional'],[89,'Graduate'],[97,'Paid Renegade'],[119,'Legend']];
 function levelFor(n){ let name=LEVELS[0][1]; for (const [min,t] of LEVELS) if (n>=min) name=t; return name; }
 const CCOLORS=['#2f7d5c','#1d5c8f','#d4a017','#b3542e','#7b5cb8','#c94f7c'];
 /* Celebration confetti is made of the code you actually type. Saturated hues in

@@ -7,9 +7,9 @@ The complete Kindergarten-through-College coding class in one self-contained,
 offline HTML file. Download it (or copy it to `C:\code-school\`), double-click,
 and it runs in any browser with **zero network access and zero API usage**.
 
-## What's inside — 221 lessons
+## What's inside — 234 lessons
 
-Graduation is the 122 required lessons — every lesson, every practice rep, and
+Graduation is the 135 required lessons — every lesson, every practice rep, and
 the arcade prep lessons that sit inside the grades.
 Challenges, portfolio pieces, Beyond and the Review Desk sit outside that count.
 
@@ -37,7 +37,7 @@ Challenges, portfolio pieces, Beyond and the Review Desk sit outside that count.
 | **The Kata Table** | **7 puzzles marked on tests you were never shown** |
 | **Python** | **13 lessons: a second language, from `print` to a working report** |
 | **The Terminal** | **13 lessons: folders, files, pipes and git, typed by hand into a shell that lives in the page** |
-| **Arcade prep** | **Small Terminal and Python lessons inside the grades themselves — K through College — so each arcade room is somewhere you have already been** |
+| **Arcade prep** | **28 small Terminal, Python, Sound Room, Kata and Quest lessons inside the grades themselves — K through College — so each arcade room is somewhere you have already been** |
 
 Reviews double as test-out exams (⚡): pass one first and it ticks the whole
 grade. Challenges are hint-free. Reps (🏋) are required: they count toward the
@@ -45,7 +45,7 @@ grade and toward graduation, because the practice most likely to make something
 stick was the practice easiest to skip. Beyond and the Review Desk sit outside
 the graduation count on purpose — they are what you do after finishing, not a
 moved goalpost. So do the grade bosses: the arrow out of a grade's last lesson
-walks into one, but the grade's own x/y and the 122 both ignore it.
+walks into one, but the grade's own x/y and the 135 both ignore it.
 
 ## The boss at the end of every grade
 
@@ -69,12 +69,26 @@ memory.
 The five arcade rooms used to start from nothing at the end of the school. Now
 each grade carries one or two short lessons in those languages, pitched at the
 grade's own idea, as core lessons that count toward the grade and toward
-graduation — that is what "part of the main lessons" has to mean. The Terminal
-ladder climbs K → 1 → 3 → 10 → 12 → College (folders → names → rename → build
-in stages → grep → commit with a sentence); the Python ladder climbs 4 → 12 →
-College (print → `2 + 3` vs `"2" + "3"` → lists → `def` → `if` → `for` → dict →
-read a traceback → docstring). Each one ends with a note saying which room it
-is a first taste of.
+graduation — that is what "part of the main lessons" has to mean. Five ladders:
+
+- **Terminal** K → 1 → 3 → 10 → 12 → College: `ls` → `cat` by name → `mv` as a
+  name you can change → build in stages, reading the panel after each → `grep
+  -r TODO` → a commit whose message is a sentence.
+- **Python** 4 → 12 → College: `print` → `2 + 3` vs `"2" + "3"` → a list and
+  `len` → `def` → `if`/`else` → `for` → a dict → a program that starts with a
+  real `TypeError` → a docstring.
+- **Sound Room** K → 2 → 5 → 9: copy one line and hear it → colour in slices 1
+  and 9 → the tempo is a number → a loop lays two bars.
+- **Kata Table** 7 → 8 → 9 → 11 → 12 → College: `double` → `sign` with the
+  case the examples never show → `sumAll` → `nameOf` → fix `lastOf`, which
+  starts off by one → `isEven`, returning the expression.
+- **Quest** 1 → 4 → 8: walk to the flag by name → `say(look())` → an `if` that
+  steps round a wall.
+
+Each one ends with a note saying which room it is a first taste of. Every Quest
+board and kata was proved on the real engine before it was written in — the
+answer wins and the starting code does not — and the browser test does the
+same for all 28 through the page's own grader.
 
 Mechanically: `PREP(gid, tag, builder, args)` calls the room's own builder and
 then re-homes the lesson — `g` becomes the grade, `beyond` becomes false — so
@@ -88,8 +102,7 @@ coach nobody can see), the crumb no longer counts the boss in "lesson n of m",
 and the level titles were recomputed so "Loop Rider" still lands on the loops
 lesson it always did rather than a grade later.
 
-`prep_test.js`: 27 checks. Sound Room, Kata Table and Quest prep are the next
-stage.
+`prep_test.js`: 35 checks.
 
 ## The Sound Room shows its working
 

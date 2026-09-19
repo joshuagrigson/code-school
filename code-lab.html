@@ -415,6 +415,9 @@ body.dark #duckbar{background:var(--panel2);border-color:var(--line);color:var(-
 .statbar i{display:block;height:100%;background:var(--accent)}
 .navitem.pract{color:#7b5cb8}
 body.dark .navitem.pract{color:#b89fe0}
+.navitem.prep{color:#1f6f8b}
+body.dark .navitem.prep{color:#7cc4de}
+.prepnote{margin:14px 0 0;padding:8px 12px;border:1px dashed var(--line);border-radius:8px;font-size:.86rem;color:var(--soft)}
 .navitem.proj{color:#1d5c8f;font-weight:bold}
 body.dark .navitem.proj{color:#7db8e8}
 .brief{background:#f7f4ec;border:1px solid #e5dcc6;border-left:3px solid #b08d4a;border-radius:12px;padding:14px 18px;margin:16px 0}
@@ -4367,8 +4370,308 @@ QB('C', 'Boss: one rule, written once',
  'A function with a single responsibility, a name that describes it, and no duplication is what <b>clean code</b> means in practice. A rule applied repeatedly rather than a list of steps is a <b>policy</b>.',
  'This is how autonomous things are actually written. Nobody programs a robot with a list of moves; they write the rule for one step and run it forever.');
 
+/* ---- Arcade prep, inside the grades ---------------------------------------
+   Every arcade track (Quest, the Sound Room, the Kata Table, Python, the
+   Terminal) used to start from nothing at the end of the school. Now each
+   grade carries one or two small lessons in those languages, pitched at that
+   grade's idea, so the standalone track is somewhere you have already been.
+   They are core lessons: they count toward the grade and toward graduation,
+   which is what "part of the main lessons" has to mean. They are appended to
+   L after everything else so that no saved progress - which is a list of
+   lesson indexes - points at a different lesson than it did yesterday. */
+function PREP(gid, tag, build, args){
+  build.apply(null, args);
+  const les = L[L.length - 1];
+  les.g = gid; les.beyond = false; les.prep = true; les.title = tag + ' ' + les.title;
+}
+const T_HOME = () => shfs({
+  'project/app.js': '// TODO: wire up the button\nlet clicks = 0;\n',
+  'project/notes.txt': 'TODO buy milk\nremember the dentist\nTODO call back the client\n',
+  'project/readme.md': '# My project\n',
+  'scratch/old-draft.txt': 'nothing here\n'
+});
+const PREP_FOOT = (room) => '<p class="prepnote">🎮 This is a first taste of <b>' + room + '</b>, one of the rooms in the arcade. The full track is waiting there when you want more.</p>';
+
+/* ===================================================== THE TERMINAL ===== */
+PREP('K', '💻', SH, ['The machine has folders',
+ {fs: T_HOME()},
+ '<p>Kindergarten was words on a screen: you typed, and the computer showed it. This box is the other direction. You type a word, press <b>Enter</b>, and the computer <i>answers</i>.</p>'
+ + '<p>The word is <code>ls</code>. It means <i>list</i> &mdash; show me what is here. Type it, press Enter, and the machine lists its folders. Folders end with a <code>/</code>.</p>'
+ + '<p>Then look inside one: <code>ls project</code> &mdash; the word, a space, the folder&rsquo;s name. That is how you point at something in a terminal: you say its name.</p>'
+ + PREP_FOOT('the Terminal'),
+ 'Type <code>ls</code>, press Enter, then type <code>ls project</code> and press Enter.',
+ '',
+ 'ls\nls project',
+ 'Two lines: <code>ls</code> on its own, then <code>ls project</code>. Press Enter after each one.',
+ (st)=>[[st.ran.filter(x => x === 'ls').length >= 2, 'two <code>ls</code> commands'],
+        [st.out.some(l => /project\//.test(l)), 'the first one showing the <code>project/</code> folder'],
+        [st.out.some(l => /app\.js/.test(l)), 'the second one looking inside it &mdash; it should show <code>app.js</code>']],
+ 'You asked the machine what it has, twice, and it told you. That is a terminal: a question, an answer, another question.',
+ 'Not yet. <code>ls</code> on one line, Enter, then <code>ls project</code>, Enter. If it complained, check the spelling of <code>project</code>.',
+ 'The word you type is a <b>command</b>. The place you type it is the <b>terminal</b>, and the <code>$</code> is the <b>prompt</b> &mdash; the machine saying <i>go on</i>.',
+ 'Every server on the internet is driven this way. Nobody clicks on a server; they type to it.']);
+
+PREP('G1', '💻', SH, ['Everything has a name',
+ {fs: T_HOME()},
+ '<p>Grade 1 was elements with names: an <code>h1</code>, a <code>p</code>, an <code>img</code>. Files have names too, and the terminal will show you any file if you say its name.</p>'
+ + '<p><code>cat</code> shows what is inside a file. <code>cat project/readme.md</code> means <i>show me the file called <code>readme.md</code> that lives in the <code>project</code> folder</i>. The <code>/</code> joins the folder to the file, the way a surname joins a family.</p>'
+ + '<p>Show two files. Get the names exactly right &mdash; a terminal does not guess, and <code>readme</code> is not <code>readme.md</code>.</p>'
+ + PREP_FOOT('the Terminal'),
+ 'Show <code>project/readme.md</code> and then <code>project/notes.txt</code> with <code>cat</code>.',
+ '',
+ 'cat project/readme.md\ncat project/notes.txt',
+ 'Two lines: <code>cat project/readme.md</code>, Enter, then <code>cat project/notes.txt</code>, Enter.',
+ (st)=>[[st.ran.filter(x => x === 'cat').length >= 2, 'two <code>cat</code> commands'],
+        [st.out.some(l => /# My project/.test(l)), 'the readme showing on screen'],
+        [st.out.some(l => /TODO buy milk/.test(l)), 'and the notes showing on screen']],
+ 'Two files, opened by name, without a mouse. The name is the whole address: folder, slash, file.',
+ 'Not yet. If it said <i>no such file</i>, the name is spelled differently from what <code>ls project</code> shows. The <code>.md</code> and <code>.txt</code> are part of the name.',
+ 'The folder-slash-file text is a <b>path</b>. The bit after the dot (<code>.md</code>, <code>.txt</code>) is the <b>extension</b>, and it is part of the name, not decoration.',
+ 'Half of all "file not found" errors in the world are a path with one letter wrong. The other half are the right path in the wrong folder.']);
+
+PREP('G3', '💻', SH, ['A name you can change',
+ {fs: T_HOME()},
+ '<p>Grade 3 was name tags: a <code>class</code> or an <code>id</code> you choose, and can change. A file&rsquo;s name is a name tag too, and <code>mv</code> changes it.</p>'
+ + '<p><code>mv project/notes.txt project/todo.txt</code> reads as <i>move notes.txt to todo.txt</i> &mdash; same folder, new name. Nothing inside the file changes. Only the tag.</p>'
+ + '<p>Rename it, then <code>ls project</code> to see that the old name is gone and the new one is there. Renaming is not copying: there is one file before and one file after.</p>'
+ + PREP_FOOT('the Terminal'),
+ 'Rename <code>project/notes.txt</code> to <code>project/todo.txt</code> with <code>mv</code>, then list <code>project</code> to check.',
+ '',
+ 'mv project/notes.txt project/todo.txt\nls project',
+ '<code>mv project/notes.txt project/todo.txt</code> &mdash; old name first, new name second &mdash; then <code>ls project</code>.',
+ (st)=>[[st.ran.includes('mv'), 'an <code>mv</code>'],
+        [st.exists('project/todo.txt'), 'a file called <code>todo.txt</code> in <code>project</code>'],
+        [!st.exists('project/notes.txt'), 'and no <code>notes.txt</code> any more &mdash; a rename, not a copy'],
+        [(st.read('project/todo.txt') || '').indexOf('TODO buy milk') >= 0, 'with the same words inside it'],
+        [st.out.some(l => /todo\.txt/.test(l)), 'and an <code>ls</code> showing the new name']],
+ 'Same file, new name, and the panel under the terminal shows exactly that: one thing went, one thing came, nothing inside changed.',
+ 'Not yet. <code>mv</code> takes the old name then the new one, both with <code>project/</code> in front. Then <code>ls project</code>.',
+ '<code>mv</code> is <b>move</b>, and renaming is moving a file to a new name in the same place. The old name is the <b>source</b>, the new one the <b>destination</b>.',
+ 'Renaming a file is the most common change in any codebase, and git can follow a rename only because the contents did not change. Name tags and contents are separate things.']);
+
+PREP('G10', '💻', SH, ['Build it in stages',
+ {fs: shfs({})},
+ '<p>Grade 10 was building something in stages: get one part standing, check it, then the next. The terminal is where that habit lives, because every line is a stage and the panel underneath shows what each one did.</p>'
+ + '<p>Four stages. <code>mkdir site</code> makes a folder. <code>echo "&lt;h1&gt;Stage one&lt;/h1&gt;" &gt; site/index.html</code> writes a file with a heading in it &mdash; the <code>&gt;</code> means <i>into this file</i>, and the quotes stop the shell reading the pointy brackets as arrows. <code>touch site/app.js</code> makes an empty file. <code>ls site</code> checks.</p>'
+ + '<p>Run each line and <b>read the panel</b> before typing the next. If the folder did not appear, the file has nowhere to go. That is the whole lesson of Grade 10 in four lines: do not start stage two until stage one is real.</p>'
+ + PREP_FOOT('the Terminal'),
+ 'Make <code>site</code>, put a heading into <code>site/index.html</code>, make an empty <code>site/app.js</code>, and list <code>site</code>.',
+ '',
+ 'mkdir site\necho "<h1>Stage one</h1>" > site/index.html\ntouch site/app.js\nls site',
+ 'In order: <code>mkdir site</code>, then <code>echo "&lt;h1&gt;Stage one&lt;/h1&gt;" &gt; site/index.html</code> (quotes around the heading), then <code>touch site/app.js</code>, then <code>ls site</code>.',
+ (st)=>[[st.isDir('site'), 'a folder called <code>site</code>'],
+        [/<h1>.*<\/h1>/.test(st.read('site/index.html') || ''), '<code>site/index.html</code> with a heading inside it'],
+        [st.read('site/app.js') === '', 'an empty <code>site/app.js</code>'],
+        [st.out.some(l => /index\.html/.test(l)) && st.out.some(l => /app\.js/.test(l)), 'an <code>ls site</code> at the end showing both files']],
+ 'Four stages, each one checked before the next. You just did by hand what a build script does a thousand times a day &mdash; and you could paste these four lines into one and never do it by hand again.',
+ 'Not yet. If <code>echo</code> complained, the heading needs quotes. If <code>ls site</code> shows nothing, the <code>mkdir</code> did not run first. Read the panel after each line.',
+ 'A file written by a command rather than an editor is <b>generated</b>. The <code>&gt;</code> is a <b>redirect</b>: it sends what a command would have printed into a file instead.',
+ 'Every project template &mdash; <i>create-react-app</i>, <i>rails new</i> &mdash; is a script of lines like these. Someone typed them by hand once, then saved them.']);
+
+PREP('G12', '💻', SH, ['Find every TODO',
+ {fs: shfs({'project/app.js': '// TODO: wire up the button\nlet clicks = 0;\nfunction go(){}\n', 'project/notes.txt': 'TODO buy milk\nremember the dentist\nTODO call back the client\n', 'project/readme.md': '# My project\nNothing to do here.\n', 'project/src/util.js': 'export const x = 1; // TODO name this\n'})},
+ '<p>Grade 12 was when things go wrong, and the first move when something goes wrong is not to guess where. It is to <b>search</b>.</p>'
+ + '<p><code>grep</code> finds every line containing a word. <code>grep -r TODO project</code> means <i>search for TODO, in project, and every folder inside it</i> &mdash; the <code>-r</code> is <i>recursive</i>, which is the terminal&rsquo;s word for <i>keep going down</i>. It prints each matching line with the file it came from in front.</p>'
+ + '<p>Run it. Four unfinished notes, in three files, one of them buried a folder down. You did not open a single file to find them.</p>'
+ + PREP_FOOT('the Terminal'),
+ 'Search the whole <code>project</code> folder for <code>TODO</code> with <code>grep -r</code>.',
+ '',
+ 'grep -r TODO project',
+ 'One line: <code>grep -r TODO project</code> &mdash; the option, the word to look for, the folder to look in.',
+ (st)=>[[st.ran.includes('grep'), 'a <code>grep</code>'],
+        [st.out.some(l => /TODO buy milk/.test(l)), 'finding the note about milk'],
+        [st.out.some(l => /name this/.test(l)), 'and the one buried in <code>src/util.js</code> &mdash; which needs <code>-r</code>'],
+        [st.out.filter(l => /TODO/.test(l)).length >= 4, 'all four of them']],
+ 'Four lines you did not have to open a file to find, one of them a folder down. When something breaks, this is the first command: find every place the broken thing is mentioned, then read.',
+ 'Not yet. <code>grep -r TODO project</code>: the <code>-r</code> goes before the word, and the folder comes last. Without <code>-r</code> the one inside <code>src</code> is missed.',
+ 'Searching text for a pattern is <b>grep</b> &mdash; the name is an old editor command, <i>g/re/p</i>. Going into every subfolder is <b>recursive</b>. The word you search for is the <b>pattern</b>.',
+ 'The reason people leave the word <code>TODO</code> in code is this command. It is not a note to themselves; it is a note to <code>grep</code>.']);
+
+PREP('C', '💻', SH, ['Commit it, and say why',
+ {fs: shfs({'project/app.js': 'let clicks = 0;\n', 'project/readme.md': '# My project\n'})},
+ '<p>College was about writing for the next person: names that explain themselves, one job per function. A commit message is the same skill, and it is the most-read sentence you will ever write about your code.</p>'
+ + '<p>Three lines make a folder remember itself: <code>git init</code> to start, <code>git add .</code> to put everything on the table, <code>git commit -m "..."</code> to take the snapshot. The message inside the quotes is the part that matters. <code>"fix"</code> tells a stranger nothing. <code>"Start the project: the app and its readme"</code> tells them what and why.</p>'
+ + '<p>Finish with <code>git log --oneline</code> and read your sentence back the way someone else will in a year.</p>'
+ + PREP_FOOT('the Terminal'),
+ 'Inside <code>project</code>: <code>git init</code>, <code>git add .</code>, a <code>git commit</code> whose message is a real sentence, then <code>git log --oneline</code>.',
+ 'cd project\n',
+ 'cd project\ngit init\ngit add .\ngit commit -m "Start the project: the app and its readme"\ngit log --oneline',
+ 'After <code>cd project</code>: <code>git init</code>, <code>git add .</code>, <code>git commit -m "a sentence that says what and why"</code>, <code>git log --oneline</code>.',
+ (st)=>[[!!st.git, 'a repository started with <code>git init</code>'],
+        [!!st.git && st.git.commits.length >= 1, 'one commit'],
+        [!!st.git && st.git.commits.length > 0 && st.git.commits[0].msg.trim().length >= 20 && /\s/.test(st.git.commits[0].msg.trim()), 'a message that is a sentence &mdash; twenty characters or more, with spaces in it'],
+        [!!st.git && ['app.js','readme.md'].every(f => f in st.git.tracked), 'both files in it'],
+        [st.ran.includes('git log'), 'and a <code>git log</code> to read it back']],
+ 'A snapshot with a sentence on it that a stranger could read. That sentence is the interface to your work: in a year, it is all anyone will have.',
+ 'Not yet. The order is <code>init</code>, <code>add .</code>, <code>commit -m "..."</code>. If the message row failed, write a sentence: what changed and why, not one word.',
+ 'A remembered moment is a <b>commit</b>; the sentence is the <b>commit message</b>; the list of them is the <b>history</b>. A message written for the reader rather than the writer is the difference between a log and a diary.',
+ 'Teams that enforce real commit messages can trace a bug to the exact change and the reason for it years later. Teams that allow "fix" cannot, and they pay for it every week.']);
+
+/* =========================================================== PYTHON ===== */
+PREP('G4', '🐍', PL, ['print makes it happen',
+ '<p>Grade 4 was making things happen: a line of code, and something appears. Here is the same idea in a second language. Python has no page and no <code>screen.textContent</code>. It has <code>print</code>, which writes one line and moves to the next:</p>'
+ + '<pre class="czcode">print("Ready")</pre>'
+ + '<p>No semicolon. No braces. The text goes in quotes inside the brackets, and each <code>print</code> is its own line of output. The black box below is a <b>console</b>: just what your program said, nothing else.</p>'
+ + PREP_FOOT('Python'),
+ 'Print <code>Ready</code>, <code>Set</code> and <code>Go</code>, one per line.',
+ '',
+ 'print("Ready")\nprint("Set")\nprint("Go")',
+ 'Three lines, one <code>print</code> each: <code>print("Ready")</code>, then the same for the other two words.',
+ 'Ready\nSet\nGo',
+ 'Three lines out of three lines, in a language you had never typed a minute ago. Making something appear is the same act everywhere; only the spelling changes.',
+ 'Not quite. Three separate <code>print(...)</code> lines, each word in quotes, spelled with a capital letter exactly as the goal shows.',
+ {},
+ 'The window that shows only text is the <b>console</b>. <code>print</code> writes to <b>standard output</b>, and each call ends with a <b>newline</b> unless you say otherwise.',
+ 'Python is the language of science, data and machine learning. It got there partly because <code>print("hi")</code> is the whole first program.']);
+
+PREP('G5', '🐍', PL, ['2 + 3 is not "2" + "3"',
+ '<p>Grade 5 was words and numbers, and the fact that <code>"2"</code> and <code>2</code> are different kinds of thing. Python agrees, and it will show you.</p>'
+ + '<pre class="czcode">print(2 + 3)\nprint("2" + "3")</pre>'
+ + '<p>The first line adds two numbers and prints <code>5</code>. The second glues two pieces of text and prints <code>23</code>. Same <code>+</code>, different job, decided by whether there are quotes. Type both and look at the console: the machine is not confused, it is doing exactly what the quotes told it.</p>'
+ + PREP_FOOT('Python'),
+ 'Print <code>2 + 3</code> as numbers, then <code>"2" + "3"</code> as text, one per line.',
+ '',
+ 'print(2 + 3)\nprint("2" + "3")',
+ 'Two lines: <code>print(2 + 3)</code> with no quotes, then <code>print("2" + "3")</code> with quotes around each digit.',
+ '5\n23',
+ '<code>5</code> and <code>23</code>, from the same plus sign. The quotes decided which job it did. That distinction is Grade 5 in one screen, and it will follow you into every language you ever learn.',
+ 'Not yet. The first <code>print</code> needs the digits <i>without</i> quotes so they add; the second needs them <i>with</i> quotes so they glue.',
+ {reqs:[[/print\s*\(\s*2\s*\+\s*3\s*\)/, 'a <code>print(2 + 3)</code> with no quotes'],
+        [/print\s*\(\s*["']2["']\s*\+\s*["']3["']\s*\)/, 'a <code>print("2" + "3")</code> with quotes']]},
+ 'A number is an <b>int</b>; text is a <b>str</b>. Gluing two strings is <b>concatenation</b>. The kind of thing a value is, is its <b>type</b>.',
+ 'A price read from a web form arrives as text. Add two of them without converting and you get <code>"1020"</code>, not <code>30</code>. Every shopping cart has had that bug once.']);
+
+PREP('G6', '🐍', PL, ['A list and how long it is',
+ '<p>Grade 6 was lists. Python writes them the same way &mdash; square brackets, commas &mdash; and gives you <code>len</code> to count them:</p>'
+ + '<pre class="czcode">fruits = ["apple", "pear", "fig"]\nprint(len(fruits))\nprint(fruits[0])</pre>'
+ + '<p>Three things there. A list in a box called <code>fruits</code>. <code>len(fruits)</code> &mdash; how many. And <code>fruits[0]</code> &mdash; the first item, because positions start at zero here too. Different language, same list.</p>'
+ + PREP_FOOT('Python'),
+ 'Make a list of three fruits, print how many there are, then print the first one.',
+ '',
+ 'fruits = ["apple", "pear", "fig"]\nprint(len(fruits))\nprint(fruits[0])',
+ 'Three lines: the list in a box, <code>print(len(fruits))</code>, <code>print(fruits[0])</code>.',
+ '3\napple',
+ 'A count and a first item. Nothing you did not already know from Grade 6 &mdash; which is the point: a list is a list, whatever language it is written in.',
+ 'Not yet. The list needs exactly three items with <code>"apple"</code> first, then <code>len(...)</code> for the count and <code>[0]</code> for the first.',
+ {reqs:[[/\[\s*["'][^"']+["']\s*,\s*["'][^"']+["']\s*,\s*["'][^"']+["']\s*\]/, 'a list of three quoted items'],
+        [/len\s*\(/, '<code>len(...)</code> to count it'],
+        [/\[\s*0\s*\]/, '<code>[0]</code> to take the first']]},
+ 'Counting a collection is its <b>length</b>. Taking an item by its position is <b>indexing</b>, and the position is the <b>index</b>, counted from zero.',
+ 'Python lists are how most data science begins: a list of numbers, a list of names, and questions asked of them. <code>len</code> is asked ten thousand times a day in every notebook on earth.']);
+
+PREP('G7', '🐍', PL, ['Teaching a trick, in Python',
+ '<p>Grade 7 was teaching the computer a trick: a <code>function</code>, taught once and called many times. Python spells it <code>def</code>, and instead of curly braces it uses a colon and indentation:</p>'
+ + '<pre class="czcode">def greet(name):\n    print("Hi", name)\n\ngreet("Sam")</pre>'
+ + '<p>The line ending in <code>:</code> opens the function. The indented line underneath is its body &mdash; four spaces, and the indentation <i>is</i> the braces. <code>greet("Sam")</code> performs it. Teach it once, then call it twice with two different names.</p>'
+ + PREP_FOOT('Python'),
+ 'Teach <code>greet(name)</code> to print <code>Hi</code> and the name, then call it with <code>Sam</code> and with <code>Ada</code>.',
+ '',
+ 'def greet(name):\n    print("Hi", name)\n\ngreet("Sam")\ngreet("Ada")',
+ '<code>def greet(name):</code>, then an indented <code>print("Hi", name)</code>, then two calls: <code>greet("Sam")</code> and <code>greet("Ada")</code>.',
+ 'Hi Sam\nHi Ada',
+ 'One trick, two performances. The colon-and-indent is the only new thing on the screen; the idea is Grade 7 exactly.',
+ 'Not yet. The body line must be indented under <code>def</code>. Then two separate calls, each with a name in quotes.',
+ {reqs:[[/def\s+greet\s*\(\s*name\s*\)\s*:/, '<code>def greet(name):</code> with the colon'],
+        [(c) => (c.match(/greet\s*\(\s*["']/g) || []).length >= 2, 'two calls to it']]},
+ '<code>def</code> <b>defines</b> a function. The indented lines under it are its <b>body</b> or <b>block</b>, and Python uses <b>indentation</b> where other languages use braces.',
+ 'Most of the code you will read in your life is a function someone else wrote. Being able to tell where its body starts and ends in any language is the skill; the spelling is the easy part.']);
+
+PREP('G8', '🐍', PL, ['A choice, in Python',
+ '<p>Grade 8 was making choices with <code>if</code> and <code>else</code>. Python has the same two words, with colons and indentation doing the work of braces:</p>'
+ + '<pre class="czcode">if age &lt; 13:\n    print("kid")\nelse:\n    print("teen")</pre>'
+ + '<p>The test comes after <code>if</code>, the colon opens the block, the indented line is what happens. <code>else:</code> is the other door. Put <code>age = 11</code> above it and one of the two lines prints. Change the 11 to 15 and the other one does. Same choice you made in Grade 8, in a new alphabet.</p>'
+ + PREP_FOOT('Python'),
+ 'With <code>age = 11</code>, print <code>kid</code> if age is under 13, otherwise <code>teen</code>.',
+ 'age = 11\n',
+ 'age = 11\nif age < 13:\n    print("kid")\nelse:\n    print("teen")',
+ 'Under <code>age = 11</code>: <code>if age &lt; 13:</code>, an indented <code>print("kid")</code>, then <code>else:</code> and an indented <code>print("teen")</code>.',
+ 'kid',
+ 'One of two doors, chosen by a number. Try 15 in the box and run again &mdash; the other door opens, and nothing else on the screen had to change.',
+ 'Not yet. <code>if age &lt; 13:</code> with the colon, the <code>print</code> indented under it, then <code>else:</code> with its own indented <code>print</code>.',
+ {reqs:[[/if\s+age\s*<\s*13\s*:/, '<code>if age &lt; 13:</code>'],
+        [/else\s*:/, 'an <code>else:</code>']]},
+ 'The test after <code>if</code> is the <b>condition</b>; the two indented parts are <b>branches</b>. A value that is either true or false is a <b>boolean</b>.',
+ 'Every age gate, every "are you sure", every free-shipping threshold is this shape. The languages differ; the fork in the road does not.']);
+
+PREP('G9', '🐍', PL, ['Doing it again, in Python',
+ '<p>Grade 9 was loops. Python&rsquo;s <code>for</code> walks a list one item at a time and hands you each one by name:</p>'
+ + '<pre class="czcode">for n in [1, 2, 3]:\n    print(n)</pre>'
+ + '<p>No counter to set up, no test, no <code>++</code>. <code>n</code> is 1, then 2, then 3, and the indented line runs once for each. Print each number <b>doubled</b> &mdash; <code>n * 2</code> &mdash; and read the three lines that come out.</p>'
+ + PREP_FOOT('Python'),
+ 'Loop over <code>[1, 2, 3]</code> and print each number doubled.',
+ '',
+ 'for n in [1, 2, 3]:\n    print(n * 2)',
+ 'Two lines: <code>for n in [1, 2, 3]:</code>, then an indented <code>print(n * 2)</code>.',
+ '2\n4\n6',
+ 'Three lines from two. The loop did not care how long the list was, which is the whole reason loops exist &mdash; the same two lines would handle three thousand.',
+ 'Not yet. <code>for n in [1, 2, 3]:</code> with the colon, and <code>print(n * 2)</code> indented under it.',
+ {reqs:[[/for\s+\w+\s+in\s+\[/, 'a <code>for ... in [...]:</code> loop'],
+        [/\*\s*2/, 'doubling with <code>* 2</code>']]},
+ 'Walking a list item by item is <b>iteration</b>; the name that takes each item in turn is the <b>loop variable</b>. Anything a <code>for</code> can walk is an <b>iterable</b>.',
+ 'A spreadsheet formula copied down a column is this loop with the code hidden. Python is where you stop hiding it.']);
+
+PREP('G11', '🐍', PL, ['A box with labels, in Python',
+ '<p>Grade 11 was objects: one box with several labelled compartments. Python calls it a <b>dict</b>, and writes it with curly braces, labels in quotes, and colons:</p>'
+ + '<pre class="czcode">pet = {"name": "Rex", "age": 3}\nprint(pet["name"])</pre>'
+ + '<p>The label goes in square brackets to read it &mdash; <code>pet["name"]</code> is <code>Rex</code>. Read the age too, and add one to it as you print it: the number inside is a real number, not text.</p>'
+ + PREP_FOOT('Python'),
+ 'Make a <code>pet</code> dict with a name and an age, print the name, then print the age plus one.',
+ '',
+ 'pet = {"name": "Rex", "age": 3}\nprint(pet["name"])\nprint(pet["age"] + 1)',
+ 'The dict on one line, then <code>print(pet["name"])</code>, then <code>print(pet["age"] + 1)</code>.',
+ 'Rex\n4',
+ 'A name and a number out of one labelled box, and the number still added like a number. The JavaScript object you built in Grade 11 and this dict are the same idea with different punctuation.',
+ 'Not yet. Labels in quotes with colons: <code>{"name": "Rex", "age": 3}</code>. Read with square brackets: <code>pet["name"]</code>.',
+ {reqs:[[/\{\s*["']name["']\s*:/, 'a dict with a <code>"name"</code> label'],
+        [/\[\s*["']name["']\s*\]/, 'reading it with <code>["name"]</code>'],
+        [/\[\s*["']age["']\s*\]\s*\+\s*1/, 'and the age plus one']]},
+ 'A labelled box is a <b>dictionary</b> (<i>dict</i>); the label is a <b>key</b>, what it holds is the <b>value</b>. Reading by label is a <b>lookup</b>.',
+ 'Every JSON file on the internet is a dict written down. Python reads them straight into this shape, which is why it runs so much of the web&rsquo;s plumbing.']);
+
+PREP('G12', '🐍', PL, ['Read the traceback',
+ '<p>Grade 12 was when things go wrong. Here is a program that is already wrong, and the console under it says exactly why. <b>Run it first.</b> Read the red text: it names the kind of error, the line, and what could not be done.</p>'
+ + '<p>The mistake is gluing text to a number with <code>+</code>. JavaScript would have quietly made <code>"Total: 5"</code>; Python refuses, because it would rather stop than guess. The fix is the comma you met in Grade 4: <code>print("Total:", total)</code> takes two things and spaces them.</p>'
+ + '<p>Change the one line. Run again. The loop &mdash; run, read, change one thing, run &mdash; is the job.</p>'
+ + PREP_FOOT('Python'),
+ 'Fix the program so it prints <code>Total: 5</code>.',
+ 'total = 5\nprint("Total: " + total)',
+ 'total = 5\nprint("Total:", total)',
+ 'Replace the <code>+</code> with a comma: <code>print("Total:", total)</code>. Python puts the space in.',
+ 'Total: 5',
+ 'You read what the machine said, found the line, and changed that line. That is debugging, and it is most of the work in any language.',
+ 'Not yet. Run it and read the traceback: it points at the line with the <code>+</code>. A comma between the two pieces fixes it.',
+ {reqs:[[/print\s*\(\s*["']Total:\s*["']\s*,\s*total\s*\)/, 'a <code>print</code> with a comma between the text and the number']]},
+ 'The red report is a <b>traceback</b>; the named kind of error, <b>TypeError</b>, means a value was asked to do something its type cannot. Reading it from the bottom up is the habit.',
+ 'Professionals spend more time reading errors than writing code. The fast ones are not faster typists; they read the traceback instead of guessing.']);
+
+PREP('C', '🐍', PL, ['One job, with a note on the door',
+ '<p>College was taste: one job per function, a name that says it, and something written down for the next person. Python has a place for that last part built in &mdash; a <b>docstring</b>, a quoted sentence as the first line of the body:</p>'
+ + '<pre class="czcode">def area(width, height):\n    """Area of a rectangle."""\n    return width * height</pre>'
+ + '<p>Three quotes, a sentence, three quotes. It does nothing when the program runs. It is there for whoever reads the function next, which will be you, and it is the difference between code and a tool.</p>'
+ + '<p>Write it, then prove it works twice with two different rectangles.</p>'
+ + PREP_FOOT('Python'),
+ 'Write <code>area(width, height)</code> with a docstring, and print <code>area(3, 4)</code> and <code>area(2, 5)</code>.',
+ '',
+ 'def area(width, height):\n    """Area of a rectangle."""\n    return width * height\n\nprint(area(3, 4))\nprint(area(2, 5))',
+ '<code>def area(width, height):</code>, a <code>"""docstring"""</code> line, <code>return width * height</code>, then two <code>print(area(...))</code> lines.',
+ '12\n10',
+ 'One job, named for what it does, with a sentence on the door. Every library you will ever import is a folder of functions written like this one.',
+ 'Not yet. The docstring is a line in triple quotes right under the <code>def</code>. Then <code>return</code> the product, and print two calls.',
+ {reqs:[[/def\s+area\s*\(\s*\w+\s*,\s*\w+\s*\)\s*:/, '<code>def area(...)</code> taking two things'],
+        [/"""[^"]+"""|\'\'\'[^\']+\'\'\'/, 'a docstring in triple quotes'],
+        [/return\s+\w+\s*\*\s*\w+/, 'a <code>return</code> of the product']]},
+ 'The quoted first line is a <b>docstring</b>; Python keeps it and shows it when someone asks <code>help(area)</code>. A function that does one thing has a <b>single responsibility</b>.',
+ 'The documentation you read on any Python library was generated from docstrings exactly like this one. Writing one is publishing.']);
+
 const ORDER = [];
-for (const g of GRADES) for (let i=0;i<L.length;i++) if (L[i].g===g.id && !L[i].chal && !L[i].proj) ORDER.push(i);
+/* Within a grade the walk follows L's order, except that the grade's boss goes
+   last whatever its index: lessons appended later (the arcade prep) still
+   belong before the end-of-grade board. */
+for (const g of GRADES){
+  const run = [];
+  for (let i=0;i<L.length;i++) if (L[i].g===g.id && !L[i].chal && !L[i].proj) run.push(i);
+  run.filter(i => !L[i].boss).concat(run.filter(i => L[i].boss)).forEach(i => ORDER.push(i));
+}
 
 /* ============================ QA BANK ============================ */
 const STOP = new Set(['the','a','an','is','are','was','do','does','i','my','me','it','to','of','in','on','and','or','what','how','why','when','can','cant','dont','this','that','you','your','would','use','used','using','real','life','for','back','need','needs','about','there','will','take','much','get','got','put','thing','things','be','been','being','if','but','so','just','any','all','into','very','really','actually','should','could','did','has','have','had','am','were','who','which','whose','from','with','at','as','by','not','please','tell','explain','happens','happen','ever','even','still','also','than','then','them','they','their','our','us','we','one']);
@@ -9407,7 +9710,10 @@ function normRes(les, code){
 /* Thresholds are positions in the walking order, so they moved when reps became
    required. Each one was remapped to the same point in the curriculum rather
    than left where it was, which would have handed out "Loop Rider" in Grade 7. */
-const LEVELS=[[0,'Rookie'],[4,'Word Wrangler'],[8,'Tag Tamer'],[14,'Style Painter'],[19,'Name Tagger'],[22,'Button Whisperer'],[27,'Word Gluer'],[30,'List Keeper'],[32,'Trick Teacher'],[38,'Decision Maker'],[46,'Loop Rider'],[50,'Machine Builder'],[54,'Box Labeler'],[59,'Bug Detective'],[64,'Code Professional'],[69,'Graduate'],[75,'Paid Renegade'],[91,'Legend']];
+/* Thresholds are positions along the walk, so every time a grade gains a
+   lesson they are recomputed to land on the same lesson as before: Loop Rider
+   is earned where loops are, whatever else was added in front of it. */
+const LEVELS=[[0,'Rookie'],[4,'Word Wrangler'],[8,'Tag Tamer'],[15,'Style Painter'],[21,'Name Tagger'],[24,'Button Whisperer'],[29,'Word Gluer'],[33,'List Keeper'],[35,'Trick Teacher'],[42,'Decision Maker'],[52,'Loop Rider'],[56,'Machine Builder'],[61,'Box Labeler'],[67,'Bug Detective'],[73,'Code Professional'],[79,'Graduate'],[86,'Paid Renegade'],[106,'Legend']];
 function levelFor(n){ let name=LEVELS[0][1]; for (const [min,t] of LEVELS) if (n>=min) name=t; return name; }
 const CCOLORS=['#2f7d5c','#1d5c8f','#d4a017','#b3542e','#7b5cb8','#c94f7c'];
 /* Celebration confetti is made of the code you actually type. Saturated hues in
@@ -9580,7 +9886,7 @@ function renderNav(){
     for (const x of lessons){
       if (q && !x.l.title.toLowerCase().includes(q)) continue;
       const b = document.createElement('button');
-      b.className = 'navitem' + (x.l.pract ? ' pract' : '') + (x.i===idx && !sandbox ? ' cur':'') + (isOpen ? '' : ' ghidden');
+      b.className = 'navitem' + (x.l.pract ? ' pract' : '') + (x.l.prep ? ' prep' : '') + (x.i===idx && !sandbox ? ' cur':'') + (isOpen ? '' : ' ghidden');
       b.innerHTML = '<span class="tick">' + (done.has(x.i)?'✓':'') + '</span><span>' + x.l.title + '</span>';
       b.onclick = ()=>loadLesson(x.i);
       listEl.appendChild(b);
@@ -9629,7 +9935,9 @@ function loadLesson(i){
   document.querySelectorAll('.navtip,.predcard').forEach(x => x.remove());
   const les = L[i], g = GRADES.find(x=>x.id===les.g);
   teachEl.dataset.lv = g.lv;
-  const gl = L.map((l,n)=>({l,n})).filter(x=>x.l.g===les.g);
+  /* the boss says "end of grade" for itself, so it is not one of the m in
+     "lesson n of m" for the lessons before it either */
+  const gl = L.map((l,n)=>({l,n})).filter(x=>x.l.g===les.g && !x.l.boss);
   const pos = gl.findIndex(x=>x.n===i);
   const op = ORDER.indexOf(i);
   const crumb = '<div class="crumb"><button id="crPrev" title="Previous lesson" aria-label="Previous lesson"'+(op<=0?' disabled':'')+'>&larr;</button><span>' + g.name + '<span class="crsub"> · ' + g.sub + '</span> — ' + (les.deep ? 'floor ' + (les.deepN || 1) + ' of ' + DEEP_FLOORS
@@ -11417,6 +11725,9 @@ function ghostable(){
      fades in the answer one word at a time does the deciding for you, which
      is the one thing these lessons are asking the learner to do themselves. */
   if (L[idx].beyond) return false;
+  /* a Terminal lesson replaces the editor with a prompt; a ghost typing into
+     the editor underneath it would be a coach nobody can see */
+  if (L[idx].kind === 'shell') return false;
   return !lessonDone(idx);
 }
 /* One place decides whether the editor is connected, and every screen that

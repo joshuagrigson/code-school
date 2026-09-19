@@ -7,9 +7,10 @@ The complete Kindergarten-through-College coding class in one self-contained,
 offline HTML file. Download it (or copy it to `C:\code-school\`), double-click,
 and it runs in any browser with **zero network access and zero API usage**.
 
-## What's inside — 206 lessons
+## What's inside — 221 lessons
 
-Graduation is the 107 required lessons — every lesson and every practice rep.
+Graduation is the 122 required lessons — every lesson, every practice rep, and
+the arcade prep lessons that sit inside the grades.
 Challenges, portfolio pieces, Beyond and the Review Desk sit outside that count.
 
 | Track | Territory |
@@ -36,6 +37,7 @@ Challenges, portfolio pieces, Beyond and the Review Desk sit outside that count.
 | **The Kata Table** | **7 puzzles marked on tests you were never shown** |
 | **Python** | **13 lessons: a second language, from `print` to a working report** |
 | **The Terminal** | **13 lessons: folders, files, pipes and git, typed by hand into a shell that lives in the page** |
+| **Arcade prep** | **Small Terminal and Python lessons inside the grades themselves — K through College — so each arcade room is somewhere you have already been** |
 
 Reviews double as test-out exams (⚡): pass one first and it ticks the whole
 grade. Challenges are hint-free. Reps (🏋) are required: they count toward the
@@ -43,7 +45,7 @@ grade and toward graduation, because the practice most likely to make something
 stick was the practice easiest to skip. Beyond and the Review Desk sit outside
 the graduation count on purpose — they are what you do after finishing, not a
 moved goalpost. So do the grade bosses: the arrow out of a grade's last lesson
-walks into one, but the grade's own x/y and the 107 both ignore it.
+walks into one, but the grade's own x/y and the 122 both ignore it.
 
 ## The boss at the end of every grade
 
@@ -61,6 +63,33 @@ None of them can be passed by walking at the flag — that is a test, not a clai
 — and every one ships with the answer that beats it, checked by the same engine
 the learner plays on. An idea you can only use in the room you met it in is a
 memory.
+
+## The arcade, inside the grades
+
+The five arcade rooms used to start from nothing at the end of the school. Now
+each grade carries one or two short lessons in those languages, pitched at the
+grade's own idea, as core lessons that count toward the grade and toward
+graduation — that is what "part of the main lessons" has to mean. The Terminal
+ladder climbs K → 1 → 3 → 10 → 12 → College (folders → names → rename → build
+in stages → grep → commit with a sentence); the Python ladder climbs 4 → 12 →
+College (print → `2 + 3` vs `"2" + "3"` → lists → `def` → `if` → `for` → dict →
+read a traceback → docstring). Each one ends with a note saying which room it
+is a first taste of.
+
+Mechanically: `PREP(gid, tag, builder, args)` calls the room's own builder and
+then re-homes the lesson — `g` becomes the grade, `beyond` becomes false — so
+the engine, the coach and the chips are exactly the room's. They are appended
+to `L` after everything else, because saved progress is a list of lesson
+indexes and inserting in the middle would point every save at a different
+lesson than yesterday; `ORDER` then puts them after the grade's lessons and
+before its boss whatever their index. The ghost coach is off for Terminal
+lessons (the editor is behind the prompt there, so a ghost typing into it is a
+coach nobody can see), the crumb no longer counts the boss in "lesson n of m",
+and the level titles were recomputed so "Loop Rider" still lands on the loops
+lesson it always did rather than a grade later.
+
+`prep_test.js`: 27 checks. Sound Room, Kata Table and Quest prep are the next
+stage.
 
 ## The Sound Room shows its working
 

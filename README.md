@@ -29,7 +29,7 @@ Challenges, portfolio pieces, Beyond and the Review Desk sit outside that count.
 | Portfolio | Five client jobs graded by a sign-off checklist, unlocked by the grades they need |
 | **Beyond** | **15 lessons after graduation: reading and fixing code you did not write, verifying what a machine wrote, writing a spec, asking a question that gets answered, commit messages, READMEs, shipping, secrets, untrusted input, accessibility, transferring to the next language, and performance** |
 | **Review Desk** | **10 lessons on reading code a machine wrote — see below** |
-| **Quest** | **8 levels where your code drives a hero across a board** |
+| **Quest** | **13 levels where your code drives a hero across a board that fights back** |
 | **The Sound Room** | **8 lessons where your code is the instrument** |
 | **The Kata Table** | **7 puzzles marked on tests you were never shown** |
 | **Python** | **13 lessons: a second language, from `print` to a working report** |
@@ -82,14 +82,29 @@ lifted from a place that already worked out how to make programming feel like
 something rather than like homework — and what was taken is the mechanic, not
 the artwork.
 
-**Quest** (from CodeCombat) is eight levels where your code drives a character
-across a board. `hero.moveRight(4)`, `hero.attack()`, `hero.look("right")`.
+**Quest** (from CodeCombat) is thirteen levels where your code drives a
+character across a board. `hero.moveRight(4)`, `hero.attack()`, `hero.look("right")`.
 Level one is five lines in a row; level eight takes the controls away and asks
 you to write a `turn(hero)` function that something else calls sixty times,
 which is the Screeps idea and a genuinely different way to think. In between:
 an off-by-one that eats a corridor, an enemy that hits back if your maths is
 wrong, and a switch that has to be stood on before a door three screens away
 will open.
+
+The last five levels are a board that does not wait for you. **The world takes
+a turn after every one of yours** — every move, every swing, every `say` — so a
+wasted line is a square of ground given away. A *chaser* walks toward you, a
+*patrol* walks its beat, a *ghost* ignores walls, and a *caster* never moves but
+owns her whole row and column until you step out of it. Spikes come up on a
+count, which makes a deliberate wasted turn the answer rather than a mistake,
+and a pit is not a heart but the end of the run. Every one of them turns a route
+into a strategy: `look`, decide, act, repeat, against a board you cannot
+predict — which is the loop every robot and autopilot ever written runs.
+
+The whole kit is synthesised through the Sound Room's own `soundKit()` bus, so
+the replay has a voice: a sword is filtered noise with a crack on the front, a
+defeated ogre is a sawtooth falling through a filter, and clearing the level
+gets a chord. There is a sound toggle on the board and the page remembers it.
 
 **The Sound Room** (from EarSketch) is eight lessons where the output is music.
 `makeBeat(KICK, 1, 1, "0---0---0---0---")` — sixteen characters, sixteen slices

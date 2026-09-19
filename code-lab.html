@@ -3898,6 +3898,110 @@ SH('A project from nothing',
  'A set of commands that builds a project from nothing is a <b>scaffold</b>, and saving them to run again is a <b>script</b> &mdash; the moment a sequence of terminal commands lands in a file, it is a program. Doing it the same way every time is <b>reproducibility</b>, and it is the property the terminal has that a mouse never will.',
  'Every framework&rsquo;s "create new project" command is a script that does what you just did by hand, plus a few hundred more files. Now you know what is inside it.');
 
+/* ---- The dungeon proper -------------------------------------------------
+   The first eight levels are a board that waits for you. These five are a
+   board that does not: things walk toward you between your lines, spikes
+   come up on a count, a witch owns a whole row, and a hole in the floor is
+   not a heart but the end. Every one of them is the same lesson in a nastier
+   costume - work out what is true before you type, because the board is not
+   going to hold still while you guess. */
+
+QU('Something is following you',
+ {w:8, h:1, hero:[0,0], exit:[7,0], hp:4, budget:30, win:'foes exit',
+  foes:[{at:[6,0], name:'Imp', icon:'😈', kind:'chaser', hp:2, bite:1}]},
+ '<p>Everything you have fought so far stood exactly where it was put. This one walks.</p>'
+ + '<p>The rule that changes everything: <b>the board takes a turn after every one of yours</b>. Every move, every swing, every <code>say</code> &mdash; each one is a turn, and when yours is finished the Imp gets to move one square toward you. There is no standing still. A wasted line is not free, it is a square of ground given away.</p>'
+ + '<p>Which is also the good news, because you do not have to chase it. It is coming. Wait where you are, let it walk into range, and hit it when it arrives. Two hits &mdash; it takes two &mdash; and the corridor is yours.</p>'
+ + '<p>The waiting is the interesting part to write. You need a loop that keeps going until something is true, and a question to ask each time round:</p>'
+ + '<pre class="czcode">while (hero.foesLeft() > 0) {\n  if (hero.look("right") === "foe") {\n    hero.attack();\n  } else {\n    hero.say("come on then");\n  }\n}</pre>'
+ + '<p><code>hero.look("right")</code> tells you what is in the next square &mdash; <code>"clear"</code>, <code>"wall"</code>, <code>"foe"</code>, and now a few new answers too. <code>hero.foesLeft()</code> is how many are still standing. Put them together and you have a program that reacts to a board it cannot predict, which is the whole job.</p>',
+ 'Let the Imp come to you, put it down, and finish on the flag.',
+ '',
+ 'while (hero.foesLeft() > 0) {\n  if (hero.look("right") === "foe") {\n    hero.attack();\n  } else {\n    hero.say("come on then");\n  }\n}\nhero.moveRight(7);',
+ 'Loop until <code>hero.foesLeft()</code> is 0. Inside it, ask <code>hero.look("right")</code>: if the answer is <code>"foe"</code> then <code>hero.attack()</code>, otherwise say something and let it walk one more square. Then run to the flag.',
+ [[/look\s*\(/, 'a <code>hero.look(...)</code> &mdash; something has to ask what is out there'],
+  [/while|for\s*\(/, 'a loop &mdash; you cannot know in advance how many turns it takes']],
+ 'You wrote a program that does not know the future. It asks what is in front of it, decides, and asks again &mdash; and it would still work if the Imp started somewhere else. That is the difference between a route and a strategy.',
+ 'Not yet. Remember that a <code>say</code> costs a turn too, which is what lets the Imp close the gap. If you are dying, you are swinging at air before it arrives; if you never reach it, your loop stopped too early.',
+ 'A loop that runs until a condition changes rather than a fixed number of times is a <b>while loop</b>, and asking the world what state it is in before deciding is <b>polling</b>. A thing that moves on its own between your instructions is an <b>agent</b>.',
+ 'Every game you have played runs this loop sixty times a second: read the world, decide, act, repeat. So does a thermostat, a self-driving car and the code that decides whether your card payment goes through.');
+
+QU('Spikes on a count',
+ {w:7, h:1, hero:[0,0], exit:[6,0], hp:1, budget:20,
+  traps:[{at:[3,0], period:2, phase:[1]}]},
+ '<p>One heart. One corridor. And halfway along it, a tile with spikes that come up and go down, up and down, on a count of two.</p>'
+ + '<p>You cannot fight a floor. You cannot go round it either &mdash; the corridor is one square wide. The only thing you can change is <b>when you arrive</b>, and the only tool you have for changing when is doing something that costs a turn without moving you.</p>'
+ + '<p>Watch the replay before you write anything. The spikes flash when they are up. Count which turns those are. Then count which turn your foot lands on that tile, and ask whether those two counts can be made to disagree.</p>'
+ + '<p><code>hero.look("right")</code> helps here as well: it answers <code>"trap"</code> when the next square is about to be dangerous and <code>"safe-trap"</code> when it is about to be safe. A single wasted turn is all it takes to change which.</p>',
+ 'Cross the spikes and reach the flag, with the one heart you have.',
+ '',
+ 'hero.say("wait for them to drop");\nhero.moveRight(6);',
+ 'Walking straight in is one turn too early. Spend a turn on something that is not a move &mdash; <code>hero.say("...")</code> will do &mdash; and then walk. One turn is the whole puzzle.',
+ [[(c) => /say\s*\(|look\s*\(/.test(c), 'something that costs a turn without moving you, or a <code>look</code> that decides when to go']],
+ 'One wasted turn, deliberately. Timing is a thing you can program, and the tool for it is doing nothing on purpose &mdash; which is a strange idea until the first time it saves you.',
+ 'Not yet. If the spikes caught you, you arrived on the wrong beat: add exactly one turn before you set off, not two. Count the flashes in the replay.',
+ 'A hazard that cycles on a fixed period is on a <b>duty cycle</b>, and arriving when it is safe is <b>phase</b>. Deliberately doing nothing for one turn is a <b>no-op</b>, and real programs are full of them.',
+ 'Traffic lights, hard drives waiting for a platter to come round, and every radio in the world do exactly this: the thing you want is not always available, so you time your arrival instead of forcing it.');
+
+QU('The witch down the hall',
+ {w:8, h:2, hero:[0,0], exit:[7,1], hp:3, budget:20,
+  foes:[{at:[7,0], name:'Vex', icon:'🧙', kind:'caster', range:9, bite:1, hp:1}]},
+ '<p>Vex never moves. Vex does not have to.</p>'
+ + '<p>A caster owns a straight line &mdash; the whole row she is standing in, and the whole column too. Anywhere in that line, with nothing solid in between, she can reach you from any distance. You start in her row. You have three hearts and there are seven squares between you.</p>'
+ + '<p>The answer is not to run faster. It is to <b>stop being in the line</b>. Step out of her row and everything she can do stops being about you, and then walking the length of the board is just walking.</p>'
+ + '<p>This is the first level where the right move is sideways. Most boards reward going toward the flag; this one punishes it for exactly as long as you stay in that row. Geometry beats speed.</p>',
+ 'Get out of Vex’s line, cross the room, and finish on the flag.',
+ '',
+ 'hero.moveDown(1);\nhero.moveRight(7);',
+ 'The very first thing you do should not be moving right. Drop into the other row, <i>then</i> cross. Vex can only reach along her own row and column.',
+ [[(c) => /moveDown|moveUp/.test(c), 'a move out of the row you start in'],
+  [(c) => { const m = c.match(/hero\.(moveRight|moveDown|moveUp|moveLeft)/); return !!m && m[1] !== 'moveRight'; }, 'and it happens <i>before</i> you start walking right']],
+ 'You solved a fight by not having it. Reading what a thing can reach, and standing outside it, is worth more than hitting harder &mdash; and it is the same instinct as not putting the secret in the file everyone can read.',
+ 'Not yet. If you are losing hearts, you spent turns in her row. Check what your very first line does.',
+ 'The squares a piece can reach are its <b>range</b> or <b>line of sight</b>, and something solid that cuts the line gives you <b>cover</b>. Working out what an attacker can touch, and standing outside it, is called reducing the <b>attack surface</b>.',
+ 'That last phrase is not a metaphor: it is the actual phrase security engineers use, and the actual job. Most of protecting a system is noticing which row you are standing in.');
+
+QU('Look before you leap',
+ {w:7, h:3, hero:[0,1], exit:[6,1], hp:3, budget:22, pits:[[3,1]], walls:[[3,2]]},
+ '<p>A hole in the floor. Not a heart, not a scratch &mdash; the end of the run. Fire costs you one; a pit costs you all of them at once.</p>'
+ + '<p>It sits in the middle of your row, and the square below it is a wall, so there is exactly one way past: up and over. Three squares of detour, and the whole level is whether you noticed the hole before your hero walked into it.</p>'
+ + '<p>You can see it on the board, so this one is easy to plan by eye. But plan it with <code>hero.look("right")</code> instead, because that is the version that still works when you cannot see:</p>'
+ + '<pre class="czcode">if (hero.look("right") === "pit") {\n  hero.moveUp(1);\n}</pre>'
+ + '<p>Here is the habit worth taking away: <b>the cheap check before the expensive mistake</b>. A look costs you nothing. Falling in costs you the run. Almost every guard clause you will ever write is this trade, and the ones people skip are the ones that end up in the incident report.</p>',
+ 'Get round the pit and finish on the flag.',
+ '',
+ 'hero.moveRight(2);\nhero.moveUp(1);\nhero.moveRight(2);\nhero.moveDown(1);\nhero.moveRight(2);',
+ 'Go right until you are one square short of the hole, step up into the top row, cross above it, come back down and carry on. Do not step down too early &mdash; the pit is waiting exactly where you left it.',
+ [[(c) => /moveUp/.test(c) && /moveDown/.test(c), 'a way up and a way back down again'],
+  [(c) => c.split('\n').filter(l => l.trim()).length <= 9, 'nine lines or fewer &mdash; there is no need to go square by square']],
+ 'Round rather than through, and your hero is still alive to be smug about it. A check that costs nothing, before a move that could cost everything, is the cheapest habit in programming.',
+ 'Not yet. If you fell in, you came back down one square too early &mdash; the pit is at the fourth square of your row. Count them on the board.',
+ 'A test you run before doing something irreversible is a <b>guard</b> or a <b>precondition</b>, and an action you cannot take back is <b>destructive</b>. Checking first is <b>defensive programming</b>.',
+ 'The reason <code>rm -rf</code> has a reputation, and the reason every deploy script starts by asking which environment it is pointed at, is this level. The check is boring and takes a second; the mistake makes the news.');
+
+QU('The lower vault',
+ {w:9, h:3, hero:[0,0], exit:[8,2], hp:5, budget:50, win:'gems exit',
+  gems:[[4,2]], walls:[[2,1],[6,1]], pits:[[5,0]],
+  traps:[{at:[3,2], period:2, phase:[0]}],
+  foes:[{at:[8,0], name:'Vex', icon:'🧙', kind:'caster', range:9, bite:1, hp:1},
+        {at:[7,2], name:'Imp', icon:'😈', kind:'chaser', hp:2, bite:1}]},
+ '<p>Everything at once. A witch holding the top row, a pit in it as well, spikes on the bottom row, an imp that walks toward you the moment you do anything, and a gem you cannot leave without.</p>'
+ + '<p>There is no new command here and no new idea. There is a board that punishes every habit you have not built yet: walking without looking, spending turns you did not mean to spend, standing in a line you could have stepped out of.</p>'
+ + '<p>The route that works is the boring one. Get out of the witch’s row immediately. Work along the bottom, letting <code>look</code> tell you whether the next square is spikes-about-to-be-up or clear. Take the gem. And when the imp arrives &mdash; it will arrive, you do not need to go and find it &mdash; put it down and walk to the flag.</p>'
+ + '<p>One loop, one <code>if</code> inside it, one decision per turn. If you find yourself writing twenty lines of moves, stop and write the loop instead: the board is deciding what happens, so your code has to be the kind that asks.</p>',
+ 'Take the gem and finish on the flag, with the vault doing its worst.',
+ '',
+ 'hero.moveDown(2);\nwhile (hero.look("right") !== "foe") {\n  if (hero.look("right") === "trap") {\n    hero.say("wait");\n  } else {\n    hero.moveRight(1);\n  }\n}\nhero.attack();\nhero.attack();\nhero.moveRight(6);',
+ 'Drop to the bottom row first &mdash; that takes the witch out of the game entirely. Then one loop: if the square to the right is <code>"trap"</code>, wait a turn; otherwise step right. Stop when it is <code>"foe"</code>, hit twice, and finish the walk.',
+ [[/while|for\s*\(/, 'a loop, because the number of turns is not something you can know in advance'],
+  [/look\s*\(/, 'a <code>look</code> inside it, because the board changes between your lines'],
+  [/if\s*\(/, 'and an <code>if</code>, because the answer changes what you should do'],
+  [(c) => (c.match(/hero\.move/g) || []).length <= 6, 'six move lines or fewer &mdash; the loop should be doing the walking']],
+ 'That is the whole track in one board: look, decide, act, repeat &mdash; against a world that moves while you think. Every level before this was practice for writing code that does not know what it is going to meet.',
+ 'Not yet. Check the order: the witch’s row first, then the spikes, then the imp. If you died early you were still in the top row; if you died late you went looking for the imp instead of letting it come.',
+ 'Code that reads the world each turn and picks an action is an <b>agent loop</b> or a <b>game loop</b>; the fixed rules it plays by are the <b>policy</b>. Writing the policy instead of the route is what makes it work on a board you have not seen.',
+ 'This is the shape of every robot, every trading bot and every autopilot ever written: sense, decide, act, repeat, forever, with no idea what is coming next. You have just written one by hand.');
+
 const ORDER = [];
 for (const g of GRADES) for (let i=0;i<L.length;i++) if (L[i].g===g.id && !L[i].chal && !L[i].proj) ORDER.push(i);
 
@@ -6225,12 +6329,33 @@ function questRun(SPEC, CODE){
   (SPEC.walls || []).forEach(function(p){ wallAt[p[0] + ',' + p[1]] = 1; });
   (SPEC.fire  || []).forEach(function(p){ fireAt[p[0] + ',' + p[1]] = 1; });
 
+  /* Traps are tiles that are only dangerous some of the time, which is the
+     whole point of them: a wall teaches you to go round, a spike teaches you
+     to count. Each one is hot when (step % period) is in its phase list. */
+  var trapList = (SPEC.traps || []).map(function(t){
+    return {x:t.at[0], y:t.at[1], kind:t.kind || 'spike', period:t.period || 2,
+            phase:t.phase == null ? [0] : [].concat(t.phase), bite:t.bite == null ? 1 : t.bite};
+  });
+  var pitAt = {};
+  (SPEC.pits || []).forEach(function(p){ pitAt[p[0] + ',' + p[1]] = 1; });
+  var step = 0;
+
   var hx = SPEC.hero[0], hy = SPEC.hero[1];
   var hp = SPEC.hp || 3, maxhp = hp, gems = 0, dir = 'right';
   var gemList = (SPEC.gems || []).map(function(p){ return {x:p[0], y:p[1], got:false}; });
+  /* A foe used to be a wall that hit back. These ones have a job: the guard
+     stands (which is every enemy the first eight levels ever had, so nothing
+     old changes), the chaser closes on you, the patrol walks its beat, the
+     ghost ignores walls, and the caster never moves but reaches down a whole
+     row. The kind is what makes a level a puzzle rather than a corridor. */
   var foeList = (SPEC.foes || []).map(function(f){
-    return {x:f.at[0], y:f.at[1], hp:f.hp == null ? 1 : f.hp, max:f.hp == null ? 1 : f.hp,
-            name:f.name || 'ogre', icon:f.icon || '👹', alive:true, bite:f.bite == null ? 1 : f.bite};
+    var kind = f.kind || 'guard';
+    return {x:f.at[0], y:f.at[1], x0:f.at[0], y0:f.at[1],
+            hp:f.hp == null ? 1 : f.hp, max:f.hp == null ? 1 : f.hp,
+            name:f.name || 'ogre', icon:f.icon || '👹', alive:true,
+            bite:f.bite == null ? 1 : f.bite, kind:kind,
+            range:f.range == null ? 3 : f.range,
+            path:f.path || null, leg:0, back:false, sleeps:!!f.sleeps, woke:false};
   });
   var switches = (SPEC.switches || []).map(function(s){ return {x:s.at[0], y:s.at[1], on:false, opens:s.opens}; });
   var doors = (SPEC.doors || []).map(function(d){ return {x:d.at[0], y:d.at[1], id:d.id, open:false}; });
@@ -6245,7 +6370,10 @@ function questRun(SPEC, CODE){
       foes: foeList.map(function(f){ return {x:f.x, y:f.y, hp:f.hp, alive:f.alive, icon:f.icon, name:f.name}; }),
       gemsOn: gemList.filter(function(g){ return !g.got; }).map(function(g){ return [g.x, g.y]; }),
       doorsOpen: doors.filter(function(d){ return d.open; }).map(function(d){ return [d.x, d.y]; }),
-      switchesOn: switches.filter(function(s){ return s.on; }).map(function(s){ return [s.x, s.y]; })
+      switchesOn: switches.filter(function(s){ return s.on; }).map(function(s){ return [s.x, s.y]; }),
+      /* which traps are dangerous in THIS frame, so the replay can show the
+         spikes coming up rather than describing them afterwards */
+      hot: trapList.filter(function(t){ return t.phase.indexOf(step % t.period) >= 0; }).map(function(t){ return [t.x, t.y]; })
     });
     said = '';
   }
@@ -6253,6 +6381,88 @@ function questRun(SPEC, CODE){
   function spend(cmd){
     if (++acts > BUDGET) throw {quest:'budget'};
     void cmd;
+  }
+  function hotTrap(x, y, atStep){
+    for (var i = 0; i < trapList.length; i++){
+      var t = trapList[i];
+      if (t.x === x && t.y === y && t.phase.indexOf(atStep % t.period) >= 0) return t;
+    }
+    return null;
+  }
+  function trapArmed(x, y){ return trapList.some(function(t){ return t.x === x && t.y === y; }); }
+  function solidFor(f, x, y){
+    if (x < 0 || y < 0 || x >= W || y >= H) return true;
+    if (f.kind !== 'ghost'){
+      if (wallAt[x + ',' + y]) return true;
+      var d = doorFound(x, y);
+      if (d && !d.open) return true;
+    }
+    if (foeAt(x, y)) return true;
+    return false;
+  }
+  function hurt(why, who){
+    hp -= who;
+    if (hp <= 0){ lost = why; throw {quest:'dead'}; }
+    return why;
+  }
+  /* Everything that happens because a turn passed rather than because you
+     asked: the trap cycle ticks, and anything that moves, moves. It runs
+     after each of the hero's actions, so a level with a chaser in it is
+     about arithmetic under pressure rather than arithmetic. */
+  function world(){
+    step++;
+    var notes = [];
+    var t = hotTrap(hx, hy, step);
+    if (t) notes.push(hurt('the ' + t.kind + 's caught you', t.bite) && 'the ' + t.kind + 's went off under you — that cost a heart');
+    for (var i = 0; i < foeList.length; i++){
+      var f = foeList[i];
+      if (!f.alive || f.kind === 'guard') continue;
+      if (f.sleeps && !f.woke){
+        if (Math.abs(f.x - hx) + Math.abs(f.y - hy) <= 2) f.woke = true;
+        else continue;
+      }
+      if (f.kind === 'caster'){
+        /* fires down a row or column, and a wall stops it, so standing out of
+           line is the answer rather than running faster */
+        if (inLine(f) ) notes.push(hurt(f.name + ' struck you from across the room', f.bite) && f.name + ' struck you from across the room');
+        continue;
+      }
+      var to = null;
+      if (f.kind === 'patrol' && f.path && f.path.length){
+        var want = f.path[f.leg % f.path.length];
+        to = [f.x + want[0], f.y + want[1]];
+        if (solidFor(f, to[0], to[1]) && !(to[0] === hx && to[1] === hy)){ f.leg++; to = null; }
+        else f.leg++;
+      } else if (f.kind === 'chaser' || f.kind === 'ghost'){
+        var dx = hx - f.x, dy = hy - f.y;
+        var tries = Math.abs(dx) >= Math.abs(dy)
+          ? [[Math.sign(dx), 0], [0, Math.sign(dy)]]
+          : [[0, Math.sign(dy)], [Math.sign(dx), 0]];
+        for (var k = 0; k < tries.length && !to; k++){
+          var nx = f.x + tries[k][0], ny = f.y + tries[k][1];
+          if (!tries[k][0] && !tries[k][1]) continue;
+          if (nx === hx && ny === hy){ to = [nx, ny]; break; }
+          if (!solidFor(f, nx, ny)) to = [nx, ny];
+        }
+      }
+      if (!to) continue;
+      if (to[0] === hx && to[1] === hy){
+        notes.push(hurt(f.name + ' caught you', f.bite) && f.name + ' reached you and hit');
+      } else { f.x = to[0]; f.y = to[1]; }
+    }
+    return notes.join('; ');
+  }
+  function inLine(f){
+    if (f.x !== hx && f.y !== hy) return false;
+    var dx = Math.sign(hx - f.x), dy = Math.sign(hy - f.y);
+    var dist = Math.abs(hx - f.x) + Math.abs(hy - f.y);
+    if (dist === 0 || dist > f.range) return false;
+    for (var s = 1; s < dist; s++){
+      var x = f.x + dx * s, y = f.y + dy * s;
+      if (wallAt[x + ',' + y]) return false;
+      var d = doorFound(x, y); if (d && !d.open) return false;
+    }
+    return true;
   }
   function blocked(x, y){
     if (x < 0 || y < 0 || x >= W || y >= H) return 'the edge of the map';
@@ -6291,11 +6501,16 @@ function questRun(SPEC, CODE){
         switches[s].on = true;
         for (var d = 0; d < doors.length; d++) if (doors[d].id === switches[s].opens) doors[d].open = true;
       }
+    if (pitAt[hx + ',' + hy]){ lost = 'you walked into the pit'; throw {quest:'dead'}; }
     if (fireAt[hx + ',' + hy]){
       hp--;
       if (hp <= 0){ lost = 'the fire finished you off'; throw {quest:'dead'}; }
       return 'you stepped in fire — that cost a heart';
     }
+    /* Traps fire in world(), at the end of the turn, and only there. Checking
+       here as well meant an always-hot tile took two hearts for one step, and
+       it also disagreed with the frame the replay draws, which is the one
+       thing in this engine that must never happen. */
     return '';
   }
 
@@ -6311,11 +6526,20 @@ function questRun(SPEC, CODE){
     for (var i = 0; i < n; i++){
       spend(name);
       var why = blocked(hx + dx, hy + dy);
-      if (why){ snap(name + '()', 'bumped into ' + why + ' — the hero did not move'); return; }
+      if (why){
+        /* a bump still costs you the turn, and the board takes its turn too -
+           standing still next to a chaser is not a way to wait safely */
+        var wb = world();
+        snap(name + '()', 'bumped into ' + why + ' — the hero did not move' + (wb ? '; ' + wb : ''));
+        return;
+      }
       hx += dx; hy += dy;
       var note = land();
-      snap(name + '()', note);
-      if (done()) throw {quest:'done'};
+      /* reaching the flag ends it before anything else gets a move: winning
+         and then being killed on the same square would be a cheat */
+      if (done()){ snap(name + '()', note); throw {quest:'done'}; }
+      var wn = world();
+      snap(name + '()', [note, wn].filter(Boolean).join('; '));
     }
     if (n === 0) snap(name + '(0)', 'moving zero squares does nothing at all');
   }
@@ -6353,15 +6577,21 @@ function questRun(SPEC, CODE){
         if (!target){ snap('attack()', 'you swung at thin air — nothing is standing next to you'); sync(); return; }
       }
       target.hp--;
-      if (target.hp <= 0){ target.alive = false; snap('attack()', target.name + ' is down'); if (done()) throw {quest:'done'}; }
+      if (target.hp <= 0){
+        target.alive = false;
+        if (done()){ snap('attack()', target.name + ' is down'); throw {quest:'done'}; }
+        var wd = world();
+        snap('attack()', target.name + ' is down' + (wd ? '; ' + wd : ''));
+      }
       else {
         hp -= target.bite;
         if (hp <= 0){ lost = target.name + ' got you first'; snap('attack()', ''); throw {quest:'dead'}; }
-        snap('attack()', target.name + ' has ' + target.hp + ' left and hit you back');
+        var wh = world();
+        snap('attack()', target.name + ' has ' + target.hp + ' left and hit you back' + (wh ? '; ' + wh : ''));
       }
       sync();
     },
-    say: function(msg){ spend('say'); said = String(msg); snap('say(...)', ''); sync(); },
+    say: function(msg){ spend('say'); said = String(msg); var ws = world(); snap('say(...)', ws); sync(); },
     look: function(which){
       var d = which === 'right' ? [1,0] : which === 'left' ? [-1,0] : which === 'down' ? [0,1]
             : which === 'up' ? [0,-1] : null;
@@ -6372,6 +6602,8 @@ function questRun(SPEC, CODE){
       var dd = doorFound(x, y); if (dd) return dd.open ? 'clear' : 'door';
       if (foeAt(x, y)) return 'foe';
       if (fireAt[x + ',' + y]) return 'fire';
+      if (pitAt[x + ',' + y]) return 'pit';
+      if (trapArmed(x, y)) return hotTrap(x, y, step + 1) ? 'trap' : 'safe-trap';
       for (var i = 0; i < gemList.length; i++) if (!gemList[i].got && gemList[i].x === x && gemList[i].y === y) return 'gem';
       if (SPEC.exit && SPEC.exit[0] === x && SPEC.exit[1] === y) return 'exit';
       return 'clear';
@@ -7235,7 +7467,7 @@ function shellRun(SPEC, CODE){
 
 
 const ARC_CSS = "\n*{box-sizing:border-box}\nbody{margin:0;font:14px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#11131a;color:#e8e6e1;padding:12px}\n.verdict{border-radius:9px;padding:9px 12px;margin:0 0 10px;font-weight:600;font-size:.86rem;line-height:1.45}\n.verdict.win{background:#12432f;color:#8fe7bd;border:1px solid #1d6a4b}\n.verdict.lose{background:#43241c;color:#f0b49c;border:1px solid #79402e}\n.verdict.idle{background:#1b1f28;color:#9aa2b0;border:1px solid #2a3040}\n.verdict small{display:block;font-weight:400;opacity:.85;margin-top:3px}\n.ttl{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:#7c8598;margin:12px 0 6px}\nbutton{font:inherit;font-weight:600;border:none;border-radius:8px;padding:7px 14px;cursor:pointer;background:#2b6b57;color:#eafff6}\nbutton:hover{background:#35836a}\n/* Dimming a button with opacity drags its label under the bar too: a\n   disabled control still has to be readable, so the ground dims and the\n   text does not. */\nbutton[disabled]{background:#39414f;color:#c3cad6;cursor:default}\n";
-const QUEST_CSS = "\n#board{position:relative;margin:0 auto;background:#171a22;border-radius:10px;padding:5px}\n.qc{position:absolute;border-radius:5px;background:#1f2430}\n.qc.wall{background:#3a4152;box-shadow:inset 0 -3px 0 #2c3242}\n.qc.fire{background:#4a2118}\n.qc.exit{background:#1c4437;box-shadow:inset 0 0 0 2px #2f7d5c}\n.sp{position:absolute;display:flex;align-items:center;justify-content:center;transition:transform .17s ease;z-index:2}\n.sp.gone{opacity:0;transform:scale(.3)}\n#hero{z-index:4}\n#hero.hurt{animation:shake .3s}\n@keyframes shake{25%{transform:translate(var(--tx),var(--ty)) rotate(-12deg)}75%{transform:translate(var(--tx),var(--ty)) rotate(12deg)}}\n.bub{position:absolute;z-index:6;background:#f3f1ec;color:#22262e;border-radius:9px;padding:3px 8px;font-size:11px;font-weight:600;white-space:nowrap;transform:translate(-50%,-115%);box-shadow:0 2px 8px rgba(0,0,0,.45)}\n#hud{display:flex;gap:14px;align-items:center;margin:10px 0 0;font-size:.8rem;color:#aab2c0;flex-wrap:wrap}\n#hud b{color:#e8e6e1}\n#trace{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}\n.blk{font:600 11px/1 ui-monospace,Menlo,Consolas,monospace;padding:5px 7px;border-radius:5px;background:#232936;color:#9fb4c9;border-left:3px solid #3d4b61}\n.blk.mv{border-left-color:#4f9ad8;color:#a9d1f0}\n.blk.at{border-left-color:#d8714f;color:#f0b8a4}\n.blk.sy{border-left-color:#c5a03f;color:#e8d29a}\n.blk.now{background:#31405a;color:#fff;box-shadow:0 0 0 1px #5a7ba8}\n.blk.bump{border-left-color:#8a5a2b;opacity:.75;text-decoration:line-through}\n.note{font-size:.76rem;color:#c3a06a;min-height:1.3em;margin-top:6px}\n";
+const QUEST_CSS = "\n#board{position:relative;margin:0 auto;background:#171a22;border-radius:10px;padding:5px}\n.qc{position:absolute;border-radius:5px;background:#1f2430}\n.qc.wall{background:#3a4152;box-shadow:inset 0 -3px 0 #2c3242}\n.qc.fire{background:#4a2118}\n.qc.exit{background:#1c4437;box-shadow:inset 0 0 0 2px #2f7d5c}\n.qc.pit{background:#08090c;box-shadow:inset 0 0 14px #000;color:#2a2f3a;display:flex;align-items:center;justify-content:center;font-size:.9em}\n.qc.trap{background:#2a2118;color:#6b5a3f;display:flex;align-items:center;justify-content:center;font-size:.72em;transition:background .12s,color .12s}\n.qc.trap.hot{background:#5e2a1c;color:#ffb38a;box-shadow:inset 0 0 0 2px #a8472b,0 0 12px rgba(200,80,40,.5)}\nbutton.ghost{background:#2a3142;color:#c6d0e0}\nbutton.ghost:hover{background:#354056}\n.sp{position:absolute;display:flex;align-items:center;justify-content:center;transition:transform .17s ease;z-index:2}\n.sp.gone{opacity:0;transform:scale(.3)}\n#hero{z-index:4}\n#hero.hurt{animation:shake .3s}\n@keyframes shake{25%{transform:translate(var(--tx),var(--ty)) rotate(-12deg)}75%{transform:translate(var(--tx),var(--ty)) rotate(12deg)}}\n.bub{position:absolute;z-index:6;background:#f3f1ec;color:#22262e;border-radius:9px;padding:3px 8px;font-size:11px;font-weight:600;white-space:nowrap;transform:translate(-50%,-115%);box-shadow:0 2px 8px rgba(0,0,0,.45)}\n#hud{display:flex;gap:14px;align-items:center;margin:10px 0 0;font-size:.8rem;color:#aab2c0;flex-wrap:wrap}\n#hud b{color:#e8e6e1}\n#trace{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}\n.blk{font:600 11px/1 ui-monospace,Menlo,Consolas,monospace;padding:5px 7px;border-radius:5px;background:#232936;color:#9fb4c9;border-left:3px solid #3d4b61}\n.blk.mv{border-left-color:#4f9ad8;color:#a9d1f0}\n.blk.at{border-left-color:#d8714f;color:#f0b8a4}\n.blk.sy{border-left-color:#c5a03f;color:#e8d29a}\n.blk.now{background:#31405a;color:#fff;box-shadow:0 0 0 1px #5a7ba8}\n.blk.bump{border-left-color:#8a5a2b;opacity:.75;text-decoration:line-through}\n.note{font-size:.76rem;color:#c3a06a;min-height:1.3em;margin-top:6px}\n";
 const SOUND_CSS = "\n#deck{background:#171a22;border-radius:10px;padding:10px;overflow-x:auto}\n.trk{display:flex;align-items:center;gap:7px;margin-bottom:5px}\n.tname{flex:0 0 74px;font:600 10px/1 ui-monospace,Menlo,monospace;color:#8b94a6;text-align:right;letter-spacing:.04em}\n.steps{position:relative;display:flex;gap:1px}\n.st{width:13px;height:21px;border-radius:2px;background:#232936;flex:0 0 auto}\n.st.bar{background:#283040}\n.st.on{box-shadow:inset 0 0 0 1px rgba(255,255,255,.22)}\n.st.hold{opacity:.42}\n.st.lit{transform:scaleY(1.45);filter:brightness(1.9) saturate(1.3);box-shadow:0 0 12px currentColor}\n.st{transition:transform .07s ease-out,filter .07s ease-out}\n#hit{font-size:1rem;padding:11px 22px;border-radius:10px;font-weight:700;letter-spacing:.01em;box-shadow:0 2px 0 #1d4a3c}\n#hit:active{transform:translateY(1px);box-shadow:0 1px 0 #1d4a3c}\n#sctl.going #hit{background:#b8472f;box-shadow:0 2px 0 #7d2e1d}\n#play{position:absolute;top:-3px;bottom:-3px;width:2px;background:#f0d98a;border-radius:2px;left:0;display:none;pointer-events:none;z-index:3}\n#bars{display:flex;gap:1px;margin:0 0 5px 81px}\n.bn{width:55px;font:600 9px/1 ui-monospace,monospace;color:#8b94a6;flex:0 0 auto}\n#sctl{display:flex;gap:9px;align-items:center;margin-top:11px;flex-wrap:wrap;font-size:.79rem;color:#aab2c0}\n#fx{margin-top:9px;font:600 11px/1.6 ui-monospace,Menlo,monospace;color:#8b94a6}\n";
 const CONSOLE_CSS = "\n.term{background:#0d1017;border:1px solid #232936;border-radius:9px;padding:12px 14px;\n  font:13px/1.65 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word;color:#d7dbe2;min-height:60px}\n.term .pyerr{display:block;margin-top:10px;padding:9px 11px;border-radius:7px;background:#3a1f18;color:#f4b9a2;border-left:3px solid #c2542e;font-weight:600}\n.term .pyerr i{display:block;font-style:normal;font-weight:400;opacity:.8;font-size:.9em;margin-top:3px}\n.term .cursor{display:inline-block;width:7px;height:15px;background:#3f7d63;vertical-align:-2px;animation:bl 1.1s steps(2) infinite}\n@keyframes bl{50%{opacity:0}}\n.term .empty{color:#5f6879;font-style:italic}\ntable.tt{width:100%;border-collapse:collapse;font:12px/1.5 ui-monospace,Menlo,Consolas,monospace;margin-top:4px}\ntable.tt th{text-align:left;font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:#7c8598;padding:0 8px 5px;font-weight:600}\ntable.tt td{padding:6px 8px;border-top:1px solid #222834;vertical-align:top;word-break:break-word}\ntable.tt tr.p td:first-child{color:#6fd3a4}\ntable.tt tr.f td:first-child{color:#e8896a}\ntable.tt tr.f{background:#241a17}\ntable.tt .hid{color:#7c8598;font-style:italic}\ntable.tt .why{color:#e8896a;display:block;font-size:.92em;margin-top:2px}\n.rank{display:inline-block;background:#2a3142;color:#c6d0e0;border-radius:5px;padding:2px 7px;font-size:.68rem;font-weight:700;letter-spacing:.06em}\n";
 
@@ -7252,6 +7484,27 @@ function arcVerdict(state, head, sub){
 }
 
 /* ------------------------------------------------------------- QUEST --- */
+/* Quest borrows the Sound Room's synthesiser rather than shipping audio: the
+   same soundKit() bus that made the drums loud, with a kit of its own. Nothing
+   here is a recording either - a sword is filtered noise with a crack on the
+   front, and a defeated ogre is a sawtooth falling through a filter. */
+const QUEST_SFX = {
+  STEP:   {kind:'noise', dur:0.045, hp:2200, gain:0.22},
+  BUMP:   {kind:'noise', dur:0.12,  bp:200,  q:1.1, gain:0.85, body:[72]},
+  SWING:  {kind:'noise', dur:0.13,  bp:2800, q:0.55, gain:0.62, snap:0.55},
+  HIT:    {kind:'noise', dur:0.18,  bp:850,  q:0.8, gain:1.0,  body:[150, 72], snap:0.6},
+  DOWN:   {kind:'tone',  f0:320, f1:58,  dur:0.5,  type:'sawtooth', gain:0.85, drop:0.34, lp:1500, lpq:4, click:0.35},
+  HURT:   {kind:'tone',  f0:240, f1:104, dur:0.32, type:'square',   gain:0.6,  drop:0.2,  lp:1700},
+  GEM:    {kind:'tone',  f0:1046, f1:1046, dur:0.5, type:'sine',    gain:0.55, chord:[0,7,12]},
+  DOOR:   {kind:'noise', dur:0.42,  bp:420,  q:0.7, gain:0.8,  body:[120, 88]},
+  SWITCH: {kind:'tone',  f0:880, f1:1320, dur:0.09, type:'square',  gain:0.4},
+  SPIKE:  {kind:'noise', dur:0.17,  bp:3400, q:1.5, gain:0.95, snap:0.75},
+  PIT:    {kind:'tone',  f0:420, f1:40,  dur:0.7,  type:'triangle', gain:0.8,  drop:0.6},
+  WINA:   {kind:'tone',  f0:523, f1:523, dur:0.22, type:'triangle', gain:0.6},
+  WINB:   {kind:'tone',  f0:659, f1:659, dur:0.22, type:'triangle', gain:0.6},
+  WINC:   {kind:'tone',  f0:784, f1:784, dur:0.7,  type:'triangle', gain:0.7, chord:[0,5,12]},
+  LOSE:   {kind:'tone',  f0:210, f1:52,  dur:0.8,  type:'sawtooth', gain:0.7, drop:0.62, lp:900, lpq:3}
+};
 const QUEST_VIEW = [
 'var R = questRun(SPEC, CODE);',
 'var CELL = Math.max(26, Math.min(52, Math.floor((Math.min(window.innerWidth - 40, 560)) / SPEC.w)));',
@@ -7271,6 +7524,8 @@ const QUEST_VIEW = [
 'for (var y = 0; y < SPEC.h; y++) for (var x = 0; x < SPEC.w; x++) put("qc", x, y);',
 '(SPEC.walls||[]).forEach(function(p){ put("qc wall", p[0], p[1]); });',
 '(SPEC.fire||[]).forEach(function(p){ put("qc fire", p[0], p[1], "\uD83D\uDD25"); });',
+'(SPEC.pits||[]).forEach(function(p){ put("qc pit", p[0], p[1], "\u2B24"); });',
+'var trapEls = (SPEC.traps||[]).map(function(t){ return {t:t, el:put("qc trap", t.at[0], t.at[1], "\u25B2")}; });',
 'if (SPEC.exit) put("qc exit", SPEC.exit[0], SPEC.exit[1], "\uD83C\uDFC1");',
 'var doorEls = (SPEC.doors||[]).map(function(d){ return {d:d, el:put("sp", d.at[0], d.at[1], "\uD83D\uDEAA")}; });',
 'var swEls = (SPEC.switches||[]).map(function(w){ return {w:w, el:put("sp", w.at[0], w.at[1], "\u25C9")}; });',
@@ -7302,24 +7557,74 @@ const QUEST_VIEW = [
 '    bub.style.left = (f.x * CELL + CELL / 2 + 5) + "px"; bub.style.top = (f.y * CELL + 5) + "px";',
 '    board.appendChild(bub);',
 '  }',
+'  trapEls.forEach(function(t){',
+'    var hot = (f.hot || []).some(function(p){ return p[0] === t.t.at[0] && p[1] === t.t.at[1]; });',
+'    t.el.className = "qc trap" + (hot ? " hot" : "");',
+'  });',
 '  if (/cost a heart|hit you back|got you/.test(f.note || "")) { heroEl.classList.add("hurt"); setTimeout(function(){ heroEl.classList.remove("hurt"); }, 320); }',
+'}',
+'var KIT = soundKit(), actx = null, abus = null, sndOn = SOUND !== false, live = false;',
+'/* One context and one bus for the whole replay: building them per hit would',
+'   cost more than the sound is worth, and the browser only unlocks audio once',
+'   a person has clicked something, which pressing Run counts as. */',
+'function sfx(name, delay){',
+'  if (!sndOn || !live) return;',
+'  try {',
+'    if (!actx){ actx = new (window.AudioContext || window.webkitAudioContext)(); abus = KIT.bus(actx); }',
+'    if (actx.state === "suspended") actx.resume();',
+'    KIT.voice(actx, name, actx.currentTime + (delay || 0), abus);',
+'  } catch (e){}',
+'}',
+'/* what a frame sounds like, worked out from what changed since the last one */',
+'function sound(f, prev){',
+'  if (!prev) return;',
+'  if (f.hp < prev.hp){',
+'    if (/spike|trap/.test(f.note || "")) sfx("SPIKE"); else sfx("HURT");',
+'  }',
+'  if (/^bumped/.test(f.note || "")) sfx("BUMP");',
+'  else if (/attack/.test(f.cmd || "")){',
+'    sfx("SWING");',
+'    if (/ is down/.test(f.note || "")){ sfx("HIT", 0.06); sfx("DOWN", 0.12); }',
+'    else if (/left and hit you back/.test(f.note || "")) sfx("HIT", 0.06);',
+'  }',
+'  else if (/move/.test(f.cmd || "") && (f.x !== prev.x || f.y !== prev.y)) sfx("STEP");',
+'  if (f.gemsOn.length < prev.gemsOn.length) sfx("GEM", 0.02);',
+'  if (f.switchesOn.length > prev.switchesOn.length) sfx("SWITCH");',
+'  if (f.doorsOpen.length > prev.doorsOpen.length) sfx("DOOR", 0.05);',
 '}',
 'var at = 0, timer = null;',
 'function step(){',
 '  if (at >= R.frames.length) { stop(); return; }',
+'  sound(R.frames[at], at > 0 ? R.frames[at - 1] : null);',
 '  draw(R.frames[at]);',
 '  var blocks = trace.querySelectorAll(".blk");',
 '  for (var i = 0; i < blocks.length; i++) blocks[i].classList.toggle("now", +blocks[i].dataset.at === at);',
 '  at++;',
 '}',
-'function stop(){ clearInterval(timer); timer = null; document.getElementById("replay").disabled = false; }',
+'function stop(){',
+'  clearInterval(timer); timer = null; document.getElementById("replay").disabled = false;',
+'  /* the ending is the point of the whole replay, so it gets a chord */',
+'  if (!live) return;',
+'  if (R.won){ sfx("WINA", 0.05); sfx("WINB", 0.17); sfx("WINC", 0.3); }',
+'  else if (/pit/.test(R.why || "")) sfx("PIT", 0.05);',
+'  else if (R.error) sfx("LOSE", 0.05);',
+'}',
 'function go(){',
-'  at = 0; document.getElementById("replay").disabled = true;',
+'  at = 0; live = true; document.getElementById("replay").disabled = true;',
 '  clearInterval(timer);',
 '  timer = setInterval(step, R.frames.length > 26 ? 110 : 260);',
 '  step();',
 '}',
 'document.getElementById("replay").onclick = go;',
+'var mute = document.getElementById("mute");',
+'if (mute){',
+'  mute.textContent = sndOn ? "\uD83D\uDD0A Sound on" : "\uD83D\uDD07 Sound off";',
+'  mute.onclick = function(){',
+'    sndOn = !sndOn;',
+'    mute.textContent = sndOn ? "\uD83D\uDD0A Sound on" : "\uD83D\uDD07 Sound off";',
+'    try { parent.postMessage({questSound: sndOn}, "*"); } catch (e){}',
+'  };',
+'}',
 'draw(R.frames[0]);',
 'setTimeout(go, 220);'
 ].join('\n');
@@ -7339,9 +7644,11 @@ function questDoc(les, code){
   const body = banner
     + '<div id="board"></div><div id="hud"></div><div id="note" class="note"></div>'
     + '<div class="ttl">Your code, one command at a time</div><div id="trace"></div>'
-    + '<div style="margin-top:10px"><button id="replay">↻ Watch it again</button></div>';
-  const js = 'var SPEC=' + JSON.stringify(spec) + ';var CODE=' + JSON.stringify(code) + ';var HERO=' + JSON.stringify(heroFace()) + ';\n'
-    + questRun.toString() + '\n' + QUEST_VIEW;
+    + '<div style="margin-top:10px"><button id="replay">↻ Watch it again</button>'
+    + ' <button id="mute" class="ghost">🔊 Sound on</button></div>';
+  const js = 'var SPEC=' + JSON.stringify(spec) + ';var CODE=' + JSON.stringify(code) + ';var HERO=' + JSON.stringify(heroFace())
+    + ';var SOUND=' + (questSound ? 'true' : 'false') + ';var SOUND_RECIPES=' + JSON.stringify(QUEST_SFX) + ';\n'
+    + soundKit.toString() + '\n' + questRun.toString() + '\n' + QUEST_VIEW;
   return arcPage(QUEST_CSS, body, js);
 }
 
@@ -7950,6 +8257,15 @@ function markErr(range){
   errEl.innerHTML = hlEsc(code.slice(0,a)) + '<span class="redpen">' + hlEsc(code.slice(a,b)) + '</span>' + hlEsc(code.slice(b)) + '\n';
   errEl.scrollTop = edEl.scrollTop; errEl.scrollLeft = edEl.scrollLeft;
 }
+/* Whether the dungeon makes noise. Kept up here because the preview is rebuilt
+   from scratch on every run and would forget. */
+let questSound = true;
+try { questSound = localStorage.getItem('questSound') !== '0'; } catch(e){}
+window.addEventListener('message', (e)=>{
+  if (!e.data || typeof e.data.questSound !== 'boolean') return;
+  questSound = e.data.questSound;
+  try { localStorage.setItem('questSound', questSound ? '1' : '0'); } catch(err){}
+});
 let graded = false;
 const SHELL_TIP = '\u2328\uFE0F The box above is a terminal. Type one command, press <b>Enter</b>, and it runs \u2014 the panel below shows what that did to the machine. When the session is done, press <b>\u25B6 Run</b> (or Ctrl+Enter) and the coach reads the whole thing.';
 function previewOnly(){
@@ -9654,7 +9970,13 @@ const ADV_CLASSES = [
   {id:'bard',      icon:'🎼', name:'Bard',      blurb:'You want it to be beautiful.',
    long:'Bards care how it feels and how it sounds. They are why software is pleasant to use instead of merely correct, and their track runs through the Sound Room.', first:'SR'}
 ];
-const ADV_FACES = ['🧑','👩','👨','🧙','🧝','🤖','🐱','🦊','🐻','🐉','👾','🦉'];
+/* Forty of them, because the figure walking the board is the one thing in
+   the school that is purely yours, and a choice of twelve is a menu while a
+   choice of forty is a decision. */
+const ADV_FACES = ['🧑','👩','👨','🧒','👴','👵','🧙','🧚','🧝','🧜','🧛','🧟',
+  '🤖','👽','👾','🤡','🦸','🦹','🥷','👸','🤴','🧐','🤠','👨‍🍳',
+  '🐱','🦊','🐻','🐨','🐯','🦁','🐵','🐸','🦉','🦅','🐧','🐙',
+  '🐉','🦖','🦕','🦄'];
 
 /* A badge is only worth having if it marks something you could not have got
    by clicking. Every one of these is earned by a thing that ran. */

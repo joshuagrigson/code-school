@@ -30,6 +30,7 @@ Challenges, portfolio pieces, Beyond and the Review Desk sit outside that count.
 | **Beyond** | **15 lessons after graduation: reading and fixing code you did not write, verifying what a machine wrote, writing a spec, asking a question that gets answered, commit messages, READMEs, shipping, secrets, untrusted input, accessibility, transferring to the next language, and performance** |
 | **Review Desk** | **10 lessons on reading code a machine wrote — see below** |
 | **Quest** | **13 levels where your code drives a hero across a board that fights back** |
+| **The Deep** | **650 generated Quest floors, each one proved winnable before you see it** |
 | **The Sound Room** | **8 lessons where your code is the instrument** |
 | **The Kata Table** | **7 puzzles marked on tests you were never shown** |
 | **Python** | **13 lessons: a second language, from `print` to a working report** |
@@ -176,6 +177,19 @@ told it is a sentence and which program says that thing, because the first
 goal line used to read like an invitation to type one, and the last lesson is a brief with
 no walkthrough — scaffold a site and put it under version control — because
 that is how the work arrives.
+
+**The Deep** is the same hero on six hundred and fifty boards nobody wrote.
+A floor is not stored: it is built from its own number, so floor 137 is floor
+137 on every machine, forever, and the whole dungeon costs one entry in the
+lesson list rather than 650. The interesting part is the promise. Generated
+levels are notorious for shipping rooms with no doors, so before a floor is
+handed over the generator lays a route through it, writes that route as a
+program, and runs it through **the same `questRun` the learner plays on** — if
+the real engine does not win, the floor is thrown away and a different one is
+built. A floor nobody can finish cannot exist, and the proof is not a model of
+the game but the game. `par` is what that plain route cost: walk, swing at
+whatever is in the way, wait when the spikes are up. Beating par means you
+found something better than the machine did.
 
 **The Adventurer** (from Codédex) is the character all of it belongs to: a name,
 a face, and one of four classes — Builder, Sleuth, Architect, Bard — which are

@@ -243,6 +243,9 @@ body.grabbing{cursor:ns-resize;user-select:none}
 .arcrow .arcneed{display:block;font-size:.78rem;margin-top:6px;color:var(--acct);line-height:1.45}
 .arcrow .arcneed.warn{color:var(--warn)}
 .arcrow.early{border-style:dashed}
+.deepstat{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
+.deepstat span{font:600 .76rem/1 var(--mono);background:var(--chip);border:1px solid var(--chipline);
+  color:var(--chipink);border-radius:6px;padding:5px 8px}
 .readynote{border:1px solid var(--line2);border-left:3px solid var(--warn);border-radius:12px;
   background:var(--panel2);padding:13px 16px;margin:0 0 18px;font-size:.92rem;line-height:1.6}
 .readygo{display:block;width:100%;margin-top:11px;text-align:left;border:1px solid var(--line);
@@ -2804,6 +2807,7 @@ GRADES.push({id:'SR', name:'The Sound Room',  sub:'Code that makes music',      
 GRADES.push({id:'KT', name:'The Kata Table',  sub:'Puzzles with hidden tests',   lv:2});
 GRADES.push({id:'PY', name:'Python',          sub:'A second language, from zero',lv:1});
 GRADES.push({id:'SH', name:'The Terminal',    sub:'The machine, in its own words',lv:1});
+GRADES.push({id:'DP', name:'The Deep',        sub:'650 floors, every one proved',lv:1});
 
 /* ---- Quest -------------------------------------------------------------
    reqs are about HOW, the simulation is about WHETHER. Both have to hold: a
@@ -4002,6 +4006,65 @@ QU('The lower vault',
  'Code that reads the world each turn and picks an action is an <b>agent loop</b> or a <b>game loop</b>; the fixed rules it plays by are the <b>policy</b>. Writing the policy instead of the route is what makes it work on a board you have not seen.',
  'This is the shape of every robot, every trading bot and every autopilot ever written: sense, decide, act, repeat, forever, with no idea what is coming next. You have just written one by hand.');
 
+/* ---- The Deep ------------------------------------------------------------
+   One lesson slot, six hundred and fifty floors. The board is not stored: it
+   is generated from the floor number and proved winnable on the spot by the
+   same questRun the learner plays on, so this costs one entry in the lesson
+   list rather than six hundred and fifty, and there is no way for a floor to
+   exist that nobody can finish. How deep you have been is kept separately,
+   because "lesson done" cannot describe a place you can always go deeper. */
+const DEEP_FLOORS = 650;
+let deepFloor = 1, deepBest = 1;
+try {
+  deepFloor = Math.min(DEEP_FLOORS, Math.max(1, +(localStorage.getItem('deepFloor') || 1) || 1));
+  deepBest = Math.min(DEEP_FLOORS, Math.max(1, +(localStorage.getItem('deepBest') || deepFloor) || 1));
+} catch(e){}
+function deepSave(){ try { localStorage.setItem('deepFloor', String(deepFloor)); localStorage.setItem('deepBest', String(deepBest)); } catch(e){} }
+const DEEP_IDX = L.length;
+L.push({lang:'arc', kind:'quest', g:'DP', beyond:true, deep:true, spec:{w:5,h:1,hero:[0,0],exit:[4,0],budget:20},
+  title:'The Deep', teach:'', goal:'', start:'', sol:'', hint:'', html:'', css:'', js:'',
+  check:(c)=>{
+    const sim = questRun(L[DEEP_IDX].spec, c);
+    const pairs = [[()=>!sim.error, sim.error ? 'the run finishes without going wrong &mdash; right now: <b>' + esc(sim.error) + '</b>' : 'the run finishes without going wrong'],
+                   [()=>sim.won, sim.won ? 'the floor is cleared' : sim.error ? 'the floor is cleared \u2014 the run stopped on the line above' : esc(sim.why || 'the floor is cleared')]];
+    return all(c, pairs) ? {ok:true, msg:L[DEEP_IDX].passMsg || 'Cleared.'} : {ok:false, msg:'Not through yet. The checklist says what stopped you \u2014 and the replay shows exactly where.'};
+  }});
+/* Building a floor: generate, prove, and write the lesson around it. */
+function loadDeep(n){
+  n = Math.min(DEEP_FLOORS, Math.max(1, n | 0));
+  const got = questFloor(questRun, n);
+  if (!got){ statusEl.className = 'bad'; statusEl.innerHTML = 'Floor ' + n + ' would not build. That is a bug, not you.'; return; }
+  const les = L[DEEP_IDX], s = got.spec;
+  const beasts = [...new Set(s.foes.map(f => f.icon + ' ' + f.name.replace(/ \d+$/, '')))];
+  les.spec = s;
+  les.title = 'The Deep \u2014 floor ' + n;
+  les.deepN = n; les.par = got.par;
+  les.teach = '<p>Floor <b>' + n + '</b> of ' + DEEP_FLOORS + '. Nobody wrote this board: it was built from the number ' + n
+    + ' and then <b>proved</b> \u2014 before you saw it, a route through it was found and run, so a floor you cannot finish cannot exist. '
+    + 'The same number always builds the same floor, so this one is yours to come back to.</p>'
+    + '<div class="deepstat"><span>' + s.w + '\u00d7' + s.h + '</span><span>\u2764\uFE0F ' + s.hp + '</span>'
+    + (s.gems.length ? '<span>\uD83D\uDC8E ' + s.gems.length + '</span>' : '')
+    + (s.traps.length ? '<span>\u25B2 ' + s.traps.length + '</span>' : '')
+    + (s.pits.length ? '<span>\u2B24 ' + s.pits.length + '</span>' : '')
+    + '<span>par ' + got.par + '</span><span>budget ' + s.budget + '</span></div>'
+    + (beasts.length ? '<p>Down here with you: ' + beasts.join(', ') + '.</p>' : '<p>Nothing alive on this floor. Walk it.</p>')
+    + '<p>Par is what a plain, unclever route cost \u2014 walk, swing at whatever is in the way, wait when the spikes are up. '
+    + 'Beating it means you found something better than the machine did.</p>'
+    + (s.foes.some(f => f.kind !== 'guard') ? '<p>Something down here moves between your lines. A fixed list of moves will not survive that; '
+        + 'a loop that asks <code>hero.look()</code> before each step will.</p>' : '');
+  les.goal = s.win.indexOf('foes') >= 0 ? 'Clear the floor of everything standing, take every gem, and finish on the flag.'
+    : s.win.indexOf('gems') >= 0 ? 'Take every gem and finish on the flag.' : 'Reach the flag.';
+  les.hint = 'Par for this floor is ' + got.par + ' moves and the budget is ' + s.budget + '. '
+    + 'If you cannot see a route, walk it one square at a time with <code>hero.look()</code> in front of you.';
+  les.passMsg = 'Floor ' + n + ' cleared.' + (n < DEEP_FLOORS
+    ? ' <button class="readygo" data-act="deep" data-n="' + (n + 1) + '">Descend to floor ' + (n + 1) + ' \u2192</button>'
+    : ' That is the bottom. There is nothing below floor ' + DEEP_FLOORS + ' but the way back up.');
+  les.rn = 'A board built from a number rather than stored is <b>procedural generation</b>, and the number is the <b>seed</b>. '
+    + 'Checking that a generated thing is actually playable before shipping it is <b>validation</b> \u2014 and doing it with the real engine rather than a model of it is the only version that cannot drift.';
+  les.rw = 'Every roguelike ever made is this: the dungeon is not stored, it is a number and a recipe. The hard part is never the generating, it is proving the result is finishable, which is why so many generated games ship rooms with no doors.';
+  deepFloor = n; deepBest = Math.max(deepBest, n); deepSave();
+  loadLesson(DEEP_IDX);
+}
 const ORDER = [];
 for (const g of GRADES) for (let i=0;i<L.length;i++) if (L[i].g===g.id && !L[i].chal && !L[i].proj) ORDER.push(i);
 
@@ -7488,6 +7551,265 @@ function arcVerdict(state, head, sub){
    same soundKit() bus that made the drums loud, with a kit of its own. Nothing
    here is a recording either - a sword is filtered noise with a crack on the
    front, and a defeated ogre is a sawtooth falling through a filter. */
+/* ============================================================================
+   THE DEEP - generated Quest floors.
+
+   Hand-authoring four hundred boards would produce four hundred boards nobody
+   checked. The honest way to promise that many is to generate them from a
+   seed and then PROVE each one: the generator lays a route first and builds
+   the level around it, then hands both to the real questRun and only keeps
+   the level if the real engine says that route wins. The proof is the same
+   engine the learner plays on, not a model of it, so a floor cannot exist
+   that nobody can finish.
+
+   The route it proves is deliberately dumb - walk, swing when something is in
+   the way, wait when the spikes are up. A person will find shorter ones. Par
+   is what the dumb route cost, so beating par means something.
+   ========================================================================= */
+
+/* deterministic, tiny, and the same on every machine: floor 37 is floor 37 */
+function rng(seed){
+  let a = (seed >>> 0) || 1;
+  return function(){
+    a += 0x6D2B79F5; a = Math.imul(a ^ (a >>> 15), 1 | a);
+    a ^= a + Math.imul(a ^ (a >>> 7), 61 | a);
+    return ((a ^ (a >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const pick = (r, arr) => arr[Math.floor(r() * arr.length)];
+const irnd = (r, lo, hi) => lo + Math.floor(r() * (hi - lo + 1));
+
+/* Everything the dungeon can throw, and the floor it starts appearing on.
+   Difficulty is a budget, not a switch: deeper floors can afford more. */
+const BESTIARY = [
+  {kind:'guard',  name:'Grubb',  icon:'👹', hp:1, bite:1, from:1,  cost:1},
+  {kind:'guard',  name:'Mott',   icon:'👺', hp:2, bite:1, from:3,  cost:2},
+  {kind:'chaser', name:'Imp',    icon:'😈', hp:1, bite:1, from:5,  cost:3},
+  {kind:'patrol', name:'Warg',   icon:'🐺', hp:1, bite:1, from:8,  cost:3},
+  {kind:'chaser', name:'Devil',  icon:'👿', hp:2, bite:1, from:12, cost:4},
+  {kind:'caster', name:'Vex',    icon:'🧙', hp:1, bite:1, from:15, cost:4, range:9},
+  {kind:'ghost',  name:'Wisp',   icon:'👻', hp:1, bite:1, from:20, cost:4},
+  {kind:'caster', name:'Mordra', icon:'🧟', hp:2, bite:1, from:26, cost:5, range:9},
+  {kind:'chaser', name:'Drake',  icon:'🐉', hp:3, bite:2, from:34, cost:7, sleeps:true}
+];
+
+function floorPlan(floor){
+  /* grows slowly: a floor should feel like the one before it plus one idea */
+  const t = Math.min(1, (floor - 1) / 60);
+  return {
+    w: Math.min(13, 5 + Math.floor(floor / 5)),
+    h: Math.min(7, 1 + Math.floor(floor / 4)),
+    budget: 0,                      /* filled in from par once it is known */
+    hp: Math.min(9, 3 + Math.floor(floor / 9)),
+    gems: floor < 3 ? 0 : Math.min(3, 1 + Math.floor(floor / 14)),
+    foePoints: Math.floor(t * 12) + (floor >= 2 ? 1 : 0),
+    traps: floor < 7 ? 0 : Math.min(4, 1 + Math.floor((floor - 7) / 10)),
+    pits: floor < 10 ? 0 : Math.min(4, 1 + Math.floor((floor - 10) / 12)),
+    walls: Math.floor(t * 9)
+  };
+}
+
+/* ---------------------------------------------------------------- the map */
+function carve(r, plan){
+  const W = plan.w, H = plan.h;
+  const wall = {};
+  const key = (x, y) => x + ',' + y;
+  /* a spine the route can always follow, then walls anywhere off it */
+  const spineY = irnd(r, 0, H - 1);
+  const onSpine = (x, y) => y === spineY;
+  let placed = 0, tries = 0;
+  while (placed < plan.walls && tries++ < 200){
+    const x = irnd(r, 1, W - 2), y = irnd(r, 0, H - 1);
+    if (onSpine(x, y) || wall[key(x, y)]) continue;
+    wall[key(x, y)] = 1; placed++;
+  }
+  return {W, H, spineY, wall, key};
+}
+
+/* free squares, in a stable order so the same seed picks the same ones */
+function freeCells(m, taken){
+  const out = [];
+  for (let y = 0; y < m.H; y++) for (let x = 0; x < m.W; x++){
+    const k = m.key(x, y);
+    if (!m.wall[k] && !taken[k]) out.push([x, y]);
+  }
+  return out;
+}
+
+/* ------------------------------------------------------------- the route */
+/* Shortest path on the static board: walls and pits are solid, everything
+   else is walked through and dealt with when we get there. */
+function path(m, from, to, solid){
+  const q = [[from[0], from[1]]], seen = {}, prev = {};
+  seen[m.key(from[0], from[1])] = 1;
+  const D = [[1,0],[-1,0],[0,1],[0,-1]];
+  while (q.length){
+    const [x, y] = q.shift();
+    if (x === to[0] && y === to[1]) break;
+    for (const [dx, dy] of D){
+      const nx = x + dx, ny = y + dy, k = m.key(nx, ny);
+      if (nx < 0 || ny < 0 || nx >= m.W || ny >= m.H) continue;
+      if (m.wall[k] || solid[k] || seen[k]) continue;
+      seen[k] = 1; prev[k] = [x, y]; q.push([nx, ny]);
+    }
+  }
+  const end = m.key(to[0], to[1]);
+  if (!seen[end]) return null;
+  const route = [];
+  let cur = [to[0], to[1]];
+  while (!(cur[0] === from[0] && cur[1] === from[1])){
+    route.push(cur);
+    cur = prev[m.key(cur[0], cur[1])];
+    if (!cur) return null;
+  }
+  route.push([from[0], from[1]]);
+  return route.reverse();
+}
+
+/* the reference program: walk the route one square at a time, swing at
+   whatever is standing on the next square, and wait when the spikes are up */
+function program(route, spec){
+  /* Asking what is in front of you costs nothing - look() never spends a turn
+     - so the proof route can afford to check before every single step. It has
+       to: a chaser is never where it started, so a program built from the
+       board as it was laid out would walk into something that moved. */
+  const lines = [];
+  for (let i = 1; i < route.length; i++){
+    const [px, py] = route[i - 1], [x, y] = route[i];
+    const dir = JSON.stringify(x > px ? 'right' : x < px ? 'left' : y > py ? 'down' : 'up');
+    lines.push('for (let a = 0; a < 4; a++) { if (hero.look(' + dir + ') === "foe") { hero.attack(); } }');
+    lines.push('if (hero.look(' + dir + ') === "trap") { hero.say("wait"); }');
+    lines.push(x > px ? 'hero.moveRight(1);' : x < px ? 'hero.moveLeft(1);'
+             : y > py ? 'hero.moveDown(1);' : 'hero.moveUp(1);');
+  }
+  return lines.join('\n');
+}
+
+/* --------------------------------------------------------------- a floor */
+function buildFloor(seed, floor){
+  const r = rng(seed), plan = floorPlan(floor), m = carve(r, plan);
+  const taken = {};
+  const hero = [0, m.spineY]; taken[m.key(hero[0], hero[1])] = 1;
+  const exit = [m.W - 1, m.spineY]; taken[m.key(exit[0], exit[1])] = 1;
+
+  const spec = {w:m.W, h:m.H, hero, exit, hp:plan.hp, walls:[], gems:[], foes:[], traps:[], pits:[],
+                win:'exit', budget:80};
+  for (const k in m.wall) spec.walls.push(k.split(',').map(Number));
+
+  /* gems first, because they bend the route and everything else reacts to it */
+  let cells = freeCells(m, taken);
+  for (let i = 0; i < plan.gems && cells.length; i++){
+    const c = pick(r, cells); taken[m.key(c[0], c[1])] = 1;
+    spec.gems.push(c); cells = freeCells(m, taken);
+  }
+  if (spec.gems.length) spec.win = 'exit+gems';
+
+  /* pits anywhere off the spine - the route must never need them */
+  for (let i = 0; i < plan.pits; i++){
+    const off = cells.filter(c => c[1] !== m.spineY);
+    if (!off.length) break;
+    const c = pick(r, off); taken[m.key(c[0], c[1])] = 1;
+    spec.pits.push(c); cells = freeCells(m, taken);
+  }
+
+  /* foes, paid for out of the floor's points */
+  let points = plan.foePoints;
+  const roster = BESTIARY.filter(b => b.from <= floor);
+  let guard = 0;
+  while (points > 0 && roster.length && cells.length){
+    const b = pick(r, roster);
+    if (b.cost > points){ points--; continue; }
+    /* A caster standing in the spine owns every square of the route, which is
+       not a puzzle, it is a toll. They get placed off it. */
+    const where = cells.filter(c => c[0] > 1 && (b.kind !== 'caster' || c[1] !== m.spineY));
+    const spot = pick(r, where) || null;
+    if (!spot) break;
+    points -= b.cost;
+    taken[m.key(spot[0], spot[1])] = 1;
+    const f = {at:spot, name: b.name + (guard++ ? ' ' + guard : ''), icon:b.icon, kind:b.kind,
+               hp:b.hp, bite:b.bite};
+    if (b.range) f.range = b.range;
+    if (b.sleeps) f.sleeps = true;
+    if (b.kind === 'patrol') f.path = [[1,0],[1,0],[-1,0],[-1,0]];
+    spec.foes.push(f);
+    cells = freeCells(m, taken);
+  }
+  /* "kill everything" is only a fair ask when everything stands still: a
+     route to where a chaser used to be is a route to an empty square. */
+  if (spec.foes.length && floor % 4 === 0 && spec.foes.every(f => f.kind === 'guard'))
+    spec.win = spec.win.indexOf('gems') >= 0 ? 'exit+gems+foes' : 'exit+foes';
+
+  /* traps on the spine, because a trap you can walk round teaches nothing */
+  for (let i = 0; i < plan.traps; i++){
+    const on = cells.filter(c => c[1] === m.spineY && c[0] > 0 && c[0] < m.W - 1);
+    if (!on.length) break;
+    const c = pick(r, on); taken[m.key(c[0], c[1])] = 1;
+    spec.traps.push({at:c, period:irnd(r, 2, 3), phase:[irnd(r, 0, 1)]});
+    cells = freeCells(m, taken);
+  }
+  return {spec, m};
+}
+
+/* ---------------------------------------------------------- and prove it */
+function proveFloor(questRun, seed, floor){
+  const {spec, m} = buildFloor(seed, floor);
+  const solid = {};
+  spec.pits.forEach(p => { solid[m.key(p[0], p[1])] = 1; });
+
+  /* through every gem, then out - nearest first, which is not optimal and is
+     not trying to be: this is the route we can promise, not the best one */
+  const stops = [];
+  let here = spec.hero, left = spec.gems.slice();
+  while (left.length){
+    left.sort((a, b) => (Math.abs(a[0] - here[0]) + Math.abs(a[1] - here[1]))
+                      - (Math.abs(b[0] - here[0]) + Math.abs(b[1] - here[1])));
+    stops.push(left[0]); here = left.shift();
+  }
+  stops.push(spec.exit);
+
+  let route = [], from = spec.hero;
+  for (const to of stops){
+    const leg = path(m, from, to, solid);
+    if (!leg) return null;
+    route = route.concat(route.length ? leg.slice(1) : leg);
+    from = to;
+  }
+  /* a level that wants every foe down needs the route to visit them */
+  if (spec.win.indexOf('foes') >= 0){
+    for (const f of spec.foes){
+      const leg = path(m, from, f.at, solid);
+      if (!leg) return null;
+      route = route.concat(leg.slice(1));
+      from = f.at;
+    }
+    const back = path(m, from, spec.exit, solid);
+    if (!back) return null;
+    route = route.concat(back.slice(1));
+  }
+
+  const code = program(route, spec);
+  spec.budget = Math.max(24, route.length * 3 + 40);
+  const r = questRun(spec, code);
+  if (!r.won) return null;
+  /* par is what the dumb route cost; the budget gives real room over it */
+  spec.budget = Math.max(12, Math.round(r.acts * 1.7) + 6);
+  const again = questRun(spec, code);
+  if (!again.won) return null;
+  return {spec, par:r.acts, proof:code, floor};
+}
+
+/* The one a floor number resolves to: try seeds until one proves, which on
+   these plans is nearly always the first. Deterministic, so floor 37 is the
+   same board for everyone, forever. */
+function questFloor(questRun, floor){
+  for (let t = 0; t < 40; t++){
+    const got = proveFloor(questRun, floor * 7919 + t * 104729 + 13, floor);
+    if (got) return got;
+  }
+  return null;
+}
+
+
 const QUEST_SFX = {
   STEP:   {kind:'noise', dur:0.045, hp:2200, gain:0.22},
   BUMP:   {kind:'noise', dur:0.12,  bp:200,  q:1.1, gain:0.85, body:[72]},
@@ -8382,6 +8704,15 @@ function runCheck(){
     ghostLap = true;
     return;
   }
+  /* A floor cleared is not a lesson finished: you can always go deeper, so the
+     Deep keeps its own count rather than pretending to be a checklist item. */
+  if (res.ok && L[idx].deep){
+    const n = L[idx].deepN || 1;
+    if (n >= deepFloor){ deepFloor = Math.min(DEEP_FLOORS, n + 1); deepBest = Math.max(deepBest, n); deepSave(); }
+    if (!beyondDone.has(idx)){ beyondDone.add(idx); saveP(); renderNav(); }
+    btnNext.style.display = n < DEEP_FLOORS ? 'inline-block' : 'none';
+    btnNext.textContent = 'Descend \u2192';
+  }
   if (res.ok && L[idx].beyond && !beyondDone.has(idx)){
     beyondDone.add(idx); bumpStreak(); saveP(); renderNav(); confetti(110);
     const el=document.createElement('div'); el.className='gbanner';
@@ -8836,7 +9167,7 @@ function loadLesson(i){
   const gl = L.map((l,n)=>({l,n})).filter(x=>x.l.g===les.g);
   const pos = gl.findIndex(x=>x.n===i);
   const op = ORDER.indexOf(i);
-  const crumb = '<div class="crumb"><button id="crPrev" title="Previous lesson" aria-label="Previous lesson"'+(op<=0?' disabled':'')+'>&larr;</button><span>' + g.name + '<span class="crsub"> · ' + g.sub + '</span> — lesson ' + (pos+1) + ' of ' + gl.length + '</span><button id="crNext" title="Next lesson" aria-label="Next lesson"'+(op>=ORDER.length-1?' disabled':'')+'>&rarr;</button></div>';
+  const crumb = '<div class="crumb"><button id="crPrev" title="Previous lesson" aria-label="Previous lesson"'+(op<=0?' disabled':'')+'>&larr;</button><span>' + g.name + '<span class="crsub"> · ' + g.sub + '</span> — ' + (les.deep ? 'floor ' + (les.deepN || 1) + ' of ' + DEEP_FLOORS : 'lesson ' + (pos+1) + ' of ' + gl.length) + '</span><button id="crNext" title="Next lesson" aria-label="Next lesson"'+(op>=ORDER.length-1?' disabled':'')+'>&rarr;</button></div>';
   teachEl.innerHTML = crumb + '<h2>' + les.title + '</h2>' + readyNote(les) + les.teach + rhythmBox(les) + shapeHtml(i) + widgetsFor(i) + decoderFor(les) + ((RN[i]||les.rn) ? '<div class="realname"><b>Real name</b>' + (RN[i]||les.rn) + '</div>' : '') + (MORE[i] ? '<div class="morebox"><b>More to chew on</b>' + MORE[i] + '</div>' : '') + (OLDS[i] ? '<div class="elders"><b class="el">📜 Lineage</b>' + OLDS[i] + '</div>' : '');
   recallShow(i);
   goalEl.innerHTML = '<b>DO THIS:</b> ' + les.goal;
@@ -9686,7 +10017,7 @@ function openHub() {
    Four grades, and no sensible way to guess which one somebody wants. So the
    door is a screen rather than a jump: it shows all five, says what each one
    is for, and marks the one your class was made for. */
-const ARC_GRADES = ['QS','SR','KT','PY','SH'];
+const ARC_GRADES = ['QS','SR','KT','PY','SH','DP'];
 /* What a track takes for granted, said out loud. Quest, the Sound Room and
    Python genuinely start from nothing - their first lessons are one line each,
    and each teaches the loop when it gets to it. The Kata Table does not: a kata
@@ -9697,7 +10028,8 @@ const ARC_NEEDS = {
   SR: {gate:null, need:'Starts from nothing \u2014 the first lessons are one line each.'},
   KT: {gate:'G9',  need:'Assumes the school: functions, loops, and working with strings.'},
   PY: {gate:null, need:'Starts from nothing \u2014 a second language that does not assume the first.'},
-  SH: {gate:null, need:'Starts from nothing \u2014 no code at all, just the machine\u2019s own language.'}
+  SH: {gate:null, need:'Starts from nothing \u2014 no code at all, just the machine\u2019s own language.'},
+  DP: {gate:null, need:'Assumes Quest \u2014 it is the same hero, on boards nobody wrote.'}
 };
 function arcReady(gid){
   const g = ARC_NEEDS[gid];
@@ -9710,9 +10042,11 @@ const ARC_PITCH = {
   SR:['🎵','Your code is the instrument. Rhythm strings, tracks, tempo and effects, every sound built out of an oscillator rather than loaded from a file.'],
   KT:['🧩','Puzzles marked on tests you were not shown. The gap between "it works on my examples" and "it works" is the most useful hour in the whole school.'],
   PY:['🐍','A second language, from print to a working report. Everything you already know, wearing different clothes — which is how you find out what you actually knew.'],
+  DP:['🕳️','Six hundred and fifty floors built from their own numbers and proved winnable before you see them. The hero, the enemies and the traps you already know, arranged by something that has never heard of you.'],
   SH:['💻','The terminal. Folders, files, pipes and git, typed one line at a time into a machine that does exactly what you said and nothing you meant. Every developer tool you will ever install assumes you can do this.']
 };
 function arcadeInto(gid){
+  if (gid === 'DP') return loadDeep(deepFloor);
   const items = L.map((l,i)=>({l,i})).filter(x => x.l.g === gid);
   if (!items.length) return openHub();
   const next = items.find(x => !beyondDone.has(x.i)) || items[0];
@@ -9729,6 +10063,7 @@ function openArcade(){
     const items = L.map((l,i)=>({l,i})).filter(x => x.l.g === gid);
     const dn = items.filter(x => beyondDone.has(x.i)).length;
     const p = ARC_PITCH[gid];
+    const count = gid === 'DP' ? 'floor ' + deepFloor + '/' + DEEP_FLOORS : dn + '/' + items.length;
     const rd = arcReady(gid);
     return '<button class="arcrow' + (gid === mine ? ' mine' : '') + (rd.ready ? '' : ' early') + '" data-act="arcgo" data-g="' + gid + '">'
       + '<span class="arci">' + p[0] + '</span>'
@@ -9736,7 +10071,7 @@ function openArcade(){
       + '<span>' + p[1] + '</span>'
       + '<span class="arcneed' + (rd.ready ? '' : ' warn') + '">' + (rd.ready ? '\u2713 ' : '\u26A0 ') + rd.need
       + (rd.ready ? '' : ' You are ' + done.size + ' lessons in, so expect a fight. It is not locked.') + '</span></span>'
-      + '<span class="arcn">' + dn + '/' + items.length + '</span></button>';
+      + '<span class="arcn">' + count + '</span></button>';
   }).join('');
   teachEl.innerHTML =
     '<div class="hubhead"><div>The Arcade<span>Nothing here is needed to graduate. All of it is real code, and none of it is a quiz.</span></div></div>'
@@ -9862,6 +10197,7 @@ teachEl.addEventListener('click', (e) => {
   if (a === 'place') return placeStart();
   if (a === 'arcade') return openArcade();
   if (a === 'arcgo') return arcadeInto(act.dataset.g);
+  if (a === 'deep') return loadDeep(+act.dataset.n);
   if (a === 'adv') return advOpen();
   if (a === 'warmup') {
     const q = drillQueue(sessionSize());
@@ -9893,6 +10229,7 @@ const PAL_ACTS = [
   { t: 'The Kata Table \u2014 puzzles with hidden tests', f: () => arcadeInto('KT') },
   { t: 'Python \u2014 a second language', f: () => arcadeInto('PY') },
   { t: 'The Terminal \u2014 folders, files and git by hand', f: () => arcadeInto('SH') },
+  { t: 'The Deep \u2014 650 generated Quest floors', f: () => loadDeep(deepFloor) },
   { t: 'Run / check my code', f: () => $('#btnRun').click() },
   { t: 'Help me (hint for this lesson)', f: () => $('#btnHelp').click() },
   { t: 'Ask a question', f: () => $('#qaPanel').classList.add('open') },
@@ -10849,7 +11186,11 @@ $('#btnHelp').onclick = ()=>{ if(!sandbox){ statusEl.className=''; statusEl.inne
 $('#btnLead').onclick = ()=>{ if(!sandbox) giveLead(); };
 $('#btnSol').onclick  = ()=>{ if(!sandbox){ solShown = true; killGhost(); edEl.value = L[idx].sol; runCheck(); } };
 $('#btnReDo').onclick = ()=>{ if(sandbox){ edEl.value = SANDBOX_START; outEl.srcdoc = edEl.value; } else { edEl.value = L[idx].start; leadStep=0; solShown=false; assistedKeys=0; if(ghostLap){ ghostOn=false; ghostLap=false; } killGhost(); runCheck(); } };
-btnNext.onclick = ()=>{ const p=ORDER.indexOf(idx); if (p>-1 && p<ORDER.length-1) loadLesson(ORDER[p+1]); };
+btnNext.onclick = ()=>{
+  /* in the Deep, "next" means one floor further down */
+  if (L[idx] && L[idx].deep) return loadDeep((L[idx].deepN || 1) + 1);
+  const p=ORDER.indexOf(idx); if (p>-1 && p<ORDER.length-1) loadLesson(ORDER[p+1]);
+};
 $('#remindHide').onclick = ()=>{ remindBox.style.display='none'; try{localStorage.setItem('remindHidden','1');}catch(e){} };
 $('#btnReplay').onclick = ()=>{
   if (!confirm('Victory lap! This clears your ticks so you can run the whole school again with fresh eyes. Your graduation still happened - this is a flex, not a reset of who you are. Go again?')) return;

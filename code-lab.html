@@ -431,6 +431,10 @@ body.dark #status.projlist .coachline{background:#2b2820;border-color:#4a432f;co
 #status.projlist .coachline{background:#fdf3d7;border:1px solid #e8d48a;border-radius:6px;padding:6px 10px;margin-bottom:8px;font-size:.88rem}
 .navitem.chal{color:#8a5a2e;font-weight:bold}
 body.dark .navitem.chal{color:#d9a45e}
+.navitem.boss{color:#7a2f48;font-weight:bold}
+body.dark .navitem.boss{color:#e9a0ba}
+.bossnote{background:var(--panel);border:1px solid var(--line);border-left:4px solid #7a2f48;border-radius:8px;padding:9px 12px;margin:0 0 14px;font-size:.92rem}
+body.dark .bossnote{border-left-color:#e9a0ba}
 body.sensei #btnHelp,body.sensei #btnLead,body.sensei #btnSol{display:none}
 body.sensei .edwrap{box-shadow:inset 0 0 0 3px #a52222}
 body.sensei #btnTheme{border-color:#8a1c1c}
@@ -4065,6 +4069,290 @@ function loadDeep(n){
   deepFloor = n; deepBest = Math.max(deepBest, n); deepSave();
   loadLesson(DEEP_IDX);
 }
+
+/* ---- The boss at the end of every grade ---------------------------------
+   One Quest board per grade, K through College, sitting at the end of it.
+   None of them is required - they carry beyond:true, so graduation is still
+   the same 107 lessons - and none of them teaches anything new. Each one
+   takes the single idea that grade spent its lessons on and makes you use it
+   somewhere that has nothing to do with where you learned it: a page becomes
+   a dungeon, and the idea either travelled or it did not. That is the whole
+   point. An idea you can only use in the room you met it in is a memory. */
+
+function QB(gid, title, spec, teach, goal, start, sol, hint, reqs, passMsg, failMsg, rn, rw){
+  const les = {
+    lang:'arc', kind:'quest', spec, title, teach, goal, start, sol, hint,
+    g:gid, beyond:true, boss:true, rn, rw, html:'', css:'', js:'',
+    check:(c)=>{
+      const sim = questRun(spec, c);
+      const pairs = (reqs || []).slice();
+      pairs.push([()=>!sim.error, sim.error
+        ? 'the run gets to the end without going wrong &mdash; right now: <b>' + esc(sim.error) + '</b>'
+        : 'the run gets to the end without going wrong']);
+      pairs.push([()=>sim.won, sim.won ? 'the board is cleared'
+        : sim.error ? 'the board is cleared — the run stopped on the line above, so it never got there'
+        : esc(sim.why || 'the board is cleared')]);
+      return all(c, pairs) ? {ok:true, msg:passMsg} : {ok:false, msg:failMsg};
+    }
+  };
+  L.push(les);
+}
+const BOSS_HEAD = '<p class="bossnote"><b>⚔️ End of grade.</b> Nothing new here, and nothing you have to do &mdash; '
+  + 'graduation does not count this one. It is the idea you just spent a grade on, asked for somewhere it was never taught.</p>';
+
+QB('K', 'Boss: say it out loud',
+ {w:5, h:1, hero:[0,0], exit:[4,0], budget:12},
+ BOSS_HEAD
+ + '<p>Kindergarten was words on a screen: you wrote something, and the machine showed it. Same job here, different screen. <code>hero.say("...")</code> puts your words in a speech bubble over the hero’s head.</p>'
+ + '<p>And the other half of Kindergarten: <b>one instruction to a line, and they happen in the order you wrote them</b>. Nothing on this board is difficult. What it is checking is whether "top to bottom, one at a time" is a thing you now believe about computers rather than a sentence you read.</p>',
+ 'Say two things, then walk to the flag.',
+ '',
+ 'hero.say("here I go");\nhero.say("one line at a time");\nhero.moveRight(4);',
+ 'Three lines. Two <code>hero.say("...")</code> lines with your own words in the quotes, then <code>hero.moveRight(4)</code>.',
+ [[(c) => (c.match(/hero\.say\s*\(/g) || []).length >= 2, 'two <code>hero.say(...)</code> lines, with your words in the quotes']],
+ 'Your words, on a screen you have never seen before, in the order you wrote them. That is the whole of Kindergarten, and it did not care which screen.',
+ 'Not yet. Two <code>hero.say("something")</code> lines first &mdash; the quotes hold your words &mdash; then one line that walks four squares right.',
+ 'A line of text a program shows is <b>output</b>, and doing things strictly in the order written is <b>sequence</b>. They are the first two ideas in programming and you now have both.',
+ 'Every log line, every error message and every chat app you have ever used is a computer saying something in the order it was told to.');
+
+QB('G1', 'Boss: call it by its name',
+ {w:6, h:1, hero:[0,0], exit:[5,0], budget:16, win:'exit+foes',
+  foes:[{at:[2,0], name:'Grubb', icon:'👹'}, {at:[4,0], name:'Mott', icon:'👺'}]},
+ BOSS_HEAD
+ + '<p>Grade 1 was about things having names. <code>&lt;h1&gt;</code> is not <code>&lt;p&gt;</code>, and calling a thing by the wrong name gets you the wrong thing.</p>'
+ + '<p>Two enemies stand in this corridor and they have names: <b>Grubb</b> and <b>Mott</b>. <code>hero.attack()</code> swings at whatever happens to be next to you. <code>hero.attack("Grubb")</code> says who. Use the names &mdash; and note what happens if you name someone who is not standing beside you, because a program that asks for a thing by the wrong name is the bug you will meet most often for the rest of your life.</p>',
+ 'Put both of them down by name, and finish on the flag.',
+ '',
+ 'hero.moveRight(1);\nhero.attack("Grubb");\nhero.moveRight(2);\nhero.attack("Mott");\nhero.moveRight(2);',
+ 'Walk up beside Grubb first &mdash; one square &mdash; then <code>hero.attack("Grubb")</code>. Two more squares brings you beside Mott. Names go in quotes, exactly as spelled on the board.',
+ [[/attack\s*\(\s*["'][A-Za-z]/, 'at least one <code>attack("Name")</code> that names who it is hitting']],
+ 'You addressed two different things by name and got the right one both times. That is what an id is, what a class is, and what a variable name is.',
+ 'Not yet. The names are on the board: <b>Grubb</b> first, then <b>Mott</b>. Spelling counts, and you have to be standing next to someone to hit them.',
+ 'The text that picks out one particular thing is an <b>identifier</b>. Asking for one that is not there is a <b>reference error</b>, and it is the single most common mistake in programming.',
+ 'Every "cannot read property of undefined" you will ever see is this: the program asked for something by name and nothing of that name was there.');
+
+QB('G2', 'Boss: the exact number',
+ {w:5, h:3, hero:[0,0], exit:[4,2], budget:6,
+  walls:[[1,1],[2,1],[3,1],[1,2],[2,2],[3,2]]},
+ BOSS_HEAD
+ + '<p>Grade 2 was values: <code>16px</code> is not <code>16</code>, and <code>padding: 8px</code> does something precise. The machine does exactly what the number says.</p>'
+ + '<p>This board gives you <b>six moves and not one more</b>. The route is four right and two down &mdash; so it fits, but only if you say the numbers. <code>hero.moveRight(4)</code> is one line and four moves. Four separate <code>hero.moveRight(1)</code> lines is the same four moves and a lot more typing, and on a tighter board it is how you run out.</p>'
+ + '<p>Get in the habit now: the number in the brackets is the instruction, not decoration.</p>',
+ 'Reach the flag using six moves and three lines or fewer.',
+ '',
+ 'hero.moveRight(4);\nhero.moveDown(2);',
+ 'Two lines is enough: how many squares right, then how many squares down. Count them off the board before you type.',
+ [[(c) => c.split('\n').filter(l => l.trim() && !l.trim().startsWith('//')).length <= 3, 'three lines or fewer']],
+ 'Two lines, six moves, exactly the number of each. Saying precisely how much is the difference between a value and a guess.',
+ 'Not yet. The budget is six moves, so there is no room to wander. Count the squares right, then the squares down, and put those two numbers in the brackets.',
+ 'The number you hand a command is an <b>argument</b>, and the exact amount it means is a <b>value</b>. Getting the value right is most of what programming is.',
+ 'A wrong number is how a Mars orbiter was lost in 1999: one team worked in pounds and the other in newtons, and every line of code was otherwise perfect.');
+
+QB('G3', 'Boss: ask what it is',
+ {w:6, h:1, hero:[0,0], exit:[5,0], budget:14,
+  foes:[{at:[3,0], name:'Grubb', icon:'👹'}]},
+ BOSS_HEAD
+ + '<p>Grade 3 was labels &mdash; ids and classes, the tags you put on things so you can find them again.</p>'
+ + '<p>Here the board wears its own labels and you can read them. <code>hero.look("right")</code> hands back a word describing what is in the next square: <code>"clear"</code>, <code>"wall"</code>, <code>"foe"</code>, <code>"gem"</code>, <code>"exit"</code>, <code>"pit"</code>, <code>"trap"</code>. Put it straight into a <code>say</code> and the hero reads it out:</p>'
+ + '<pre class="czcode">hero.say(hero.look("right"));</pre>'
+ + '<p>Notice there are no quotes around <code>hero.look("right")</code> in that line. Quotes would mean the <i>words</i> "hero.look" &mdash; without them, it means the answer. That distinction cost you a lesson in Grade 3 and it is the same one here.</p>',
+ 'Read out what is ahead of you twice, deal with what you find, and reach the flag.',
+ '',
+ 'hero.say(hero.look("right"));\nhero.moveRight(2);\nhero.say(hero.look("right"));\nhero.attack();\nhero.moveRight(3);',
+ 'Say what is to your right, walk two, say what is to your right again &mdash; that one is the ogre &mdash; hit it, then finish the walk.',
+ [[(c) => (c.match(/look\s*\(/g) || []).length >= 2, 'two <code>hero.look(...)</code> calls'],
+  [/say\s*\(\s*hero\.look/, 'at least one <code>hero.say(hero.look("..."))</code> &mdash; the answer, not the words']],
+ 'You asked the board what something was and it told you, in a word you could act on. That is every label you have ever written, read back.',
+ 'Not yet. Two looks, and at least one of them handed straight to <code>say</code> with no quotes around it &mdash; <code>hero.say(hero.look("right"))</code>.',
+ 'A value a function hands back is its <b>return value</b>. Putting one call inside another is <b>composition</b>, and it is how almost all real code is built.',
+ 'This is what a browser does every time it draws a page: ask what each thing is, then decide what to do with it.');
+
+QB('G4', 'Boss: show the count',
+ {w:6, h:1, hero:[0,0], exit:[5,0], budget:16, win:'exit+gems', gems:[[2,0],[4,0]]},
+ BOSS_HEAD
+ + '<p>Grade 4 was making something happen &mdash; <code>screen.textContent = ...</code>, a line of code that changes what a person sees.</p>'
+ + '<p>Two gems on this board. <code>hero.gemsLeft()</code> hands back how many are still out there, and <code>say</code> shows it. Glue them together with <code>+</code>, exactly the way you glued words to values in Grade 4:</p>'
+ + '<pre class="czcode">hero.say("gems left: " + hero.gemsLeft());</pre>'
+ + '<p>Say it after each gem. The number goes down while you watch, because the thing you are showing is a real fact about the world and not a sentence you typed. That is the difference between a program and a poster.</p>',
+ 'Take both gems, showing how many are left after each one, and finish on the flag.',
+ '',
+ 'hero.moveRight(2);\nhero.say("gems left: " + hero.gemsLeft());\nhero.moveRight(2);\nhero.say("gems left: " + hero.gemsLeft());\nhero.moveRight(1);',
+ 'Walk two squares onto the first gem and say the count. Two more for the second, say it again, then one more to the flag.',
+ [[(c) => (c.match(/gemsLeft\s*\(/g) || []).length >= 2, 'two <code>hero.gemsLeft()</code> calls'],
+  [/say\s*\([^)]*\+/, 'a <code>say</code> that glues words to a number with <code>+</code>']],
+ 'The number changed while you watched, because you were showing the world rather than describing it. That is what makes a program alive.',
+ 'Not yet. Step onto a gem to pick it up, then <code>hero.say("gems left: " + hero.gemsLeft())</code> &mdash; and do it after both.',
+ 'Glueing text to a value is <b>concatenation</b>, and showing a fact that can change is <b>live state</b>. A screen that shows what is true rather than what was typed is a <b>view</b>.',
+ 'Every dashboard, every scoreboard, every unread-messages badge is this line of code: a real number, glued to a word, shown to a person.');
+
+QB('G5', 'Boss: do the sum first',
+ {w:9, h:1, hero:[0,0], exit:[8,0], budget:8},
+ BOSS_HEAD
+ + '<p>Grade 5 was words and numbers, and the trap where <code>"2" + 2</code> is <code>"22"</code>. Numbers are for arithmetic; text is not.</p>'
+ + '<p>Eight squares, eight moves, and no room to waste any. What this board wants is the arithmetic <b>inside the brackets</b>:</p>'
+ + '<pre class="czcode">hero.moveRight(4 + 4);</pre>'
+ + '<p>The machine works out <code>4 + 4</code> first and then moves that far. It is one number, arrived at by doing a sum, and that is allowed anywhere a number is allowed. If you had written <code>"4" + "4"</code> you would have handed it the word "44" and the level would have told you so &mdash; which is the Grade 5 lesson in one move.</p>',
+ 'Reach the flag in one line, with a sum in the brackets.',
+ '',
+ 'hero.moveRight(4 + 4);',
+ 'One line: <code>hero.moveRight(</code> a sum that makes eight <code>);</code> &mdash; <code>4 + 4</code>, <code>6 + 2</code>, <code>2 * 4</code>, any of them.',
+ [[/move(Right|Left|Up|Down)\s*\(\s*[-\d.\s]*[+*\/-][-\d.\s]*\)/, 'a sum inside the brackets rather than a single number'],
+  [(c) => c.split('\n').filter(l => l.trim()).length === 1, 'exactly one line']],
+ 'You handed a command a calculation and it did the sum before it moved. Anywhere a number belongs, working one out belongs too.',
+ 'Not yet. It wants the arithmetic in the brackets &mdash; <code>hero.moveRight(4 + 4)</code> &mdash; in a single line, and the total has to be exactly eight.',
+ 'A piece of code that works out to a value is an <b>expression</b>, and doing it before the outer call is <b>evaluation order</b>. Almost everything you write is an expression somewhere inside something else.',
+ 'Spreadsheets are nothing but this idea, which is why they are the most used programming tool on earth by a distance nobody else is close to.');
+
+QB('G6', 'Boss: walk the list',
+ {w:7, h:1, hero:[0,0], exit:[6,0], budget:10},
+ BOSS_HEAD
+ + '<p>Grade 6 was lists: many values in one box, in order, reachable one at a time.</p>'
+ + '<p>Six squares to the flag, and this board wants them to come out of a list rather than out of your fingers:</p>'
+ + '<pre class="czcode">const steps = [3, 2, 1];\nfor (const s of steps) {\n  hero.moveRight(s);\n}</pre>'
+ + '<p>Three plus two plus one is six. The numbers live in the list; the loop takes them one at a time and hands each to <code>moveRight</code>. Change the list and the route changes with it, without touching the loop &mdash; which is the entire reason lists exist.</p>',
+ 'Reach the flag by looping over a list of distances.',
+ '',
+ 'const steps = [3, 2, 1];\nfor (const s of steps) {\n  hero.moveRight(s);\n}',
+ 'Make a list whose numbers add up to six &mdash; <code>[3, 2, 1]</code> or <code>[2, 2, 2]</code> &mdash; then <code>for (const s of steps)</code> and move <code>s</code> each time round.',
+ [[/\[\s*\d+\s*,/, 'a list of numbers written with square brackets'],
+  [/for\s*\(\s*(const|let)\s+\w+\s+of\s+/, 'a <code>for ... of</code> loop walking that list']],
+ 'The route lives in the data now, not in the code. Change the list and the hero goes somewhere else with the loop untouched &mdash; that separation is most of what makes big programs possible.',
+ 'Not yet. The numbers in your list have to add up to exactly six, and the loop has to be the thing calling <code>moveRight</code>.',
+ 'A list is an <b>array</b>, walking it is <b>iteration</b>, and keeping the values apart from the code that uses them is <b>data-driven</b> design.',
+ 'Every playlist, every shopping basket and every set of search results is an array being walked by a loop exactly like this one.');
+
+QB('G7', 'Boss: teach it a move',
+ {w:5, h:3, hero:[0,0], exit:[4,2], budget:12},
+ BOSS_HEAD
+ + '<p>Grade 7 was functions: teach the machine a trick once, give it a name, use it as often as you like.</p>'
+ + '<p>The route here is a staircase &mdash; two right, one down, twice. Rather than writing four lines, teach it the step:</p>'
+ + '<pre class="czcode">function hop() {\n  hero.moveRight(2);\n  hero.moveDown(1);\n}\nhop();\nhop();</pre>'
+ + '<p>Writing the function does nothing at all on its own; it is a recipe sitting on a shelf. The two <code>hop();</code> lines are what actually happen. Students lose an hour to that distinction at some point, and it is cheaper to lose it here where the hero visibly does not move.</p>',
+ 'Define one function and use it twice to reach the flag.',
+ '',
+ 'function hop() {\n  hero.moveRight(2);\n  hero.moveDown(1);\n}\nhop();\nhop();',
+ 'Write <code>function hop() { ... }</code> with two right and one down inside it. Then call it &mdash; <code>hop();</code> &mdash; twice.',
+ [[/function\s+\w+\s*\(\s*\)/, 'a function of your own, with a name'],
+  [(c) => { const m = c.match(/function\s+(\w+)/); return !!m && (c.match(new RegExp('(^|[^\\w.])' + m[1] + '\\s*\\(', 'g')) || []).length >= 3; },
+    'and it is actually called twice &mdash; writing it is not running it']],
+ 'One trick, taught once, used twice. Every time you notice you have written the same thing twice, that is a function asking to be born.',
+ 'Not yet. Check you have both halves: the <code>function hop() { ... }</code> that teaches it, and the two <code>hop();</code> lines that do it.',
+ 'The recipe is a <b>function definition</b>; using it is a <b>call</b>. Writing something once and using it in many places is the whole point, and the habit is called <b>DRY</b> &mdash; don’t repeat yourself.',
+ 'The code you use every day is thousands of these. Nobody writes a browser as one long list of moves, for the same reason nobody writes a recipe book as one long sentence.');
+
+QB('G8', 'Boss: it depends',
+ {w:7, h:2, hero:[0,0], exit:[6,1], budget:16, walls:[[3,0]]},
+ BOSS_HEAD
+ + '<p>Grade 8 was choices: <code>if</code> does something only when something is true, and <code>else</code> covers the rest.</p>'
+ + '<p>There is a wall in the top row. You can see where. But write it as though you could not:</p>'
+ + '<pre class="czcode">if (hero.look("right") === "wall") {\n  hero.moveDown(1);\n} else {\n  hero.moveRight(1);\n}</pre>'
+ + '<p>Put that inside a loop and you have a program that walks any corridor of this shape, not just this one. The difference between code that solves the board in front of you and code that solves the kind of board is exactly this <code>if</code>.</p>',
+ 'Get to the flag, deciding each step rather than listing them.',
+ '',
+ 'for (let i = 0; i < 6; i++) {\n  if (hero.look("right") === "wall") {\n    hero.moveDown(1);\n  } else {\n    hero.moveRight(1);\n  }\n}\nhero.moveRight(1);',
+ 'Loop six or seven times. Each time round: if what is to your right is <code>"wall"</code>, go down one; otherwise go right one. Then one last step onto the flag.',
+ [[/if\s*\(/, 'an <code>if</code>'],
+  [/else/, 'and an <code>else</code> for the other case'],
+  [/look\s*\(/, 'with <code>hero.look(...)</code> deciding which']],
+ 'Your program made its own decisions with its own eyes. Hand it a different corridor and it would still get through &mdash; that is the difference an <code>if</code> makes.',
+ 'Not yet. The test is <code>hero.look("right") === "wall"</code> &mdash; three equals signs, and the word in quotes. If you finish beside the flag rather than on it, add one more step.',
+ 'The thing an <code>if</code> tests is a <b>condition</b>; the two ways out are <b>branches</b>. Code that reads the world instead of assuming it is <b>adaptive</b>.',
+ 'Every "if the user is logged in", every "if the payment cleared", every fork your programs will ever take is this line with different words in it.');
+
+QB('G9', 'Boss: again, and again',
+ {w:9, h:1, hero:[0,0], exit:[8,0], budget:24, win:'exit+foes',
+  foes:[{at:[2,0], name:'Grubb', icon:'👹'}, {at:[4,0], name:'Mott', icon:'👺'},
+        {at:[6,0], name:'Warg', icon:'🐺'}]},
+ BOSS_HEAD
+ + '<p>Grade 9 was loops: say it once, have it happen many times.</p>'
+ + '<p>Three enemies, evenly spaced, one square apart each time. Step, swing, step &mdash; three times. You could write nine lines. Do not:</p>'
+ + '<pre class="czcode">for (let i = 0; i < 3; i++) {\n  hero.moveRight(1);\n  hero.attack();\n  hero.moveRight(1);\n}</pre>'
+ + '<p>Then two more squares to the flag. Count before you type: three rounds of two moves and a swing, then the walk out. If your loop runs four times, the fourth round swings at nothing and wastes the turns &mdash; harmless here, fatal on a board with a budget that matters.</p>',
+ 'Clear all three and finish on the flag, using a loop rather than nine lines.',
+ '',
+ 'for (let i = 0; i < 3; i++) {\n  hero.moveRight(1);\n  hero.attack();\n  hero.moveRight(1);\n}\nhero.moveRight(2);',
+ 'One loop running three times. Inside: right one, attack, right one. After the loop, two more squares to the flag.',
+ [[/for\s*\(|while\s*\(/, 'a loop'],
+  [(c) => (c.match(/hero\.attack/g) || []).length <= 2, 'the attack written once or twice, not once per enemy']],
+ 'Three fights out of one description. The loop did not care that there were three &mdash; and that is why it would still work if there were thirty.',
+ 'Not yet. Check how many times round your loop goes: three. And the pattern inside is step, swing, step &mdash; the second step carries you off the square they were standing on.',
+ 'The number of times round is the <b>iteration count</b>, and a loop that runs one time too many is an <b>off-by-one</b> &mdash; the most famous small mistake in the field.',
+ 'Off-by-one errors have grounded aircraft and lost banks money. Counting carefully in a four-line loop is the same skill as counting carefully in a four-million-line system.');
+
+QB('G10', 'Boss: the machine in stages',
+ {w:8, h:3, hero:[0,0], exit:[7,0], budget:30, win:'exit+gems',
+  doors:[{at:[4,0], id:'gate'}], switches:[{at:[2,2], opens:'gate'}],
+  walls:[[4,1],[4,2]], gems:[[6,2]]},
+ BOSS_HEAD
+ + '<p>Grade 10 was building something in stages: get one part working, then the next, and do not start the second until the first actually runs.</p>'
+ + '<p>This board is four stages and they only work in one order. There is a shut door across the corridor. There is a switch that opens it, and it is the wrong way. There is a gem past the door. There is the flag.</p>'
+ + '<p>Work the order out on paper before you touch the keyboard: <b>switch, door, gem, flag</b>. Then write it one stage at a time and run it after each &mdash; that is what the whole grade was about. Writing all fifteen moves and pressing Run once is how you end up staring at a board with no idea which line is wrong.</p>',
+ 'Open the door, take the gem, and finish on the flag.',
+ '',
+ 'hero.moveDown(2);\nhero.moveRight(2);\nhero.moveUp(2);\nhero.moveRight(4);\nhero.moveDown(2);\nhero.moveUp(2);\nhero.moveRight(1);',
+ 'Down two and right two puts you on the switch. Back up two, right four through the now-open door, down two for the gem, back up, and one right onto the flag.',
+ [[(c) => c.split('\n').filter(l => l.trim() && !l.trim().startsWith('//')).length <= 10, 'ten lines or fewer']],
+ 'Four stages in the only order that works, planned before it was typed. That is project work, and it is a different skill from writing a clever line.',
+ 'Not yet. The door stays shut until something stands on the switch, and the switch is at the bottom left. Go there first even though it is backwards.',
+ 'Work that has to happen in a fixed order is a <b>dependency chain</b>, and the thing that unlocks the rest is on the <b>critical path</b>. Getting one stage running before starting the next is <b>incremental development</b>.',
+ 'Every build system, every deployment pipeline and every construction project is a dependency chain. You cannot paint the walls before there are walls.');
+
+QB('G11', 'Boss: read your own labels',
+ {w:6, h:1, hero:[0,0], exit:[5,0], budget:16, win:'exit+gems', gems:[[3,0]]},
+ BOSS_HEAD
+ + '<p>Grade 11 was objects: one thing with labelled parts, read with a dot.</p>'
+ + '<p><code>hero</code> is an object, and it has been one all along. It carries <code>hero.hp</code>, <code>hero.gems</code>, <code>hero.x</code> and <code>hero.y</code>, and a dot gets you any of them:</p>'
+ + '<pre class="czcode">hero.say("hearts: " + hero.hp);</pre>'
+ + '<p>Say your hearts before you set off and your gems after you pick one up. The parts you have been calling all grade &mdash; <code>hero.moveRight</code>, <code>hero.attack</code> &mdash; are the same dot doing the same job: reach inside a labelled box and get the thing with that label. Methods and fields are the same idea wearing different hats.</p>',
+ 'Report your hearts, take the gem, report your gems, and finish on the flag.',
+ '',
+ 'hero.say("hearts: " + hero.hp);\nhero.moveRight(3);\nhero.say("gems: " + hero.gems);\nhero.moveRight(2);',
+ 'Say <code>hero.hp</code> first, walk three squares onto the gem, say <code>hero.gems</code>, then two more to the flag.',
+ [[/hero\.hp\b/, 'a read of <code>hero.hp</code>'],
+  [/hero\.gems\b/, 'and a read of <code>hero.gems</code>']],
+ 'The hero was an object the whole time and you have been using the dot since Grade 4 without calling it that. Fields and methods, one idea.',
+ 'Not yet. Both reads are wanted: <code>hero.hp</code> somewhere and <code>hero.gems</code> somewhere &mdash; and the gem has to actually be picked up before the second one is worth saying.',
+ 'A labelled value inside an object is a <b>property</b> or <b>field</b>; a function inside one is a <b>method</b>. Reaching in with a dot is <b>property access</b>, and it is the same operation either way.',
+ 'Every API you will ever use is an object with labelled parts. Learning to read the labels is most of learning a new library.');
+
+QB('G12', 'Boss: it is already broken',
+ {w:7, h:2, hero:[0,0], exit:[6,0], budget:18, walls:[[3,0]]},
+ BOSS_HEAD
+ + '<p>Grade 12 was what to do when it goes wrong: read the message, find the line, fix that line.</p>'
+ + '<p>So this one starts broken. There is already a program in the box and it does not work. Press <b>Run</b> before you change anything and watch what happens: the hero sets off, stops dead, and the note under the board says what it hit.</p>'
+ + '<p>That note is the error message. It tells you what and where. Do not rewrite the program &mdash; find the one line that is wrong and repair that. Deleting everything and starting again is the most expensive habit in programming, and this board is small enough to break it in.</p>',
+ 'Fix the program that is already there and get to the flag.',
+ 'hero.moveRight(6);',
+ 'hero.moveRight(2);\nhero.moveDown(1);\nhero.moveRight(2);\nhero.moveUp(1);\nhero.moveRight(2);',
+ 'Run it first and read the note: it bumps into a wall. The wall is in the top row, so go round it &mdash; two right, down one, two right, up one, two right.',
+ [[(c) => /moveDown/.test(c) && /moveUp/.test(c), 'a way down around the wall and a way back up']],
+ 'You read what the machine told you, found the line, and changed that line. That loop &mdash; run, read, fix, run &mdash; is the actual job, far more than typing new code is.',
+ 'Not yet. Press Run and read the note under the board: it names the thing the hero walked into. The top row is blocked partway along; the bottom row is not.',
+ 'The note is a <b>diagnostic</b>, working from it is <b>debugging</b>, and changing one line at a time so you know which change did it is <b>bisection</b>.',
+ 'Professional programmers spend more time reading errors than writing features. The ones who are fast are not better typists; they are better readers.');
+
+QB('C', 'Boss: one rule, written once',
+ {w:9, h:1, hero:[0,0], exit:[8,0], budget:30, win:'exit+foes',
+  foes:[{at:[3,0], name:'Grubb', icon:'👹'}, {at:[6,0], name:'Mott', icon:'👺', hp:2}]},
+ BOSS_HEAD
+ + '<p>College was about taste: names that say what they mean, functions that do one job, and never writing the same thing twice.</p>'
+ + '<p>Nine squares, two enemies, one of which takes two hits. You could write the exact sequence &mdash; walk, walk, walk, hit, walk, walk, hit, hit, walk &mdash; and it would work, and it would be worthless the moment anything moved.</p>'
+ + '<p>Write the rule instead:</p>'
+ + '<pre class="czcode">function forward() {\n  if (hero.look("right") === "foe") {\n    hero.attack();\n  } else {\n    hero.moveRight(1);\n  }\n}</pre>'
+ + '<p>One function. One job: take one step forward, whatever that means right now. Call it enough times and the board solves itself &mdash; and it would solve a different board too, which the hand-written sequence never would. That is the whole of College in twelve lines: a good name, one job, and no repetition.</p>',
+ 'Clear the corridor and reach the flag by writing one rule and repeating it.',
+ '',
+ 'function forward() {\n  if (hero.look("right") === "foe") {\n    hero.attack();\n  } else {\n    hero.moveRight(1);\n  }\n}\nfor (let i = 0; i < 12; i++) {\n  forward();\n}',
+ 'Write a function that takes one step: if the next square holds a foe, attack; otherwise move one right. Then call it a dozen times in a loop.',
+ [[/function\s+\w+\s*\(\s*\)/, 'a function with a name that says what it does'],
+  [/if\s*\(/, 'one decision inside it'],
+  [/for\s*\(|while\s*\(/, 'and a loop that calls it rather than repeated lines'],
+  [(c) => (c.match(/hero\.(attack|moveRight)/g) || []).length <= 3, 'each action written once, not once per square']],
+ 'One rule, written once, applied until the board ran out. Everything you learned in College is in those twelve lines: a name that explains itself, a function with a single job, and not one repeated instruction.',
+ 'Not yet. Check the shape: one <code>function</code> containing one <code>if</code>, and a loop that calls it. If the run ends short, call it a few more times &mdash; extra calls after the flag cost nothing.',
+ 'A function with a single responsibility, a name that describes it, and no duplication is what <b>clean code</b> means in practice. A rule applied repeatedly rather than a list of steps is a <b>policy</b>.',
+ 'This is how autonomous things are actually written. Nobody programs a robot with a list of moves; they write the rule for one step and run it forever.');
+
 const ORDER = [];
 for (const g of GRADES) for (let i=0;i<L.length;i++) if (L[i].g===g.id && !L[i].chal && !L[i].proj) ORDER.push(i);
 
@@ -9223,6 +9511,18 @@ function renderNav(){
       b.onclick = ()=>loadLesson(x.i);
       listEl.appendChild(b);
     }
+    /* The grade's boss sits under its lessons, not hidden behind finishing
+       them: it is in the → walk for everyone, and a nav that disagreed with
+       the arrow would be a list that lies about what is in the sequence. It
+       carries beyond:true, so the x/y count above still ignores it. */
+    for (const x of L.map((l,i)=>({l,i})).filter(x=>x.l.g===g.id && x.l.boss)){
+      if (q && !x.l.title.toLowerCase().includes(q)) continue;
+      const b = document.createElement('button');
+      b.className = 'navitem boss' + (x.i===idx && !sandbox ? ' cur':'') + (isOpen ? '' : ' ghidden');
+      b.innerHTML = '<span class="tick">' + (beyondDone.has(x.i)?'✓':'') + '</span><span>' + x.l.title + '</span>';
+      b.onclick = ()=>loadLesson(x.i);
+      listEl.appendChild(b);
+    }
     if (gComplete) for (const x of chals){
       if (q && !x.l.title.toLowerCase().includes(q)) continue;
       const b = document.createElement('button');
@@ -9258,7 +9558,12 @@ function loadLesson(i){
   const gl = L.map((l,n)=>({l,n})).filter(x=>x.l.g===les.g);
   const pos = gl.findIndex(x=>x.n===i);
   const op = ORDER.indexOf(i);
-  const crumb = '<div class="crumb"><button id="crPrev" title="Previous lesson" aria-label="Previous lesson"'+(op<=0?' disabled':'')+'>&larr;</button><span>' + g.name + '<span class="crsub"> · ' + g.sub + '</span> — ' + (les.deep ? 'floor ' + (les.deepN || 1) + ' of ' + DEEP_FLOORS : 'lesson ' + (pos+1) + ' of ' + gl.length) + '</span><button id="crNext" title="Next lesson" aria-label="Next lesson"'+(op>=ORDER.length-1?' disabled':'')+'>&rarr;</button></div>';
+  const crumb = '<div class="crumb"><button id="crPrev" title="Previous lesson" aria-label="Previous lesson"'+(op<=0?' disabled':'')+'>&larr;</button><span>' + g.name + '<span class="crsub"> · ' + g.sub + '</span> — ' + (les.deep ? 'floor ' + (les.deepN || 1) + ' of ' + DEEP_FLOORS
+               /* a boss is not lesson n of m: the grade's count does not
+                  include it, and two disagreeing counts on one screen is one
+                  of them lying */
+               : les.boss ? 'end of grade'
+               : 'lesson ' + (pos+1) + ' of ' + gl.length) + '</span><button id="crNext" title="Next lesson" aria-label="Next lesson"'+(op>=ORDER.length-1?' disabled':'')+'>&rarr;</button></div>';
   teachEl.innerHTML = crumb + '<h2>' + les.title + '</h2>' + readyNote(les) + les.teach + rhythmBox(les) + shapeHtml(i) + widgetsFor(i) + decoderFor(les) + ((RN[i]||les.rn) ? '<div class="realname"><b>Real name</b>' + (RN[i]||les.rn) + '</div>' : '') + (MORE[i] ? '<div class="morebox"><b>More to chew on</b>' + MORE[i] + '</div>' : '') + (OLDS[i] ? '<div class="elders"><b class="el">📜 Lineage</b>' + OLDS[i] + '</div>' : '');
   recallShow(i);
   goalEl.innerHTML = '<b>DO THIS:</b> ' + les.goal;
@@ -10038,7 +10343,11 @@ function nextThing() {
   const nx = ORDER.filter(i => !L[i].beyond).find(i => !done.has(i));
   if (nx != null) return { act: 'lesson', i: nx, label: (done.size ? 'Carry on: ' : 'Start: ') + txtTitle(nx),
     why: done.size ? 'Where you left off.' : 'The first lesson. You will be typing within a minute.' };
-  const nb = ORDER.filter(i => L[i].beyond).find(i => !beyondDone.has(i));
+  /* The grade bosses are beyond lessons sitting inside the teaching grades, so
+     without this the first thing a graduate is handed is a Kindergarten boss
+     under the sentence "this is the part about real work". They are met in the
+     walk and listed under their grade; the hub's next-thing is the main line. */
+  const nb = ORDER.filter(i => L[i].beyond && !L[i].boss).find(i => !beyondDone.has(i));
   if (nb != null) return { act: 'lesson', i: nb, label: gradeName(L[nb].g) + ': ' + txtTitle(nb),
     why: 'You finished the school. This is the part about real work.' };
   const np = L.map((l, i) => ({ l, i })).find(x => x.l.proj && !projDone.has(x.i) && gradeDone(x.l.gate));

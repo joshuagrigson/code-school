@@ -7,7 +7,7 @@ The complete Kindergarten-through-College coding class in one self-contained,
 offline HTML file. Download it (or copy it to `C:\code-school\`), double-click,
 and it runs in any browser with **zero network access and zero API usage**.
 
-## What's inside — 192 lessons
+## What's inside — 206 lessons
 
 Graduation is the 107 required lessons — every lesson and every practice rep.
 Challenges, portfolio pieces, Beyond and the Review Desk sit outside that count.
@@ -31,6 +31,7 @@ Challenges, portfolio pieces, Beyond and the Review Desk sit outside that count.
 | **Review Desk** | **10 lessons on reading code a machine wrote — see below** |
 | **Quest** | **13 levels where your code drives a hero across a board that fights back** |
 | **The Deep** | **650 generated Quest floors, each one proved winnable before you see it** |
+| **Grade bosses** | **14 Quest boards, one at the end of every grade from Kindergarten to College, each asking for that grade's idea somewhere it was never taught** |
 | **The Sound Room** | **8 lessons where your code is the instrument** |
 | **The Kata Table** | **7 puzzles marked on tests you were never shown** |
 | **Python** | **13 lessons: a second language, from `print` to a working report** |
@@ -41,7 +42,25 @@ grade. Challenges are hint-free. Reps (🏋) are required: they count toward the
 grade and toward graduation, because the practice most likely to make something
 stick was the practice easiest to skip. Beyond and the Review Desk sit outside
 the graduation count on purpose — they are what you do after finishing, not a
-moved goalpost.
+moved goalpost. So do the grade bosses: the arrow out of a grade's last lesson
+walks into one, but the grade's own x/y and the 107 both ignore it.
+
+## The boss at the end of every grade
+
+Fourteen Quest boards, one per grade, none of them required. Each takes the
+single idea that grade spent its lessons on and asks for it somewhere with
+nothing in common with where it was learned: a page becomes a dungeon, and the
+idea either travelled or it did not. Grade 1 taught that elements have names,
+so its boss makes you hit two ogres by name. Grade 6 taught lists, so its boss
+hands you a list of step counts to walk. Grade 9 taught loops, so its boss
+spaces three enemies evenly and blocks the nine-line answer with a move budget.
+Grade 12 taught debugging, so its boss starts with a program that is already
+wrong and asks you to read the note under the board.
+
+None of them can be passed by walking at the flag — that is a test, not a claim
+— and every one ships with the answer that beats it, checked by the same engine
+the learner plays on. An idea you can only use in the room you met it in is a
+memory.
 
 ## The Review Desk: reading code a machine wrote
 

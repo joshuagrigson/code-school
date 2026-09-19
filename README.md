@@ -411,6 +411,25 @@ them, so a missing bracket is explained in the coach's English — except
 page.html` is a perfectly good line of shell and a syntax error in anything
 else.
 
+**"Complete that last line" is not advice.** Someone who stops typing after a
+comma stops *because* they do not know what comes next, so telling them to
+finish the line names the one thing they are stuck on and calls it the fix.
+`CALL_PARTS` lists what each room's functions are given, in order, and
+`whatComesNext` walks back to the bracket that is still open, counts the pieces
+already supplied and says which one is due: *makeBeat() is given 4 things inside
+the brackets, separated by commas. You have typed 1 of them, so next comes which
+track — a number from 1 to 8.* Only fixed-arity calls are listed, because a
+function that takes any number of arguments would be counted wrong; everything
+else falls back to a sentence per character — what a `,`, a `(`, a `.`, an `=`
+or an `&&` was promising when the code stopped. The same sentence is what the
+preview panel shows, so the board and the coach never disagree.
+
+The half of that fix that should have come first: the decoder's operator and
+punctuation pass ran on JavaScript lessons only, which left the Sound Room —
+where every line is four pieces separated by commas — with no entry for the
+comma at all, and Quest and Python in the same position. It now runs on those
+too. Not on the Terminal: `ls -la` is not a subtraction.
+
 **A Terminal lesson is a filesystem plus a question about the filesystem.**
 `SH(...)` takes a `spec` — `{fs, cwd?, pre?}` — where `fs` comes from
 `shfs({'project/app.js': '...', 'scratch': null})`, a flat path map because a

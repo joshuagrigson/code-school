@@ -4639,7 +4639,12 @@ function decoderFor(les){
   if (/^\s*#[a-zA-Z]/m.test(code)) push('#name');
   if (/[a-z-]+\s*:/.test(code) && les.lang==='css') push(':');
   for (const [re,t] of GSYMS){ if (re.test(code)) push(t); }
-  if (les.lang==='js'){
+  /* The operators and the punctuation used to be explained on JavaScript
+     lessons only, which left the Sound Room - whose every line is four pieces
+     separated by commas - with no entry for the comma at all, and Quest and
+     Python in the same position. They are all the same language underneath.
+     The terminal is not: "ls -la" is not a subtraction, so it stays out. */
+  if (les.lang==='js' || les.lang==='py' || (les.lang==='arc' && les.kind!=='shell')){
     const ns = code.replace(/(['"`])(?:[^'"`\\]|\\.)*?\1/g, m=>' '.repeat(m.length));
     for (const [re,t] of JOPS){ if (re.test(ns)) push(t); }
     if (/\b(?:for|while)\s*\([^)]*\bi\b/.test(code)) push('i');
@@ -8442,6 +8447,90 @@ function jsSyntaxError(code){
   try { new Function(code); return null; }
   catch(e){ return e.message || 'syntax error'; }
 }
+/* What each room's functions are given, in order. "Complete that last line" is
+   useless advice to someone who stopped typing BECAUSE they did not know what
+   came next - it names the one thing they are stuck on and calls it the fix.
+   With this, the coach can say which piece the brackets are still waiting for.
+   Only fixed-arity calls belong here: a function that will happily take more
+   arguments than are listed would get counted wrong, so those fall through to
+   the plain explanation below. */
+const CALL_PARTS = {
+  /* the Sound Room */
+  makeBeat:  ['which sound &mdash; <code>KICK</code>, <code>SNARE</code>, <code>HAT</code> and the rest, typed without quotes',
+              'which track &mdash; a number from 1 to 8',
+              'which measure it starts on &mdash; usually <code>1</code>',
+              'the rhythm &mdash; sixteen characters in quotes, like <code>"0---0---0---0---"</code>'],
+  fitMedia:  ['which sound, typed without quotes', 'which track &mdash; a number from 1 to 8',
+              'the measure it starts on', 'the measure it stops at'],
+  setEffect: ['which track &mdash; a number from 1 to 8',
+              'which effect &mdash; <code>VOLUME</code>, <code>FILTER</code>, <code>DELAY</code>, <code>PAN</code> or <code>REVERB</code>, without quotes',
+              'how much of it'],
+  setTempo:  ['the speed in beats per minute, somewhere between 45 and 220'],
+  analyzeTrack: ['which track to count'],
+  /* Quest */
+  moveRight: ['how many squares'], moveLeft: ['how many squares'],
+  moveUp:    ['how many squares'], moveDown: ['how many squares'],
+  look:      ['a direction in quotes &mdash; <code>"right"</code>, <code>"left"</code>, <code>"up"</code> or <code>"down"</code>'],
+  say:       ['what to say, in quotes'],
+  /* everywhere else */
+  getElementById: ['the id to go looking for, in quotes'],
+  floor:     ['the number to round down'],
+  join:      ['what to put between the items, in quotes'],
+  includes:  ['the thing to look for']
+  /* Python is absent on purpose: it has its own reader, and its own sentence
+     for a line that stops early, further down. */
+};
+/* and when the call is not one we know, what that character was promising */
+const UNFINISHED = {
+  ',': 'A comma means &ldquo;and here comes the next one&rdquo;, so something still has to follow it &mdash; and then the line needs its closing <code>)</code> and <code>;</code>.',
+  '(': 'An open bracket <code>(</code> means &ldquo;here is what I am giving this&rdquo;, and so far nothing has been given. Put what it needs inside, then close it with <code>)</code>.',
+  '[': 'An open square bracket <code>[</code> starts a list, and this one is still empty and still open. Add the items, then close it with <code>]</code>.',
+  '{': 'An open curly brace <code>{</code> starts a block, and this block never ends. What goes inside comes next, then a <code>}</code> to shut it.',
+  '=': 'An <code>=</code> puts something into a box, and the right-hand side is missing &mdash; there is nothing yet to put in.',
+  '.': 'A dot means &ldquo;now reach inside this&rdquo;, and the name after the dot has not been typed.',
+  '+': 'A <code>+</code> needs something on <b>both</b> sides. The right-hand one is missing.',
+  '-': 'A <code>-</code> needs something on <b>both</b> sides. The right-hand one is missing.',
+  '*': 'A <code>*</code> needs something on <b>both</b> sides. The right-hand one is missing.',
+  '/': 'A <code>/</code> needs something on <b>both</b> sides. The right-hand one is missing.',
+  '&&': 'An <code>&amp;&amp;</code> joins two tests together, and the second test is missing.',
+  '||': 'An <code>||</code> joins two tests together, and the second test is missing.'
+};
+/* Which bracket is still open, what was called, and how many pieces went in */
+function openCall(t){
+  const ns = t.replace(/(['"`])(?:[^'"`\\]|\\.)*?\1/g, m => ' '.repeat(m.length));
+  let depth = 0, at = -1;
+  for (let i = ns.length - 1; i >= 0; i--){
+    const c = ns[i];
+    if (c === ')') depth++;
+    else if (c === '('){ if (!depth){ at = i; break; } depth--; }
+  }
+  if (at < 0) return null;
+  const nm = ns.slice(0, at).match(/([A-Za-z_$][\w$]*)\s*$/);
+  if (!nm) return null;
+  const parts = CALL_PARTS[nm[1]];
+  if (!parts) return null;
+  let d = 0, n = 0;
+  for (let i = at + 1; i < ns.length; i++){
+    const c = ns[i];
+    if (c === '(' || c === '[' || c === '{') d++;
+    else if (c === ')' || c === ']' || c === '}') d--;
+    else if (c === ',' && !d) n++;
+  }
+  /* more commas than the function has pieces is a different mistake, and not
+     one this sentence should guess at */
+  return n < parts.length ? {name:nm[1], parts, n} : null;
+}
+function whatComesNext(t, ch){
+  const call = (ch === ',' || ch === '(') && openCall(t);
+  if (call){
+    const N = call.parts.length, lead = '<code>' + call.name + '()</code> ';
+    if (N === 1) return lead + 'is given one thing inside the brackets: <b>' + call.parts[0] + '</b>.';
+    return lead + 'is given ' + N + ' things inside the brackets, separated by commas. '
+      + (call.n ? 'You have typed ' + call.n + ' of them, so next comes <b>' : 'The first one is <b>')
+      + call.parts[call.n] + '</b>.';
+  }
+  return UNFINISHED[ch] || 'Whatever was meant to come after it has not been typed yet.';
+}
 function friendlySyntax(msg, code){
   lintRange = null;
   const t = code.trimEnd();
@@ -8461,8 +8550,10 @@ function friendlySyntax(msg, code){
     }
   }
   if (/[+\-*/=,({[.]$/.test(t) || /(&&|\|\|)\s*$/.test(t)){
-    lintRange = {a:t.length-1, b:t.length};
-    return 'It looks like a line isn’t finished &mdash; the code ends mid-thought (after a ' + t.slice(-1) + '). Complete that last line.';
+    const two = /(&&|\|\|)\s*$/.test(t), ch = two ? t.slice(-2) : t.slice(-1);
+    lintRange = {a:t.length-ch.length, b:t.length};
+    return 'It looks like a line isn’t finished: the code ends mid-thought, after a <code>'
+      + (ch === '&&' ? '&amp;&amp;' : ch) + '</code> &mdash; ' + whatComesNext(t, ch);
   }
   const opens = (code.match(/\{/g)||[]).length, closes = (code.match(/\}/g)||[]).length;
   if (opens > closes) return 'A curly brace { was opened but never closed. Count your { and } &mdash; you need one more }.';

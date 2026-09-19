@@ -156,6 +156,23 @@ details.ft p{margin:6px 0 0;line-height:1.5}
    turns into a tall editor rather than a strip of dead space at the bottom.
    1.6 against 1 means the editor gets about 62% of what is going spare. */
 .edwrap{position:relative;flex:1.6 1 0;min-height:150px;background:#1e1e1e;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--sh2)}
+.shpane{display:none;position:absolute;inset:0;overflow:auto;background:#0d1017;color:#d7dbe2;padding:12px 14px;
+  font:13px/1.65 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;cursor:text}
+body.atprompt .shpane{display:block}
+body.atprompt #ed,body.atprompt #hl,body.atprompt #errlay{display:none}
+body.noedit .shpane{display:none}
+.shpane .shrow{white-space:pre-wrap;word-break:break-word;margin-bottom:2px}
+.shpane .shps{color:#7fd1a8;font-weight:700}
+.shpane .shps i{color:#8fb4e8;font-style:normal}
+.shpane .shcmd{color:#f3f1ec;font-weight:600}
+.shpane .shout{display:block;color:#c3cad6}
+.shpane .shd{color:#8fb4e8}
+.shpane .sherr{display:block;color:#f4b9a2;background:#3a1f18;border-left:3px solid #c2542e;
+  padding:4px 9px;border-radius:5px;margin:4px 0 6px}
+.shline{display:flex;align-items:baseline;gap:7px}
+.shline .shps{flex:0 0 auto}
+#shIn{flex:1 1 auto;min-width:40px;background:transparent;border:0;outline:0;padding:0;margin:0;
+  color:#f3f1ec;font:inherit;font-weight:600;caret-color:#7fd1a8}
 .edgrip{flex:0 0 auto;height:14px;margin:-4px 0 -4px;display:flex;align-items:center;justify-content:center;cursor:ns-resize;touch-action:none}
 .edgrip i{display:block;width:44px;height:4px;border-radius:3px;background:var(--line);transition:background .15s,width .15s}
 .edgrip:hover i,.edgrip.drag i{background:var(--accent);width:70px}
@@ -898,7 +915,7 @@ button:focus-visible,.navitem:focus-visible,#ed:focus-visible,input:focus-visibl
       <div class="remind" id="remind"><span id="remindTxt"></span><button id="remindHide">hide</button></div>
       <div class="scaffold" id="scaffold"><div class="sclabel" id="scLabel"></div><pre id="scPre"></pre></div>
       <div id="duckbar"><span class="dk">🦆</span><span id="duckQ"></span><span class="dbtns"><button id="duckNext">Next line →</button><button id="duckDone">Done</button></span></div>
-      <div class="edwrap"><pre id="hl"></pre><pre id="errlay"></pre><textarea id="ed" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea></div>
+      <div class="edwrap"><pre id="hl"></pre><pre id="errlay"></pre><textarea id="ed" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea><div class="shpane" id="shPane"><div id="shOut"></div><div class="shline"><span class="shps" id="shPs">you@codelab:<i>~</i>$</span><input id="shIn" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" aria-label="Terminal: type a command and press Enter"></div></div></div>
       <div class="edgrip" id="edGrip" title="Drag to resize the typing box"><i></i></div>
       <div id="ghosttalk"></div>
       <div class="btnrow">
@@ -3577,7 +3594,7 @@ SH('Where am I, and what is here',
  '<p>This is a terminal. There is no page, no mouse, no buttons &mdash; you type a word, press Enter, and the machine does that one thing and waits for the next. It is the oldest way of talking to a computer and it is still how most real work gets done, because it is the only way that can be written down, repeated, and handed to another machine.</p>'
  + '<p>Two commands to start. <code>pwd</code> asks <i>where am I?</i> &mdash; it prints the folder you are standing in. <code>ls</code> asks <i>what is here?</i> &mdash; it lists what that folder holds. Folders end with a <code>/</code> in the listing; files do not.</p>'
  + '<p>Notice what the terminal does not do. It does not explain itself, it does not suggest, and it does not ask if you are sure. It does exactly what you typed, and if you typed it wrong it says so and stops. That sounds harsh and it is the reason people trust it: a tool that guesses what you meant is a tool you can never quite predict.</p>'
- + '<p>The terminal below is the real thing, so use it like one: click it, type a line, press <b>Enter</b>, and that command runs and answers before you type the next. The line with the <code>$</code> is what you typed; the lines under it are what came back. <b>&uarr;</b> brings back the command before, the way it does at every prompt you will ever sit at. Get one wrong and it says so and waits &mdash; it does not throw the session away.</p>' + '<p>Everything you run collects in the box above, and that is the other half of this track. A list of commands, in order, in a file, is a <b>shell script</b> &mdash; which is how the work actually gets done, because nobody types forty lines at three in the morning twice. You are writing one by using the terminal. When the session does what the goal asked, press <b>Run</b> and the coach reads the whole thing.</p>',
+ + '<p>The box on the right is a real terminal, so use it like one: type a line, press <b>Enter</b>, and that command runs and answers before you type the next. The line with the <code>$</code> is what you typed; the lines under it are what came back. <b>&uarr;</b> brings back the command before, the way it does at every prompt you will ever sit at. Get one wrong and it says so and waits &mdash; it does not throw the session away.</p>' + '<p>Underneath it is the half a terminal never shows you: what your typing did to the machine. Folders and files that appeared, changed or went, and the whole tree as it now stands with a mark on the folder you are standing in. Run <code>pwd</code> or <code>ls</code> and it will tell you plainly that nothing changed, because looking is not doing &mdash; that distinction is most of what beginners get wrong.</p>' + '<p>Everything you run also collects as a list of commands, and that list is a <b>shell script</b>: the way real work actually gets done, because nobody types forty lines at three in the morning twice. When the session does what the goal asked, press <b>Run</b> and the coach reads the whole thing.</p>',
  'Ask where you are with <code>pwd</code>, then ask what is here with <code>ls</code> &mdash; two lines, one word each.',
  '',
  'pwd\nls',
@@ -4496,7 +4513,7 @@ const REMIND = {
   quest:'hero.moveRight(3) · hero.attack() · hero.look("right") · one line, one order, top to bottom',
   sound:'makeBeat(KICK, 1, 1, "0---0---0---0---") · 0 hits, - waits, + holds · sound names take no quotes',
   kata: 'return the answer, do not print it · you are marked on tests you cannot see · the empty case is one of them',
-  shell:'one command per line · pwd where am I · ls what is here · cd go there · a space between the command and what it acts on',
+  shell:'type one line, press Enter · pwd where am I · ls what is here · cd go there · a space between the command and what it acts on',
 };
 /* Arcade lessons all share one lang but not one reminder, so the kind decides.
    An unknown lang used to reach the bar as the literal word "undefined". */
@@ -7437,93 +7454,95 @@ function kataDoc(les, code){
 }
 
 /* ------------------------------------------------------------- TERMINAL */
-const SHELL_CSS = "\n.sh{background:#0d1017;border:1px solid #232936;border-radius:9px;padding:12px 14px;\n  font:13px/1.65 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word;color:#d7dbe2;min-height:60px}\n.sh .ps{color:#7fd1a8;font-weight:600}\n.sh .ps i{color:#8fb4e8;font-style:normal}\n.sh .cmd{color:#f3f1ec;font-weight:600}\n.sh .o{display:block;color:#c3cad6}\n.sh .e{display:block;color:#f4b9a2;background:#3a1f18;border-left:3px solid #c2542e;padding:4px 9px;border-radius:5px;margin:4px 0 6px}\n.sh .cursor{display:inline-block;width:8px;height:15px;background:#7fd1a8;vertical-align:-2px;animation:bl 1.1s steps(2) infinite}\n@keyframes bl{50%{opacity:0}}\n.sh .empty{color:#8b94a6;font-style:italic}\n.sh .d{color:#8fb4e8}\n.sh .ln.live{display:flex;align-items:baseline;gap:7px}\n.sh .ln.live .ps{flex:0 0 auto}\n.sh #inp{flex:1 1 auto;min-width:40px;background:transparent;border:0;outline:0;padding:0;margin:0;color:#f3f1ec;font:inherit;font-weight:600;caret-color:#7fd1a8}\n";
-/* The transcript is the whole preview: what was typed, on a prompt that
-   shows where it was typed, and what came back. An error is shown where it
-   happened and nothing runs after it, because that is what a shell does. */
-/* The terminal in the preview is the real article: you click it, type one
-   line, press Enter, and that line runs and answers before you type the
-   next. What makes it safe to do that is the replay - every Enter re-runs
-   the whole session from the lesson's starting filesystem through the same
-   shellRun the coach grades with, so the screen can never drift from what
-   is being marked. One engine, two jobs, even when one of them is live.
-   Everything typed is posted up to the editor, which fills with the list of
-   commands you just ran: a shell script, written by using the shell. */
-function shellView(){
-  var rowsEl = document.getElementById('rows'), inp = document.getElementById('inp'),
-      ps = document.getElementById('ps'), vb = document.getElementById('vb'),
-      term = document.getElementById('term');
-  var lines = CODE.split('\n');
-  while (lines.length && !lines[lines.length - 1].trim()) lines.pop();
-  var hist = lines.slice(), hi = hist.length;
-  function esc(s){ return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
-  function prompt(p){ return 'you@codelab:<i>' + esc(p) + '</i>$'; }
-  function paint(){
-    var st = shellRun(SPEC, lines.join('\n'));
-    var tr = st.transcript, cut = -1, bad = 0, i, j, t;
-    for (i = 0; i < tr.length; i++){
-      if (tr[i].err) bad++;
-      /* clear wipes the screen and nothing else - the session is still there */
-      if (tr[i].cmd.trim() === 'clear' && !tr[i].err) cut = i;
-    }
-    var html = '';
-    for (i = cut + 1; i < tr.length; i++){
-      t = tr[i];
-      html += '<div class="ln"><span class="ps">' + prompt(st.pretty(t.cwd)) + '</span> <span class="cmd">' + esc(t.cmd) + '</span>';
-      for (j = 0; j < t.out.length; j++)
-        html += '<span class="o">' + esc(t.out[j]).replace(/(^|\s)(\S+\/)(?=\s|$)/g, '$1<span class="d">$2</span>') + '</span>';
-      if (t.err) html += '<span class="e">' + esc(t.err) + '</span>';
-      html += '</div>';
-    }
-    rowsEl.innerHTML = html;
-    ps.innerHTML = prompt(st.pretty(st.cwd));
-    var n = tr.length;
-    vb.className = 'verdict ' + (bad ? 'lose' : 'idle');
-    vb.innerHTML = !n
-      ? '\u2328\uFE0F Type a command and press Enter<small>Click the prompt below and type. The machine answers one line at a time \u2014 when the whole session is there, press Run and the coach reads it.</small>'
-      : bad
-        ? (bad === 1 ? '\u26A0\uFE0F One line was not understood' : '\u26A0\uFE0F ' + bad + ' lines were not understood')
-          + '<small>' + esc(st.error) + ' \u2014 the session kept going, the way a real terminal does. Type the line again, correctly, and carry on.</small>'
-        : '\u2328\uFE0F ' + n + (n === 1 ? ' command ran' : ' commands ran') + ', now in ' + esc(st.pretty(st.cwd))
-          + '<small>Every line was understood. Whether it did the job is the coach\u2019s call \u2014 press Run when the session is done.</small>';
-    window.scrollTo(0, document.body.scrollHeight);
-  }
-  function send(){ try { parent.postMessage({sh: lines.join('\n')}, '*'); } catch (e){} }
-  inp.addEventListener('keydown', function(e){
-    if (e.key === 'Enter'){
-      e.preventDefault();
-      var v = inp.value;
-      inp.value = '';
-      if (!v.trim()) return;      /* Enter on an empty line is just a new prompt */
-      lines.push(v); hist.push(v); hi = hist.length;
-      paint(); send();
-    } else if (e.key === 'ArrowUp'){
-      e.preventDefault();
-      if (hi > 0){ hi--; inp.value = hist[hi]; }
-    } else if (e.key === 'ArrowDown'){
-      e.preventDefault();
-      if (hi < hist.length - 1){ hi++; inp.value = hist[hi]; } else { hi = hist.length; inp.value = ''; }
-    }
-  });
-  /* clicking anywhere in the black puts the caret where it belongs, unless
-     you were selecting something to copy */
-  term.addEventListener('click', function(){ if (!String(window.getSelection())) inp.focus(); });
-  /* the page above sends the caret down when someone clicks the record */
-  window.addEventListener('message', function(e){ if (e.data && e.data.shfocus) inp.focus(); });
-  paint();
-  if (FOCUS) { try { inp.focus({preventScroll:true}); } catch (e){ inp.focus(); } }
+/* The terminal itself is up in the typing box, where a terminal belongs. This
+   panel answers the question a real terminal never answers: what did that do
+   to the machine? It is the same shellRun the coach grades with, run twice -
+   once on nothing, for the machine as the lesson handed it over, and once on
+   the session - so what is drawn is the difference the typing actually made. */
+const SHELL_CSS = "\n.now{background:#0d1017;border:1px solid #232936;border-radius:9px;padding:12px 14px;\n  font:13px/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#d7dbe2}\n.now .h{font:600 .68rem/1.4 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;letter-spacing:.12em;\n  text-transform:uppercase;color:#98a2b3;margin:0 0 7px}\n.now .h+.h{margin-top:14px}\n.row{white-space:pre-wrap;word-break:break-word}\n.row .nm{color:#d7dbe2}\n.row.dir .nm{color:#8fb4e8}\n.row.new .nm{color:#7fd1a8;font-weight:700}\n.row.chg .nm{color:#f0d98a;font-weight:700}\n.row.gone .nm{color:#ea9382;text-decoration:line-through}\n.row .tag{color:#98a2b3;font-size:.92em}\n.row.here{background:#17263d;border-radius:4px;box-shadow:0 0 0 1px #24405f}\n.body{color:#aab3c0;border-left:2px solid #2c3444;margin:2px 0 7px 20px;padding-left:10px;white-space:pre-wrap}\n.nothing{color:#aab3c0;font-style:italic}\n.gitb{margin-top:14px;border-top:1px solid #232936;padding-top:11px;color:#c3cad6}\n.gitb b{color:#7fd1a8}\n";
+/* Everything under home as a flat map - folders true, files their contents.
+   Two of these, before and after, is the whole of "what changed". */
+function shSnap(st){
+  const out = {};
+  const walk = (n, abs) => {
+    if (!n || n.type !== 'dir') return;
+    Object.keys(n.children).sort().forEach(k => {
+      const c = n.children[k], p = abs + '/' + k;
+      out[p] = c.type === 'dir' ? true : c.content;
+      walk(c, p);
+    });
+  };
+  let home = st.fs;
+  st.home.split('/').filter(Boolean).forEach(part => { home = home && home.children ? home.children[part] : null; });
+  walk(home, '');
+  return out;
 }
 function shellDoc(les, code){
   const spec = les.spec || {fs:{type:'dir', children:{}}};
-  const body = '<div class="verdict idle" id="vb"></div>'
-    + '<div class="sh" id="term"><div id="rows"></div>'
-    + '<div class="ln live"><span class="ps" id="ps"></span>'
-    + '<input id="inp" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"'
-    + ' aria-label="Type a command and press Enter"></div></div>';
-  const js = 'var SPEC=' + JSON.stringify(spec) + ';var CODE=' + JSON.stringify(code)
-    + ';var FOCUS=' + (shellFocus ? 'true' : 'false') + ';\n'
-    + shellRun.toString() + '\n' + shellView.toString() + '\nshellView();';
-  return arcPage(SHELL_CSS, body, js);
+  const was = shSnap(shellRun(spec, ''));
+  const st = shellRun(spec, code);
+  const now = shSnap(st);
+  const paths = Object.keys(Object.assign({}, was, now)).sort();
+  const isNew = p => was[p] === undefined && now[p] !== undefined;
+  const isGone = p => was[p] !== undefined && now[p] === undefined;
+  const isChg = p => was[p] !== undefined && now[p] !== undefined && was[p] !== now[p];
+  const touched = paths.filter(p => isNew(p) || isGone(p) || isChg(p));
+  const nm = p => p.slice(p.lastIndexOf('/') + 1);
+  const shown = (t) => { const l = String(t).replace(/\n+$/, '').split('\n'); 
+    return esc(l.slice(0, 4).join('\n')) + (l.length > 4 ? '\n… and ' + (l.length - 4) + ' more lines' : ''); };
+  const here = st.pretty(st.cwd);
+
+  const banner = st.error
+    ? arcVerdict('lose', '⚠️ One line was not understood', st.error
+        + ' — the session kept going, the way a real terminal does.')
+    : arcVerdict('idle', st.transcript.length
+        ? '✅ ' + st.transcript.length + (st.transcript.length === 1 ? ' command ran' : ' commands ran') + ', and you are in ' + esc(here)
+        : '⌨️ Nothing run yet',
+        st.transcript.length
+          ? 'Below is what that did to the machine. Press Run when the session is done and the coach reads the whole thing.'
+          : 'Type a command in the terminal above and press Enter. Whatever it does to the machine shows up here.');
+
+  /* what the typing changed, which is the half a terminal never shows you */
+  let diff;
+  if (!touched.length)
+    diff = '<p class="nothing">' + (st.transcript.length
+      ? 'Nothing on the machine has changed. Everything you have run so far only looked — pwd, ls, cat and grep read, they do not write.'
+      : 'Nothing has happened yet.') + '</p>';
+  else diff = touched.map(p => {
+    const dir = (now[p] === true) || (was[p] === true);
+    const cls = isNew(p) ? 'new' : isGone(p) ? 'gone' : 'chg';
+    const mark = isNew(p) ? '+' : isGone(p) ? '−' : '~';
+    const tag = isNew(p) ? (dir ? 'new folder' : 'new file') : isGone(p) ? 'gone' : 'changed';
+    return '<div class="row ' + cls + (dir ? ' dir' : '') + '">' + mark + ' <span class="nm">' + esc(p.slice(1)) + (dir ? '/' : '')
+      + '</span> <span class="tag">' + tag + '</span></div>'
+      + (!dir && now[p] !== undefined && String(now[p]).trim() ? '<div class="body">' + shown(now[p]) + '</div>' : '');
+  }).join('');
+
+  /* and the machine as it stands, with where you are standing marked */
+  const tree = paths.filter(p => now[p] !== undefined).map(p => {
+    const depth = p.split('/').length - 2;
+    const dir = now[p] === true;
+    const cls = isNew(p) ? ' new' : isChg(p) ? ' chg' : '';
+    const atHere = dir && ('~' + p) === here;
+    return '<div class="row' + cls + (dir ? ' dir' : '') + (atHere ? ' here' : '') + '">'
+      + '  '.repeat(depth) + '<span class="nm">' + esc(nm(p)) + (dir ? '/' : '') + '</span>'
+      + (atHere ? ' <span class="tag">← you are here</span>' : '') + '</div>';
+  }).join('');
+
+  let git = '';
+  if (st.git){
+    const n = st.git.commits.length, staged = Object.keys(st.git.staged).length;
+    git = '<div class="gitb"><b>git</b> — a repository in <b>' + esc(st.pretty(st.git.root)) + '</b>, '
+      + n + (n === 1 ? ' commit' : ' commits')
+      + (staged ? ', ' + staged + ' file' + (staged === 1 ? '' : 's') + ' staged and waiting' : '')
+      + (n ? '<div class="body">' + st.git.commits.map(c => esc(c.hash.slice(0, 7) + '  ' + c.msg.split('\n')[0])).join('\n') + '</div>' : '')
+      + '</div>';
+  }
+
+  return arcPage(SHELL_CSS, banner
+    + '<div class="now"><p class="h">What your typing changed</p>' + diff
+    + '<p class="h">The machine now — ' + esc(st.home) + '</p>' + (tree || '<p class="nothing">Empty.</p>')
+    + git + '</div>');
 }
 
 /* --------------------------------------------------------------- PYTHON */
@@ -7731,15 +7750,13 @@ function markErr(range){
   errEl.scrollTop = edEl.scrollTop; errEl.scrollLeft = edEl.scrollLeft;
 }
 let graded = false;
-/* Whether the caret belongs in the terminal: true while the person is typing
-   down there, false the moment they type in the editor instead. */
-let shellFocus = false;
-const SHELL_TIP = '\u2328\uFE0F Type a command in the terminal below and press <b>Enter</b> \u2014 one line at a time, at a real prompt. What you run collects in the box above as a record of the session; there is nothing to type up there. When the session is done, press <b>\u25B6 Run</b> (or Ctrl+Enter) and the coach reads the whole thing.';
+const SHELL_TIP = '\u2328\uFE0F The box above is a terminal. Type one command, press <b>Enter</b>, and it runs \u2014 the panel below shows what that did to the machine. When the session is done, press <b>\u25B6 Run</b> (or Ctrl+Enter) and the coach reads the whole thing.';
 function previewOnly(){
   if (hub || drillOn) return;
   syncHl(); errEl.innerHTML=''; graded = false;
   if (sandbox){ outEl.srcdoc = edEl.value; return; }
   outEl.srcdoc = buildDoc(L[idx], edEl.value);
+  shPaint();
   statusEl.className='wait';
   statusEl.innerHTML = (L[idx] && L[idx].kind === 'shell') ? SHELL_TIP
     : '✍️ The page below updates as you type. Press <b>▶ Run</b> (or Ctrl+Enter) when you want the coach to grade it.';
@@ -7752,6 +7769,7 @@ function runCheck(){
   graded = true;
   const les = L[idx], code = edEl.value;
   outEl.srcdoc = buildDoc(les, code);
+  shPaint();
   if (les.proj){
     let coachMsg=null; lintRange=null;
     if (code.trim()){
@@ -8320,8 +8338,8 @@ function loadLesson(i){
   if (duckLine>-1) duckEnd(false);
   updateGhost();
   saveP(); renderNav();
-  shellFocus = les.kind === 'shell';
   if (lessonDone(idx)) runCheck(); else previewOnly();
+  shFocus();
   const cp=$('#crPrev'), cn=$('#crNext');
   if (cp) cp.onclick=()=>{ const o=ORDER.indexOf(idx); if (o>0) loadLesson(ORDER[o-1]); };
   if (cn) cn.onclick=()=>{ const o=ORDER.indexOf(idx); if (o>=0 && o<ORDER.length-1) loadLesson(ORDER[o+1]); };
@@ -9963,7 +9981,7 @@ function phFor(lang, kind){
   return lang==='html' ? 'Type your HTML here - the page below updates with every keystroke'
     : lang==='css' ? 'Type your CSS rules here - the page below re-dresses as you type'
     : lang==='py' ? 'Type your Python here - print(...) is how it shows you anything'
-    : kind==='shell' ? 'The session you type in the terminal below collects here - the script you are writing, not a place to type'
+    : kind==='shell' ? 'Type a command and press Enter'
     : kind==='quest' ? 'Type your orders here - hero.moveRight(3), one per line, top to bottom'
     : kind==='sound' ? 'Type your score here - makeBeat(KICK, 1, 1, "0---0---0---0---")'
     : kind==='kata' ? 'Write the function here - return the answer, do not print it'
@@ -10052,7 +10070,6 @@ edEl.addEventListener('input', ()=>{
   if (sandbox){ syncHl(); errEl.innerHTML=''; outEl.srcdoc = edEl.value; try{localStorage.setItem('sandboxCode', edEl.value);}catch(e){} return; }
   if (duckLine>-1) duckEnd(false);
   typedThisLesson = true;
-  shellFocus = false;
   document.querySelectorAll('.predcard').forEach(x=>x.remove());
   if (guideIdx>=0){ guideIdx=-1; guideMark(false); }
   syncHl(); errEl.innerHTML='';
@@ -10064,22 +10081,64 @@ edEl.addEventListener('input', ()=>{
    so Run has the whole session to grade and the person can see the script
    they just wrote by hand. Assigning .value fires no input event, which is
    the point: the frame is never rebuilt underneath someone typing into it. */
-/* Clicking the record is a reasonable thing to do when you want to type, so
-   it sends you where the typing happens instead of swallowing the keystroke. */
-edEl.addEventListener('focus', ()=>{
-  if (sandbox || hub || drillOn || !L[idx] || L[idx].kind !== 'shell') return;
-  shellFocus = true;
-  try { outEl.contentWindow.postMessage({shfocus:true}, '*'); } catch(e){}
+/* ---- the terminal, in the typing box ----------------------------------- */
+/* On a Terminal lesson this pane stands where the editor is: a prompt you type
+   at, one line at a time, Enter to run that line and only that line. The lines
+   collect in the editor's value underneath it, so Run, Show me, Start over and
+   every checker still see an ordinary script - and the panel below shows what
+   the session did to the machine, which is the half a terminal never shows. */
+const shPaneEl = $('#shPane'), shOutEl = $('#shOut'), shInEl = $('#shIn'), shPsEl = $('#shPs');
+let shHist = [], shHi = 0;
+function shellLesson(){ return (!sandbox && !hub && !drillOn && L[idx] && L[idx].kind === 'shell') ? L[idx] : null; }
+function shLines(){ const v = edEl.value.split('\n'); while (v.length && !v[v.length - 1].trim()) v.pop(); return v; }
+function shPrompt(p){ return 'you@codelab:<i>' + esc(p) + '</i>$'; }
+function shPaint(toEnd){
+  const les = shellLesson(); if (!les) return;
+  const st = shellRun(les.spec, edEl.value), tr = st.transcript;
+  /* clear wipes the screen and nothing else, the way it does anywhere */
+  let cut = -1;
+  for (let i = 0; i < tr.length; i++) if (tr[i].cmd.trim() === 'clear' && !tr[i].err) cut = i;
+  let html = '';
+  for (let i = cut + 1; i < tr.length; i++){
+    const t = tr[i];
+    html += '<div class="shrow"><span class="shps">' + shPrompt(st.pretty(t.cwd)) + '</span> <span class="shcmd">' + esc(t.cmd) + '</span>';
+    t.out.forEach(o => { html += '<span class="shout">' + esc(o).replace(/(^|\s)(\S+\/)(?=\s|$)/g, '$1<span class="shd">$2</span>') + '</span>'; });
+    if (t.err) html += '<span class="sherr">' + esc(t.err) + '</span>';
+    html += '</div>';
+  }
+  shOutEl.innerHTML = html;
+  shPsEl.innerHTML = shPrompt(st.pretty(st.cwd));
+  shHist = shLines(); shHi = shHist.length;
+  if (toEnd) shPaneEl.scrollTop = shPaneEl.scrollHeight;
+}
+function shFocus(){
+  if (!shellLesson() || shPaneEl.offsetParent === null) return;
+  try { shInEl.focus({preventScroll:true}); } catch(e){ shInEl.focus(); }
+}
+shInEl.addEventListener('keydown', (e)=>{
+  if (!shellLesson()) return;
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)){ e.preventDefault(); runCheck(); return; }
+  if (e.key === 'Enter'){
+    e.preventDefault();
+    const v = shInEl.value; shInEl.value = '';
+    if (!v.trim()){ shPaint(true); return; }        /* Enter on nothing is a fresh prompt */
+    const had = edEl.value.replace(/\n+$/, '');
+    edEl.value = (had ? had + '\n' : '') + v;
+    typedThisLesson = true;
+    shPaint(true);
+    previewOnly();                                   /* the panel below answers */
+    shFocus();
+    return;
+  }
+  if (e.key === 'ArrowUp'){ e.preventDefault(); if (shHi > 0){ shHi--; shInEl.value = shHist[shHi]; } return; }
+  if (e.key === 'ArrowDown'){
+    e.preventDefault();
+    if (shHi < shHist.length - 1){ shHi++; shInEl.value = shHist[shHi]; }
+    else { shHi = shHist.length; shInEl.value = ''; }
+  }
 });
-window.addEventListener('message', (e)=>{
-  if (!e.data || typeof e.data.sh !== 'string') return;
-  if (outEl && e.source !== outEl.contentWindow) return;
-  if (sandbox || hub || drillOn || !L[idx] || L[idx].kind !== 'shell') return;
-  shellFocus = true; typedThisLesson = true;
-  edEl.value = e.data.sh;
-  syncHl(); errEl.innerHTML = '';
-  if (graded){ graded = false; statusEl.className = 'wait'; statusEl.innerHTML = SHELL_TIP; btnNext.style.display = 'none'; }
-});
+/* clicking the black puts the caret where it belongs, unless you were selecting */
+shPaneEl.addEventListener('click', ()=>{ if (!String(window.getSelection())) shInEl.focus(); });
 statusEl.addEventListener('click', (e)=>{
   const b = e.target.closest('[data-hs]');
   if (!b || sandbox || !L[idx].proj) return;

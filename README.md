@@ -124,18 +124,31 @@ learner types commands, one per line: `pwd`, `ls`, `cd`, `mkdir`, `touch`,
 three lines of git that every project starts with. The shell is real in the way
 the Python interpreter is real: a tokeniser that respects quotes, redirection,
 `|`, `&&` and `#`, and a `git` that tracks a staging area and a commit history.
-The terminal in the preview is interactive, because a terminal that is not is
-a picture of one: you click it, type a line, press **Enter**, and that command
-runs and answers before you type the next, with `↑` for the command before and
-a wrong line answered rather than fatal. What makes that safe is the replay —
-every Enter re-runs the whole session from the lesson's starting filesystem
-through the same `shellRun` the coach grades with, so the screen cannot drift
-from what is being marked. Every line that runs is posted up to the editor, so
-the box above fills with the script you just wrote by using the shell, and
-**Run** grades that whole session when it is done. That box is read-only on
-these lessons and a click in it puts the caret at the prompt: while it stayed
-editable, a line typed there ran on every keystroke with no Enter involved,
-which is two contradictory rules on one screen.
+**The typing box is the terminal.** Not a script box, not a picture of a
+prompt: on these lessons the editor is replaced by a terminal in the same
+frame — type a line, press **Enter**, it runs and answers, `↑` recalls the
+command before, a wrong line is answered rather than fatal. Everything run
+collects in the editor's value underneath, so `Run`, `Show me`, `Start over`
+and every checker still see an ordinary script; the terminal is the interface
+and the script is the record.
+
+**The panel below answers what a terminal never does: what did that do?** It
+runs the same `shellRun` twice — once on nothing, for the machine as the lesson
+handed it over, and once on the session — and draws the difference: files and
+folders that appeared, changed or went, with the contents of the ones that
+changed, then the whole tree as it now stands with a mark on the folder you are
+standing in, and a git box once a repository exists. When a session has only
+read, it says so in as many words: *everything you have run so far only looked*.
+That distinction — looking versus doing — is most of what a beginner gets wrong
+at a prompt, and a real terminal gives them nothing to see it with.
+
+Getting here took three wrong shapes, each reported in one sentence by someone
+using it: a static transcript that ran the whole box on `Run` ("shouldn't I have
+to push enter"), an interactive preview with the editor still live above it ("I
+never pressed enter" — the editor was running a line per keystroke), and a
+read-only editor that swallowed the keys ("I can't even type in the top
+section"). The lesson is the obvious one: if two things on screen can take
+typing, exactly one of them is going to be wrong.
 
 The coach does not grade the words typed; it grades the world left behind — is
 the folder there, does the file say what it should, is the commit in, was the

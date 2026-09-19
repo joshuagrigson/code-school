@@ -459,6 +459,25 @@ lesson text had to be rewritten, and `chip_test.js` walks every lesson in the
 school to check that a chip is visibly a chip in both themes, clears AA on its
 own ground, and that the commands it knows about are marked.
 
+**A printed code block makes a promise, so it states it.** Every `pre.czcode`
+in a lesson is captioned by running that lesson's own checker on it: *this is
+the answer*, *these lines belong in your answer but are not all of it*, or *an
+example of the idea, not the answer*. It came from someone typing the block on
+the last Sound Room brief exactly as shown and being marked wrong — correctly,
+because it demonstrates the trick with two tracks where the brief wants four.
+Deriving the caption from the checker rather than from a hand-written note
+means it is right on all 27 blocks and stays right; the first version guessed
+from text overlap and told eight lessons' worth of learners that a block
+"belongs in your answer" when typing it alone still failed.
+
+**The rhythm string explains itself.** Every Sound Room lesson draws its own
+pattern as sixteen labelled slices with the beat count underneath (1 e & a 2 e
+& a…), the four beats marked, and `0` / `-` / `+` given meanings in words,
+plus the four arguments of `makeBeat` colour-matched to an explanation of each.
+Reported as "the dashes arent clear what they mean", which the prose had in
+fact explained in a sentence — a sentence is not the same as being able to see
+which character is which slice.
+
 **The test suites** live outside the repo but the recipe is worth keeping:
 every non-project lesson must have its solution pass and its starting code fail;
 every Beyond and Review Desk lesson additionally runs a list of

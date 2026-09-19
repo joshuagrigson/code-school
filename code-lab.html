@@ -140,6 +140,49 @@ details.ft summary{cursor:pointer;font-size:.78rem;text-transform:uppercase;lett
 details.ft p{margin:6px 0 0;line-height:1.5}
 .realname b{color:var(--acct);font-size:.7rem;text-transform:uppercase;letter-spacing:1px;margin-right:6px}
 .morebox{margin-top:22px;background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:14px 18px}
+.excap{font-size:.85rem;line-height:1.55;margin:-6px 0 14px;padding:8px 11px;border-radius:9px;
+  border:1px solid var(--line2);background:var(--panel2);color:var(--ink)}
+.excap.is,.excap.part{border-color:var(--goodline);background:var(--good)}
+.excap.not{border-color:var(--badline);background:var(--bad)}
+.rhythm{margin:18px 0;background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:14px;padding:14px 16px}
+.rhythm>b{display:block;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--soft);margin:0 0 10px}
+.rhythm>b.r2{margin-top:18px}
+.rcall{font-family:var(--mono);font-size:.94rem;font-weight:700;color:var(--ink);margin-bottom:11px;overflow-wrap:break-word}
+.rcall .rfn{color:var(--acct)}
+.rp{border-radius:4px;padding:1px 5px;border:1px solid transparent}
+.rp.p1{background:#d9ecd9;border-color:#a9d0a9;color:#1d4d1d}
+.rp.p2{background:#d9e6f3;border-color:#a7c4e0;color:#1b4467}
+.rp.p3{background:#f3e6d4;border-color:#dcc49b;color:#63451a}
+.rp.p4{background:#ecdcef;border-color:#cfb0d6;color:#552760}
+body.dark .rp.p1{background:#1c3320;border-color:#2f5636;color:#a9dcb0}
+body.dark .rp.p2{background:#17293c;border-color:#2b4a68;color:#a6cbec}
+body.dark .rp.p3{background:#33291a;border-color:#57462b;color:#e3c894}
+body.dark .rp.p4{background:#2e2036;border-color:#4d3658;color:#dcb6e6}
+.rargs{list-style:none;margin:0;padding:0;font-size:.88rem;line-height:1.6}
+.rargs li{position:relative;padding-left:20px;margin-bottom:6px}
+.rargs i{position:absolute;left:0;top:7px;width:11px;height:11px;border-radius:3px;border:1px solid}
+.rargs i.p1{background:#d9ecd9;border-color:#a9d0a9}
+.rargs i.p2{background:#d9e6f3;border-color:#a7c4e0}
+.rargs i.p3{background:#f3e6d4;border-color:#dcc49b}
+.rargs i.p4{background:#ecdcef;border-color:#cfb0d6}
+body.dark .rargs i.p1{background:#2f5636;border-color:#3f6f48}
+body.dark .rargs i.p2{background:#2b4a68;border-color:#3a6088}
+body.dark .rargs i.p3{background:#57462b;border-color:#6e5a38}
+body.dark .rargs i.p4{background:#4d3658;border-color:#63476f}
+.rgrid{display:grid;grid-template-columns:repeat(16,1fr);gap:2px}
+.rcell{text-align:center;padding:5px 0 3px;border-radius:5px;background:var(--chip);border:1px solid var(--chipline)}
+.rcell.hit{background:var(--good);border-color:var(--goodline)}
+.rcell.beat{box-shadow:inset 0 2px 0 var(--accent)}
+.rcell .rch{display:block;font-family:var(--mono);font-weight:700;font-size:.92rem;color:var(--chipink)}
+.rcell.hit .rch{color:var(--cwink)}
+.rcell.hold .rch{color:var(--warn)}
+.rcell .rct{display:block;font:600 .6rem/1.4 var(--mono);color:var(--soft)}
+.rnote{font-size:.87rem;line-height:1.6;color:var(--ink);margin:10px 0 0}
+.rkey{display:flex;gap:7px 16px;flex-wrap:wrap;margin-top:10px;font-size:.85rem;color:var(--ink)}
+.rkey .k{display:inline-block;font-family:var(--mono);font-weight:700;background:var(--chip);border:1px solid var(--chipline);
+  border-radius:5px;padding:0 6px;margin-right:7px;color:var(--chipink)}
+.rkey .k.hit{background:var(--good);border-color:var(--goodline);color:var(--cwink)}
+.rkey .k.hold{color:var(--warn)}
 .decoder{margin-top:22px;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:14px;padding:14px 18px;box-shadow:var(--sh1)}
 .decoder>b{display:block;font-size:.65rem;text-transform:uppercase;letter-spacing:.13em;font-weight:700;color:var(--soft);margin-bottom:9px}
 .decoder table{border-collapse:collapse;width:100%}
@@ -2777,7 +2820,12 @@ function QU(title, spec, teach, goal, start, sol, hint, reqs, passMsg, failMsg, 
       pairs.push([()=>!sim.error, sim.error
         ? 'the run gets to the end without going wrong &mdash; right now: <b>' + esc(sim.error) + '</b>'
         : 'the run gets to the end without going wrong']);
-      pairs.push([()=>sim.won, sim.won ? 'the level is cleared' : esc(sim.why || 'the level is cleared')]);
+      /* When the run stopped with a complaint, the row above is already saying
+         what the complaint was; repeating it word for word as the next row
+         reads like two faults rather than one. */
+      pairs.push([()=>sim.won, sim.won ? 'the level is cleared'
+        : sim.error ? 'the level is cleared \u2014 the run stopped on the line above, so it never got there'
+        : esc(sim.why || 'the level is cleared')]);
       return all(c, pairs) ? {ok:true, msg:passMsg} : {ok:false, msg:failMsg};
     }
   };
@@ -7448,6 +7496,10 @@ function soundKit(){
 }
 
 const SOUND_VIEW = [
+/* declared first because the track loop below fills it: a var used before its
+   own line is hoisted as undefined, and .push on undefined threw inside the
+   preview on every Sound Room lesson */
+'var ALLCELLS = [];',
 'var SC = soundRun(CODE);',
 'var deck = document.getElementById("deck");',
 'var MEAS = Math.max(SC.measures, 2), COLS = MEAS * 16;',
@@ -7476,7 +7528,6 @@ const SOUND_VIEW = [
 '  });',
 '  row.appendChild(steps); deck.appendChild(row); ALLCELLS.push(cells);',
 '});',
-'var ALLCELLS = [];',
 'var head = document.getElementById("play");',
 'document.getElementById("deck").style.position = "relative";',
 'var fx = document.getElementById("fx");',
@@ -8470,10 +8521,10 @@ function loadLesson(i){
   const pos = gl.findIndex(x=>x.n===i);
   const op = ORDER.indexOf(i);
   const crumb = '<div class="crumb"><button id="crPrev" title="Previous lesson" aria-label="Previous lesson"'+(op<=0?' disabled':'')+'>&larr;</button><span>' + g.name + '<span class="crsub"> · ' + g.sub + '</span> — lesson ' + (pos+1) + ' of ' + gl.length + '</span><button id="crNext" title="Next lesson" aria-label="Next lesson"'+(op>=ORDER.length-1?' disabled':'')+'>&rarr;</button></div>';
-  teachEl.innerHTML = crumb + '<h2>' + les.title + '</h2>' + readyNote(les) + les.teach + shapeHtml(i) + widgetsFor(i) + decoderFor(les) + ((RN[i]||les.rn) ? '<div class="realname"><b>Real name</b>' + (RN[i]||les.rn) + '</div>' : '') + (MORE[i] ? '<div class="morebox"><b>More to chew on</b>' + MORE[i] + '</div>' : '') + (OLDS[i] ? '<div class="elders"><b class="el">📜 Lineage</b>' + OLDS[i] + '</div>' : '');
+  teachEl.innerHTML = crumb + '<h2>' + les.title + '</h2>' + readyNote(les) + les.teach + rhythmBox(les) + shapeHtml(i) + widgetsFor(i) + decoderFor(les) + ((RN[i]||les.rn) ? '<div class="realname"><b>Real name</b>' + (RN[i]||les.rn) + '</div>' : '') + (MORE[i] ? '<div class="morebox"><b>More to chew on</b>' + MORE[i] + '</div>' : '') + (OLDS[i] ? '<div class="elders"><b class="el">📜 Lineage</b>' + OLDS[i] + '</div>' : '');
   recallShow(i);
   goalEl.innerHTML = '<b>DO THIS:</b> ' + les.goal;
-  markCode(teachEl, les); markCode(goalEl, les);
+  markCode(teachEl, les); markCode(goalEl, les); captionExamples(teachEl, les);
   const remind = remindFor(les);
   remindTxt.innerHTML = remind;
   remindBox.style.display = (!remind || localStorage.getItem('remindHidden')==='1') ? 'none' : 'flex';
@@ -9894,6 +9945,88 @@ function markCode(root, les){
       t.parentNode.replaceChild(holder, t);
     });
   });
+}
+/* "the dashes arent clear what they mean". The prose said sixteen characters,
+   sixteen slices, and that is true and useless: you cannot see which character
+   is which slice by reading a sentence about it. So every Sound Room lesson
+   carries the call and the string taken apart, using that lesson's own
+   pattern - the fifth character stops being something you count on fingers. */
+/* A lesson that prints a block of code is making a promise about that block,
+   and the promise was never stated. On the last Sound Room brief the block is
+   a demonstration of the trick - two tracks where the brief wants four - and
+   someone typed it exactly as shown and was marked wrong, correctly and
+   uselessly. So every printed block says what it is now, worked out from the
+   lesson's own answer rather than from a caption somebody remembered to add,
+   which means it is right on all 192 lessons and stays right. */
+function captionExamples(root, les){
+  if (!root || !les) return;
+  const norm = t => String(t).replace(/[‘’“”'"]/g, '"').replace(/\s+/g, ' ').trim();
+  const sol = norm(les.sol || '');
+  root.querySelectorAll('pre.czcode').forEach(pre => {
+    if (pre.closest('.clozebox')) return;
+    const nx = pre.nextElementSibling;
+    if (nx && nx.classList.contains('excap')) return;
+    const lines = pre.textContent.split('\n').map(norm).filter(l => l && l !== '}' && l !== '{');
+    if (!lines.length) return;
+    /* The honest way to caption a block is to run the lesson's own checker on
+       it. Guessing from how much of it appears in the answer said "these lines
+       belong in your answer" about eight blocks that would still be marked
+       wrong if you typed them, which is the same lie in a kinder voice. */
+    let passes = false;
+    try { passes = !!(normRes(les, pre.textContent) || {}).ok; } catch (e){ passes = false; }
+    const partly = !!sol && lines.every(l => sol.indexOf(l) >= 0);
+    let cls, cap;
+    if (passes){
+      cls = 'is'; cap = '\u2713 <b>This is the answer.</b> Typing exactly this passes the lesson.';
+    } else if (partly){
+      cls = 'part'; cap = '\u2713 These lines belong in your answer \u2014 but they are <b>not all of it</b>. '
+        + 'Typing only this will not pass; the goal above the box says what else it wants.';
+    } else {
+      cls = 'not'; cap = '\u261D An example of the idea, <b>not the answer</b>. Typing exactly this will not pass \u2014 '
+        + 'read the goal above the box and the checklist under it for what is actually being asked.';
+    }
+    const p = document.createElement('p');
+    p.className = 'excap ' + cls;
+    p.innerHTML = cap;
+    pre.parentNode.insertBefore(p, pre.nextSibling);
+  });
+}
+function rhythmOf(les){
+  const m = /['"]([0+\-]{16})['"]/.exec(les.sol || '') || /['"]([0+\-]{16})['"]/.exec(les.start || '');
+  return m ? m[1] : '0---0---0---0---';
+}
+function rhythmBox(les){
+  if (!les || les.kind !== 'sound') return '';
+  const pat = rhythmOf(les), count = ['1','e','&','a'];
+  let cells = '';
+  for (let i = 0; i < 16; i++){
+    const ch = pat[i], kind = ch === '0' ? 'hit' : ch === '+' ? 'hold' : 'rest';
+    cells += '<div class="rcell ' + kind + (i % 4 === 0 ? ' beat' : '') + '" title="slice ' + (i + 1) + '">'
+      + '<span class="rch">' + (ch === '-' ? '&ndash;' : ch) + '</span>'
+      + '<span class="rct">' + (i % 4 === 0 ? '<b>' + (i / 4 + 1) + '</b>' : count[i % 4]) + '</span></div>';
+  }
+  const hits = (pat.match(/0/g) || []).length, holds = (pat.match(/\+/g) || []).length;
+  return '<div class="rhythm">'
+    + '<b>Reading the line, piece by piece</b>'
+    + '<div class="rcall"><span class="rfn">makeBeat</span>(<span class="rp p1">SOUND</span>, '
+      + '<span class="rp p2">track</span>, <span class="rp p3">measure</span>, <span class="rp p4">"rhythm"</span>);</div>'
+    + '<ul class="rargs">'
+    + '<li><i class="p1"></i><b>SOUND</b> &mdash; which instrument. A name the room already knows, so it takes <b>no quotes</b>: <code>KICK</code>, not <code>"KICK"</code>.</li>'
+    + '<li><i class="p2"></i><b>track</b> &mdash; which row on the board below. Track 1 and track 2 play at the same time, like two drummers standing side by side.</li>'
+    + '<li><i class="p3"></i><b>measure</b> &mdash; which bar it starts on. Measure 1 is the first bar, measure 2 the next, and so on.</li>'
+    + '<li><i class="p4"></i><b>"rhythm"</b> &mdash; the sixteen characters below. This one <b>does</b> need quotes, because it is text you invented.</li>'
+    + '</ul>'
+    + '<b class="r2">The sixteen characters, one slice each</b>'
+    + '<div class="rgrid">' + cells + '</div>'
+    + '<p class="rnote">One measure is cut into sixteen equal slices, and each character says what happens in its slice. '
+    + 'Four slices make one <b>beat</b>, so the numbers under the row are how you would count it out loud: '
+    + '<b>1</b> e &amp; a <b>2</b> e &amp; a <b>3</b> e &amp; a <b>4</b> e &amp; a. The green columns are the four beats. '
+    + 'This pattern has ' + hits + ' hit' + (hits === 1 ? '' : 's') + (holds ? ' and ' + holds + ' held slice' + (holds === 1 ? '' : 's') : '') + '.</p>'
+    + '<div class="rkey">'
+    + '<span><span class="k hit">0</span>hit the sound here</span>'
+    + '<span><span class="k rest">&ndash;</span>stay quiet for this slice</span>'
+    + '<span><span class="k hold">+</span>keep the sound that is already ringing</span>'
+    + '</div></div>';
 }
 function shapeHtml(i) {
   /* a post-graduation lesson carries its own shape, because SHAPE is keyed by

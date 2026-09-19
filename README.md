@@ -62,6 +62,40 @@ None of them can be passed by walking at the flag — that is a test, not a clai
 the learner plays on. An idea you can only use in the room you met it in is a
 memory.
 
+## The Sound Room shows its working
+
+The room's whole language is a sixteen-character string, and for a while it
+taught that language by assertion: *beats 2 and 4 — slices 5 and 13*, with
+nothing on screen connecting the first half of that sentence to the second.
+Someone who typed `makeBeat(SNARE,` and stopped had been told *where* without
+ever being shown *how*, and the only way to check a string was to press Run and
+be told no.
+
+Three things fix that, and all three are on every lesson in the room:
+
+- **The numbers are derived, not stated.** The panel under each lesson lays
+  out the sixteen slices *with their numbers on them*, then shows why a beat is
+  four of them, which slice each beat starts on (1, 5, 9, 13), why an eighth is
+  every other slice, and a method for typing sixteen characters without losing
+  count (four groups of four). Lesson 2 works the method on a *different*
+  target — a hit on beat 3 — so the snare string is derived by the learner, not
+  handed to them.
+- **Every string you type is read back to you, live.** As you type, the board
+  echoes each `makeBeat` with the slice numbers under its characters and says
+  in English where the hits landed: *2 hits, on slices 4 and 13 — the a after
+  beat 1 and beat 4.* A hit one slice early is named as what it is before Run.
+  Fifteen characters is counted and said; seventeen is told where it spills.
+  `fitMedia` is read the same way — *measures 1, 2, 3 and 4, stops before 5* —
+  which is the half-open range lesson 6 is about, shown rather than described.
+  It reads the calls the engine actually made, so a loop's bars are read the
+  same as a typed one, once.
+- **The board is numbered** — slice numbers under the rows, beats marked — and
+  it stops padding a second, empty measure nobody wrote.
+
+`sound_teach.js` holds the room to all of it, including that lesson 2's teach
+text never contains the snare string and that a fifteen-character rhythm is
+caught before Run.
+
 ## The Review Desk: reading code a machine wrote
 
 Generating code is easy now. Reading it is the skill that decides whether you

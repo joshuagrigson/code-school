@@ -183,6 +183,17 @@ body.dark .rargs i.p4{background:#4d3658;border-color:#63476f}
   border-radius:5px;padding:0 6px;margin-right:7px;color:var(--chipink)}
 .rkey .k.hit{background:var(--good);border-color:var(--goodline);color:var(--cwink)}
 .rkey .k.hold{color:var(--warn)}
+.rcell .rnum{display:block;font:700 .6rem/1.3 var(--mono);color:var(--soft);border-bottom:1px solid var(--chipline);margin:0 3px 2px}
+.rcell.beat .rnum{color:var(--acct)}
+.rcell.want{outline:2px solid var(--acct);outline-offset:-1px}
+.rbeats{margin-top:18px;padding-top:14px;border-top:1px dashed var(--line);font-size:.88rem;line-height:1.6}
+.rbeats>b{display:block;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--soft);margin:0 0 8px}
+.rbeats table{border-collapse:collapse;margin:6px 0 10px}
+.rbeats th{text-align:left;font:700 .82rem var(--mono);color:var(--acct);padding:3px 14px 3px 0;white-space:nowrap}
+.rbeats td{font-family:var(--mono);font-size:.86rem;padding:3px 0;color:var(--ink)}
+.rbeats td b{color:var(--cwink);background:var(--good);border:1px solid var(--goodline);border-radius:4px;padding:0 5px}
+.rbeats p{margin:6px 0}
+.rbeats .rhow{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 11px;margin-top:10px}
 .decoder{margin-top:22px;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:14px;padding:14px 18px;box-shadow:var(--sh1)}
 .decoder>b{display:block;font-size:.65rem;text-transform:uppercase;letter-spacing:.13em;font-weight:700;color:var(--soft);margin-bottom:9px}
 .decoder table{border-collapse:collapse;width:100%}
@@ -3009,7 +3020,8 @@ SN('A drum you can see',
  + '<pre class="czcode">makeBeat(KICK, 1, 1, "0---0---0---0---");</pre>'
  + '<p>Sixteen characters, sixteen equal slices of one measure. <code>0</code> means hit the sound here. <code>-</code> means silence. Count them: hits land on slices 1, 5, 9 and 13 &mdash; which is one hit per beat, four to the bar, the plainest pulse in music.</p>'
  + '<p>The four things in the brackets are: which sound, which track, which measure to start on, and the rhythm. Sound names go in <b>without</b> quotes &mdash; <code>KICK</code>, not <code>"KICK"</code> &mdash; because they are names the room already knows, the same way <code>true</code> is a name and <code>"true"</code> is a word. The rhythm does need quotes, because it is text you made up.</p>'
- + '<p>Type it and press <b>Play it</b> under the board.</p>',
+ + '<p>Everything in this room is written in those sixteen characters, so learn to <b>count</b> them before anything else: four slices make one <b>beat</b>, four beats make the measure. The panel under this lesson, <i>Reading the line, piece by piece</i>, lays all sixteen out with their numbers and shows where every beat starts. Keep it in view &mdash; every lesson here will ask you to put something on a numbered slice.</p>'
+ + '<p>Type the line and press <b>Play it</b> under the board. As you type, the board reads your rhythm back to you in slices and beats &mdash; check it against what you meant before you press Run.</p>',
  'Put a <code>KICK</code> on track 1, measure 1, hitting on every beat.',
  '',
  'makeBeat(KICK, 1, 1, "0---0---0---0---");',
@@ -3023,8 +3035,10 @@ SN('A drum you can see',
 SN('Two at once',
  '<p>One drum is a metronome. Music starts when two things happen at different times.</p>'
  + '<p>Put the snare on <b>track 2</b>. Tracks are just layers &mdash; they play at the same time, and the only reason to separate them is so you can change one without disturbing the other. Same reason you keep things in separate functions.</p>'
- + '<p>The snare does not go where the kick goes. Put it on beats 2 and 4 &mdash; slices 5 and 13 &mdash; and the two patterns lock into each other. That off-placement is called the <b>backbeat</b>, and it is close to the whole of why rock and roll sounds like rock and roll.</p>'
- + '<p>Write the kick line, then the snare line under it. Count the dashes carefully: a snare one slice early sounds wrong in a way you will hear instantly and struggle to explain, which is a good early demonstration that your ears are a better test suite than your eyes.</p>',
+ + '<p>The snare does not go where the kick goes. The kick is on all four beats; the snare goes on <b>beats 2 and 4 only</b>. That off-placement is called the <b>backbeat</b>, and it is close to the whole of why rock and roll sounds like rock and roll.</p>'
+ + '<p>Now turn &ldquo;beats 2 and 4&rdquo; into characters. A beat is four slices wide, and each beat starts where the last one ended: beat 1 starts at slice 1, beat 2 at slice <b>5</b>, beat 3 at slice 9, beat 4 at slice <b>13</b>. So the snare string is sixteen characters with a <code>0</code> in the 5th place and the 13th place, and a dash everywhere else.</p>'
+ + '<p>Here is the method, on a different target so you can practise it. Suppose you wanted one hit on beat 3. Beat 3 starts at slice 9. Write sixteen dashes in four groups of four &mdash; <code>---- ---- ---- ----</code> &mdash; and slice 9 is the first character of the third group. Replace it: <code>---- ---- 0--- ----</code>. Take the spaces out: <code>"--------0-------"</code>. Eight dashes, a zero, seven dashes; count them.</p>'
+ + '<p>Do the same for slices 5 and 13. Write the kick line, then the snare line under it, and read the board’s echo of your string before you press Run: it will tell you which slices your hits landed on. A snare one slice early sounds wrong in a way you will hear instantly and struggle to explain, which is a good early demonstration that your ears are a better test suite than your eyes.</p>',
  'Kick on every beat on track 1, snare on beats 2 and 4 on track 2.',
  'makeBeat(KICK, 1, 1, "0---0---0---0---");',
  'makeBeat(KICK, 1, 1, "0---0---0---0---");\nmakeBeat(SNARE, 2, 1, "----0-------0---");',
@@ -3040,7 +3054,7 @@ SN('Two at once',
 SN('Faster, slower',
  '<p>Same notes, different speed, different music. <code>setTempo(90)</code> sets beats per minute for the whole piece, and it belongs at the top where anyone reading can see it.</p>'
  + '<p>Try the same beat at 75 and at 160. At 75 it drags and feels heavy; at 160 it is urgent. Nothing about the pattern changed &mdash; the only thing you altered is how much real time each of those sixteen slices takes up. Tempo is the clock speed.</p>'
- + '<p>Add a hi-hat while you are here. Hats usually go on every <b>eighth</b> &mdash; slices 1, 3, 5, 7, 9, 11, 13, 15 &mdash; which is twice as often as the kick, and what gives a beat its sense of forward motion.</p>'
+ + '<p>Add a hi-hat while you are here. One slice is a <b>sixteenth</b> of the bar, so a beat &mdash; four slices &mdash; is a <b>quarter</b>, and halfway through a beat is an <b>eighth</b>: two slices. Hats usually go on every eighth, which means every <i>other</i> slice: 1, 3, 5, 7, 9, 11, 13, 15. That is twice as often as the kick, and it is what gives a beat its sense of forward motion. As a string it is simply <code>0-</code> written eight times.</p>'
  + '<p>Write the tempo line first, then the three instrument lines. Order matters for reading, not for sound: the room reads your whole program before anything plays.</p>',
  'Set the tempo to 90, and add a hi-hat on every eighth on track 3, keeping the kick and snare.',
  'makeBeat(KICK, 1, 1, "0---0---0---0---");\nmakeBeat(SNARE, 2, 1, "----0-------0---");',
@@ -7824,7 +7838,7 @@ function shellRun(SPEC, CODE){
 
 const ARC_CSS = "\n*{box-sizing:border-box}\nbody{margin:0;font:14px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#11131a;color:#e8e6e1;padding:12px}\n.verdict{border-radius:9px;padding:9px 12px;margin:0 0 10px;font-weight:600;font-size:.86rem;line-height:1.45}\n.verdict.win{background:#12432f;color:#8fe7bd;border:1px solid #1d6a4b}\n.verdict.lose{background:#43241c;color:#f0b49c;border:1px solid #79402e}\n.verdict.idle{background:#1b1f28;color:#9aa2b0;border:1px solid #2a3040}\n.verdict small{display:block;font-weight:400;opacity:.85;margin-top:3px}\n.ttl{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:#7c8598;margin:12px 0 6px}\nbutton{font:inherit;font-weight:600;border:none;border-radius:8px;padding:7px 14px;cursor:pointer;background:#2b6b57;color:#eafff6}\nbutton:hover{background:#35836a}\n/* Dimming a button with opacity drags its label under the bar too: a\n   disabled control still has to be readable, so the ground dims and the\n   text does not. */\nbutton[disabled]{background:#39414f;color:#c3cad6;cursor:default}\n";
 const QUEST_CSS = "\n#board{position:relative;margin:0 auto;background:#171a22;border-radius:10px;padding:5px}\n.qc{position:absolute;border-radius:5px;background:#1f2430}\n.qc.wall{background:#3a4152;box-shadow:inset 0 -3px 0 #2c3242}\n.qc.fire{background:#4a2118}\n.qc.exit{background:#1c4437;box-shadow:inset 0 0 0 2px #2f7d5c}\n.qc.pit{background:#08090c;box-shadow:inset 0 0 14px #000;color:#2a2f3a;display:flex;align-items:center;justify-content:center;font-size:.9em}\n.qc.trap{background:#2a2118;color:#6b5a3f;display:flex;align-items:center;justify-content:center;font-size:.72em;transition:background .12s,color .12s}\n.qc.trap.hot{background:#5e2a1c;color:#ffb38a;box-shadow:inset 0 0 0 2px #a8472b,0 0 12px rgba(200,80,40,.5)}\nbutton.ghost{background:#2a3142;color:#c6d0e0}\nbutton.ghost:hover{background:#354056}\n.sp{position:absolute;display:flex;align-items:center;justify-content:center;transition:transform .17s ease;z-index:2}\n.sp.gone{opacity:0;transform:scale(.3)}\n#hero{z-index:4}\n#hero.hurt{animation:shake .3s}\n@keyframes shake{25%{transform:translate(var(--tx),var(--ty)) rotate(-12deg)}75%{transform:translate(var(--tx),var(--ty)) rotate(12deg)}}\n.bub{position:absolute;z-index:6;background:#f3f1ec;color:#22262e;border-radius:9px;padding:3px 8px;font-size:11px;font-weight:600;white-space:nowrap;transform:translate(-50%,-115%);box-shadow:0 2px 8px rgba(0,0,0,.45)}\n#hud{display:flex;gap:14px;align-items:center;margin:10px 0 0;font-size:.8rem;color:#aab2c0;flex-wrap:wrap}\n#hud b{color:#e8e6e1}\n#trace{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}\n.blk{font:600 11px/1 ui-monospace,Menlo,Consolas,monospace;padding:5px 7px;border-radius:5px;background:#232936;color:#9fb4c9;border-left:3px solid #3d4b61}\n.blk.mv{border-left-color:#4f9ad8;color:#a9d1f0}\n.blk.at{border-left-color:#d8714f;color:#f0b8a4}\n.blk.sy{border-left-color:#c5a03f;color:#e8d29a}\n.blk.now{background:#31405a;color:#fff;box-shadow:0 0 0 1px #5a7ba8}\n.blk.bump{border-left-color:#8a5a2b;opacity:.75;text-decoration:line-through}\n.note{font-size:.76rem;color:#c3a06a;min-height:1.3em;margin-top:6px}\n";
-const SOUND_CSS = "\n#deck{background:#171a22;border-radius:10px;padding:10px;overflow-x:auto}\n.trk{display:flex;align-items:center;gap:7px;margin-bottom:5px}\n.tname{flex:0 0 74px;font:600 10px/1 ui-monospace,Menlo,monospace;color:#8b94a6;text-align:right;letter-spacing:.04em}\n.steps{position:relative;display:flex;gap:1px}\n.st{width:13px;height:21px;border-radius:2px;background:#232936;flex:0 0 auto}\n.st.bar{background:#283040}\n.st.on{box-shadow:inset 0 0 0 1px rgba(255,255,255,.22)}\n.st.hold{opacity:.42}\n.st.lit{transform:scaleY(1.45);filter:brightness(1.9) saturate(1.3);box-shadow:0 0 12px currentColor}\n.st{transition:transform .07s ease-out,filter .07s ease-out}\n#hit{font-size:1rem;padding:11px 22px;border-radius:10px;font-weight:700;letter-spacing:.01em;box-shadow:0 2px 0 #1d4a3c}\n#hit:active{transform:translateY(1px);box-shadow:0 1px 0 #1d4a3c}\n#sctl.going #hit{background:#b8472f;box-shadow:0 2px 0 #7d2e1d}\n#play{position:absolute;top:-3px;bottom:-3px;width:2px;background:#f0d98a;border-radius:2px;left:0;display:none;pointer-events:none;z-index:3}\n#bars{display:flex;gap:1px;margin:0 0 5px 81px}\n.bn{width:55px;font:600 9px/1 ui-monospace,monospace;color:#8b94a6;flex:0 0 auto}\n#sctl{display:flex;gap:9px;align-items:center;margin-top:11px;flex-wrap:wrap;font-size:.79rem;color:#aab2c0}\n#fx{margin-top:9px;font:600 11px/1.6 ui-monospace,Menlo,monospace;color:#8b94a6}\n";
+const SOUND_CSS = "\n#deck{background:#171a22;border-radius:10px;padding:10px;overflow-x:auto}\n.trk{display:flex;align-items:center;gap:7px;margin-bottom:5px}\n.tname{flex:0 0 74px;font:600 10px/1 ui-monospace,Menlo,monospace;color:#8b94a6;text-align:right;letter-spacing:.04em}\n.steps{position:relative;display:flex;gap:1px}\n.st{width:13px;height:21px;border-radius:2px;background:#232936;flex:0 0 auto}\n.st.bar{background:#303b52}\n.st.on{box-shadow:inset 0 0 0 1px rgba(255,255,255,.22)}\n.st.hold{opacity:.42}\n.st.lit{transform:scaleY(1.45);filter:brightness(1.9) saturate(1.3);box-shadow:0 0 12px currentColor}\n.st{transition:transform .07s ease-out,filter .07s ease-out}\n#hit{font-size:1rem;padding:11px 22px;border-radius:10px;font-weight:700;letter-spacing:.01em;box-shadow:0 2px 0 #1d4a3c}\n#hit:active{transform:translateY(1px);box-shadow:0 1px 0 #1d4a3c}\n#sctl.going #hit{background:#b8472f;box-shadow:0 2px 0 #7d2e1d}\n#play{position:absolute;top:-3px;bottom:-3px;width:2px;background:#f0d98a;border-radius:2px;left:0;display:none;pointer-events:none;z-index:3}\n#bars{display:flex;gap:1px;margin:0 0 5px 81px}\n.bn{width:55px;font:600 9px/1 ui-monospace,monospace;color:#8b94a6;flex:0 0 auto}\n#sctl{display:flex;gap:9px;align-items:center;margin-top:11px;flex-wrap:wrap;font-size:.79rem;color:#aab2c0}\n#fx{margin-top:9px;font:600 11px/1.6 ui-monospace,Menlo,monospace;color:#8b94a6}\n.slnums{display:flex;gap:1px;margin:3px 0 0 81px}\n.slnums i{width:13px;flex:0 0 auto;font:600 8px/1.4 ui-monospace,monospace;font-style:normal;color:#8b94a6;text-align:center}\n.slnums i.b{color:#e8edf5}\n.rb{background:#171a22;border:1px solid #262c3a;border-radius:10px;padding:10px 12px;margin:0 0 10px}\n.rbh{font:600 12px/1.5 ui-monospace,Menlo,monospace;color:#c9d3e6;margin-bottom:6px}\n.rbh b{color:#f0d98a}\n.rbh code{color:#8fd0ab}\n.rbg{display:flex;gap:2px;margin:4px 0 6px;overflow-x:auto}\n.rbg i{flex:0 0 21px;width:21px;text-align:center;border-radius:4px;background:#232936;font-style:normal;padding:2px 0}\n.rbg i.on{background:#2e6b4d}\n.rbg i.hd{background:#3b4a3f}\n.rbg i.bt{box-shadow:inset 0 2px 0 #f0d98a}\n.rbg i span{display:block;font:600 8px/1.3 ui-monospace,monospace;color:#8b94a6}\n.rbg i em{display:block;font:700 12px/1.4 ui-monospace,monospace;font-style:normal;color:#e8edf5}\n.rbg i.on em{color:#c8f5dc}\n.rbg i.on span,.rbg i.hd span{color:#dff7e8}\n.rbp{font:12px/1.55 -apple-system,Segoe UI,Roboto,sans-serif;color:#aab2c0;margin:0}\n.rbp b{color:#e8edf5}\n.rbw{font:600 12px/1.5 -apple-system,Segoe UI,Roboto,sans-serif;color:#f0c98a;margin:5px 0 0}\n";
 const CONSOLE_CSS = "\n.term{background:#0d1017;border:1px solid #232936;border-radius:9px;padding:12px 14px;\n  font:13px/1.65 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word;color:#d7dbe2;min-height:60px}\n.term .pyerr{display:block;margin-top:10px;padding:9px 11px;border-radius:7px;background:#3a1f18;color:#f4b9a2;border-left:3px solid #c2542e;font-weight:600}\n.term .pyerr i{display:block;font-style:normal;font-weight:400;opacity:.8;font-size:.9em;margin-top:3px}\n.term .cursor{display:inline-block;width:7px;height:15px;background:#3f7d63;vertical-align:-2px;animation:bl 1.1s steps(2) infinite}\n@keyframes bl{50%{opacity:0}}\n.term .empty{color:#5f6879;font-style:italic}\ntable.tt{width:100%;border-collapse:collapse;font:12px/1.5 ui-monospace,Menlo,Consolas,monospace;margin-top:4px}\ntable.tt th{text-align:left;font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:#7c8598;padding:0 8px 5px;font-weight:600}\ntable.tt td{padding:6px 8px;border-top:1px solid #222834;vertical-align:top;word-break:break-word}\ntable.tt tr.p td:first-child{color:#6fd3a4}\ntable.tt tr.f td:first-child{color:#e8896a}\ntable.tt tr.f{background:#241a17}\ntable.tt .hid{color:#7c8598;font-style:italic}\ntable.tt .why{color:#e8896a;display:block;font-size:.92em;margin-top:2px}\n.rank{display:inline-block;background:#2a3142;color:#c6d0e0;border-radius:5px;padding:2px 7px;font-size:.68rem;font-weight:700;letter-spacing:.06em}\n";
 
 /* The hero on the board is YOUR character, if you made one. */
@@ -8424,7 +8438,9 @@ const SOUND_VIEW = [
 'var ALLCELLS = [];',
 'var SC = soundRun(CODE);',
 'var deck = document.getElementById("deck");',
-'var MEAS = Math.max(SC.measures, 2), COLS = MEAS * 16;',
+'/* the board shows what you made - a second, empty measure you never wrote was',
+'   on it before, and at lesson two a bar you did not write is a question */',
+'var MEAS = Math.max(SC.measures, 1), COLS = MEAS * 16;',
 'var HUE = {};',
 'var PAL = ["#4f9ad8","#d8714f","#5fbf8a","#c07fd0","#d8b44f","#4fc3c3","#e07a9f","#8a9ad8"];',
 'Object.keys(SOUND_RECIPES).forEach(function(k, i){ HUE[k] = PAL[i % PAL.length]; });',
@@ -8450,6 +8466,10 @@ const SOUND_VIEW = [
 '  });',
 '  row.appendChild(steps); deck.appendChild(row); ALLCELLS.push(cells);',
 '});',
+'/* slice numbers under the rows, so "slice 5" is a column you can point at */',
+'var nums = document.createElement("div"); nums.className = "slnums";',
+'for (var i = 0; i < COLS; i++){ var n = document.createElement("i"); n.textContent = (i % 16) + 1; if (i % 4 === 0) n.className = "b"; nums.appendChild(n); }',
+'deck.appendChild(nums);',
 'var head = document.getElementById("play");',
 'document.getElementById("deck").style.position = "relative";',
 'var fx = document.getElementById("fx");',
@@ -8525,8 +8545,61 @@ const SOUND_VIEW = [
 'document.getElementById("hit").onclick = function(){ playing ? stop() : play(); };'
 ].join('\n');
 
+/* Every rhythm you typed, read back in slices and beats - live, on each
+   keystroke, in the same panel as the board. This is the piece the room was
+   missing: a way to know what "----0-------0---" means BEFORE pressing Run
+   and being told it was wrong. It reads the calls the engine actually made,
+   so a bar a loop wrote is read the same way as a bar you typed. */
+function sliceName(i){
+  const beat = Math.floor(i / 4) + 1, sub = i % 4;
+  return sub === 0 ? 'beat ' + beat : 'the ' + ['', 'e', '&amp;', 'a'][sub] + ' after beat ' + beat;
+}
+function andList(a){ return a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1]; }
+function rhythmRead(SC){
+  const seen = {}, out = [];
+  for (const call of SC.calls){
+    const fm = /^fitMedia\((\w+), (\d+), (\d+), (\d+)\)$/.exec(call);
+    if (fm){
+      const k = 'f' + fm[1] + fm[2] + fm[3] + fm[4]; if (seen[k]) continue; seen[k] = 1;
+      const a = +fm[3], b = +fm[4], list = []; for (let m = a; m < b; m++) list.push(m);
+      out.push('<div class="rb"><div class="rbh"><b>' + fm[1] + '</b> · track ' + fm[2] + ' · <code>fitMedia(' + fm[1] + ', ' + fm[2] + ', ' + a + ', ' + b + ')</code></div>'
+        + '<p class="rbp">Plays through measure' + (list.length === 1 ? ' ' : 's ') + '<b>' + andList(list) + '</b> and stops <b>before</b> measure ' + b
+        + ' &mdash; the last number is where it ends, not the last bar it fills.</p></div>');
+      if (out.length >= 6) break;
+      continue;
+    }
+    const mb = /^makeBeat\((\w+), (\d+), (\d+), "([^"]*)"\)$/.exec(call);
+    if (!mb) continue;
+    const k = 'm' + mb[1] + mb[2] + mb[4]; if (seen[k]) continue; seen[k] = 1;
+    const pat = mb[4], hits = [], holds = [];
+    for (let i = 0; i < pat.length; i++){ if (pat[i] === '0') hits.push(i); else if (pat[i] === '+') holds.push(i); }
+    let cells = '';
+    for (let i = 0; i < Math.min(pat.length, 16); i++){
+      const ch = pat[i];
+      cells += '<i class="' + (ch === '0' ? 'on' : ch === '+' ? 'hd' : '') + (i % 4 === 0 ? ' bt' : '') + '"><span>' + (i + 1) + '</span><em>' + (ch === '-' ? '–' : ch) + '</em></i>';
+    }
+    const inBar = hits.filter(i => i < 16), onBeat = inBar.every(i => i % 4 === 0);
+    let say;
+    if (!inBar.length) say = 'No hits in the first measure.';
+    else if (inBar.length === 1) say = 'One hit, on slice <b>' + (inBar[0] + 1) + '</b> &mdash; ' + sliceName(inBar[0]) + '.';
+    else say = inBar.length + ' hits, on slices <b>' + andList(inBar.map(i => i + 1)) + '</b> &mdash; '
+      + (onBeat ? (inBar.length === 4 ? 'one on every beat.' : 'beats ' + andList(inBar.map(i => i / 4 + 1)) + '.')
+                : andList(inBar.map(sliceName)) + '.');
+    if (holds.length) say += ' ' + holds.length + ' slice' + (holds.length === 1 ? '' : 's') + ' held with <code>+</code>.';
+    if (pat.length > 16 && pat.length % 16 === 0) say += ' ' + (pat.length / 16) + ' measures in one string.';
+    let warn = '';
+    const short = 16 - pat.length;
+    if (pat.length < 16) warn = pat.length + ' character' + (pat.length === 1 ? '' : 's') + ', not 16 &mdash; the last ' + short + ' slice' + (short === 1 ? '' : 's')
+      + ' of the measure stay' + (short === 1 ? 's' : '') + ' silent. Fine if you meant it; if not, count again.';
+    else if (pat.length > 16 && pat.length % 16) warn = pat.length + ' characters &mdash; 16 fill a measure, so the last ' + (pat.length % 16) + ' spill into the next one.';
+    out.push('<div class="rb"><div class="rbh"><b>' + mb[1] + '</b> · track ' + mb[2] + ' · <code>"' + esc(pat) + '"</code></div>'
+      + '<div class="rbg">' + cells + '</div><p class="rbp">' + say + '</p>' + (warn ? '<p class="rbw">⚠ ' + warn + '</p>' : '') + '</div>');
+    if (out.length >= 6) break;
+  }
+  return out.join('');
+}
 function soundDoc(les, code){
-  let banner;
+  let banner, read = '';
   if (!code.trim()) banner = arcVerdict('idle', 'Nothing on the tracks yet.', 'Write a line on the right and it appears here.');
   else {
     const SC = soundRun(code);
@@ -8534,8 +8607,9 @@ function soundDoc(les, code){
       ? arcVerdict('lose', '❌ The music stopped', SC.error)
       : arcVerdict('win', '🎵 ' + SC.notes + ' note' + (SC.notes === 1 ? '' : 's') + ' on ' + SC.used.length + ' track' + (SC.used.length === 1 ? '' : 's'),
           SC.tempo + ' BPM · ' + SC.measures + ' measure' + (SC.measures === 1 ? '' : 's') + ' · ' + (SC.sounds.join(', ') || 'nothing yet'));
+    read = rhythmRead(SC);
   }
-  const body = banner
+  const body = banner + read
     + '<div id="deck"><div id="bars"></div><div id="play"></div></div>'
     + '<div id="fx"></div>'
     + '<div id="sctl"><button id="hit">▶ Play it</button><span>Nothing here is a recording &mdash; every sound is built out of an oscillator and an envelope when you press play.</span></div>';
@@ -11054,16 +11128,39 @@ function rhythmOf(les){
   const m = /['"]([0+\-]{16})['"]/.exec(les.sol || '') || /['"]([0+\-]{16})['"]/.exec(les.start || '');
   return m ? m[1] : '0---0---0---0---';
 }
-function rhythmBox(les){
-  if (!les || les.kind !== 'sound') return '';
-  const pat = rhythmOf(les), count = ['1','e','&','a'];
+/* Sixteen cells with the slice number ON them. "Put the snare on slice 5" is
+   only an instruction if 5 is somewhere you can look; before this the number
+   lived in a tooltip, and the learner counted dashes in their head. */
+function rhythmCells(pat, opts){
+  const count = ['1','e','&','a'], o = opts || {};
   let cells = '';
   for (let i = 0; i < 16; i++){
-    const ch = pat[i], kind = ch === '0' ? 'hit' : ch === '+' ? 'hold' : 'rest';
-    cells += '<div class="rcell ' + kind + (i % 4 === 0 ? ' beat' : '') + '" title="slice ' + (i + 1) + '">'
+    const ch = pat[i] || '-', kind = ch === '0' ? 'hit' : ch === '+' ? 'hold' : 'rest';
+    cells += '<div class="rcell ' + kind + (i % 4 === 0 ? ' beat' : '') + (o.mark && o.mark.indexOf(i) >= 0 ? ' want' : '') + '">'
+      + '<span class="rnum">' + (i + 1) + '</span>'
       + '<span class="rch">' + (ch === '-' ? '&ndash;' : ch) + '</span>'
       + '<span class="rct">' + (i % 4 === 0 ? '<b>' + (i / 4 + 1) + '</b>' : count[i % 4]) + '</span></div>';
   }
+  return '<div class="rgrid">' + cells + '</div>';
+}
+/* Where slice 5 comes from. The room kept saying "beats 2 and 4, slices 5 and
+   13" as though the second half followed from the first, and it does - but
+   only if someone has told you a beat is four slices wide and starts on the
+   first of them. This is that someone. */
+const BEAT_TABLE = '<div class="rbeats"><b>Where the slice numbers come from</b>'
+  + '<p>A measure is cut into <b>16 slices</b>. Four slices make one <b>beat</b>, so a measure has four beats and each one owns four slices in a row:</p>'
+  + '<table><tr><th>beat 1</th><td>slices <b>1</b> 2 3 4</td></tr>'
+  + '<tr><th>beat 2</th><td>slices <b>5</b> 6 7 8</td></tr>'
+  + '<tr><th>beat 3</th><td>slices <b>9</b> 10 11 12</td></tr>'
+  + '<tr><th>beat 4</th><td>slices <b>13</b> 14 15 16</td></tr></table>'
+  + '<p>A beat <i>lands</i> on the first of its four. So &ldquo;on the beat&rdquo; means slices <b>1, 5, 9, 13</b> &mdash; and &ldquo;beats 2 and 4&rdquo; means slices <b>5 and 13</b>. '
+  + 'Halfway through a beat is an <b>eighth</b>: slices 1, 3, 5, 7, 9, 11, 13, 15 &mdash; every other slice. One slice on its own is a <b>sixteenth</b>.</p>'
+  + '<p class="rhow"><b>How to type one without losing count:</b> write four dashes, a space in your head, four more, and so on &mdash; <code>---- ---- ---- ----</code> is sixteen. '
+  + 'Then find the slice you want by its group: slice 5 is the first of the second group, slice 13 the first of the fourth. Replace that dash with a <code>0</code>, take the imaginary spaces out, and count the characters once more before you press Run.</p></div>';
+function rhythmBox(les){
+  if (!les || les.kind !== 'sound') return '';
+  const pat = rhythmOf(les);
+  const cells = rhythmCells(pat);
   const hits = (pat.match(/0/g) || []).length, holds = (pat.match(/\+/g) || []).length;
   return '<div class="rhythm">'
     + '<b>Reading the line, piece by piece</b>'
@@ -11076,7 +11173,7 @@ function rhythmBox(les){
     + '<li><i class="p4"></i><b>"rhythm"</b> &mdash; the sixteen characters below. This one <b>does</b> need quotes, because it is text you invented.</li>'
     + '</ul>'
     + '<b class="r2">The sixteen characters, one slice each</b>'
-    + '<div class="rgrid">' + cells + '</div>'
+    + cells
     + '<p class="rnote">One measure is cut into sixteen equal slices, and each character says what happens in its slice. '
     + 'Four slices make one <b>beat</b>, so the numbers under the row are how you would count it out loud: '
     + '<b>1</b> e &amp; a <b>2</b> e &amp; a <b>3</b> e &amp; a <b>4</b> e &amp; a. The green columns are the four beats. '
@@ -11085,7 +11182,7 @@ function rhythmBox(les){
     + '<span><span class="k hit">0</span>hit the sound here</span>'
     + '<span><span class="k rest">&ndash;</span>stay quiet for this slice</span>'
     + '<span><span class="k hold">+</span>keep the sound that is already ringing</span>'
-    + '</div></div>';
+    + '</div>' + BEAT_TABLE + '</div>';
 }
 function shapeHtml(i) {
   /* a post-graduation lesson carries its own shape, because SHAPE is keyed by

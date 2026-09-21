@@ -7,7 +7,7 @@ The complete Kindergarten-through-College coding class in one self-contained,
 offline HTML file. Download it (or copy it to `C:\code-school\`), double-click,
 and it runs in any browser with **zero network access and zero API usage**.
 
-## What's inside — 234 lessons
+## What's inside — 234 lessons, and a path
 
 Graduation is the 155 required lessons — every lesson, every practice rep, every
 challenge, the arcade prep lessons inside the grades, and the boss at the end of
@@ -37,6 +37,7 @@ each grade. Portfolio pieces, Beyond and the Review Desk sit outside that count.
 | **The Kata Table** | **7 puzzles marked on tests you were never shown** |
 | **Python** | **13 lessons: a second language, from `print` to a working report** |
 | **The Terminal** | **13 lessons: folders, files, pipes and git, typed by hand into a shell that lives in the page** |
+| **Learn Python** | **The Duolingo mechanic pointed at Python: a path of 21 units, eight quick cards a session, five kinds of card, every one built from real code by the engine** |
 | **Arcade prep** | **28 small Terminal, Python, Sound Room, Kata and Quest lessons inside the grades themselves — K through College — so each arcade room is somewhere you have already been** |
 
 Reviews double as test-out exams (⚡): pass one first and it ticks the lessons
@@ -115,6 +116,43 @@ and the level titles were recomputed so "Loop Rider" still lands on the loops
 lesson it always did rather than a grade later.
 
 `prep_test.js`: 35 checks.
+
+## Learn Python: the path
+
+The mechanic a hundred million people use every day, pointed at Python. A path
+of 21 small units — print, numbers, words, boxes, `if`, `elif`, `while`, `for`,
+lists, slices, strings, dicts, functions, `return`, defaults, `try`, small
+programs — each a five-minute session of eight cards. Five kinds, rotated so no
+two in a row are the same: **read it** (what does this print — pick one),
+**fill the gap** (type the missing piece), **type it** (type the last line
+yourself), **order the lines** (tap them into place), **find the bug** (which
+line is wrong). Instant verdict on every card with a sentence saying why.
+Three hearts a session; a wrong card is dealt again at the end, and keeps
+coming back until it is right. A crown on the unit when you clear it, the
+next unit unlocks, XP and the streak tick. Out of hearts ends the session and
+loses nothing.
+
+None of the cards were written by hand. `LP_UNITS` is 105 short snippets with
+a sentence each; everything else is built from them by running the real
+Python engine. A read card's right answer is what the engine printed; its
+wrong answers are what the engine printed for the snippet with **one thing
+changed** (`LP_MUT`: a number off by one, `<` for `<=`, `and` for `or`,
+`.upper()` for `.lower()`, `range(n)` for `range(n+1)`, two lines swapped…),
+kept only if the engine says the output differs. A find-the-bug card is one
+of those mutants, restricted to the ones that changed a single line. A
+fill-the-gap answer is right if it is the original token *or* if the engine
+says the program it makes prints the same thing — and a blank is only offered
+where a nonsense token would change the output, because a token inside a
+branch that never runs would accept anything. A typed line and an ordered
+set of lines are checked the same way: run it, compare. `input()` snippets are
+kept off the read cards, since the console echoes what was typed.
+
+`lp_test.js` builds 252 sessions (every unit, twelve seeds) and holds every
+card to it: exactly one right option, all options distinct and real, the
+snippet's own answer accepted, nonsense rejected, a missing line rejected,
+the bug's fix restoring the expected output. Then it plays a session through
+the buttons a person presses, misses on purpose, and checks the hearts, the
+re-deal, the crown, the unlock, the XP and the streak.
 
 ## The Sound Room shows its working
 

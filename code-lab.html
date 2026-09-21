@@ -446,6 +446,50 @@ body.dark #status.projlist .coachline{background:#2b2820;border-color:#4a432f;co
 .navitem.chal{color:#8a5a2e;font-weight:bold}
 body.dark .navitem.chal{color:#d9a45e}
 #btnNext.counting{min-width:12.5em;font-variant-numeric:tabular-nums}
+/* ---- Learn Python: the path and its cards ---- */
+.lpstats{display:flex;gap:16px;flex-wrap:wrap;margin:0 0 16px;font-size:.88rem;color:var(--soft)}
+.lpstats span{background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:4px 12px}
+.lppath{display:flex;flex-direction:column;gap:0;margin:18px 0 6px;position:relative}
+.lppath:before{content:"";position:absolute;left:23px;top:24px;bottom:24px;width:4px;background:var(--line);border-radius:2px}
+.lpnode{display:flex;gap:14px;align-items:flex-start;padding:8px 0;position:relative}
+.lpring{flex:0 0 50px;width:50px;height:50px;border-radius:50%;border:3px solid var(--line);background:var(--panel);font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .12s,box-shadow .15s;box-shadow:0 3px 0 var(--line)}
+.lpring:hover:not([disabled]){transform:translateY(-1px)}
+.lpring:active:not([disabled]){transform:translateY(2px);box-shadow:none}
+.lpnode.cur .lpring{border-color:var(--accent);background:var(--btn);color:#fff;box-shadow:0 3px 0 #1d4a3c}
+.lpnode.done .lpring{border-color:#d9a500;background:#fff4c2;box-shadow:0 3px 0 #b78a00}
+body.dark .lpnode.done .lpring{background:#3d3410;border-color:#d9a500}
+.lpnode.locked .lpring{opacity:.55;cursor:not-allowed;box-shadow:none}
+.lpnode.locked .lpt{opacity:.6}
+.lpt{flex:1;min-width:0;padding-top:6px}
+.lpt b{display:block;font-size:1rem}
+.lpt details{margin-top:2px;font-size:.86rem;color:var(--soft)}
+.lpt summary{cursor:pointer;color:var(--acct);font-size:.78rem;letter-spacing:.06em;text-transform:uppercase}
+.lpt details p{margin:6px 0 0;line-height:1.5;color:var(--ink)}
+.lpcrowns{display:block;font-size:.8rem;letter-spacing:.05em;margin:2px 0}
+.lpdone{background:var(--good);border:1px solid var(--goodline);border-radius:12px;padding:12px 16px;font-weight:600}
+.lphearts{font-size:.9rem;letter-spacing:.05em;white-space:nowrap}
+.lphearts i{font-style:normal;opacity:.45}
+.lpcard{border-left-color:#d9a500}
+.lpcard .czcode.lpexp{background:var(--good);border:1px solid var(--goodline);color:var(--cwink);margin-bottom:8px}
+.lpcard .czcode.lpexp:before{content:"prints";display:block;font:600 .62rem/1.6 var(--sans);letter-spacing:.12em;text-transform:uppercase;opacity:.75}
+.lpblank{background:var(--warnbg,#fdf3d7);color:var(--warn);border-radius:4px;padding:0 3px;font-weight:700}
+.lprow{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.lpin{flex:1;min-width:12em;font:1rem var(--mono);padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink)}
+.lpin:focus{outline:2px solid var(--accent);outline-offset:-1px}
+.lpin.hit{border-color:var(--goodline);background:var(--good)}
+.lpin.miss{border-color:var(--badline);background:var(--bad)}
+.lpcheck{font:600 .95rem var(--sans);padding:9px 18px;border:none;border-radius:10px;background:var(--btn);color:#fff;cursor:pointer;box-shadow:0 2px 0 #1d4a3c}
+.lpcheck:active{transform:translateY(1px);box-shadow:none}
+.lpcheck[disabled],.lpundo[disabled]{opacity:.5;cursor:default}
+.lpundo{font:600 .9rem var(--sans);padding:9px 14px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink);cursor:pointer}
+.lpbank{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.lpbank .lpline{font-size:.9rem;padding:8px 12px}
+.lpbank .lpline[disabled]{opacity:.35;cursor:default}
+.lpbuild{min-height:3.2em;border:1px dashed var(--line)}
+.lpbuild.hit{border-color:var(--goodline);background:var(--good)}
+.lpbuild.miss{border-color:var(--badline);background:var(--bad)}
+.lpln{display:inline-block;width:1.6em;color:var(--soft);font-size:.8em}
+.lptipbox{background:var(--panel2);border:1px solid var(--line);border-left:3px solid #d9a500;border-radius:10px;padding:10px 14px}
 .navitem.boss{color:#7a2f48;font-weight:bold}
 body.dark .navitem.boss{color:#e9a0ba}
 .bossnote{background:var(--panel);border:1px solid var(--line);border-left:4px solid #7a2f48;border-radius:8px;padding:9px 12px;margin:0 0 14px;font-size:.92rem}
@@ -2827,6 +2871,7 @@ GRADES.push({id:'KT', name:'The Kata Table',  sub:'Puzzles with hidden tests',  
 GRADES.push({id:'PY', name:'Python',          sub:'A second language, from zero',lv:1});
 GRADES.push({id:'SH', name:'The Terminal',    sub:'The machine, in its own words',lv:1});
 GRADES.push({id:'DP', name:'The Deep',        sub:'650 floors, every one proved',lv:1});
+GRADES.push({id:'LP', name:'Learn Python',    sub:'The path: five minutes a unit',lv:1});
 
 /* ---- Quest -------------------------------------------------------------
    reqs are about HOW, the simulation is about WHETHER. Both have to hold: a
@@ -10182,7 +10227,7 @@ function renderNav(){
 
 function loadLesson(i){
   killNext();
-  sandbox = false; hub = false; drillOn = false; drill = null; placing = null; idx = i;
+  sandbox = false; hub = false; drillOn = false; drill = null; placing = null; lpS = null; idx = i;
   syncModeUI();
   $('#btnSandbox').textContent = 'Free play';
   $('#btnSandbox').title = 'An uncheckable scratch page - write anything, break nothing'; leadStep = 0; solShown = false;
@@ -11001,7 +11046,7 @@ function hubRing(dn, total) {
     + '<text x="40" y="38">' + dn + '</text><text x="40" y="54" class="rs">of ' + total + '</text></svg>';
 }
 function openHub() {
-  hub = true; sandbox = false; drillOn = false; drill = null; syncModeUI();
+  hub = true; sandbox = false; drillOn = false; drill = null; lpS = null; syncModeUI();
   ghostTalkOff(); killGhost();
   document.querySelectorAll('.predcard,.navtip').forEach(x => x.remove());
   $('#btnSandbox').textContent = 'Free play';
@@ -11053,7 +11098,7 @@ function openHub() {
    Four grades, and no sensible way to guess which one somebody wants. So the
    door is a screen rather than a jump: it shows all five, says what each one
    is for, and marks the one your class was made for. */
-const ARC_GRADES = ['QS','SR','KT','PY','SH','DP'];
+const ARC_GRADES = ['QS','SR','KT','PY','LP','SH','DP'];
 /* What a track takes for granted, said out loud. Quest, the Sound Room and
    Python genuinely start from nothing - their first lessons are one line each,
    and each teaches the loop when it gets to it. The Kata Table does not: a kata
@@ -11065,7 +11110,8 @@ const ARC_NEEDS = {
   KT: {gate:'G9',  need:'Assumes the school: functions, loops, and working with strings.'},
   PY: {gate:null, need:'Starts from nothing \u2014 a second language that does not assume the first.'},
   SH: {gate:null, need:'Starts from nothing \u2014 no code at all, just the machine\u2019s own language.'},
-  DP: {gate:null, need:'Assumes Quest \u2014 it is the same hero, on boards nobody wrote.'}
+  DP: {gate:null, need:'Assumes Quest \u2014 it is the same hero, on boards nobody wrote.'},
+  LP: {gate:null, need:'Starts from nothing \u2014 five minutes a unit, and the first unit is print.'}
 };
 function arcReady(gid){
   const g = ARC_NEEDS[gid];
@@ -11079,17 +11125,514 @@ const ARC_PITCH = {
   KT:['🧩','Puzzles marked on tests you were not shown. The gap between "it works on my examples" and "it works" is the most useful hour in the whole school.'],
   PY:['🐍','A second language, from print to a working report. Everything you already know, wearing different clothes — which is how you find out what you actually knew.'],
   DP:['🕳️','Six hundred and fifty floors built from their own numbers and proved winnable before you see them. The hero, the enemies and the traps you already know, arranged by something that has never heard of you.'],
+  LP:['🦉','Python the way a hundred million people learn a language: a path of small units, eight quick cards each, mixed kinds, checked the instant you answer, mistakes dealt back until they stick, three hearts, a crown per unit and a streak. Every card is built from real code by running it.'],
   SH:['💻','The terminal. Folders, files, pipes and git, typed one line at a time into a machine that does exactly what you said and nothing you meant. Every developer tool you will ever install assumes you can do this.']
 };
 function arcadeInto(gid){
   if (gid === 'DP') return loadDeep(deepFloor);
+  if (gid === 'LP') return lpOpen();
   const items = L.map((l,i)=>({l,i})).filter(x => x.l.g === gid);
   if (!items.length) return openHub();
   const next = items.find(x => !beyondDone.has(x.i)) || items[0];
   loadLesson(next.i);
 }
-function openArcade(){
+/* ============================================================================
+   LEARN PYTHON - the path.
+
+   The mechanic a hundred million people use every day, pointed at Python.
+   A path of small units, five minutes each. Every session is eight cards of
+   mixed kinds - read the code and say what it prints, type the missing piece,
+   put the lines in order, find the wrong line, type the last line yourself -
+   with the answer checked the moment you give it, a sentence saying why, a
+   mistake put back at the end of the session until you get it, three hearts,
+   and a crown on the unit when you finish. What we took is the mechanic: short,
+   varied, immediate, forgiving, daily.
+
+   Nothing here is a quiz written by hand. Every card is built from a real
+   snippet by running it on the same Python engine the lessons use: the right
+   answer is what the engine printed, the wrong answers are what the engine
+   printed for a version of the code with one thing changed, and a typed answer
+   is right if the engine says the program it makes prints the same thing.
+   ========================================================================= */
+const LP_UNITS = [
+ {t:'Say it', tip:'<code>print(...)</code> writes one line and moves to the next. Text goes in quotes. Two prints, two lines.', items:[
+  {s:'print writes exactly what is in the quotes', c:'print("Hello")'},
+  {s:'each print is its own line', c:'print("one")\nprint("two")'},
+  {s:'the quotes are not printed, only what is inside them', c:'print("Python")\nprint("3, 2, 1")'},
+  {s:'an empty print makes an empty line', c:'print("top")\nprint()\nprint("bottom")'},
+  {s:'commas print several things with a space between', c:'print("Hi", "there")'}]},
+ {t:'Numbers', tip:'Without quotes, digits are numbers and Python does the maths. <code>//</code> divides and drops the remainder; <code>%</code> keeps only the remainder; <code>**</code> is a power.', items:[
+  {s:'numbers are calculated, not copied', c:'print(2 + 3)'},
+  {s:'* multiplies and - subtracts, like maths', c:'print(4 * 5)\nprint(10 - 7)'},
+  {s:'/ always gives a decimal, even when it divides exactly', c:'print(9 / 3)'},
+  {s:'// is whole-number division; % is the remainder', c:'print(7 // 2)\nprint(7 % 2)'},
+  {s:'** is a power: 2 to the 5', c:'print(2 ** 5)'}]},
+ {t:'Words', tip:'Text in quotes is a <b>string</b>. <code>+</code> glues two strings, <code>*</code> repeats one, and <code>len()</code> counts its characters.', items:[
+  {s:'+ glues strings together with nothing in between', c:'print("ab" + "cd")'},
+  {s:'digits in quotes are text, so + glues instead of adding', c:'print("2" + "3")'},
+  {s:'* repeats a string', c:'print("ha" * 3)'},
+  {s:'len counts every character, spaces included', c:'print(len("hello"))\nprint(len("a b"))'},
+  {s:'you glue a space yourself, or Python will not', c:'print("Hi" + " " + "Ada")'}]},
+ {t:'Boxes', tip:'A name, an <code>=</code>, a value: <code>x = 5</code>. Later lines use the name. Assign again and the old value is gone. <code>x += 1</code> is short for <code>x = x + 1</code>.', items:[
+  {s:'a name holds a value for later', c:'x = 5\nprint(x)'},
+  {s:'the name stands in for its value in maths', c:'x = 5\nprint(x * 2)'},
+  {s:'assigning again replaces the old value', c:'x = 5\nx = 9\nprint(x)'},
+  {s:'+= grows a box by that much', c:'x = 5\nx += 3\nprint(x)'},
+  {s:'two boxes, one line each', c:'a = 3\nb = 4\nprint(a * b)'}]},
+ {t:'Words and numbers', tip:'<code>str()</code> turns a number into text; <code>int()</code> turns text into a whole number. An f-string, <code>f"..."</code>, drops a value into text with <code>{}</code>.', items:[
+  {s:'commas let print mix text and numbers, with a space between', c:'age = 11\nprint("Age:", age)'},
+  {s:'an f-string drops the value in where the braces are', c:'age = 11\nprint(f"Age: {age}")'},
+  {s:'str turns a number into text, so + can glue it', c:'n = 7\nprint("n is " + str(n))'},
+  {s:'int turns text into a number, so + can add it', c:'s = "20"\nprint(int(s) + 1)'},
+  {s:'inside the braces you can do maths', c:'w = 6\nprint(f"{w} times 7 is {w * 7}")'}]},
+ {t:'True or false', tip:'A comparison is a question with a yes-or-no answer: <code>==</code> asks are they equal, <code>!=</code> not equal, <code>&lt;</code> and <code>&gt;</code> less and greater. The answer is <code>True</code> or <code>False</code>.', items:[
+  {s:'== asks whether two things are equal', c:'print(3 == 3)\nprint(3 == 4)'},
+  {s:'!= asks whether they are different', c:'print(5 != 6)'},
+  {s:'< and > compare sizes', c:'x = 7\nprint(x > 5)\nprint(x < 5)'},
+  {s:'and needs both sides true; or needs one', c:'print(True and False)\nprint(True or False)'},
+  {s:'not flips the answer', c:'x = 2\nprint(not x > 5)'}]},
+ {t:'if', tip:'<code>if test:</code> then an indented line. The indented part runs only when the test is true. <code>else:</code> is the other door.', items:[
+  {s:'the indented line runs because the test is true', c:'x = 10\nif x > 5:\n    print("big")'},
+  {s:'when the test is false, the indented line is skipped', c:'x = 2\nif x > 5:\n    print("big")\nprint("done")'},
+  {s:'else runs when the if did not', c:'x = 2\nif x > 5:\n    print("big")\nelse:\n    print("small")'},
+  {s:'the test can be about text too', c:'name = "Ada"\nif name == "Ada":\n    print("hello, Ada")'},
+  {s:'a line after the block runs either way', c:'n = 4\nif n % 2 == 0:\n    print("even")\nelse:\n    print("odd")\nprint("checked")'}]},
+ {t:'elif', tip:'<code>elif</code> is another door between <code>if</code> and <code>else</code>. Python tries them top to bottom and takes the first that is true - only one.', items:[
+  {s:'the first true door wins; the rest are skipped', c:'x = 15\nif x > 20:\n    print("huge")\nelif x > 10:\n    print("big")\nelse:\n    print("small")'},
+  {s:'when no door is true, else runs', c:'x = 3\nif x > 20:\n    print("huge")\nelif x > 10:\n    print("big")\nelse:\n    print("small")'},
+  {s:'order matters: 25 is also over 10, but the first door took it', c:'x = 25\nif x > 20:\n    print("huge")\nelif x > 10:\n    print("big")'},
+  {s:'several elifs, one answer', c:'g = 85\nif g >= 90:\n    print("A")\nelif g >= 80:\n    print("B")\nelif g >= 70:\n    print("C")'},
+  {s:'without an else, nothing may print at all', c:'t = 5\nif t > 30:\n    print("hot")\nelif t > 20:\n    print("warm")\nprint("end")'}]},
+ {t:'while', tip:'<code>while test:</code> repeats the indented lines for as long as the test stays true. Something inside must change, or it never stops.', items:[
+  {s:'the loop runs while n is under 3, printing 0, 1, 2', c:'n = 0\nwhile n < 3:\n    print(n)\n    n += 1'},
+  {s:'the change inside the loop is what ends it', c:'n = 5\nwhile n > 0:\n    n -= 2\nprint(n)'},
+  {s:'a total built up one lap at a time', c:'total = 0\nn = 1\nwhile n <= 4:\n    total += n\n    n += 1\nprint(total)'},
+  {s:'the line after the loop runs once it stops', c:'n = 3\nwhile n > 0:\n    print("tick")\n    n -= 1\nprint("boom")'},
+  {s:'if the test is false at the start, the body never runs', c:'n = 10\nwhile n < 5:\n    print("never")\nprint("skipped")'}]},
+ {t:'for and range', tip:'<code>for i in range(n):</code> runs the block n times, with <code>i</code> counting from 0 up to n-1. <code>range(a, b)</code> starts at a and stops before b.', items:[
+  {s:'range(3) counts 0, 1, 2 - it stops before 3', c:'for i in range(3):\n    print(i)'},
+  {s:'range(1, 4) starts at 1 and stops before 4', c:'for i in range(1, 4):\n    print(i)'},
+  {s:'the counter is a value you can use', c:'for i in range(1, 4):\n    print(i * 10)'},
+  {s:'the body runs once per lap, whatever it says', c:'for i in range(2):\n    print("hi")'},
+  {s:'a running total over a range', c:'total = 0\nfor i in range(1, 5):\n    total += i\nprint(total)'}]},
+ {t:'Lists', tip:'Square brackets make a list. Positions count from 0, so <code>x[0]</code> is the first item. <code>len()</code> counts items; <code>.append()</code> adds one at the end.', items:[
+  {s:'x[0] is the first item, because positions start at 0', c:'x = [10, 20, 30]\nprint(x[0])'},
+  {s:'x[2] is the third', c:'x = [10, 20, 30]\nprint(x[2])'},
+  {s:'len counts the items', c:'x = ["a", "b", "c", "d"]\nprint(len(x))'},
+  {s:'append adds to the end', c:'x = [1, 2]\nx.append(3)\nprint(x)'},
+  {s:'a whole list prints with its brackets', c:'x = [5, 6]\nx.append(7)\nprint(len(x), x)'}]},
+ {t:'Lists in loops', tip:'<code>for item in list:</code> visits every item in turn. <code>sum()</code>, <code>max()</code>, <code>min()</code> and <code>sorted()</code> work on a whole list.', items:[
+  {s:'for visits each item by name', c:'for n in [2, 4, 6]:\n    print(n)'},
+  {s:'the loop can do something with each one', c:'for n in [1, 2, 3]:\n    print(n * n)'},
+  {s:'sum adds a list up; max finds its largest', c:'x = [3, 9, 4]\nprint(sum(x))\nprint(max(x))'},
+  {s:'sorted hands back a new, ordered list', c:'x = [3, 1, 2]\nprint(sorted(x))'},
+  {s:'counting the items that pass a test', c:'count = 0\nfor n in [4, 7, 10, 1]:\n    if n > 5:\n        count += 1\nprint(count)'}]},
+ {t:'Slices', tip:'<code>x[-1]</code> is the last item. <code>x[a:b]</code> is the items from position a up to but not including b. Leave a side blank and it means from the start or to the end.', items:[
+  {s:'-1 counts from the end: the last item', c:'x = [10, 20, 30]\nprint(x[-1])'},
+  {s:'[0:2] is positions 0 and 1, stopping before 2', c:'x = [10, 20, 30, 40]\nprint(x[0:2])'},
+  {s:'[1:] is everything from position 1 on', c:'x = [10, 20, 30, 40]\nprint(x[1:])'},
+  {s:'slicing works on strings too', c:'s = "python"\nprint(s[0:3])'},
+  {s:'[:2] is the first two', c:'s = "python"\nprint(s[:2], s[-1])'}]},
+ {t:'String tricks', tip:'Strings have methods: <code>.upper()</code>, <code>.lower()</code>, <code>.replace(a, b)</code>, <code>.split()</code> into a list, and <code>"-".join(list)</code> back into one. <code>in</code> asks whether a piece is inside.', items:[
+  {s:'upper makes capitals; the original is untouched', c:'s = "hello"\nprint(s.upper())'},
+  {s:'replace swaps every copy of one piece for another', c:'s = "hello"\nprint(s.replace("l", "L"))'},
+  {s:'split breaks a sentence into a list of words', c:'s = "a b c"\nprint(s.split())'},
+  {s:'join glues a list into one string with a separator', c:'w = ["x", "y", "z"]\nprint("-".join(w))'},
+  {s:'in asks whether the piece is somewhere inside', c:'s = "python"\nprint("th" in s)\nprint("z" in s)'}]},
+ {t:'Dicts', tip:'A dict is a box with labels: <code>{"name": "Rex", "age": 3}</code>. Read a value by its label, <code>d["name"]</code>; assign to a new label to add one; <code>in</code> asks whether a label exists.', items:[
+  {s:'a label in square brackets reads its value', c:'d = {"name": "Rex", "age": 3}\nprint(d["name"])'},
+  {s:'the value can be used like any value', c:'d = {"name": "Rex", "age": 3}\nprint(d["age"] + 1)'},
+  {s:'assigning to a new label adds it', c:'d = {"a": 1}\nd["b"] = 2\nprint(len(d))'},
+  {s:'assigning to an old label changes it', c:'d = {"a": 1}\nd["a"] = 5\nprint(d["a"])'},
+  {s:'in asks whether a label is there', c:'d = {"a": 1}\nprint("a" in d)\nprint("z" in d)'}]},
+ {t:'Dicts in loops', tip:'<code>for k in d:</code> visits the labels. <code>for k, v in d.items():</code> visits label and value together. <code>d.get(k, fallback)</code> reads without crashing on a missing label.', items:[
+  {s:'a loop over a dict visits its labels', c:'d = {"a": 1, "b": 2}\nfor k in d:\n    print(k)'},
+  {s:'items() gives label and value together', c:'d = {"a": 1, "b": 2}\nfor k, v in d.items():\n    print(k, v)'},
+  {s:'get with a fallback does not crash on a missing label', c:'d = {"a": 1}\nprint(d.get("z", 0))'},
+  {s:'adding up the values', c:'d = {"x": 5, "y": 7}\ntotal = 0\nfor v in d.values():\n    total += v\nprint(total)'},
+  {s:'counting with a dict: each word becomes a label', c:'count = {}\nfor w in ["a", "b", "a"]:\n    count[w] = count.get(w, 0) + 1\nprint(count["a"])'}]},
+ {t:'Functions', tip:'<code>def name(x):</code> teaches a trick; the indented lines are its body; <code>name(5)</code> performs it with x set to 5. Nothing in the body runs until the call.', items:[
+  {s:'def teaches; the call performs', c:'def hi():\n    print("hi")\nhi()'},
+  {s:'call it twice and it runs twice', c:'def hi():\n    print("hi")\nhi()\nhi()'},
+  {s:'a parameter takes the value handed in', c:'def greet(name):\n    print("Hi", name)\ngreet("Ada")'},
+  {s:'two parameters, two values, in order', c:'def add(a, b):\n    print(a + b)\nadd(2, 3)'},
+  {s:'a function never called never runs', c:'def loud():\n    print("LOUD")\nprint("quiet")'}]},
+ {t:'return', tip:'<code>return</code> hands a value back to whoever called. The call is then worth that value: print it, store it, use it in maths. After a return, the function is finished.', items:[
+  {s:'the call becomes the returned value', c:'def double(n):\n    return n * 2\nprint(double(4))'},
+  {s:'a returned value can be stored', c:'def double(n):\n    return n * 2\nx = double(5)\nprint(x + 1)'},
+  {s:'returns can be used inside other calls', c:'def sq(n):\n    return n * n\nprint(sq(2) + sq(3))'},
+  {s:'return ends the function; the line after it never runs', c:'def f():\n    return "first"\n    print("never")\nprint(f())'},
+  {s:'a function that returns True or False', c:'def is_even(n):\n    return n % 2 == 0\nprint(is_even(4))\nprint(is_even(7))'}]},
+ {t:'Defaults', tip:'A parameter can have a default: <code>def f(n=2)</code>. Call without it and the default is used; call with it and yours wins.', items:[
+  {s:'with nothing handed in, the default is used', c:'def hello(name="you"):\n    print("Hello,", name)\nhello()'},
+  {s:'with a value handed in, yours wins', c:'def hello(name="you"):\n    print("Hello,", name)\nhello("Ada")'},
+  {s:'a default number', c:'def power(n, p=2):\n    return n ** p\nprint(power(3))\nprint(power(2, 3))'},
+  {s:'the same function, called three ways', c:'def rep(s, n=1):\n    return s * n\nprint(rep("ab"))\nprint(rep("ab", 2))'},
+  {s:'a default list length', c:'def first(items, n=1):\n    return items[:n]\nprint(first([1, 2, 3]))\nprint(first([1, 2, 3], 2))'}]},
+ {t:'try and except', tip:'<code>try:</code> runs lines that might fail; <code>except SomeError:</code> runs instead if they did. The program carries on rather than stopping.', items:[
+  {s:'int("x") fails, so the except runs', c:'try:\n    n = int("x")\nexcept ValueError:\n    print("not a number")'},
+  {s:'when nothing fails, except is skipped', c:'try:\n    n = int("5")\n    print(n)\nexcept ValueError:\n    print("not a number")'},
+  {s:'a missing position raises IndexError', c:'x = [1, 2]\ntry:\n    print(x[5])\nexcept IndexError:\n    print("no such slot")'},
+  {s:'a missing label raises KeyError', c:'d = {"a": 1}\ntry:\n    print(d["z"])\nexcept KeyError:\n    print("no such label")'},
+  {s:'the line after the try runs either way', c:'try:\n    n = int("x")\nexcept ValueError:\n    print("bad")\nprint("carry on")'}]},
+ {t:'Small programs', tip:'Everything on the path, together: a list, a loop, a test, a function, a report. Read each one twice - once for what it does, once for how.', items:[
+  {s:'a loop with a test inside picks the evens', c:'for n in [1, 2, 3, 4]:\n    if n % 2 == 0:\n        print(n)'},
+  {s:'a function that counts matches in a list', c:'def count_big(xs):\n    c = 0\n    for x in xs:\n        if x > 5:\n            c += 1\n    return c\nprint(count_big([3, 8, 9]))'},
+  {s:'building a new list from an old one', c:'out = []\nfor n in [1, 2, 3]:\n    out.append(n * 10)\nprint(out)'},
+  {s:'the biggest, found by hand', c:'best = 0\nfor n in [4, 9, 2]:\n    if n > best:\n        best = n\nprint(best)'},
+  {s:'a report line per item, with an f-string', c:'prices = {"tea": 2, "cake": 3}\nfor k, v in prices.items():\n    print(f"{k}: {v * 2}")'}]}
+];
+
+/* ---------------------------------------------------- building the cards */
+/* One thing changed. Each returns a new program or null when it does not
+   apply. The engine decides what the change did; nothing here guesses. */
+const LP_MUT = [
+  c => { const m = /(?<![\w."])(\d+)(?![\w."])/.exec(c); return m ? c.slice(0, m.index) + (+m[1] + 1) + c.slice(m.index + m[0].length) : null; },
+  c => { const a = [...c.matchAll(/(?<![\w."])(\d+)(?![\w."])/g)]; if (a.length < 2) return null; const m = a[a.length - 1];
+         return c.slice(0, m.index) + (+m[1] > 0 ? +m[1] - 1 : 2) + c.slice(m.index + m[0].length); },
+  c => c.includes(' < ') ? c.replace(' < ', ' <= ') : c.includes(' <= ') ? c.replace(' <= ', ' < ') : null,
+  c => c.includes(' > ') ? c.replace(' > ', ' >= ') : c.includes(' >= ') ? c.replace(' >= ', ' > ') : null,
+  c => c.includes(' == ') ? c.replace(' == ', ' != ') : c.includes(' != ') ? c.replace(' != ', ' == ') : null,
+  c => c.includes(' and ') ? c.replace(' and ', ' or ') : c.includes(' or ') ? c.replace(' or ', ' and ') : null,
+  c => /\S \+ \S/.test(c) && !/\+=/.test(c) ? c.replace(/(\S) \+ (\S)/, '$1 * $2') : null,
+  c => /\S \* \S/.test(c) ? c.replace(/(\S) \* (\S)/, '$1 + $2') : null,
+  c => c.includes('.upper()') ? c.replace('.upper()', '.lower()') : c.includes('.lower()') ? c.replace('.lower()', '.upper()') : null,
+  c => /range\(\d+\)/.test(c) ? c.replace(/range\((\d+)\)/, (m, n) => 'range(' + (+n + 1) + ')') : null,
+  c => c.includes('[0]') ? c.replace('[0]', '[1]') : c.includes('[-1]') ? c.replace('[-1]', '[0]') : c.includes('[2]') ? c.replace('[2]', '[1]') : null,
+  c => c.includes('.append(') ? c.replace('.append(', '.insert(0, ') : null,
+  c => c.includes('+=') ? c.replace('+=', '-=') : c.includes('-=') ? c.replace('-=', '+=') : null,
+  c => c.includes(' // ') ? c.replace(' // ', ' / ') : c.includes(' % ') ? c.replace(' % ', ' // ') : null,
+  c => c.includes('print()') ? null : (/print\("([^"]*)", "([^"]*)"\)/.test(c) ? c.replace(/print\("([^"]*)", "([^"]*)"\)/, 'print("$1" + "$2")') : null),
+  c => c.includes('sorted(') ? c.replace('sorted(', 'reversed(') : null
+];
+/* the ones that move a whole line, for "which line is wrong" they do not apply */
+function lpSwapLines(c){
+  const ls = c.split('\n'); if (ls.length < 2) return null;
+  const k = ls.length - 1;
+  if (/^\s/.test(ls[k]) || /^\s/.test(ls[k - 1]) || /:\s*$/.test(ls[k - 1])) return null;
+  const t = ls[k]; ls[k] = ls[k - 1]; ls[k - 1] = t; return ls.join('\n');
+}
+function lpRun(code, stdin){
+  const R = PY.run(code, {stdin: stdin || [], steps: 200000});
+  if (R.err) return {err: R.err.kind, text: 'stops with ' + R.err.kind};
+  const out = R.out.join('\n').replace(/\s+$/, '');
+  return {out, text: out === '' ? '(nothing)' : out};
+}
+function lpSame(a, b){ return !a.err && !b.err && a.out === b.out; }
+/* deterministic per session so a re-run of the same seed builds the same cards */
+function lpRng(seed){ let a = (seed >>> 0) || 1; return () => { a += 0x6D2B79F5; let t = Math.imul(a ^ (a >>> 15), 1 | a); t ^= t + Math.imul(t ^ (t >>> 7), 61 | t); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+function lpShuffle(arr, r){ const a = arr.slice(); for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(r() * (i + 1)); const t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+
+/* every single-thing-changed version of a snippet that the engine says is
+   different from the original, with which line changed */
+function lpMutants(item){
+  const base = lpRun(item.c, item.in), out = [], seen = {};
+  const push = (code, multi) => {
+    if (!code || code === item.c) return;
+    const r = lpRun(code, item.in);
+    if (lpSame(r, base) || (r.err && base.err)) return;
+    if (seen[r.text]) return; seen[r.text] = 1;
+    const a = item.c.split('\n'), b = code.split('\n');
+    let line = -1;
+    if (!multi && a.length === b.length){ const diff = a.map((l, i) => l !== b[i] ? i : -1).filter(i => i >= 0); if (diff.length === 1) line = diff[0]; }
+    out.push({code, r, line});
+  };
+  for (const m of LP_MUT) push(m(item.c), false);
+  push(lpSwapLines(item.c), true);
+  return out;
+}
+const LP_KEYS = ['print','if','elif','else','for','in','range','while','def','return','len','append','input','int','str','True','False','and','or','not','sorted','sum','max','items','get','split','join','upper','replace','try','except'];
+function lpBlankable(code){
+  const out = [];
+  const re = /[A-Za-z_]+|==|!=|<=|>=|\+=|-=|\*\*|\/\/|[<>%+*\/]|\d+/g;
+  let m;
+  while ((m = re.exec(code))){
+    const t = m[0];
+    if (/^[A-Za-z_]+$/.test(t) ? LP_KEYS.includes(t) : true){
+      /* not inside a string: an odd number of quotes before it means it is */
+      const before = code.slice(0, m.index), q = (before.match(/"/g) || []).length;
+      if (q % 2 === 0) out.push({t, at: m.index});
+    }
+  }
+  return out;
+}
+/* ---- one card of each kind ---- */
+function lpCardOut(item, unit, r){
+  const ans = lpRun(item.c, item.in);
+  if (ans.err || item.in) return null;
+  const opts = [{t: ans.text, ok: true}];
+  const muts = lpMutants(item).filter(m => !m.r.err);
+  for (const m of lpShuffle(muts, r)){ if (opts.length >= 4) break; if (!opts.some(o => o.t === m.r.text)) opts.push({t: m.r.text, ok: false}); }
+  for (const other of lpShuffle(unit.items, r)){
+    if (opts.length >= 4) break;
+    if (other === item || other.in) continue;
+    const t = lpRun(other.c, other.in).text;
+    if (!opts.some(o => o.t === t)) opts.push({t, ok: false});
+  }
+  if (opts.length < 3) return null;
+  return {kind: 'out', q: 'What does this print?', code: item.c, opts: lpShuffle(opts, r), why: item.s, answer: ans.text};
+}
+function lpCardFill(item, unit, r){
+  const ans = lpRun(item.c, item.in);
+  /* a blank has to matter: a token in a branch that never runs would accept
+     any answer at all, because the engine never gets there to complain */
+  const cands = lpBlankable(item.c).filter(k => !lpSame(lpRun(item.c.slice(0, k.at) + 'zzzz' + item.c.slice(k.at + k.t.length), item.in), ans));
+  if (!cands.length) return null;
+  const pick = cands[Math.floor(r() * cands.length)];
+  const shown = item.c.slice(0, pick.at) + '____' + item.c.slice(pick.at + pick.t.length);
+  return {kind: 'fill', q: 'Type the missing piece so it prints this:', code: shown, expect: ans.text, at: pick.at, token: pick.t, item,
+          why: item.s, answer: pick.t,
+          check: (typed) => { const t = String(typed).trim(); if (t === pick.t) return true; if (!t || /\n/.test(t)) return false;
+                              return lpSame(lpRun(item.c.slice(0, pick.at) + t + item.c.slice(pick.at + pick.t.length), item.in), ans); }};
+}
+function lpCardArrange(item, unit, r){
+  const lines = item.c.split('\n');
+  if (lines.length < 3) return null;
+  let order = lpShuffle(lines.map((_, i) => i), r);
+  if (order.every((v, i) => v === i)) order = order.slice(1).concat(order[0]);
+  const ans = lpRun(item.c, item.in);
+  return {kind: 'arrange', q: 'Put the lines in order so it prints this:', lines, order, expect: ans.text, item, why: item.s, answer: item.c,
+          check: (idxs) => idxs.length === lines.length && lpSame(lpRun(idxs.map(i => lines[i]).join('\n'), item.in), ans)};
+}
+function lpCardBug(item, unit, r){
+  const lines = item.c.split('\n');
+  if (lines.length < 2) return null;
+  const muts = lpMutants(item).filter(m => m.line >= 0);
+  if (!muts.length) return null;
+  const m = muts[Math.floor(r() * muts.length)];
+  const want = lpRun(item.c, item.in).text;
+  return {kind: 'bug', q: 'This should print <b>' + esc(want) + '</b> but ' + (m.r.err ? '<b>' + esc(m.r.text) + '</b>' : 'prints <b>' + esc(m.r.text) + '</b>') + '. Which line is wrong?',
+          code: m.code, lines: m.code.split('\n'), bad: m.line, fix: lines[m.line], why: item.s, answer: 'line ' + (m.line + 1) + ' should be ' + lines[m.line], expect: want};
+}
+function lpCardType(item, unit, r){
+  const lines = item.c.split('\n');
+  const head = lines.slice(0, -1).join('\n'), last = lines[lines.length - 1];
+  if (/^\s/.test(last)) return null;
+  const ans = lpRun(item.c, item.in);
+  return {kind: 'type', q: head ? 'Type the last line so it prints this:' : 'Type one line that prints this:', code: head, expect: ans.text, item, why: item.s, answer: last,
+          check: (typed) => { const t = String(typed).replace(/\s+$/, ''); if (!t.trim() || /\n/.test(t)) return false;
+                              return lpSame(lpRun((head ? head + '\n' : '') + t, item.in), ans); }};
+}
+const LP_KINDS = {out: lpCardOut, fill: lpCardFill, arrange: lpCardArrange, bug: lpCardBug, type: lpCardType};
+const LP_SESSION = 8;
+/* eight cards: every snippet in the unit at least once, the kinds rotated so
+   no two in a row are the same, each proved by the engine before it is dealt */
+function lpBuild(u, seed){
+  const unit = LP_UNITS[u], r = lpRng(seed), cards = [];
+  const rota = ['out', 'fill', 'type', 'out', 'arrange', 'bug', 'fill', 'type'];
+  const items = lpShuffle(unit.items, r).concat(lpShuffle(unit.items, r));
+  let k = 0;
+  for (let n = 0; n < LP_SESSION && k < items.length; n++){
+    const item = items[k++];
+    const want = rota[n], tryKinds = [want].concat(Object.keys(LP_KINDS).filter(x => x !== want));
+    let card = null;
+    for (const kind of tryKinds){ card = LP_KINDS[kind](item, unit, r); if (card) break; }
+    if (!card){ n--; continue; }
+    if (cards.length && cards[cards.length - 1].kind === card.kind && card.kind !== 'out'){
+      const alt = tryKinds.slice(1).map(kd => LP_KINDS[kd](item, unit, r)).find(Boolean);
+      if (alt) card = alt;
+    }
+    cards.push(card);
+  }
+  return cards;
+}
+
+/* --------------------------------------------------------- the player's */
+let lp = {crowns: {}, best: 0, sessions: 0};
+try { const s = JSON.parse(localStorage.getItem('learnpy')); if (s && s.crowns) lp = s; } catch (e) {}
+function lpSave(){ try { localStorage.setItem('learnpy', JSON.stringify(lp)); } catch (e) {} }
+function lpCrown(u){ return lp.crowns[u] | 0; }
+function lpOpenUnit(u){ return u === 0 || lpCrown(u - 1) > 0; }
+function lpUnitsDone(){ return LP_UNITS.filter((_, u) => lpCrown(u) > 0).length; }
+
+/* ---------------------------------------------------------------- the path */
+let lpS = null;   /* the session in progress */
+function lpOpen(){
+  hub = true; sandbox = false; drillOn = false; drill = null; lpS = null; syncModeUI();
+  ghostTalkOff(); killGhost();
+  document.querySelectorAll('.predcard,.navtip').forEach(x => x.remove());
+  teachEl.dataset.lv = 1;
+  const next = LP_UNITS.findIndex((_, u) => lpOpenUnit(u) && lpCrown(u) === 0);
+  const nodes = LP_UNITS.map((unit, u) => {
+    const open = lpOpenUnit(u), c = lpCrown(u), cur = u === next;
+    return '<div class="lpnode' + (open ? '' : ' locked') + (cur ? ' cur' : '') + (c ? ' done' : '') + '">'
+      + '<button class="lpring" data-act="lpunit" data-u="' + u + '"' + (open ? '' : ' disabled') + ' aria-label="' + esc(unit.t) + '">'
+      + (open ? (c ? '\uD83D\uDC51' : (cur ? '\u25B6' : '\u2713')) : '\uD83D\uDD12') + '</button>'
+      + '<div class="lpt"><b>' + (u + 1) + '. ' + esc(unit.t) + '</b>'
+      + (c ? '<span class="lpcrowns">' + '\uD83D\uDC51'.repeat(Math.min(c, 5)) + (c > 5 ? ' +' + (c - 5) : '') + '</span>' : '')
+      + '<details' + (cur ? ' open' : '') + '><summary>Tip</summary><p>' + unit.tip + '</p></details></div></div>';
+  }).join('');
+  teachEl.innerHTML =
+    '<div class="hubhead"><div>Learn Python<span>The path. Five minutes a unit, eight quick cards each. Every card is built from real code by running it, so the right answer is always what Python actually does.</span></div></div>'
+    + '<div class="lpstats"><span>\uD83D\uDC51 ' + lpUnitsDone() + ' of ' + LP_UNITS.length + ' units</span><span>\uD83D\uDD25 ' + (stk.cur | 0) + '-day streak</span><span>' + (lp.sessions | 0) + ' session' + (lp.sessions === 1 ? '' : 's') + '</span></div>'
+    + (next >= 0 ? '<button class="hubnext" data-act="lpunit" data-u="' + next + '"><span class="hnl">' + (lpCrown(next) ? 'Again: ' : 'Next up: ') + esc(LP_UNITS[next].t) + '</span><span class="hnw">' + String(LP_UNITS[next].tip).replace(/<[^>]+>/g, '') + '</span></button>'
+                 : '<p class="lpdone">\uD83C\uDFC6 Every unit has a crown. Any of them will take another.</p>')
+    + '<div class="lppath">' + nodes + '</div>'
+    + '<div class="hubrow"><button class="hubgo" data-act="arcade">&larr; The arcade</button></div>';
+  goalEl.innerHTML = '<b>LEARN PYTHON.</b> The mechanic a hundred million people use every day, pointed at Python.';
+  remindBox.style.display = 'none';
+  $('#scaffold').style.display = 'none';
+  btnNext.style.display = 'none';
+  $('#btnHelp').style.display = 'none'; $('#btnLead').style.display = 'none'; $('#btnSol').style.display = 'none';
+  statusEl.className = 'wait';
+  statusEl.innerHTML = 'Pick a unit. Three hearts a session; a wrong card comes back at the end until it is right.';
+  outEl.srcdoc = '';
+  teachEl.scrollTop = 0;
+  renderNav();
+  announce('Learn Python. ' + lpUnitsDone() + ' of ' + LP_UNITS.length + ' units crowned.');
+  const b = teachEl.querySelector('.hubnext, .lpring:not([disabled])'); if (b) b.focus();
+}
+
+/* ------------------------------------------------------------- a session */
+const LP_HEARTS = 3;
+function lpStart(u){
+  if (!lpOpenUnit(u)) return lpOpen();
   hub = true; sandbox = false; drillOn = false; drill = null; syncModeUI();
+  const seed = (Date.now() ^ (u * 7919)) >>> 0;
+  lpS = {u, seed, cards: lpBuild(u, seed), at: 0, hearts: LP_HEARTS, right: 0, wrong: 0, redo: 0, built: []};
+  if (!lpS.cards.length){ lpS = null; return lpOpen(); }
+  goalEl.innerHTML = '<b>' + esc(LP_UNITS[u].t) + '.</b> ' + String(LP_UNITS[u].tip);
+  statusEl.className = 'wait';
+  statusEl.innerHTML = 'Answer, and the card tells you straight away. Miss one and it comes back at the end.';
+  lpShow();
+}
+function lpHearts(){ return '<span class="lphearts" aria-label="' + lpS.hearts + ' hearts left">' + '\u2764\uFE0F'.repeat(lpS.hearts) + '<i>' + '\uD83E\uDD0D'.repeat(LP_HEARTS - lpS.hearts) + '</i></span>'; }
+function lpShow(){
+  const s = lpS; if (!s) return;
+  if (s.at >= s.cards.length) return lpEnd(true);
+  const c = s.cards[s.at], n = s.cards.length;
+  let body = '<div class="rcq">' + c.q + '</div>';
+  if (c.kind === 'out'){
+    body += '<pre class="czcode">' + hlEsc(c.code) + '</pre>'
+      + '<div class="rcch">' + c.opts.map((o, k) => '<button class="rco lpo" data-n="' + k + '">' + hlEsc(o.t) + '</button>').join('') + '</div>';
+  } else if (c.kind === 'fill'){
+    body += '<pre class="czcode lpexp">' + hlEsc(c.expect) + '</pre>'
+      + '<pre class="czcode">' + hlEsc(c.code).replace('____', '<span class="lpblank">____</span>') + '</pre>'
+      + '<div class="lprow"><input class="lpin" type="text" autocomplete="off" spellcheck="false" aria-label="The missing piece" placeholder="the missing piece"><button class="lpcheck">Check</button></div>';
+  } else if (c.kind === 'type'){
+    body += '<pre class="czcode lpexp">' + hlEsc(c.expect) + '</pre>'
+      + (c.code ? '<pre class="czcode">' + hlEsc(c.code) + '\n<span class="lpblank">' + (c.code ? '' : '') + '&hellip;</span></pre>' : '')
+      + '<div class="lprow"><input class="lpin" type="text" autocomplete="off" spellcheck="false" aria-label="The line" placeholder="type the line"><button class="lpcheck">Check</button></div>';
+  } else if (c.kind === 'arrange'){
+    s.built = [];
+    body += '<pre class="czcode lpexp">' + hlEsc(c.expect) + '</pre>'
+      + '<pre class="czcode lpbuild" aria-live="polite"><span class="lpblank">tap the lines in order</span></pre>'
+      + '<div class="lpbank">' + c.order.map(i => '<button class="rco lpline" data-i="' + i + '">' + hlEsc(c.lines[i]) + '</button>').join('') + '</div>'
+      + '<div class="lprow"><button class="lpundo">Undo</button><button class="lpcheck">Check</button></div>';
+  } else if (c.kind === 'bug'){
+    body += '<div class="rcch">' + c.lines.map((l, i) => '<button class="rco lpo" data-n="' + i + '"><span class="lpln">' + (i + 1) + '</span>' + hlEsc(l) + '</button>').join('') + '</div>';
+  }
+  teachEl.innerHTML =
+    '<div class="drillbar"><b>' + (s.at + 1) + ' of ' + n + '</b>'
+    + '<span class="drillprog"><i style="width:' + Math.round(100 * s.at / n) + '%"></i></span>'
+    + lpHearts() + '<button class="drillquit lpquit">Leave</button></div>'
+    + '<div class="drillcard lpcard" data-kind="' + c.kind + '">'
+    + '<div class="tih">' + esc(LP_UNITS[s.u].t) + ' &middot; ' + {out: 'read it', fill: 'fill the gap', type: 'type it', arrange: 'order the lines', bug: 'find the bug'}[c.kind] + '</div>'
+    + body + '<div class="rcwhy"></div></div>';
+  teachEl.scrollTop = 0;
+  announce('Card ' + (s.at + 1) + ' of ' + n + '. ' + String(c.q).replace(/<[^>]+>/g, ''));
+  const first = teachEl.querySelector('.lpin, .rco'); if (first) first.focus();
+}
+function lpAnswer(ok, said){
+  const s = lpS, c = s.cards[s.at];
+  const box = teachEl.querySelector('.lpcard');
+  if (!box || box.classList.contains('done')) return;
+  box.classList.add('done');
+  box.querySelectorAll('.lpin,.lpcheck,.lpundo,.lpline').forEach(b => { b.disabled = true; });
+  if (ok){ s.right++; }
+  else {
+    s.wrong++; s.hearts--;
+    /* the card comes back at the end of the session, and keeps coming back
+       until it is right - the hearts are what bound it */
+    s.cards.push(Object.assign({}, c, {again: true}));
+  }
+  const bar = teachEl.querySelector('.lphearts'); if (bar) bar.outerHTML = lpHearts();
+  const out = s.hearts <= 0;
+  box.querySelector('.rcwhy').innerHTML =
+    (ok ? '&#9989; <b>Yes.</b> ' : '&#10060; <b>Not this time.</b> ') + said + ' ' + esc(c.why.charAt(0).toUpperCase() + c.why.slice(1)) + '.'
+    + '<div class="drillnext"><button class="lpgo">' + (out ? 'Out of hearts' : (s.at + 1 >= s.cards.length ? 'Finish &rarr;' : 'Next &rarr;')) + '</button></div>';
+  announce((ok ? 'Correct. ' : 'Not correct. ') + String(said + ' ' + c.why).replace(/<[^>]+>/g, ''));
+  const go = box.querySelector('.lpgo'); if (go) go.focus();
+  if (out) lpS.out = true;
+}
+function lpPick(k){
+  const s = lpS, c = s.cards[s.at];
+  const box = teachEl.querySelector('.lpcard'); if (!box || box.classList.contains('done')) return;
+  if (c.kind === 'out'){
+    const o = c.opts[k];
+    box.querySelectorAll('.lpo').forEach((b, n) => { b.disabled = true; if (c.opts[n].ok) b.classList.add('hit'); });
+    if (!o.ok) box.querySelector('.lpo[data-n="' + k + '"]').classList.add('miss');
+    lpAnswer(o.ok, o.ok ? 'It prints <code>' + esc(c.answer) + '</code>:' : 'It prints <code>' + esc(c.answer) + '</code>, not that:');
+  } else if (c.kind === 'bug'){
+    box.querySelectorAll('.lpo').forEach((b, n) => { b.disabled = true; if (n === c.bad) b.classList.add('hit'); });
+    if (k !== c.bad) box.querySelector('.lpo[data-n="' + k + '"]').classList.add('miss');
+    lpAnswer(k === c.bad, 'Line ' + (c.bad + 1) + ' should be <code>' + esc(c.fix) + '</code>.');
+  }
+}
+function lpCheck(){
+  const s = lpS, c = s.cards[s.at];
+  const box = teachEl.querySelector('.lpcard'); if (!box || box.classList.contains('done')) return;
+  if (c.kind === 'fill' || c.kind === 'type'){
+    const inp = box.querySelector('.lpin'), v = inp ? inp.value : '';
+    if (!v.trim()){ if (inp) inp.focus(); return; }
+    const ok = c.check(v);
+    if (inp) inp.classList.add(ok ? 'hit' : 'miss');
+    lpAnswer(ok, ok ? (v.trim() === c.answer ? '' : 'That works too - the engine printed the same thing. The one in the lesson was <code>' + esc(c.answer) + '</code>.')
+                    : 'It needed <code>' + esc(c.answer) + '</code>.');
+  } else if (c.kind === 'arrange'){
+    if (s.built.length < c.lines.length){ statusEl.className = 'wait'; statusEl.innerHTML = 'Every line has to be used - ' + (c.lines.length - s.built.length) + ' left.'; return; }
+    const ok = c.check(s.built);
+    box.querySelector('.lpbuild').classList.add(ok ? 'hit' : 'miss');
+    lpAnswer(ok, ok ? '' : 'The order was:<pre class="czcode">' + hlEsc(c.answer) + '</pre>');
+  }
+}
+function lpTap(i){
+  const s = lpS, c = s.cards[s.at]; if (!s || c.kind !== 'arrange') return;
+  const box = teachEl.querySelector('.lpcard'); if (!box || box.classList.contains('done')) return;
+  const b = box.querySelector('.lpline[data-i="' + i + '"]'); if (!b || b.disabled) return;
+  s.built.push(i); b.disabled = true;
+  box.querySelector('.lpbuild').innerHTML = hlEsc(s.built.map(k => c.lines[k]).join('\n'));
+}
+function lpUndo(){
+  const s = lpS, c = s.cards[s.at]; if (!s || c.kind !== 'arrange' || !s.built.length) return;
+  const box = teachEl.querySelector('.lpcard'); if (!box || box.classList.contains('done')) return;
+  const i = s.built.pop(); const b = box.querySelector('.lpline[data-i="' + i + '"]'); if (b) b.disabled = false;
+  box.querySelector('.lpbuild').innerHTML = s.built.length ? hlEsc(s.built.map(k => c.lines[k]).join('\n')) : '<span class="lpblank">tap the lines in order</span>';
+}
+function lpNext(){
+  const s = lpS; if (!s) return;
+  if (s.out) return lpEnd(false);
+  s.at++; lpShow();
+}
+function lpEnd(cleared){
+  const s = lpS, unit = LP_UNITS[s.u];
+  let xp = 0;
+  if (cleared){
+    lp.crowns[s.u] = lpCrown(s.u) + 1; lp.sessions = (lp.sessions | 0) + 1; lpSave();
+    xp = 20 + (s.wrong === 0 ? 10 : 0);
+    stk.xp = (stk.xp | 0) + xp; bumpStreak(); saveP();
+    confetti(s.wrong === 0 ? 200 : 110);
+  }
+  const next = s.u + 1 < LP_UNITS.length ? s.u + 1 : -1;
+  teachEl.innerHTML = '<h2>' + (cleared ? (s.wrong === 0 ? 'Perfect unit' : 'Unit cleared') : 'Out of hearts') + '</h2>'
+    + '<div class="drillscore"><b>' + s.right + ' right' + (s.wrong ? ', ' + s.wrong + ' fixed on the way' : '') + '</b>' + (xp ? ' <span>+' + xp + ' XP</span>' : '') + '</div>'
+    + (cleared
+       ? '<p>' + (s.wrong === 0 ? 'Every card first time. That is a unit that has settled.' : 'The ones you missed came back and you got them. That is the whole method: a mistake is a card you see twice.')
+         + ' <b>' + esc(unit.t) + '</b> now has ' + lpCrown(s.u) + ' crown' + (lpCrown(s.u) === 1 ? '' : 's') + '.</p>'
+       : '<p>Three misses ends the session, and nothing is lost: the unit is exactly where it was. Read the tip once more and go again.</p><p class="lptipbox">' + unit.tip + '</p>')
+    + '<div class="hubrow">'
+    + (cleared && next >= 0 ? '<button class="hubgo" data-act="lpunit" data-u="' + next + '">Next unit: ' + esc(LP_UNITS[next].t) + ' &rarr;</button>' : '')
+    + '<button class="hubgo" data-act="lpunit" data-u="' + s.u + '">' + (cleared ? 'Again for another crown' : 'Try again') + '</button>'
+    + '<button class="hubgo" data-act="lp">The path</button></div>';
+  statusEl.className = cleared ? 'ok' : 'wait';
+  statusEl.innerHTML = cleared ? 'Unit cleared. ' + lpUnitsDone() + ' of ' + LP_UNITS.length + ' crowned.' : 'Out of hearts. Nothing lost - go again.';
+  announce(cleared ? 'Unit cleared.' : 'Out of hearts.');
+  lpS = null;
+  renderNav();
+}
+
+function openArcade(){
+  hub = true; sandbox = false; drillOn = false; drill = null; lpS = null; syncModeUI();
   ghostTalkOff(); killGhost();
   document.querySelectorAll('.predcard,.navtip').forEach(x => x.remove());
   teachEl.dataset.lv = 1;
@@ -11099,7 +11642,7 @@ function openArcade(){
     const items = L.map((l,i)=>({l,i})).filter(x => x.l.g === gid);
     const dn = items.filter(x => beyondDone.has(x.i)).length;
     const p = ARC_PITCH[gid];
-    const count = gid === 'DP' ? 'floor ' + deepFloor + '/' + DEEP_FLOORS : dn + '/' + items.length;
+    const count = gid === 'DP' ? 'floor ' + deepFloor + '/' + DEEP_FLOORS : gid === 'LP' ? lpUnitsDone() + '/' + LP_UNITS.length + ' units' : dn + '/' + items.length;
     const rd = arcReady(gid);
     return '<button class="arcrow' + (gid === mine ? ' mine' : '') + (rd.ready ? '' : ' early') + '" data-act="arcgo" data-g="' + gid + '">'
       + '<span class="arci">' + p[0] + '</span>'
@@ -11110,15 +11653,15 @@ function openArcade(){
       + '<span class="arcn">' + count + '</span></button>';
   }).join('');
   teachEl.innerHTML =
-    '<div class="hubhead"><div>The Arcade<span>Nothing here is needed to graduate. All of it is real code, and none of it is a quiz.</span></div></div>'
+    '<div class="hubhead"><div>The Arcade<span>Nothing here is needed to graduate. All of it is real code, and none of it is a quiz you could pass by guessing.</span></div></div>'
     + (adv
       ? '<p class="arcwho">' + adv.face + ' <b>' + esc(adv.name) + '</b>, ' + advClass().name
         + ' · ' + adv.badges.length + ' of ' + BADGES.length + ' badges · <button class="arclink" data-act="adv">character sheet</button></p>'
       : '<button class="hubnext" data-act="adv"><span class="hnl">Make a character first</span>'
         + '<span class="hnw">Twenty seconds. It decides which figure walks the Quest board, which badges you are collecting, and whose name goes on the certificate.</span></button>')
     + '<div class="arclist">' + rows + '</div>'
-    + '<p class="hubtip">Every one of these came from somewhere real: Quest from CodeCombat, the Sound Room from EarSketch, the Kata Table from Codewars and CheckiO, the character and the badges from Codédex, the Python track from Sololearn, the Terminal from the exercises every bootcamp runs in its first week. What we took was the mechanic, not the artwork.</p>';
-  goalEl.innerHTML = '<b>THE ARCADE.</b> Five ways to write code that does something other than sit on a page.';
+    + '<p class="hubtip">Every one of these came from somewhere real: Quest from CodeCombat, the Sound Room from EarSketch, the Kata Table from Codewars and CheckiO, the character and the badges from Codédex, the Python track from Sololearn, the Learn Python path from Duolingo, the Terminal from the exercises every bootcamp runs in its first week. What we took was the mechanic, not the artwork.</p>';
+  goalEl.innerHTML = '<b>THE ARCADE.</b> Seven ways to write code that does something other than sit on a page.';
   remindBox.style.display = 'none';
   $('#scaffold').style.display = 'none';
   btnNext.style.display = 'none';
@@ -11130,7 +11673,7 @@ function openArcade(){
   outEl.srcdoc = '';
   teachEl.scrollTop = 0;
   renderNav();
-  announce('The arcade. Five tracks: Quest, the Sound Room, the Kata Table, Python and the Terminal.');
+  announce('The arcade. Seven doors: Quest, the Sound Room, the Kata Table, Python, Learn Python, the Terminal and the Deep.');
   const b = teachEl.querySelector('.arcrow, .hubnext'); if (b) b.focus();
 }
 
@@ -11213,6 +11756,15 @@ function placeEnd() {
 
 /* ---- one click handler for every button the hub and the drill can draw -- */
 teachEl.addEventListener('click', (e) => {
+  /* the Learn Python session owns every button inside its card */
+  if (lpS){
+    const o = e.target.closest('.lpcard .lpo'); if (o){ lpPick(+o.dataset.n); return; }
+    const ln = e.target.closest('.lpcard .lpline'); if (ln){ lpTap(+ln.dataset.i); return; }
+    if (e.target.closest('.lpcheck')){ lpCheck(); return; }
+    if (e.target.closest('.lpundo')){ lpUndo(); return; }
+    if (e.target.closest('.lpgo')){ lpNext(); return; }
+    if (e.target.closest('.lpquit')){ lpS = null; lpOpen(); return; }
+  }
   const opt = e.target.closest('.drillcard .rco');
   if (opt) {
     if (placing) { placeAnswer(!opt.classList.contains('dunno') && drillCard(placing.probes[placing.at].id).ch[+opt.dataset.n].ok); return; }
@@ -11234,6 +11786,8 @@ teachEl.addEventListener('click', (e) => {
   if (a === 'arcade') return openArcade();
   if (a === 'arcgo') return arcadeInto(act.dataset.g);
   if (a === 'deep') return loadDeep(+act.dataset.n);
+  if (a === 'lp') return lpOpen();
+  if (a === 'lpunit') return lpStart(+act.dataset.u);
   if (a === 'adv') return advOpen();
   if (a === 'warmup') {
     const q = drillQueue(sessionSize());
@@ -11249,6 +11803,10 @@ teachEl.addEventListener('click', (e) => {
 teachEl.addEventListener('change', (e) => {
   if (e.target.id === 'hubSkip') { try { localStorage.setItem('hubskip', e.target.checked ? '1' : '0'); } catch (x) {} }
 });
+/* Enter in a Learn Python answer box checks it, the way Enter submits anywhere */
+teachEl.addEventListener('keydown', (e) => {
+  if (lpS && e.key === 'Enter' && e.target.classList && e.target.classList.contains('lpin')){ e.preventDefault(); lpCheck(); }
+});
 function sessionSize() { return 6; }
 
 /* ---- the jump box: every lesson and every action, two keys away --------- */
@@ -11259,6 +11817,7 @@ const PAL_ACTS = [
   { t: 'Test out of what I already know (placement)', f: () => placeStart() },
   { t: 'Free play sandbox', f: () => { hub = false; drillOn = false; openSandbox(); } },
   { t: 'The arcade \u2014 Quest, the Sound Room, katas, Python, the Terminal', f: () => openArcade() },
+  { t: 'Learn Python \u2014 the path, five minutes a unit', f: () => lpOpen() },
   { t: 'My character sheet', f: () => advOpen() },
   { t: 'Quest \u2014 code that moves a hero', f: () => arcadeInto('QS') },
   { t: 'The Sound Room \u2014 code that makes music', f: () => arcadeInto('SR') },

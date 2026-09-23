@@ -405,9 +405,43 @@ to be taken seriously by the adult typing alongside the nine-year-old.
   bar on a teaching card is a 3px marker, not a stripe.
 - **A serif for the things that matter** — lesson titles, the hub's greeting,
   the certificate. It reads as a storybook to a child and as an editorial to
-  their parent. No webfonts: this file makes zero network calls, so the stacks
-  (`--serif`, `--sans`, `--mono`) have to be good on their own.
+  their parent.
+- **Three typefaces, carried inside the file.** Inter for the interface,
+  Fraunces for headings and JetBrains Mono for code, each a Latin-subset
+  variable font embedded as base64 (about 170 KB together). The file still
+  makes zero network calls, so the lab looks the same on a school laptop with
+  no internet as it does on a designer's monitor. Code ligatures are switched
+  off on purpose: a learner typing `!=` must see `!=`, not a `≠` glyph they
+  cannot find on the keyboard.
 - **Tabular numerals** on every counter, so progress never makes the line jump.
+
+### Drawn, not typed
+
+Emoji look different on every device and cheap on most of them, so every
+picture the interface relies on is drawn as SVG inside the file.
+
+- **One icon set** of stroked 24px glyphs in `currentColor`, used in the header,
+  toolbar, tab bar and footer. Labelled header buttons drop their icon on narrow
+  phones so the words still fit.
+- **The sidebar marks each kind of lesson** (review, reps, challenge, terminal,
+  Python, sound, kata, boss) with its own coloured glyph. The original title
+  text stays in the markup, visually hidden, so search, screen readers and the
+  tests read exactly what they read before.
+- **Arcade doors, the welcome card and the Learn Python path** have their own
+  illustrations: a door picture per room, a scene for the first screen, and
+  drawn crowns, locks, hearts and streak flames on the path.
+- **Quest has a tileset.** Floors, walls, pits, spikes, fire and the exit are
+  48x48 drawings lit from the top, so the board stays sharp at every cell size.
+  Doors, switches and gems are sprites; the hero and foes stand on tokens.
+- **Arcade verdicts** open with a drawn tick, cross or dot instead of an emoji.
+- **The certificate is paper worth printing:** an engraved double border, the
+  logo, a gold seal, a date and signature line, and one chip per grade passed.
+- **Grade headings in the sidebar carry their own progress line**, gold once
+  the grade is complete. Celebrations slide in at the edge instead of covering
+  the lesson.
+
+Gradients never stand alone: every gradient button and banner sits on a solid
+`background-color`, so the contrast checks below measure a real colour.
 
 ### Fifteen looks for the editor, none of them earned
 
@@ -727,3 +761,7 @@ confetti and thinking "these kids and their shortcuts" — this section is for y
 **The audit invitation:** it's one dependency-free HTML file. Open it. Read the
 checker (`runCheck`), the linter (`htmlLint`), the highlighter, the lesson data.
 Then judge. Issues and pull requests welcome.
+
+**Font credits:** Inter (Rasmus Andersson), Fraunces (Undercase Type) and
+JetBrains Mono (JetBrains) are embedded under the SIL Open Font License 1.1,
+taken from their Fontsource packages.

@@ -9775,6 +9775,17 @@ function buildDoc(les, code){
   if (les.lang === 'arc') return arcDoc(les, code);
   let body, css = les.css || '', js = '';
   if (les.lang === 'html'){ body = code.trim() ? code : '<p style="color:#a9a29a;font-family:Georgia,serif;text-align:center;margin-top:48px">Your page will appear here as you type&hellip;</p>'; js = les.js || ''; }
+  /* An unclosed tag still draws: the browser quietly guesses where it ends, so
+     half-finished code can look finished. Say so on the page itself, where the
+     learner is looking, instead of letting a lucky guess pass for a right answer. */
+  if (les.lang === 'html' && code.trim()){
+    const keep = lintRange; let unclosed = null;
+    try { unclosed = htmlLint(code); } catch (e) {}
+    lintRange = keep;
+    /* first, not last: after an unclosed tag the browser would put the note inside it */
+    if (unclosed) body = '<p class="guessnote" style="margin:0 0 16px;padding:10px 12px;border:1.5px dashed #c9a86a;border-radius:8px;background:#fbf3e2;color:#5a431c;font:600 13px/1.5 system-ui,sans-serif">'
+      + '\u270E Not finished yet. Your code opens a tag it never closes, so the browser is guessing the rest. The page below may look right only by luck. Press Run and the coach will point at what is missing.</p>' + body;
+  }
   else if (les.lang === 'css'){ body = les.html; css = code; js = les.js || ''; }
   else {
     body = les.html;
@@ -10282,10 +10293,21 @@ function killNext(){
   btnNext.textContent = 'Next lesson →';
   btnNext.classList.remove('counting');
 }
+let nextHeld = false;
 function armNext(){
   killNext();
+  nextHeld = false;
   const to = nextTarget();
   if (to < 0 || sandbox || hub || drillOn) return;
+  /* A question is waiting under the lesson ("Say it in your own words"). The
+     countdown used to run straight over it and carry the learner away mid-
+     sentence. It now waits for an answer or "Not now"; Next still works. */
+  if (teachEl.querySelector('.saybox:not(.done)')){
+    nextHeld = true;
+    btnNext.style.display = 'inline-block';
+    btnNext.textContent = 'Next lesson \u2192';
+    return;
+  }
   let left = NEXT_WAIT;
   btnNext.style.display = 'inline-block';
   btnNext.classList.add('counting');
@@ -12318,14 +12340,14 @@ const BUGS = {
 const RECALL = {
  2:{q:'Which tag makes the biggest heading?',ch:[['<h1>',1,'h for heading, 1 for the biggest kind.'],['<big>',0,'There is no big tag. Headings go h1 (biggest) to h6 (smallest).'],['<h6>',0,'h6 is the SMALLEST heading. The numbers run the other way.']]},
  3:{q:'Why do the tags not show up on the page?',ch:[['Tags are instructions, not words',1,'Stage directions: the audience never sees them, only what they do.'],['The browser lost them',0,'Nothing was lost. The browser read them, obeyed them, and hid them on purpose.'],['You have to type them twice',0,'Once is plenty. Tags are meant to be invisible.']]},
- 4:{q:'What is wrong with <h1>Hello there ?',ch:[['It is missing its closing </h1>',1,'Every element needs its closer, or the heading swallows everything after it.'],['h1 needs a number after Hello',0,'The number lives in the tag name, not the words.'],['Nothing, it is fine',0,'It renders by luck. The browser guesses where it ends, and guesses break pages.']]},
+ 4:{q:'What is wrong with this line? <code>&lt;h1&gt;Hello there</code>',ch:[['It is missing its closing </h1>',1,'Every element needs its closer, or the heading swallows everything after it.'],['h1 needs a number after Hello',0,'The number lives in the tag name, not the words.'],['Nothing, it is fine',0,'It renders by luck. The browser guesses where it ends, and guesses break pages.']]},
  5:{q:'Which hug means emphasis (usually italic)?',ch:[['<em>',1,'em is short for emphasis.'],['<strong>',0,'strong is the bold, this-matters one.'],['<i-really>',0,'Not a tag. Made-up tags are ignored.']]},
  6:{q:'Which tag makes a word bold and important?',ch:[['<strong>',1,'strong: important, shown bold.'],['<bold>',0,'Not a real tag. The browser ignores it.'],['<em>',0,'em is emphasis, usually italic.']]},
  9:{q:'Which tag makes a real clickable button?',ch:[['<button>',1,'The words between the hug are what appears on the button.'],['<btn>',0,'Not a tag. Full word: button.'],['<click>',0,'Not a tag either.']]},
- 10:{q:'Inside a <ul>, each bullet lives in a...',ch:[['<li>',1,'li is a list item, nested inside the ul.'],['<item>',0,'Not a tag. li is the real name.'],['<p>',0,'A p is a paragraph. It can go inside an li but is not a bullet itself.']]},
- 11:{q:'In <p title="hi">, what is title?',ch:[['An attribute: an extra note on the tag',1,'name="value" inside the opener. Attributes tweak an element without new tags.'],['A second tag',0,'It sits INSIDE the p tag, so it is part of that tag.'],['The words on the page',0,'It never shows as text; the browser shows it as a tooltip.']]},
+ 10:{q:'Inside a <code>&lt;ul&gt;</code>, each bullet lives in a...',ch:[['<li>',1,'li is a list item, nested inside the ul.'],['<item>',0,'Not a tag. li is the real name.'],['<p>',0,'A p is a paragraph. It can go inside an li but is not a bullet itself.']]},
+ 11:{q:'In <code>&lt;p title="hi"&gt;</code>, what is title?',ch:[['An attribute: an extra note on the tag',1,'name="value" inside the opener. Attributes tweak an element without new tags.'],['A second tag',0,'It sits INSIDE the p tag, so it is part of that tag.'],['The words on the page',0,'It never shows as text; the browser shows it as a tooltip.']]},
  12:{q:'Which attribute holds where a link goes?',ch:[['href',1,'href on an a tag. The words between the hug are what you click.'],['src',0,'src is for images and scripts, not links.'],['link',0,'Not an attribute on a; the tag itself is a.']]},
- 13:{q:'What is a <div> for?',ch:[['Grouping things into one box',1,'A plain box so related pieces travel together and can be styled as one.'],['Making text bigger',0,'That is a heading. div changes nothing by itself.'],['Dividing numbers',0,'HTML does no maths. div is short for division as in a section.']]},
+ 13:{q:'What is a <code>&lt;div&gt;</code> for?',ch:[['Grouping things into one box',1,'A plain box so related pieces travel together and can be styled as one.'],['Making text bigger',0,'That is a heading. div changes nothing by itself.'],['Dividing numbers',0,'HTML does no maths. div is short for division as in a section.']]},
  14:{q:'Which line is correct CSS?',ch:[['color: red;',1,'property, colon, value, semicolon.'],['color = red',0,'CSS uses a colon, not equals, and ends with a semicolon.'],['red: color;',0,'Backwards. The property comes first.']]},
  15:{q:'To colour the paper behind everything, you write...',ch:[['body { background: ... }',1,'body is the whole page; background is the paper.'],['p { color: ... }',0,'That colours the INK of paragraphs.'],['page { paper: ... }',0,'Neither is a real selector or property.']]},
  19:{q:'In CSS, .special picks...',ch:[['Every element with class="special"',1,'The dot means class, and a class can be on many elements.'],['The element with id="special"',0,'That would be #special. Hash is id, dot is class.'],['A tag named special',0,'That would be bare special with no dot, and no such tag exists.']]},
@@ -14102,6 +14124,7 @@ teachEl.addEventListener('click', (e) => {
     box.classList.add('done'); ta.disabled = true;
     g.remove();
     const sk = box.querySelector('.sayskip'); if (sk) sk.remove();
+    if (nextHeld) armNext();
     box.querySelector('.saywhy').innerHTML =
       (r.ok ? '&#9989; <b>That is the idea.</b> You described what the code is FOR, and that is the part that travels to the next problem. '
         : r.words < 5 ? '&#129300; <b>Say a bit more.</b> A sentence, not a label. Here is one way to put it: '
@@ -14120,7 +14143,7 @@ teachEl.addEventListener('click', (e) => {
     return;
   }
   const s = e.target.closest('.sayskip');
-  if (s) s.closest('.saybox').remove();
+  if (s){ s.closest('.saybox').remove(); if (nextHeld) armNext(); }
 });
 
 let shufState=null, traceStep=-1, predsDone=new Set();

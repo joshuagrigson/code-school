@@ -250,6 +250,32 @@ what `look` answers there and what each question says yes or no to; the one
 line to change, before and after, with the new part highlighted; then a
 fill-the-gap on the new word, where a wrong pick says why it is wrong.
 
+**Every lesson in the school is taught that way now**, not only Quest: all 209
+other lessons (K through College, the Hustle, the Portfolio, the Machine Room,
+Beyond, the Review Desk, the Sound Room, the Kata Table, Python and the
+Terminal) and all 21 Learn Python units.
+
+- **What you are making**, generated from the lesson's own answer: the page it
+  builds (drawn into a shadow root, so the lesson's styles stay inside and
+  nothing in it runs or fetches; images become a labelled box), what it prints
+  (Python, worked out by the in-page interpreter), the tests it must pass
+  (Kata) or the folders it starts in (Terminal). JavaScript answers are run
+  once and what they show is kept; `allcover_test.js` re-runs them to prove the
+  pictures still match. The Deep draws each floor's board from the route its
+  generator proved, without handing that route to Show me.
+- **Do it in three steps** with the key line marked, a table where one helps,
+  a fill-the-gap and a reminder line of its own. These were written per lesson
+  and then held to the lesson by a validator: every marked key line appears in
+  that lesson's answer (for a project, in the code its brief gives), and every
+  gap, filled in, is a line of the answer. The same check runs in
+  `allcover_test.js`, so changing a solution later cannot leave a guide
+  teaching the old one.
+- **Learn Python** opens each unit with *How this unit works*: the three steps
+  and the unit's five examples with what each one prints, worked out by
+  running it, above the first card. Open the first time, folded once crowned.
+- JavaScript that does not parse yet is no longer run in the preview; it says
+  calmly that nothing has run, and the coach under the editor says why.
+
 **Every Quest board is taught that way now**: the sixteen levels in the track,
 the fourteen grade bosses and the three prep boards inside the grades. Each
 lesson shows a drawing of its board with the route the answer takes and every

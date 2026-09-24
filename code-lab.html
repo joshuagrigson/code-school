@@ -1296,6 +1296,20 @@ code.qkey *,.teach pre mark *{color:inherit!important}
 .lpintro .qsteps{margin:6px 0 10px;background:var(--panel)}
 .qtt code.lpx{white-space:pre;font-size:.82rem}
 .lpxt td{vertical-align:top}
+
+/* ---- after the guided lap (or Show me): Start over asks to be pressed ---- */
+body.redoready #btnReDo{border-color:var(--accent);color:var(--acct);animation:redopulse 1.5s ease-in-out infinite}
+body.redoready #btnReDo .ic{opacity:1}
+/* the message names the button, so the button shows its name even where the row is too narrow for labels */
+body.redoready #btnReDo .bl{display:inline!important}
+@keyframes redopulse{0%,100%{box-shadow:0 0 0 0 rgba(26,143,112,.5),var(--sh1)}55%{box-shadow:0 0 0 8px rgba(26,143,112,0),var(--sh1)}}
+@media (prefers-reduced-motion:reduce){body.redoready #btnReDo{animation:none;outline:3px solid var(--accent);outline-offset:2px}}
+@media (max-width:760px){
+  body.redoready #btnReDo{position:relative;overflow:visible}
+  body.redoready #btnReDo::after{content:'Tap Start over';position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 9px);white-space:nowrap;
+    background:var(--btn);color:#fff;font-size:.8rem;font-weight:650;padding:6px 11px;border-radius:9px;box-shadow:var(--sh2);pointer-events:none;z-index:6}
+  body.redoready #btnReDo::before{content:'';position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 3px);border:6px solid transparent;border-top-color:var(--btn);border-bottom:0;pointer-events:none;z-index:6}
+}
 </style>
 </head>
 <body>
@@ -10090,6 +10104,7 @@ function runNudge(){
 }
 function runCheck(){
   runNudgeOff();
+  document.body.classList.remove('redoready');
   if (hub || drillOn) return;
   syncHl();
   if (sandbox) return;
@@ -10190,12 +10205,14 @@ function runCheck(){
   if (res.ok && !done.has(idx) && solShown && edEl.value === L[idx].sol){
     statusEl.innerHTML = '✓ ' + 'That IS the answer — but shown is not earned. Hit <b>↺ Start over</b> and type it yourself: the ✓ (and the XP) go to your fingers, not your eyes. Typing it is faster than you think.';
     btnNext.style.display = 'none';
+    document.body.classList.add('redoready');   /* the message points at a button: make the button easy to find */
     return;
   }
   if (res.ok && !L[idx].chal && !L[idx].proj && assistedKeys >= 12 && !lessonDone(idx)){
     statusEl.innerHTML = '✓ ' + 'That was the guided lap &mdash; the faint text typed along with you. Hit <b>↺ Start over</b> and run it solo: the ✓ (and the XP) go to your fingers. You just typed the whole thing once, so the second lap is faster than you think.';
     btnNext.style.display = 'none';
     ghostLap = true;
+    document.body.classList.add('redoready');
     return;
   }
   /* A floor cleared is not a lesson finished: you can always go deeper, so the
@@ -10712,6 +10729,7 @@ function loadLesson(i){
   syncModeUI();
   $('#btnSandbox').innerHTML = ico('brush') + '<span class="bl">Free play</span>';
   $('#btnSandbox').title = 'An uncheckable scratch page - write anything, break nothing'; leadStep = 0; solShown = false;
+  document.body.classList.remove('redoready');
   assistedKeys = 0; ghostOn = true; ghostLap = false; typedThisLesson = false; ghostFrom = 0; ghostSpoken = new Set(); ghostTalkOff(); killGhost();
   /* A bubble explaining a feature of the lesson you were on has no business
      following you to the next one. The ghost coach's note in particular is
@@ -14284,7 +14302,7 @@ function ghostable(){
 function syncModeUI(){
   /* every screen that changes mode passes through here, so a pending push
      from the lesson you just left dies here too */
-  if (hub || sandbox || drillOn) killNext();
+  if (hub || sandbox || drillOn){ killNext(); document.body.classList.remove('redoready'); }
   const live = !(hub || drillOn);
   document.body.classList.toggle('noedit', !live);
   /* On a Terminal lesson the typing happens at the prompt in the preview, and

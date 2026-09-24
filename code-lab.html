@@ -3153,7 +3153,11 @@ function QU(title, spec, teach, goal, start, sol, hint, reqs, passMsg, failMsg, 
       pairs.push([()=>sim.won, sim.won ? 'the level is cleared'
         : sim.error ? 'the level is cleared \u2014 the run stopped on the line above, so it never got there'
         : esc(sim.why || 'the level is cleared')]);
-      return all(c, pairs) ? {ok:true, msg:passMsg} : {ok:false, msg:failMsg};
+      if (all(c, pairs)) return {ok:true, msg:passMsg};
+      /* The hero reached the flag but the code skipped what the level teaches:
+         say so on the row, or the checklist reads like it missed the run. */
+      if (sim.won) reqLog.forEach(r => { if (!r.ok) r.t += ' <i class="rqwhy">&mdash; the hero made it, but this is the part the level is teaching</i>'; });
+      return {ok:false, msg:failMsg};
     }
   };
   L.push(les);
@@ -3291,13 +3295,13 @@ QU('You are not driving',
  + '<p>Why bother, when the loop worked? Because a rule that only uses what the hero can see right now still works when you do not know the board, when things move, or when the hero starts somewhere else. You write the judgement once, and something else decides when to use it. That is how game characters, robots and automated trading systems are written.</p>',
  'Write a <code>turn(hero)</code> function that collects both gems and reaches the flag within sixty ticks.',
  'function turn(hero) {\n  \n}',
- 'function turn(hero) {\n  if (hero.look("right") !== "wall" && hero.look("right") !== "edge") {\n    hero.moveRight();\n  } else if (hero.look("down") === "clear" || hero.look("down") === "gem") {\n    hero.moveDown();\n  } else {\n    hero.moveUp();\n  }\n}',
- 'Your rule from <i>Plan B, plan C</i> works here unchanged. Put its <code>if</code>, <code>else if</code> and <code>else</code> inside <code>function turn(hero) { }</code>, with no <code>while</code> around them: right if it is not a wall or the edge, otherwise down onto floor or a gem, otherwise up.',
+ 'function turn(hero) {\n  if (hero.look("right") !== "wall" && hero.look("right") !== "edge") {\n    hero.moveRight();\n  } else if (hero.look("down") !== "wall" && hero.look("down") !== "edge") {\n    hero.moveDown();\n  } else {\n    hero.moveUp();\n  }\n}',
+ 'Your rule from <i>Plan B, plan C</i> works here unchanged. Put its <code>if</code>, <code>else if</code> and <code>else</code> inside <code>function turn(hero) { }</code>, with no <code>while</code> around them: right if it is not a wall or the edge, otherwise down if below is not a wall or the edge, otherwise up.',
  [[/function\s+turn\s*\(/, 'a function called <code>turn</code>'],
   [/hero\s*\.\s*look\s*\(/, 'a <code>look</code> inside it &mdash; the rule has to read the board, not remember a route'],
   [(c)=>!/^\s*hero\s*\.\s*move/m.test(c.replace(/function\s+turn[\s\S]*?\n\}/,'')), 'no moves outside <code>turn</code> &mdash; you are not driving']],
  'You wrote judgement instead of a journey, and something else ran it sixty times. That is how every colony, swarm and autonomous agent is written, and it is why the skill it trains is different: you are no longer debugging what happened, you are debugging what you would have decided.',
- 'Not there yet. <code>turn(hero)</code> is called sixty times and makes one move each time, using only what <code>hero.look(...)</code> can see. Start from your <i>Plan B, plan C</i> rule: right if the next square is not a wall or the edge, otherwise down onto floor or a gem, otherwise up.',
+ 'Not there yet. <code>turn(hero)</code> is called sixty times and makes one move each time, using only what <code>hero.look(...)</code> can see. Start from your <i>Plan B, plan C</i> rule: right if the next square is not a wall or the edge, otherwise down if the square below is not a wall or the edge, otherwise up.',
  'Code that is handed control on a schedule rather than calling out itself is <b>inversion of control</b>, and the joke name for it is the <b>Hollywood principle</b>: do not call us, we will call you. A single pass is a <b>tick</b>; the whole arrangement is an <b>event loop</b>.',
  'This is exactly how the game Screeps works &mdash; your JavaScript runs one tick at a time on a server that keeps running while you are asleep, and if your rules are bad your colony starves overnight. It is also how every React component, every Unity script and every embedded controller is written.');
 
@@ -5213,29 +5217,33 @@ QU('Not a wall',
  'while (!hero.atExit()) {\n  if (hero.look("right") === "clear") {\n    hero.moveRight();\n  } else {\n    hero.moveDown();\n  }\n}',
  'while (!hero.atExit()) {\n  if (hero.look("right") !== "wall") {\n    hero.moveRight();\n  } else {\n    hero.moveDown();\n  }\n}',
  'Keep the loop and the <code>else</code>. Change the test to <code>hero.look("right") !== "wall"</code>: go right unless it is a wall. That lets the hero step onto gems and the flag.',
- [[/!==/, 'a <code>!==</code> &mdash; testing what the square is <i>not</i>'],
-  [/\bwhile\s*\(/, 'a <code>while</code> loop, so the rule runs at every square']],
+ [[/\b(while|for)\s*\(/, 'a loop, so the rule runs at every square'],
+  [/hero\s*\.\s*look\s*\(/, 'a <code>look</code> &mdash; the rule reads the board instead of counting squares']],
  'The hero walked onto both gems and the flag, because your rule only says no to walls. Naming the one thing to avoid, instead of every thing that is fine, is how most real rules are written.',
  'Not yet. Watch where the hero turns away: <code>look</code> answers <code>"gem"</code> or <code>"exit"</code> there, not <code>"clear"</code>. Change the test to <code>!== "wall"</code> so that only a wall makes it step down.',
  '<code>!==</code> is the <b>strict inequality</b> operator; <code>===</code> is <b>strict equality</b>. A rule that names what to refuse is a <b>deny list</b>, and one that names everything allowed is an <b>allow list</b>.',
  'Spam filters and firewalls make this same choice. A deny list lets through anything it has never heard of, which is handy on this board and dangerous in security, where the careful choice is usually the allow list.').seq = 149.25;
 
-QU('Two things at once',
- {w:7, h:2, hero:[0,0], exit:[6,1], walls:[[2,1],[4,1]], gems:[[3,0]], win:'exit+gems', budget:30},
- '<p>Your rule from last time is in the box. Run it on this board and it fails in a new way. The hero reaches the right-hand side of the map and keeps walking into it. <code>look</code> answers <code>"edge"</code> there, and <code>"edge"</code> is not <code>"wall"</code>, so your rule says go right. The hero bumps, the board takes its turn, and the loop asks again, until the moves run out.</p>'
- + '<p>You need to rule out two words, and <code>&amp;&amp;</code> joins two tests into one. It means <b>and</b>: the whole test is true only if both halves are true.</p>'
+QU('The wall and the edge',
+ {w:7, h:3, hero:[0,0], exit:[6,2], walls:[[2,0]], gems:[[4,1]], win:'exit+gems', budget:30},
+ '<p>Your rule from last time is in the box. Run it on this board. It steps down past the wall, takes the gem, and then walks into the right-hand side of the map and keeps walking into it. <code>look</code> answers <code>"edge"</code> there, and <code>"edge"</code> is not <code>"wall"</code>, so your rule says go right. The hero bumps, the board takes its turn, and the loop asks again, until the moves run out.</p>'
+ + '<p>Now try the opposite, <code>!== "edge"</code> on its own. The hero walks straight into the wall two squares in, for the same reason the other way round. This board has both, so your rule has to rule out both.</p>'
+ + '<p><code>&amp;&amp;</code> joins two tests into one. It means <b>and</b>: the whole test is true only if both halves are true.</p>'
  + '<pre class="czcode">if (hero.look("right") !== "wall" &amp;&amp; hero.look("right") !== "edge") {</pre>'
  + '<p>Read it aloud: <i>if right is not a wall, and right is not the edge</i>. Each half is a complete question, so <code>hero.look("right")</code> is written twice. Writing <code>!== "wall" &amp;&amp; "edge"</code> is the usual slip here. It does not mean what it looks like, and the run will show you.</p>'
- + '<p>Everything else stays as it was: the <code>while</code>, and the step down in the <code>else</code>. At the edge, the <code>else</code> takes over and the hero steps down onto the flag.</p>',
+ + '<p>Everything else stays as it was: the <code>while</code>, and the step down in the <code>else</code>. At the wall and at the edge, the <code>else</code> takes over and the hero steps down. </p>'
+ + '<p>There is another way to say the same thing: ask whether right is <i>blocked</i>, and swap the two moves. <code>||</code> means <b>or</b>: the test is true if either half is true.</p>'
+ + '<pre class="czcode">if (hero.look("right") === "wall" || hero.look("right") === "edge") {\n  hero.moveDown();\n} else {\n  hero.moveRight();\n}</pre>'
+ + '<p>Both are correct, and the board accepts either. Use whichever reads more like the way you would say it out loud.</p>',
  'Take the gem and finish on the flag. Go right only if the next square is not a wall and not the edge.',
  'while (!hero.atExit()) {\n  if (hero.look("right") !== "wall") {\n    hero.moveRight();\n  } else {\n    hero.moveDown();\n  }\n}',
  'while (!hero.atExit()) {\n  if (hero.look("right") !== "wall" && hero.look("right") !== "edge") {\n    hero.moveRight();\n  } else {\n    hero.moveDown();\n  }\n}',
  'Join two tests with <code>&amp;&amp;</code>: <code>hero.look("right") !== "wall" &amp;&amp; hero.look("right") !== "edge"</code>. At the edge the <code>else</code> runs and the hero steps down onto the flag.',
- [[/&&/, 'a <code>&amp;&amp;</code> joining two tests'],
-  [/!==\s*["\']edge["\']/, 'a test that rules out <code>"edge"</code>']],
- 'Both halves had to be true before the hero stepped right, so the edge stopped it the way a wall does. Your rule now knows the shape of the map, not only what is on it.',
- 'Not yet. At the right-hand edge <code>look("right")</code> answers <code>"edge"</code>, and your test lets that through. Add a second test with <code>&amp;&amp;</code>, and write <code>hero.look("right")</code> out again on its side.',
- '<code>&amp;&amp;</code> is <b>logical AND</b>. Checking a boundary before stepping past it is a <b>bounds check</b>, and a missing one is how programs read past the end of their data.',
+ [[/\b(while|for)\s*\(/, 'a loop, so the rule runs at every square'],
+  [/hero\s*\.\s*look\s*\(/, 'a <code>look</code> &mdash; the rule reads the board instead of counting squares']],
+ 'Your rule stopped at the wall and at the edge, so the hero stepped down at both. Your rule now knows the shape of the map, not only what is on it.',
+ 'Not yet. Watch where the hero gets stuck. If it walks into the wall, your test lets <code>"wall"</code> through; if it walks into the right-hand side, it lets <code>"edge"</code> through. Rule out both, with <code>&amp;&amp;</code> joining two tests, and write <code>hero.look("right")</code> out again on each side.',
+ '<code>&amp;&amp;</code> is <b>logical AND</b> and <code>||</code> is <b>logical OR</b>. Checking a boundary before stepping past it is a <b>bounds check</b>, and a missing one is how programs read past the end of their data.',
  'Heartbleed, one of the worst security bugs of the last twenty years, was a missing bounds check: the code trusted a length it was handed and read past the end of the data. The fix had the same shape as your line.').seq = 149.5;
 
 QU('Plan B, plan C',
@@ -5244,23 +5252,22 @@ QU('Plan B, plan C',
  + '<p><code>look</code> takes any of four directions: <code>"right"</code>, <code>"left"</code>, <code>"up"</code> and <code>"down"</code>. So the hero can check below before stepping there. That gives you three choices in order of preference, and <code>else if</code> is how you write a list like that:</p>'
  + '<pre class="czcode">if (first choice is possible) {\n  do it\n} else if (second choice is possible) {\n  do that\n} else {\n  last resort\n}</pre>'
  + '<p>JavaScript checks the tests from the top and runs only the <b>first</b> branch whose test is true. It skips the rest. So the order is the priority, and going right comes first because that is where the flag is.</p>'
- + '<p>For the second choice, stepping down is fine onto open floor <b>or</b> onto a gem. <code>||</code> means <b>or</b>: the test is true if either half is true.</p>'
- + '<pre class="czcode">} else if (hero.look("down") === "clear" || hero.look("down") === "gem") {\n  hero.moveDown();\n}</pre>'
- + '<p>Keep your right-hand test first, put this in the middle, and put <code>hero.moveUp();</code> in the final <code>else</code>. Then try leaving out the gem half, and watch the first wall. The hero goes up, looks down, sees floor, goes back down, and repeats that until its moves run out.</p>',
+ + '<p>For the second choice, ask the same question you already ask about the right, pointed down: is the square below not a wall and not the edge? Naming what to avoid still beats listing what is fine, because below you there can be floor, a gem or the flag itself.</p>'
+ + '<pre class="czcode">} else if (hero.look("down") !== "wall" &amp;&amp; hero.look("down") !== "edge") {\n  hero.moveDown();\n}</pre>'
+ + '<p>Keep your right-hand test first, put this in the middle, and put <code>hero.moveUp();</code> in the final <code>else</code>. Then try leaving out the edge half of the down test, and watch the second wall: the hero tries to step down off the map, and keeps trying until its moves run out.</p>',
  'Take both gems and finish on the flag: go right if you can, otherwise down, otherwise up.',
  'while (!hero.atExit()) {\n  if (hero.look("right") !== "wall" && hero.look("right") !== "edge") {\n    hero.moveRight();\n  } else {\n    hero.moveDown();\n  }\n}',
- 'while (!hero.atExit()) {\n  if (hero.look("right") !== "wall" && hero.look("right") !== "edge") {\n    hero.moveRight();\n  } else if (hero.look("down") === "clear" || hero.look("down") === "gem") {\n    hero.moveDown();\n  } else {\n    hero.moveUp();\n  }\n}',
- 'Three branches, in this order. Right, when right is not a wall and not the edge. <code>else if</code> the square below is <code>"clear"</code> <code>||</code> <code>"gem"</code>, move down. <code>else</code>, move up.',
- [[/else\s+if\s*\(/, 'an <code>else if</code> &mdash; a second choice, in line'],
-  [/look\s*\(\s*["\']down["\']\s*\)/, 'a <code>look("down")</code> before stepping down'],
-  [/\|\|/, 'a <code>||</code>, so floor and a gem both count']],
+ 'while (!hero.atExit()) {\n  if (hero.look("right") !== "wall" && hero.look("right") !== "edge") {\n    hero.moveRight();\n  } else if (hero.look("down") !== "wall" && hero.look("down") !== "edge") {\n    hero.moveDown();\n  } else {\n    hero.moveUp();\n  }\n}',
+ 'Three branches, in this order. Right, when right is not a wall and not the edge. <code>else if</code> the square below is not a wall and not the edge, move down. <code>else</code>, move up.',
+ [[/\b(while|for)\s*\(/, 'a loop, so the rule runs at every square'],
+  [/hero\s*\.\s*look\s*\(/, 'a <code>look</code> &mdash; the rule reads the board instead of counting squares']],
  'Right first, then down, then up: your hero picked the best move it could see, at every square. Keep this rule. It is the whole answer to the next lesson, where the only thing that changes is who runs it.',
- 'Not yet. If the hero bounces up and down in front of a wall, the square below it holds a gem, and your down test only allows <code>"clear"</code>. Add <code>|| hero.look("down") === "gem"</code>. If it walks into the bottom edge, you still need the final <code>else</code> that moves up.',
- '<code>||</code> is <b>logical OR</b>. A chain of <code>if</code>, <code>else if</code> and <code>else</code> checked from the top is a <b>priority order</b>: the first match wins, the same way a web server picks the first route that matches an address.',
+ 'Not yet. Watch where the hero gets stuck. If it walks into the bottom of the map, your down test lets <code>"edge"</code> through: ask <code>hero.look("down") !== "wall" &amp;&amp; hero.look("down") !== "edge"</code>. If it bounces up and down, check that moving up is in the final <code>else</code>, not before the down test.',
+ 'A chain of <code>if</code>, <code>else if</code> and <code>else</code> checked from the top is a <b>priority order</b>: the first match wins, the same way a web server picks the first route that matches an address.',
  'The first Roomba vacuums ran on a list like this: go forward; if you bump, turn; if you are stuck, back up. They had no map of the house and still covered the floor. That idea, a short list of priorities instead of a plan, came from the roboticist Rodney Brooks, who co-founded the company that made them.').seq = 149.75;
 
 /* the reminder bar over each step names the one word that step adds */
-for (const [t, r] of [["Not a wall", "look(\"right\") answers a word: \"clear\" \"wall\" \"edge\" \"gem\" \"exit\" ... · === is · !== is not"], ["Two things at once", "&amp;&amp; means both must be true · write hero.look(\"right\") on each side of it · \"edge\" is off the map"], ["Plan B, plan C", "look(\"up\") look(\"down\") look(\"left\") look(\"right\") · else if is the next choice · || means either one · the first true branch wins"], ["You are not driving", "function turn(hero) { one decision, one move } · the game calls it every tick · no while, and no moves outside the braces"]]) { const l = L.find(x => x.title === t && x.g === 'QS'); if (l) l.remind = r; }
+for (const [t, r] of [["Not a wall", "look(\"right\") answers a word: \"clear\" \"wall\" \"edge\" \"gem\" \"exit\" ... · === is · !== is not"], ["The wall and the edge", "&amp;&amp; means both must be true · || means either one is enough · write hero.look(\"right\") on each side · \"edge\" is off the map"], ["Plan B, plan C", "look(\"up\") look(\"down\") look(\"left\") look(\"right\") · else if is the next choice · the first true branch wins"], ["You are not driving", "function turn(hero) { one decision, one move } · the game calls it every tick · no while, and no moves outside the braces"]]) { const l = L.find(x => x.title === t && x.g === 'QS'); if (l) l.remind = r; }
 
 const ORDER = [];
 /* Within a grade the walk is: the lessons, then the reps, then the challenge,

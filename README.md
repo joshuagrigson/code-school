@@ -239,9 +239,17 @@ That level used to arrive straight after the first `look`, and its answer needed
 taught. Three levels now come first, each adding one of those words on a board
 where the previous level's rule fails, so the new word is needed rather than
 decorative. *Not a wall* starts from the rule most people write first
-(`=== "clear"`) and shows it refusing to step onto a gem. *Two things at once*
-adds the map's edge and `&&`. *Plan B, plan C* adds looking down, `||` and an
-`else if` chain. The last of those rules, moved inside `turn`, is the answer to
+(`=== "clear"`) and shows it refusing to step onto a gem. *The wall and the
+edge* puts a wall and the map's edge on one board, so a rule has to rule out
+both, and shows `&&` and `||` as two ways to say it. *Plan B, plan C* asks the
+same question pointed down and adds an `else if` chain.
+
+Those three are judged by their boards, not by which operator you typed: any
+rule that gets the hero there passes, and a rule that leaves out the new idea
+fails visibly, with the hero stuck on the board. `ladder_test.js` holds them to
+that for nine different ways of writing the rule. When a Quest level is cleared but
+something it teaches is missing (a hard-coded route instead of a loop, say),
+the checklist says the hero made it and that this is the part being taught. The last of those rules, moved inside `turn`, is the answer to
 level eleven, so that level teaches one idea: who runs the rule. In between:
 an off-by-one that eats a corridor, an enemy that hits back if your maths is
 wrong, and a switch that has to be stood on before a door three screens away

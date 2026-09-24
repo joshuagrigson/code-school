@@ -1325,6 +1325,11 @@ body.questlsn .prevwrap{min-height:min(290px, 42vh)}
 
 <script>
 /* the drawn icon set, shared with the static markup (same paths, same grid) */
+/* A Mac or an iPad calls the shortcut key Command. Every shortcut here already
+   accepts it (ctrlKey || metaKey); this is only so the words on screen match
+   the key the person is actually looking at. */
+const IS_MAC = /Mac|iPhone|iPad|iPod/.test(navigator.platform || '') || /Mac OS X/.test(navigator.userAgent || '');
+const KEY_MOD = IS_MAC ? '\u2318' : 'Ctrl';
 const ICO = {"home": "<path d=\"M3.5 10.8 12 3.8l8.5 7\"/><path d=\"M5.5 9.6V19a1.5 1.5 0 0 0 1.5 1.5h3.5v-5.5h3v5.5H17a1.5 1.5 0 0 0 1.5-1.5V9.6\"/>", "panel": "<rect x=\"3\" y=\"4.5\" width=\"18\" height=\"15\" rx=\"3\"/><path d=\"M9.5 4.5v15\"/>", "moon": "<path d=\"M20 14.6A8.2 8.2 0 1 1 9.4 4a6.6 6.6 0 0 0 10.6 10.6z\"/>", "sun": "<circle cx=\"12\" cy=\"12\" r=\"3.8\"/><path d=\"M12 2.8v2.1M12 19.1v2.1M4.9 4.9l1.5 1.5M17.6 17.6l1.5 1.5M2.8 12h2.1M19.1 12h2.1M4.9 19.1l1.5-1.5M17.6 6.4l1.5-1.5\"/>", "play": "<path d=\"M7.5 5.3v13.4c0 .8.9 1.3 1.6.9l11-6.7a1 1 0 0 0 0-1.8l-11-6.7c-.7-.4-1.6.1-1.6.9z\" fill=\"currentColor\" stroke=\"none\"/>", "bulb": "<path d=\"M9.2 17.6h5.6M10.2 20.8h3.6\"/><path d=\"M12 3.2a5.9 5.9 0 0 0-3.5 10.6c.6.5 1 1.2 1 2v.4h5v-.4c0-.8.4-1.5 1-2A5.9 5.9 0 0 0 12 3.2z\"/>", "steps": "<path d=\"M3.5 20.5h5v-5h5v-5h5v-5h2\"/><path d=\"M3.5 20.5v-2\"/>", "eye": "<path d=\"M2.2 12s3.5-6.8 9.8-6.8 9.8 6.8 9.8 6.8-3.5 6.8-9.8 6.8S2.2 12 2.2 12z\"/><circle cx=\"12\" cy=\"12\" r=\"2.9\"/>", "undo": "<path d=\"M4.2 13a8 8 0 1 0 2.4-6.1\"/><path d=\"M3.8 4.2v4.9h4.9\"/>", "duck": "<circle cx=\"9.3\" cy=\"7.6\" r=\"3.4\"/><path d=\"M6.1 8.6 2.9 9.6l3.4 1\"/><path d=\"M12.1 9.7c2.5.8 5.3.3 8-1.5.5 5.9-3 10.6-8.6 10.6h-1.8a5.6 5.6 0 0 1-4.3-9.2\"/><circle cx=\"10.2\" cy=\"6.8\" r=\".55\" fill=\"currentColor\"/>", "palette": "<path d=\"M12 3.2a8.8 8.8 0 1 0 0 17.6c1 0 1.6-.9 1.3-1.8l-.3-.9a1.7 1.7 0 0 1 1.6-2.2h2.4a4.2 4.2 0 0 0 4.2-4.2c0-4.8-4-8.5-9.2-8.5z\"/><circle cx=\"7.6\" cy=\"11.4\" r=\"1.05\" fill=\"currentColor\" stroke=\"none\"/><circle cx=\"9.8\" cy=\"7.3\" r=\"1.05\" fill=\"currentColor\" stroke=\"none\"/><circle cx=\"14.6\" cy=\"7.4\" r=\"1.05\" fill=\"currentColor\" stroke=\"none\"/>", "arrow": "<path d=\"M5 12h14M13.5 6.5 19 12l-5.5 5.5\"/>", "back": "<path d=\"M19 12H5M10.5 6.5 5 12l5.5 5.5\"/>", "plus": "<path d=\"M12 5v14M5 12h14\"/>", "search": "<circle cx=\"10.8\" cy=\"10.8\" r=\"6.3\"/><path d=\"m20 20-4.6-4.6\"/>", "up": "<path d=\"M12 15V4M7.5 8.5 12 4l4.5 4.5\"/><path d=\"M4 15.5v2.5A2 2 0 0 0 6 20h12a2 2 0 0 0 2-2v-2.5\"/>", "down": "<path d=\"M12 4v11M7.5 10.5 12 15l4.5-4.5\"/><path d=\"M4 15.5v2.5A2 2 0 0 0 6 20h12a2 2 0 0 0 2-2v-2.5\"/>", "ask": "<path d=\"M20.8 12a8.6 8.6 0 0 1-12.5 7.7L3.2 21l1.3-4.9A8.6 8.6 0 1 1 20.8 12z\"/><path d=\"M9.7 9.6a2.4 2.4 0 0 1 4.6.9c0 1.6-2.3 1.9-2.3 3.3\"/><path d=\"M12 16.6v.1\"/>", "brush": "<path d=\"M4.5 19.5h3.8L19.1 8.7a2.7 2.7 0 0 0-3.8-3.8L4.5 15.7z\"/><path d=\"m13.6 6.6 3.8 3.8\"/>", "book": "<path d=\"M3.5 5.6A1.6 1.6 0 0 1 5.1 4h4.6A2.3 2.3 0 0 1 12 6.3V20a2 2 0 0 0-2-2H3.5z\"/><path d=\"M20.5 5.6A1.6 1.6 0 0 0 18.9 4h-4.6A2.3 2.3 0 0 0 12 6.3V20a2 2 0 0 1 2-2h6.5z\"/>", "code": "<path d=\"m8 7.5-4.5 4.5L8 16.5M16 7.5l4.5 4.5-4.5 4.5M13.6 4.5l-3.2 15\"/>", "list": "<path d=\"M9 6.5h11M9 12h11M9 17.5h11\"/><circle cx=\"4.8\" cy=\"6.5\" r=\".9\" fill=\"currentColor\"/><circle cx=\"4.8\" cy=\"12\" r=\".9\" fill=\"currentColor\"/><circle cx=\"4.8\" cy=\"17.5\" r=\".9\" fill=\"currentColor\"/>", "screen": "<rect x=\"3\" y=\"4.5\" width=\"18\" height=\"12.5\" rx=\"2.2\"/><path d=\"M8.5 20.5h7M12 17v3.5\"/><path d=\"m10.4 8.4 3.6 2.4-3.6 2.4z\" fill=\"currentColor\" stroke=\"none\"/>", "cap": "<path d=\"M2.5 9.2 12 4.5l9.5 4.7L12 14z\"/><path d=\"M6.3 11.1v4.6c0 1.6 2.6 2.9 5.7 2.9s5.7-1.3 5.7-2.9v-4.6\"/><path d=\"M21.5 9.2v5.3\"/>", "trophy": "<path d=\"M8 3.8h8v5.8a4 4 0 0 1-8 0z\"/><path d=\"M8 5.8H4.8a3.2 3.2 0 0 0 3.6 3.9M16 5.8h3.2a3.2 3.2 0 0 1-3.6 3.9M9.5 20.2h5M12 13.6v6.6\"/>", "user": "<circle cx=\"12\" cy=\"8.3\" r=\"3.8\"/><path d=\"M4.8 20.2a7.2 7.2 0 0 1 14.4 0\"/>", "check": "<path d=\"m5 12.5 4.3 4.3L19 7\"/>", "flame": "<path d=\"M12 21a6.5 6.5 0 0 0 6.5-6.5c0-3.8-3-6-3.6-9.7-2 1.3-3 3.3-3.1 5.3-1-.7-1.6-1.9-1.7-3.2C8 8.4 5.5 11 5.5 14.5A6.5 6.5 0 0 0 12 21z\"/>", "bolt": "<path d=\"M13.2 2.8 4.6 13.6h6.6l-1 7.6 8.6-10.8h-6.6z\"/>", "pad": "<path d=\"M7.4 6.5h9.2a4.8 4.8 0 0 1 4.6 6.1l-1.1 3.9a2.6 2.6 0 0 1-4.3 1.2L13.6 15.5h-3.2l-2.2 2.2a2.6 2.6 0 0 1-4.3-1.2l-1.1-3.9a4.8 4.8 0 0 1 4.6-6.1z\"/><path d=\"M8 9.8v3M6.5 11.3h3\"/><circle cx=\"15.6\" cy=\"10.3\" r=\".8\" fill=\"currentColor\"/><circle cx=\"17.4\" cy=\"12.3\" r=\".8\" fill=\"currentColor\"/>", "star": "<path d=\"m12 3.5 2.6 5.4 5.9.8-4.3 4.1 1 5.9L12 16.9l-5.2 2.8 1-5.9-4.3-4.1 5.9-.8z\"/>"};
 function ico(n){ return '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' + ICO[n] + '</svg>'; }
 'use strict';
@@ -2635,7 +2640,7 @@ PRACT('MR','js','the price of pairs','<p>Feeling the multiplication one more tim
 /* In-the-wild lines, attached by title so lesson indices stay free to move */
 const MR_WILD = {
  'Counting the work':'Every "this page is slow" ticket at every company starts exactly here: someone stops guessing and measures where the work actually goes.',
- 'One by one':'Ctrl+F scanning a page you have not sorted is a linear search - which is why it takes longer on longer pages.',
+ 'One by one':'Find-in-page (Ctrl+F, or Command+F on a Mac) scanning a page you have not sorted is a linear search - which is why it takes longer on longer pages.',
  'The phone book trick':'Your bank finding your account among fifty million, in the time it takes the page to paint, is this halving trick on sorted data.',
  'Why halving wins':'It is why a search box over a million products answers as fast as one over a thousand - twenty steps instead of ten.',
  'Straight to the shelf':'Jumping to a video timestamp does not scan the video; the player computes where that second lives and reads it directly.',
@@ -5419,7 +5424,7 @@ const QA = [
  {k:'console paste warning scam stop', a:'Never paste code you did not write into the console. It runs AS YOU &mdash; the paste-this-to-see-who-viewed-your-profile scam steals accounts precisely this way.'},
  {k:'network tab requests watch fetch', a:'The Network tab in your browser&rsquo;s developer tools lists every request the page makes &mdash; open it on any site and watch it fetch its JSON lists in real time. It is the single best window into how the web actually works.'},
  {k:'minified gibberish class names crunched', a:'Build tools crunch human-written code into tiny scrambled names so pages download faster. The mechanism underneath is exactly your .class rules. Inspect Wikipedia for the readable version.'},
- {k:'devtools shortcut open f12', a:'F12, or Ctrl+Shift+I, or right-click then Inspect. Closing: F12 again or the X in its corner.'},
+ {k:'devtools shortcut open f12', a:'F12, or Ctrl+Shift+I (on a Mac, Command+Option+I), or right-click then Inspect. Closing: F12 again or the X in its corner.'},
  {k:'inspect see private data others', a:'No. DevTools shows only what the server sent to YOUR browser for YOUR session. Other people&rsquo;s private data never arrived on your machine, so no tool on your machine can reveal it.'},
  {k:'deleted element page broke fix', a:'You only broke your local copy &mdash; refresh and the page returns whole. This is the safest vandalism on Earth.'},
  {k:'phone view test responsive toolbar', a:'The little phone/tablet icon simulates phone screens &mdash; how developers test mobile layouts without ten devices on the desk.'},
@@ -9969,7 +9974,7 @@ window.addEventListener('message', (e)=>{
   try { localStorage.setItem('questSound', questSound ? '1' : '0'); } catch(err){}
 });
 let graded = false;
-const SHELL_TIP = '\u2328\uFE0F The box above is a terminal. Type one command, press <b>Enter</b>, and it runs \u2014 the panel below shows what that did to the machine. When the session is done, press <b>\u25B6 Run</b> (or Ctrl+Enter) and the coach reads the whole thing.';
+const SHELL_TIP = '\u2328\uFE0F The box above is a terminal. Type one command, press <b>Enter</b>, and it runs \u2014 the panel below shows what that did to the machine. When the session is done, press <b>\u25B6 Run</b> (or ' + KEY_MOD + '+Enter) and the coach reads the whole thing.';
 function previewOnly(){
   if (hub || drillOn) return;
   killNext();
@@ -9979,7 +9984,7 @@ function previewOnly(){
   shPaint();
   statusEl.className='wait';
   statusEl.innerHTML = (L[idx] && L[idx].kind === 'shell') ? SHELL_TIP
-    : '✍️ The page below updates as you type. Press <b>▶ Run</b> (or Ctrl+Enter) when you want the coach to grade it.';
+    : '✍️ The page below updates as you type. Press <b>▶ Run</b> (or ' + KEY_MOD + '+Enter) when you want the coach to grade it.';
   btnNext.style.display='none';
 }
 function runCheck(){
@@ -11450,7 +11455,7 @@ function openHub() {
         }).join('')
       + hubTrack('Portfolio', projDone.size, L.filter(l => l.proj).length, 'Finished pieces you could show someone')
     + '</div>'
-    + '<p class="hubtip"><span class="kbdtip"><b>In a hurry?</b> Press <kbd>Ctrl</kbd>+<kbd>K</kbd> anywhere to jump to any lesson or action. </span>'
+    + '<p class="hubtip"><span class="kbdtip"><b>In a hurry?</b> Press <kbd>' + KEY_MOD + '</kbd>+<kbd>K</kbd> anywhere to jump to any lesson or action. </span>'
       + '<label class="hubskip"><input type="checkbox" id="hubSkip"' + (localStorage.getItem('hubskip') === '1' ? ' checked' : '') + '> Skip this screen and drop me straight into the lesson next time</label></p>';
   goalEl.innerHTML = '<b>THE HUB.</b> One screen that always knows what you should do next.';
   remindBox.style.display = 'none';
@@ -11662,10 +11667,19 @@ const LP_UNITS = [
 /* ---------------------------------------------------- building the cards */
 /* One thing changed. Each returns a new program or null when it does not
    apply. The engine decides what the change did; nothing here guesses. */
+/* Numbers standing on their own: not part of a name, a string or a decimal.
+   Written without a lookbehind, because Safari only learned those in 16.4 and
+   a regex it cannot read stops the whole page, not just this path. */
+function lpNums(c){
+  const out = [], re = /(^|[^\w."])(\d+)(?![\w."])/g;
+  let m;
+  while ((m = re.exec(c))) out.push({index: m.index + m[1].length, n: m[2], len: m[2].length});
+  return out;
+}
 const LP_MUT = [
-  c => { const m = /(?<![\w."])(\d+)(?![\w."])/.exec(c); return m ? c.slice(0, m.index) + (+m[1] + 1) + c.slice(m.index + m[0].length) : null; },
-  c => { const a = [...c.matchAll(/(?<![\w."])(\d+)(?![\w."])/g)]; if (a.length < 2) return null; const m = a[a.length - 1];
-         return c.slice(0, m.index) + (+m[1] > 0 ? +m[1] - 1 : 2) + c.slice(m.index + m[0].length); },
+  c => { const m = lpNums(c)[0]; return m ? c.slice(0, m.index) + (+m.n + 1) + c.slice(m.index + m.len) : null; },
+  c => { const a = lpNums(c); if (a.length < 2) return null; const m = a[a.length - 1];
+         return c.slice(0, m.index) + (+m.n > 0 ? +m.n - 1 : 2) + c.slice(m.index + m.len); },
   c => c.includes(' < ') ? c.replace(' < ', ' <= ') : c.includes(' <= ') ? c.replace(' <= ', ' < ') : null,
   c => c.includes(' > ') ? c.replace(' > ', ' >= ') : c.includes(' >= ') ? c.replace(' >= ', ' > ') : null,
   c => c.includes(' == ') ? c.replace(' == ', ' != ') : c.includes(' != ') ? c.replace(' != ', ' == ') : null,
@@ -13184,6 +13198,7 @@ $('#btnDuck').onclick = ()=>{
 $('#duckNext').onclick = ()=>{ duckLine++; duckShow(); };
 $('#duckDone').onclick = ()=>duckEnd(true);
 $('#btnRun').onclick = ()=>{ if(sandbox){ syncHl(); outEl.srcdoc = edEl.value; } else runCheck(); };
+if (IS_MAC) ['#btnRun', '#btnNext'].forEach(q => { const e = $(q); if (e) e.title = e.title.replace('Ctrl', '\u2318'); });
 $('#btnHelp').onclick = ()=>{ if(!sandbox){ statusEl.className=''; statusEl.innerHTML = '💡 ' + L[idx].hint; } };
 $('#btnLead').onclick = ()=>{ if(!sandbox) giveLead(); };
 $('#btnSol').onclick  = ()=>{ if(!sandbox){ solShown = true; killGhost(); edEl.value = L[idx].sol; runCheck(); } };
@@ -13217,7 +13232,7 @@ $('#btnExport').onclick = ()=>{
      undo weeks of spacing on the new machine. */
   const code = btoa(unescape(encodeURIComponent(JSON.stringify({done:[...done], idx, tested:[...tested], chalDone:[...chalDone], projDone:[...projDone], practDone:[...practDone], ms:[...msSeen], edTheme, certName, stk, beyond:[...beyondDone], srs:srs.q, said:saidOk, preds:[...predsDone], tx:tx, adv:adv}))));
   try{ navigator.clipboard.writeText(code); alert('Save code copied to clipboard! Paste it into Import on any other device or browser.'); }
-  catch(e){ prompt('Copy this save code (Ctrl+C), then paste it into Import on the other device:', code); }
+  catch(e){ prompt('Copy this save code (' + KEY_MOD + '+C), then paste it into Import on the other device:', code); }
 };
 $('#btnImport').onclick = ()=>{
   const code = prompt('Paste your save code:');

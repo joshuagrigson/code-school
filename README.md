@@ -513,6 +513,11 @@ The phone is a first-class layout, not a narrowed desktop.
   and the test suite computes the real ratios from rendered styles so it cannot
   quietly regress. The coach's verdict is a live region, and the drill announces
   each question and verdict to a screen reader.
+- **Runs on Mac, Windows, Chromebooks, iPad and phones.** Every shortcut takes
+  Command as well as Ctrl, and the hints on screen name the key your machine
+  has (⌘+Enter on a Mac, Ctrl+Enter elsewhere). The script stays inside what
+  Safari 15.4 and later can read: it parses as ES2020, and it uses no regex
+  lookbehind, which older Safari rejects in a way that stops the whole page.
 
 ## Ways of teaching that are not reading
 

@@ -244,6 +244,12 @@ edge* puts a wall and the map's edge on one board, so a rule has to rule out
 both, and shows `&&` and `||` as two ways to say it. *Plan B, plan C* asks the
 same question pointed down and adds an `else if` chain.
 
+Each of the three is laid out the same way: run it and watch; a drawing of
+that board with the squares where the hero goes wrong numbered; a table of
+what `look` answers there and what each question says yes or no to; the one
+line to change, before and after, with the new part highlighted; then a
+fill-the-gap on the new word, where a wrong pick says why it is wrong.
+
 Those three are judged by their boards, not by which operator you typed: any
 rule that gets the hero there passes, and a rule that leaves out the new idea
 fails visibly, with the hero stuck on the board. `ladder_test.js` holds them to

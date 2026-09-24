@@ -1266,7 +1266,7 @@ body.runready #btnRun{animation:runpulse 1.5s ease-in-out infinite}
 .qtt .n{color:#a2431f;font-weight:650}
 body.dark .qtt .n{color:#f0a07a}
 .teach pre mark{background:#cdeedb;color:inherit;box-shadow:0 0 0 1px #5fb88f;border-radius:3px;padding:0 1px}
-body.dark .teach pre mark{background:#1e5a45;color:#eafff4;box-shadow:0 0 0 1px #3fae86}
+body.dark .teach pre mark{background:#174a39;color:#eafff4;box-shadow:0 0 0 1px #3fae86}
 .teach .qwords{font-size:.88rem;color:var(--soft)}
 
 /* Buttons, inputs and text boxes do not inherit font settings from the page,
@@ -1274,6 +1274,19 @@ body.dark .teach pre mark{background:#1e5a45;color:#eafff4;box-shadow:0 0 0 1px 
    === showed one long bar and !== showed a not-equals sign, neither of which
    is on anybody's keyboard. Off everywhere a learner reads or types code. */
 button,input,textarea,select{font-variant-ligatures:none;font-feature-settings:'calt' 0,'liga' 0}
+
+/* ---- Quest: the three steps box, and the key line in it ---- */
+.qsteps{margin:18px 0;padding:14px 17px 10px;border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:14px;background:var(--panel2)}
+.qsteps .tih{font-size:.65rem;letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--soft);margin-bottom:6px}
+.qsteps ol{margin:0 0 4px;padding-left:1.35em}
+.qsteps li{margin:6px 0;line-height:1.55}
+.qsteps li::marker{font-weight:700;color:var(--acct)}
+.qsteps .qttw{margin:10px 0 6px}
+code.qkey{background:#cdeedb;box-shadow:0 0 0 1px #5fb88f;color:var(--ink)}
+body.dark code.qkey{background:#174a39;box-shadow:0 0 0 1px #3fae86;color:#eafff4}
+/* syntax colours were tuned for the plain code background, not the highlight */
+code.qkey *,.teach pre mark *{color:inherit!important}
+.picbox.qpic svg{max-width:460px}
 </style>
 </head>
 <body>
@@ -4300,10 +4313,10 @@ QU('Spikes on a count',
  'Traffic lights, hard drives waiting for a platter to come round, and every radio in the world do exactly this: the thing you want is not always available, so you time your arrival instead of forcing it.');
 
 QU('The witch down the hall',
- {w:8, h:2, hero:[0,0], exit:[7,1], hp:3, budget:20,
+ {w:8, h:2, hero:[0,0], exit:[7,1], hp:1, budget:20,
   foes:[{at:[7,0], name:'Vex', icon:'🧙', kind:'caster', range:9, bite:1, hp:1}]},
  '<p>Vex never moves. Vex does not have to.</p>'
- + '<p>A caster owns a straight line &mdash; the whole row she is standing in, and the whole column too. Anywhere in that line, with nothing solid in between, she can reach you from any distance. You start in her row. You have three hearts and there are seven squares between you.</p>'
+ + '<p>A caster owns a straight line &mdash; the whole row she is standing in, and the whole column too. Anywhere in that line, with nothing solid in between, she can reach you from any distance. You start in her row. You have one heart and there are seven squares between you.</p>'
  + '<p>The answer is not to run faster. It is to <b>stop being in the line</b>. Step out of her row and everything she can do stops being about you, and then walking the length of the board is just walking.</p>'
  + '<p>This is the first level where the right move is sideways. Most boards reward going toward the flag; this one punishes it for exactly as long as you stay in that row. Geometry beats speed.</p>',
  'Get out of Vex’s line, cross the room, and finish on the flag.',
@@ -4440,7 +4453,9 @@ function QB(gid, title, spec, teach, goal, start, sol, hint, reqs, passMsg, fail
       pairs.push([()=>sim.won, sim.won ? 'the board is cleared'
         : sim.error ? 'the board is cleared — the run stopped on the line above, so it never got there'
         : esc(sim.why || 'the board is cleared')]);
-      return all(c, pairs) ? {ok:true, msg:passMsg} : {ok:false, msg:failMsg};
+      if (all(c, pairs)) return {ok:true, msg:passMsg};
+      if (sim.won) reqLog.forEach(r => { if (!r.ok) r.t += ' <i class="rqwhy">&mdash; the hero made it, but this is the idea the boss is checking</i>'; });
+      return {ok:false, msg:failMsg};
     }
   };
   L.push(les);
@@ -10697,7 +10712,7 @@ function loadLesson(i){
                   of them lying */
                : les.boss ? 'end of grade'
                : 'lesson ' + (pos+1) + ' of ' + gl.length) + '</span><button id="crNext" title="Next lesson" aria-label="Next lesson"'+(op>=ORDER.length-1?' disabled':'')+'>&rarr;</button></div>';
-  teachEl.innerHTML = crumb + '<h2>' + les.title + '</h2>' + readyNote(les) + les.teach + rhythmBox(les) + shapeHtml(i) + widgetsFor(i) + decoderFor(les) + ((RN[i]||les.rn) ? '<div class="realname"><b>Real name</b>' + (RN[i]||les.rn) + '</div>' : '') + (MORE[i] ? '<div class="morebox"><b>More to chew on</b>' + MORE[i] + '</div>' : '') + (OLDS[i] ? '<div class="elders"><b class="el">📜 Lineage</b>' + OLDS[i] + '</div>' : '');
+  teachEl.innerHTML = crumb + '<h2>' + les.title + '</h2>' + readyNote(les) + questTeach(les) + rhythmBox(les) + shapeHtml(i) + widgetsFor(i) + decoderFor(les) + ((RN[i]||les.rn) ? '<div class="realname"><b>Real name</b>' + (RN[i]||les.rn) + '</div>' : '') + (MORE[i] ? '<div class="morebox"><b>More to chew on</b>' + MORE[i] + '</div>' : '') + (OLDS[i] ? '<div class="elders"><b class="el">📜 Lineage</b>' + OLDS[i] + '</div>' : '');
   recallShow(i);
   goalEl.innerHTML = '<b>DO THIS:</b> ' + les.goal;
   markCode(teachEl, les); markCode(goalEl, les); captionExamples(teachEl, les);
@@ -11025,6 +11040,1117 @@ const CLOZE = {
 /* the Quest steps into "You are not driving" were appended to L, so their
    gap-fills are attached by title rather than by a written index */
 for (const [t, d] of [["Not a wall", {"code": "if (hero.look(\"right\") ___ \"wall\") {\n  hero.moveRight();\n}", "opts": ["!==", "===", "="], "ans": "!==", "why": "!== means is not: go right unless it is a wall. === would send the hero right only when the next square IS a wall, and a single = is not a question at all."}], ["The wall and the edge", {"code": "if (hero.look(\"right\") !== \"wall\" ___\n    hero.look(\"right\") !== \"edge\") {", "opts": ["&&", "||", "+"], "ans": "&&", "why": "&& needs both answers to be yes. With || one yes is enough, and next to a wall \"not the edge\" is yes, so the hero would walk into the wall. + adds things together; it cannot join two questions."}], ["Plan B, plan C", {"code": "} ___ (hero.look(\"down\") !== \"wall\" &&\n       hero.look(\"down\") !== \"edge\") {\n  hero.moveDown();\n} else {\n  hero.moveUp();\n}", "opts": ["else if", "if", "else"], "ans": "else if", "why": "else if is only tried when the test above it said no, which is exactly when right is blocked. A plain if would be asked every lap, even after the hero already went right, so it could move twice in one lap. else cannot carry a test of its own."}]]) { const i = L.findIndex(l => l.title === t && l.g === 'QS'); if (i >= 0) CLOZE[i] = d; }
+
+/* ---- Every Quest lesson, taught the same way ------------------------------
+   The three steps into "You are not driving" were rewritten as: run it, see
+   the board, the one idea, the one line, a gap to fill. Every other Quest
+   board (the track, the grade bosses, the prep boards) gets the same:
+   - a drawing of its board with the route the answer takes and every event
+     on it numbered, generated from a replay of the answer on the real board,
+     so the picture cannot drift from the level;
+   - three steps, with the key line marked, and a table where one helps;
+   - a gap to fill on the lesson's one idea, and its own reminder line. */
+function questPic(les){
+  const S = les.spec; let R;
+  try { R = questRun(S, les.sol); } catch (e) { return ''; }
+  if (!R || !R.frames || !R.frames.length) return '';
+  const W = S.w, H = S.h, F = R.frames;
+  const cell = Math.min(34, Math.floor(324 / W)), gw = W * cell, gh = H * cell, x0 = Math.floor((340 - gw) / 2), y0 = 8;
+  const cx = c => x0 + c * cell + cell / 2, cy = r => y0 + r * cell + cell / 2;
+  const at = (list, c, r) => (list || []).some(p => { const q = p.at || p; return q[0] === c && q[1] === r; });
+  const em = (c, r, t, k) => '<text x="' + cx(c) + '" y="' + (cy(r) + 1) + '" style="font-size:' + Math.round(cell * (k || .52)) + 'px">' + t + '</text>';
+  let o = '';
+  for (let r = 0; r < H; r++) for (let c = 0; c < W; c++){
+    const wall = at(S.walls, c, r);
+    o += '<rect x="' + (x0 + c * cell + 1.5) + '" y="' + (y0 + r * cell + 1.5) + '" width="' + (cell - 3) + '" height="' + (cell - 3) + '" rx="4"'
+      + (wall ? ' style="fill:var(--soft);stroke:var(--soft)"' : '') + '/>';
+    if (at(S.pits, c, r)) o += '<circle cx="' + cx(c) + '" cy="' + cy(r) + '" r="' + (cell * .3) + '" style="fill:#14161c"/>';
+    if (at(S.fire, c, r)) o += em(c, r, '🔥');
+    if (at(S.traps, c, r)) o += '<text x="' + cx(c) + '" y="' + (cy(r) + 1) + '" style="font-size:' + Math.round(cell * .42) + 'px;fill:#b3542e;font-weight:700">▲▲</text>';
+    if (at(S.doors, c, r)) o += em(c, r, '🚪');
+    if (at(S.switches, c, r)) o += em(c, r, '🔘');
+  }
+  (S.gems || []).forEach(p => { o += em(p[0], p[1], '💎'); });
+  if (S.exit) o += em(S.exit[0], S.exit[1], '🏁');
+  (S.foes || []).forEach(f => { o += em(f.at[0], f.at[1], f.icon || '👹'); });
+  o += em(S.hero[0], S.hero[1], heroFace());
+  /* the route, from the replay */
+  const pts = [[S.hero[0], S.hero[1]]];
+  F.forEach(f => { const l = pts[pts.length - 1]; if (l[0] !== f.x || l[1] !== f.y) pts.push([f.x, f.y]); });
+  if (pts.length > 1) o += '<polyline points="' + pts.map(q => cx(q[0]) + ',' + cy(q[1])).join(' ') + '" style="fill:none;stroke:var(--accent);stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round;stroke-dasharray:1 5;opacity:.9;marker-end:url(#qarr)"/>';
+  /* what happens on the way, in order */
+  const ev = [];
+  const add = (c, r, t) => { ev.push({c, r, t}); };
+  const casters = (S.foes || []).filter(f => f.kind === 'caster');
+  const inLine = casters.map(f => S.hero[0] === f.at[0] || S.hero[1] === f.at[1]);
+  let hits = 0;
+  for (let i = 1; i < F.length; i++){
+    const f = F[i], p = F[i - 1], cmd = f.cmd || '';
+    if (/attack/.test(cmd)) hits++;
+    if (/^say/.test(cmd)){
+      const l = ev[ev.length - 1], txt = String(f.say || '');
+      if (l && l.say === txt && l.c === f.x && l.r === f.y) { l.n++; l.t = 'says “' + esc(txt) + '” ' + l.n + ' times, waiting'; }
+      else ev.push({c: f.x, r: f.y, say: txt, n: 1, t: 'says “' + esc(txt) + '”'});
+    }
+    if (f.gemsOn.length < p.gemsOn.length) add(f.x, f.y, 'picks up the gem');
+    if (f.switchesOn.length > p.switchesOn.length) add(f.x, f.y, 'stands on the switch, and the door opens');
+    (f.foes || []).forEach((fo, j) => { const q = (p.foes || [])[j];
+      if (q && q.alive && !fo.alive){ add(q.x, q.y, (fo.name || 'the enemy') + ' goes down' + (hits > 1 ? ' after ' + hits + ' hits' : '')); hits = 0; } });
+    if (f.hp < p.hp) add(f.x, f.y, /hit you back/.test(f.note || '') ? 'takes a hit back: one heart' : 'loses a heart');
+    if (at(S.traps, f.x, f.y) && (f.x !== p.x || f.y !== p.y)) add(f.x, f.y, 'crosses the spikes while they are down');
+    casters.forEach((cf, k) => { const now = f.x === cf.at[0] || f.y === cf.at[1];
+      if (inLine[k] && !now) add(f.x, f.y, 'steps out of ' + (cf.name || 'the caster') + '’s line'); inLine[k] = now; });
+  }
+  ev.forEach((e, n) => {
+    /* two things on one square sit side by side rather than on top of each other */
+    const k = ev.slice(0, n).filter(q => q.c === e.c && q.r === e.r).length;
+    const bx = x0 + e.c * cell + cell - 5 - 15 * k, by = y0 + e.r * cell + 5;
+    o += '<circle cx="' + bx + '" cy="' + by + '" r="7.5" style="fill:#b3542e;stroke:var(--panel2);stroke-width:1.5"/><text x="' + bx + '" y="' + (by + .5) + '" style="font-size:10px;font-weight:700;fill:#fff">' + (n + 1) + '</text>';
+  });
+  /* the key wraps rather than running off the edge */
+  const wrap = (t) => { const out = []; let line = '';
+    t.split(' ').forEach(w => { if ((line + ' ' + w).replace(/&[a-z]+;/g, '_').length > 46 && line) { out.push(line); line = w; } else line = line ? line + ' ' + w : w; });
+    if (line) out.push(line); return out; };
+  let ly = y0 + gh + 16, leg = '';
+  ev.forEach((e, n) => {
+    leg += '<circle cx="14" cy="' + ly + '" r="7.5" style="fill:#b3542e"/><text x="14" y="' + (ly + .5) + '" style="font-size:10px;font-weight:700;fill:#fff">' + (n + 1) + '</text>';
+    wrap(e.t).forEach((ln, j) => { leg += '<text x="28" y="' + (ly + .5 + j * 15) + '" class="pls" style="font-size:11.5px">' + ln + '</text>'; if (j) ly += 15; });
+    ly += 18;
+  });
+  const HH = ly - 18 + 12;
+  const svg = '<svg viewBox="0 0 340 ' + HH + '" role="img" aria-label="The board, and the route the answer takes">'
+    + '<defs><marker id="qarr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker></defs>'
+    + o + leg + '</svg>';
+  const cap = ev.length ? 'The dotted line is the route. Each number marks something that happens on the way, in order.' : 'The dotted line is the route to the flag.';
+  return '<div class="picbox qpic"><div class="tih">&#128444; The board</div>' + svg + '<p class="piccap">' + cap + '</p></div>';
+}
+function qgKey(les){ return les.g + ':' + String(les.title).replace(/^[^\w]+/, ''); }
+function questSteps(gd){
+  let h = '<div class="qsteps"><div class="tih">Do it in three steps</div><ol>' + gd.steps.map(x => '<li>' + x + '</li>').join('') + '</ol>';
+  if (gd.table) h += '<div class="qttw"><table class="qtt"><tr>' + gd.table.head.map(x => '<th>' + x + '</th>').join('') + '</tr>'
+    + gd.table.rows.map(r => '<tr>' + r.map(x => '<td>' + x + '</td>').join('') + '</tr>').join('') + '</table></div>';
+  return h + '</div>';
+}
+function questTeach(les){
+  if (!les || les.kind !== 'quest' || les.deep) return les ? les.teach : '';
+  let t = les.teach;
+  if (!les.ownPic){
+    const pic = questPic(les);
+    if (pic){
+      /* after the first paragraph that is the lesson's own, not the boss banner */
+      let pos = 0, put = -1;
+      for (;;){ const i = t.indexOf('</p>', pos); if (i < 0) break; const st = t.lastIndexOf('<p', i);
+        if (t.slice(st, st + 24).indexOf('bossnote') < 0){ put = i + 4; break; } pos = i + 4; }
+      t = put < 0 ? pic + t : t.slice(0, put) + pic + t.slice(put);
+    }
+  }
+  const gd = QGUIDE[qgKey(les)];
+  if (gd) t += questSteps(gd);
+  return t;
+}
+const QGUIDE = {
+"QS:One line, one step": {
+"steps": [
+"<b>Look at the board.</b> Five floor squares lie between the hero and the flag.",
+"<b>One line moves one square:</b> <code class=\"qkey\">hero.moveRight();</code>",
+"<b>Write it.</b> Type that line five times, one under the other, and press Run."
+],
+"cz": {
+"code": "hero.___();",
+"opts": [
+"moveRight",
+"right",
+"move"
+],
+"ans": "moveRight",
+"why": "The move is called moveRight, spelled exactly like that: small m, capital R. right and move are not names the hero knows."
+},
+"remind": "hero.moveRight(); moves one square · one line per square · top to bottom",
+"table": null
+},
+"QS:Say how far, once": {
+"steps": [
+"<b>Count the squares</b> between the hero and the flag: eight.",
+"<b>A number in the brackets says how far:</b> <code class=\"qkey\">hero.moveRight(8);</code>",
+"<b>Replace the starting line</b> with that one line. Try a wrong number first and read what the preview says."
+],
+"cz": {
+"code": "hero.moveRight(___);",
+"opts": [
+"8",
+"\"8\"",
+"eight"
+],
+"ans": "8",
+"why": "A number goes in bare. \"8\" in quotes is a piece of text, not a number, and eight is a word the computer does not know."
+},
+"remind": "hero.moveRight(8) moves eight squares · the number in the brackets is how far",
+"table": null
+},
+"QS:Around the wall": {
+"steps": [
+"<b>Run the starting line</b> and watch the hero bump into the wall and stop.",
+"<b>Plan the route with your finger,</b> one part at a time, using the table below. The first part is <code class=\"qkey\">hero.moveDown(2);</code>",
+"<b>Write one line per part</b> of the plan: four lines."
+],
+"cz": {
+"code": "hero.move___(2);   // toward the bottom of the screen",
+"opts": [
+"Down",
+"Up",
+"Under"
+],
+"ans": "Down",
+"why": "Down is toward the bottom of the screen. The four moves are moveRight, moveLeft, moveUp and moveDown."
+},
+"remind": "moveRight · moveLeft · moveUp · moveDown · plan the route first, then one line per part",
+"table": {
+"head": [
+"Part of the route",
+"How far",
+"Which move"
+],
+"rows": [
+[
+"down, past the first wall",
+"2",
+"<code>moveDown</code>"
+],
+[
+"along the bottom",
+"4",
+"<code>moveRight</code>"
+],
+[
+"up, past the second wall",
+"2",
+"<code>moveUp</code>"
+],
+[
+"across to the flag",
+"2",
+"<code>moveRight</code>"
+]
+]
+}
+},
+"QS:The corridor that repeats": {
+"steps": [
+"<b>See the pattern:</b> the gems are on squares 2, 5 and 8, three squares apart.",
+"<b>The loop runs its braces three times.</b> Put <code class=\"qkey\">hero.moveRight(3);</code> inside them.",
+"<b>After the loop&rsquo;s closing brace,</b> one more line walks the rest of the way, from square 9 to square 11."
+],
+"cz": {
+"code": "for (let i = 0; i < ___; i++) {\n  hero.moveRight(3);\n}",
+"opts": [
+"3",
+"4",
+"2"
+],
+"ans": "3",
+"why": "Three gems, three laps. i starts at 0 and the loop runs while i is under 3: laps 0, 1 and 2. With 4, the fourth lap walks the hero off the end of the corridor."
+},
+"remind": "for (let i = 0; i < 3; i++) { ... } runs the braces 3 times · check the first lap and the last lap by hand",
+"table": {
+"head": [
+"Lap",
+"The hero walks over",
+"It ends on"
+],
+"rows": [
+[
+"1",
+"squares 1, 2, 3 (gem on 2)",
+"square 3"
+],
+[
+"2",
+"squares 4, 5, 6 (gem on 5)",
+"square 6"
+],
+[
+"3",
+"squares 7, 8, 9 (gem on 8)",
+"square 9"
+],
+[
+"after the loop",
+"squares 10, 11",
+"the flag"
+]
+]
+}
+},
+"QS:The thing in the way": {
+"steps": [
+"<b>Walk until you stand right beside Grubb:</b> that is one square.",
+"<b>One attack line is one hit:</b> <code class=\"qkey\">hero.attack();</code> Grubb needs two of them.",
+"<b>Then move beside Mott,</b> hit once, and walk the rest of the way to the flag."
+],
+"cz": {
+"code": "hero.moveRight(1);\nhero.attack();\nhero.___();",
+"opts": [
+"attack",
+"hit",
+"moveRight"
+],
+"ans": "attack",
+"why": "Grubb takes two hits and one attack() is one hit, so the second swing is another attack() line. hit is not a move the hero knows, and moving now walks into Grubb."
+},
+"remind": "hero.attack() hits whoever is next to you · one line, one hit · Grubb takes 2, Mott takes 1",
+"table": {
+"head": [
+"Enemy",
+"Stands on",
+"Hits to go down",
+"Hits you back?"
+],
+"rows": [
+[
+"Grubb",
+"square 2",
+"2",
+"yes, once, after your first hit"
+],
+[
+"Mott",
+"square 4",
+"1",
+"no"
+]
+]
+}
+},
+"QS:Ask before you swing": {
+"steps": [
+"<b>Pretend you cannot see</b> where the ogres are. The rule has to work wherever they stand.",
+"<b>Ask every lap:</b> <code class=\"qkey\">if (hero.look(\"right\") === \"foe\") {</code> attack; otherwise move right.",
+"<b>Put that if inside the while loop</b> that is already in the box."
+],
+"cz": {
+"code": "if (hero.look(\"right\") ___ \"foe\") {\n  hero.attack();\n}",
+"opts": [
+"===",
+"=",
+"!=="
+],
+"ans": "===",
+"why": "=== asks \"is it the same as?\". A single = tries to change the answer instead of testing it, and !== would swing at every empty square."
+},
+"remind": "while (!hero.atExit()) { ... } repeats until the flag · look(\"right\") === \"foe\" asks · else moves",
+"table": {
+"head": [
+"<code>look(\"right\")</code> says",
+"So the hero"
+],
+"rows": [
+[
+"<code>\"foe\"</code>",
+"attacks"
+],
+[
+"anything else",
+"moves right"
+]
+]
+}
+},
+"QS:The switch and the door": {
+"steps": [
+"<b>Find the ring</b> near the bottom left. Standing on it opens the door.",
+"<b>The order is forced:</b> switch, door, gem, flag. Start with <code class=\"qkey\">hero.moveDown(2);</code>",
+"<b>Write one or two lines per stage,</b> and press Run after each stage to check it."
+],
+"cz": {
+"code": "hero.moveDown(2);\nhero.moveRight(2);   // now on the switch\nhero.move___(2);    // back up to the corridor",
+"opts": [
+"Up",
+"Right",
+"Down"
+],
+"ans": "Up",
+"why": "The door is in the top row, so after the switch the hero climbs back up two squares before heading right through it."
+},
+"remind": "switch, then door, then gem, then flag · the board remembers the switch was pressed",
+"table": {
+"head": [
+"Stage",
+"Where",
+"Why"
+],
+"rows": [
+[
+"1",
+"the switch: two down, two right",
+"it opens the door"
+],
+[
+"2",
+"back up and through the door",
+"the door is open now"
+],
+[
+"3",
+"the gem, two down past the door",
+"the flag needs it"
+],
+[
+"4",
+"back up, onto the flag",
+""
+]
+]
+}
+},
+"QS:You are not driving": {
+"steps": [
+"<b>Remember your Plan B, plan C rule:</b> right if you can, otherwise down, otherwise up.",
+"<b>A function holds that rule:</b> <code class=\"qkey\">function turn(hero) {</code> with no while around it.",
+"<b>Put the if, else if and else inside the braces.</b> Nothing outside them."
+],
+"cz": {
+"code": "___ turn(hero) {\n  // one decision, one move\n}",
+"opts": [
+"function",
+"while",
+"if"
+],
+"ans": "function",
+"why": "function defines something the game can call. while would repeat it yourself, which is exactly what you are not doing any more, and if needs a test."
+},
+"remind": "function turn(hero) { one decision, one move } · the game calls it every tick · no while, and no moves outside the braces",
+"table": {
+"head": [
+"",
+"Plan B, plan C",
+"Now"
+],
+"rows": [
+[
+"who repeats the rule",
+"your while loop",
+"the game, sixty times"
+],
+[
+"the rule itself",
+"if / else if / else",
+"the same if / else if / else"
+]
+]
+}
+},
+"QS:Something is following you": {
+"steps": [
+"<b>Watch the replay:</b> every line is a turn, and the Imp steps closer after each one.",
+"<b>Loop while enemies are left:</b> <code class=\"qkey\">while (hero.foesLeft() > 0) {</code> attack when look says \"foe\", otherwise <code>hero.say(...)</code> to wait.",
+"<b>After the loop,</b> walk to the flag: <code>hero.moveRight(7);</code>"
+],
+"cz": {
+"code": "while (hero.foesLeft() ___ 0) {",
+"opts": [
+">",
+"<",
+"==="
+],
+"ans": ">",
+"why": "Keep going while more than zero enemies are left. With < the test is false from the start and the loop never runs; with === it only runs once the Imp is already down."
+},
+"remind": "every line is a turn, and the Imp moves after yours · hero.foesLeft() counts who is still up · say(...) waits a turn",
+"table": {
+"head": [
+"Each lap",
+"<code>look(\"right\")</code> says",
+"The hero"
+],
+"rows": [
+[
+"the Imp is still walking up",
+"<code>\"clear\"</code>",
+"says something, which waits a turn"
+],
+[
+"the Imp has arrived",
+"<code>\"foe\"</code>",
+"attacks"
+],
+[
+"the Imp is down",
+"the loop ends",
+"walks to the flag"
+]
+]
+}
+},
+"QS:Spikes on a count": {
+"steps": [
+"<b>Watch the replay:</b> the spikes on square 3 are up every other turn.",
+"<b>Arrive one turn later.</b> <code class=\"qkey\">hero.say(\"wait for them to drop\");</code> costs a turn and moves nothing.",
+"<b>One say, then</b> <code>hero.moveRight(6);</code>"
+],
+"cz": {
+"code": "hero.___(\"wait for them to drop\");\nhero.moveRight(6);",
+"opts": [
+"say",
+"look",
+"attack"
+],
+"ans": "say",
+"why": "say costs a turn and moves nothing, so the hero reaches the spikes one turn later, while they are down. look only asks a question and costs no turn, and a swing at empty air does not use one up either."
+},
+"remind": "say(...) costs a turn without moving · the spikes are up every other turn · look(\"right\") says \"trap\" or \"safe-trap\"",
+"table": {
+"head": [
+"Turn",
+"1",
+"2",
+"3",
+"4"
+],
+"rows": [
+[
+"Spikes",
+"up",
+"down",
+"up",
+"down"
+],
+[
+"Walking straight away",
+"square 1",
+"square 2",
+"<span class=\"n\">square 3: caught</span>",
+""
+],
+[
+"Saying one thing first",
+"square 0",
+"square 1",
+"square 2",
+"<span class=\"y\">square 3: safe</span>"
+]
+]
+}
+},
+"QS:The witch down the hall": {
+"steps": [
+"<b>Vex holds the whole top row,</b> and you start in it with one heart.",
+"<b>Step out of her line first:</b> <code class=\"qkey\">hero.moveDown(1);</code>",
+"<b>Then walk the bottom row</b> to the flag."
+],
+"cz": {
+"code": "hero.move___(1);   // first line: out of the witch’s row",
+"opts": [
+"Down",
+"Right",
+"Up"
+],
+"ans": "Down",
+"why": "Down takes you out of her row on the very first turn. Right keeps you in her line for another turn, and with one heart that ends the run. Up is off the map."
+},
+"remind": "a caster reaches her whole row and column · get out of the line first, then walk",
+"table": {
+"head": [
+"Where the hero stands",
+"Can Vex reach it?"
+],
+"rows": [
+[
+"the top row, hers",
+"<span class=\"n\">yes, from any distance</span>"
+],
+[
+"the bottom row",
+"<span class=\"y\">no</span>"
+]
+]
+}
+},
+"QS:Look before you leap": {
+"steps": [
+"<b>Find the pit</b> on square 3 of your row. The square below it is a wall.",
+"<b>The only way past is up and over.</b> Two squares right, then <code class=\"qkey\">hero.moveUp(1);</code>",
+"<b>Then two right, one down, two right</b> to the flag."
+],
+"cz": {
+"code": "hero.moveRight(2);\nhero.move___(1);   // up and over the pit",
+"opts": [
+"Up",
+"Down",
+"Right"
+],
+"ans": "Up",
+"why": "Below the pit is a wall, so the only way past is up. One more step right here walks straight into the hole."
+},
+"remind": "a pit ends the run · look(\"right\") === \"pit\" is the cheap check · up and over, then back down",
+"table": {
+"head": [
+"Square ahead",
+"What happens"
+],
+"rows": [
+[
+"floor",
+"walk on"
+],
+[
+"the pit",
+"<span class=\"n\">the run ends</span>, so go up and over"
+]
+]
+}
+},
+"QS:The lower vault": {
+"steps": [
+"<b>Get out of Vex&rsquo;s top row at once:</b> <code>hero.moveDown(2);</code>",
+"<b>Along the bottom, loop until the Imp is in front of you:</b> <code class=\"qkey\">while (hero.look(\"right\") !== \"foe\") {</code> wait on \"trap\", otherwise step right.",
+"<b>Two attacks for the Imp,</b> then walk to the flag."
+],
+"cz": {
+"code": "if (hero.look(\"right\") === \"___\") {\n  hero.say(\"wait\");\n}",
+"opts": [
+"trap",
+"safe-trap",
+"wall"
+],
+"ans": "trap",
+"why": "\"trap\" means the spikes will be up when you land; \"safe-trap\" means they will be down, so that is the moment to step."
+},
+"remind": "moveDown(2) first · loop until look says \"foe\" · wait on \"trap\", step on anything else",
+"table": {
+"head": [
+"<code>look(\"right\")</code> says",
+"The hero"
+],
+"rows": [
+[
+"<code>\"trap\"</code>",
+"says \"wait\": the spikes are about to come up"
+],
+[
+"anything else",
+"steps right"
+],
+[
+"<code>\"foe\"</code>",
+"the loop ends: time to attack"
+]
+]
+}
+},
+"K:Boss: say it out loud": {
+"steps": [
+"<b>Two things to say,</b> then the walk to the flag.",
+"<b>Words the hero says go in quotes:</b> <code class=\"qkey\">hero.say(\"here I go\");</code>",
+"<b>Write two say lines,</b> then <code>hero.moveRight(4);</code>"
+],
+"cz": {
+"code": "hero.say(___);",
+"opts": [
+"\"here I go\"",
+"here I go",
+"(here I go)"
+],
+"ans": "\"here I go\"",
+"why": "Words go in quotes. Without them the computer tries to read here, I and go as names, and it does not know them."
+},
+"remind": "hero.say(\"...\") shows your words · one line at a time, top to bottom",
+"table": null
+},
+"G1:Boss: call it by its name": {
+"steps": [
+"<b>Stand next to Grubb:</b> one square.",
+"<b>Hit him by name:</b> <code class=\"qkey\">hero.attack(\"Grubb\");</code>",
+"<b>Two squares to Mott,</b> <code>hero.attack(\"Mott\");</code>, then two squares to the flag."
+],
+"cz": {
+"code": "hero.moveRight(1);\nhero.attack(___);",
+"opts": [
+"\"Grubb\"",
+"Grubb",
+"\"Mott\""
+],
+"ans": "\"Grubb\"",
+"why": "Grubb is the one beside you, and a name is text, so it goes in quotes. Without quotes the computer looks for a box called Grubb, and naming Mott swings at someone who is not there."
+},
+"remind": "hero.attack(\"Grubb\") hits by name · the name goes in quotes",
+"table": {
+"head": [
+"Enemy",
+"Stands on",
+"Hit him with"
+],
+"rows": [
+[
+"Grubb",
+"square 2",
+"<code>hero.attack(\"Grubb\");</code>"
+],
+[
+"Mott",
+"square 4",
+"<code>hero.attack(\"Mott\");</code>"
+]
+]
+}
+},
+"G2:Boss: the exact number": {
+"steps": [
+"<b>Six moves allowed,</b> and the route is four right, then two down.",
+"<b>The number says how far:</b> <code class=\"qkey\">hero.moveRight(4);</code>",
+"<b>Then</b> <code>hero.moveDown(2);</code> Two lines in all."
+],
+"cz": {
+"code": "hero.moveRight(4);\nhero.moveDown(___);",
+"opts": [
+"2",
+"1",
+"6"
+],
+"ans": "2",
+"why": "The flag is two rows down. 1 stops a row short, and 6 tries to walk off the board with moves you do not have."
+},
+"remind": "the number in the brackets is the instruction · 4 right, 2 down, 6 moves in all",
+"table": null
+},
+"G3:Boss: ask what it is": {
+"steps": [
+"<b><code>hero.look(\"right\")</code> is a question.</b> Its answer is a word.",
+"<b>Show the answer, not the words:</b> <code class=\"qkey\">hero.say(hero.look(\"right\"));</code> with no quotes around the look.",
+"<b>Look, walk two, look again,</b> attack, then walk three to the flag."
+],
+"cz": {
+"code": "hero.say(___);",
+"opts": [
+"hero.look(\"right\")",
+"\"hero.look(right)\"",
+"look"
+],
+"ans": "hero.look(\"right\")",
+"why": "Without quotes around it, hero.look(\"right\") runs and the hero says the answer. In quotes it would say those letters. Bare look is not a name the computer knows on its own."
+},
+"remind": "hero.say(hero.look(\"right\")) says the answer · no quotes around the look",
+"table": {
+"head": [
+"The hero is on",
+"<code>look(\"right\")</code> says"
+],
+"rows": [
+[
+"square 0",
+"<code>\"clear\"</code>"
+],
+[
+"square 2",
+"<code>\"foe\"</code>: Grubb"
+]
+]
+}
+},
+"G4:Boss: show the count": {
+"steps": [
+"<b><code>hero.gemsLeft()</code> is a number</b> that goes down as you pick gems up.",
+"<b>Glue words to it with +:</b> <code class=\"qkey\">hero.say(\"gems left: \" + hero.gemsLeft());</code>",
+"<b>Walk two, say it, walk two, say it,</b> walk one to the flag."
+],
+"cz": {
+"code": "hero.say(\"gems left: \" ___ hero.gemsLeft());",
+"opts": [
+"+",
+",",
+"-"
+],
+"ans": "+",
+"why": "+ glues the words to the number into one piece of text. A comma hands say two separate things, and - tries to subtract a number from words."
+},
+"remind": "\"gems left: \" + hero.gemsLeft() glues words to a number · say it after each gem",
+"table": {
+"head": [
+"After",
+"<code>hero.gemsLeft()</code> is"
+],
+"rows": [
+[
+"the first gem, on square 2",
+"1"
+],
+[
+"the second gem, on square 4",
+"0"
+]
+]
+}
+},
+"G5:Boss: do the sum first": {
+"steps": [
+"<b>Eight squares,</b> and eight moves allowed.",
+"<b>The brackets can hold a sum:</b> <code class=\"qkey\">hero.moveRight(4 + 4);</code>",
+"<b>One line.</b> The computer works out 4 + 4 first."
+],
+"cz": {
+"code": "hero.moveRight(___);",
+"opts": [
+"4 + 4",
+"\"4\" + \"4\"",
+"\"8\""
+],
+"ans": "4 + 4",
+"why": "4 + 4 is worked out first and becomes 8. \"4\" + \"4\" glues two pieces of text into \"44\", and \"8\" in quotes is text, not a number."
+},
+"remind": "a sum in the brackets is worked out first · numbers have no quotes",
+"table": null
+},
+"G6:Boss: walk the list": {
+"steps": [
+"<b>Six squares, split into a list:</b> <code>const steps = [3, 2, 1];</code>",
+"<b>The loop hands you each number in turn:</b> <code class=\"qkey\">for (const s of steps) {</code>",
+"<b>Inside the braces,</b> <code>hero.moveRight(s);</code>"
+],
+"cz": {
+"code": "for (const s ___ steps) {\n  hero.moveRight(s);\n}",
+"opts": [
+"of",
+"in",
+"from"
+],
+"ans": "of",
+"why": "of hands you each value: 3, then 2, then 1. in would hand you the slot numbers 0, 1 and 2 instead, and from is not JavaScript."
+},
+"remind": "const steps = [3, 2, 1] · for (const s of steps) takes each number in turn",
+"table": {
+"head": [
+"Lap",
+"<code>s</code> is",
+"The hero moves"
+],
+"rows": [
+[
+"1",
+"3",
+"3 squares"
+],
+[
+"2",
+"2",
+"2 squares"
+],
+[
+"3",
+"1",
+"1 square, onto the flag"
+]
+]
+}
+},
+"G7:Boss: teach it a move": {
+"steps": [
+"<b>The route is a staircase:</b> two right, one down, twice.",
+"<b>Teach it once:</b> <code class=\"qkey\">function hop() {</code> with the two moves inside.",
+"<b>Then run it twice:</b> <code>hop();</code> and <code>hop();</code>"
+],
+"cz": {
+"code": "function hop() {\n  hero.moveRight(2);\n  hero.moveDown(1);\n}\n___\nhop();",
+"opts": [
+"hop();",
+"function hop();",
+"hop"
+],
+"ans": "hop();",
+"why": "hop(); with brackets runs the trick. Writing function again would define it a second time, and bare hop only names it without running it."
+},
+"remind": "writing a function does nothing on its own · hop(); runs it · call it twice",
+"table": null
+},
+"G8:Boss: it depends": {
+"steps": [
+"<b>There is a wall in the top row,</b> but write as if you could not see where.",
+"<b>Decide each step:</b> <code class=\"qkey\">if (hero.look(\"right\") === \"wall\") {</code> step down; <code>} else {</code> step right.",
+"<b>Put that inside a loop that runs six times,</b> then one last step onto the flag."
+],
+"cz": {
+"code": "if (hero.look(\"right\") === \"wall\") {\n  hero.moveDown(1);\n} ___ {\n  hero.moveRight(1);\n}",
+"opts": [
+"else",
+"else if",
+"then"
+],
+"ans": "else",
+"why": "else is the other road, taken whenever the test was false. else if would need a test of its own, and then is not JavaScript."
+},
+"remind": "if (...) { } else { } · look(\"right\") === \"wall\" decides · inside a loop",
+"table": {
+"head": [
+"<code>look(\"right\")</code> says",
+"The hero"
+],
+"rows": [
+[
+"<code>\"wall\"</code>",
+"steps down"
+],
+[
+"anything else",
+"steps right"
+]
+]
+}
+},
+"G9:Boss: again, and again": {
+"steps": [
+"<b>Three enemies, two squares apart:</b> step, swing, step, three times.",
+"<b>Write the round once, in a loop:</b> <code class=\"qkey\">for (let i = 0; i &lt; 3; i++) {</code>",
+"<b>After the loop,</b> <code>hero.moveRight(2);</code> to the flag."
+],
+"cz": {
+"code": "for (let i = 0; i < ___; i++) {",
+"opts": [
+"3",
+"4",
+"9"
+],
+"ans": "3",
+"why": "One round per enemy: three. A fourth round swings at nothing and wastes turns, and 9 would run far off the board."
+},
+"remind": "for (let i = 0; i < 3; i++) repeats the round · step, swing, step",
+"table": {
+"head": [
+"Round",
+"The hero"
+],
+"rows": [
+[
+"1",
+"steps to square 1, hits Grubb, steps to 2"
+],
+[
+"2",
+"steps to 3, hits Mott, steps to 4"
+],
+[
+"3",
+"steps to 5, hits Warg, steps to 6"
+],
+[
+"after the loop",
+"two squares to the flag"
+]
+]
+}
+},
+"G10:Boss: the machine in stages": {
+"steps": [
+"<b>Four stages, in one order:</b> switch, door, gem, flag.",
+"<b>Write stage 1 and run it:</b> <code class=\"qkey\">hero.moveDown(2);</code> and <code>hero.moveRight(2);</code> Check the switch turns on.",
+"<b>Add one stage at a time,</b> running after each."
+],
+"cz": {
+"code": "hero.moveUp(2);\nhero.moveRight(___);   // through the open door, to above the gem",
+"opts": [
+"4",
+"2",
+"5"
+],
+"ans": "4",
+"why": "From square 2, four squares right takes you through the door on square 4 to square 6, right above the gem. 2 stops before the door, and 5 overshoots the gem."
+},
+"remind": "stage by stage: switch, door, gem, flag · Run after each stage",
+"table": {
+"head": [
+"Stage",
+"Where",
+"Why"
+],
+"rows": [
+[
+"1",
+"the switch: two down, two right",
+"it opens the door"
+],
+[
+"2",
+"back up and through the door",
+"the door is open now"
+],
+[
+"3",
+"the gem, two down past the door",
+"the flag needs it"
+],
+[
+"4",
+"back up, onto the flag",
+""
+]
+]
+}
+},
+"G11:Boss: read your own labels": {
+"steps": [
+"<b><code>hero</code> is an object</b> with labelled parts. A dot reads them.",
+"<b>Read one:</b> <code class=\"qkey\">hero.say(\"hearts: \" + hero.hp);</code>",
+"<b>Say your hearts,</b> walk three to the gem, say your gems, walk two to the flag."
+],
+"cz": {
+"code": "hero.say(\"gems: \" + hero.___);",
+"opts": [
+"gems",
+"gemsLeft",
+"gem"
+],
+"ans": "gems",
+"why": "hero.gems is how many you are carrying. gemsLeft() counts the ones still on the board and needs brackets, and gem is not a label the hero has."
+},
+"remind": "hero.hp and hero.gems are labelled parts · a dot reads them",
+"table": {
+"head": [
+"Part",
+"What it holds"
+],
+"rows": [
+[
+"<code>hero.hp</code>",
+"hearts left"
+],
+[
+"<code>hero.gems</code>",
+"gems picked up"
+],
+[
+"<code>hero.x</code>, <code>hero.y</code>",
+"where the hero is standing"
+]
+]
+}
+},
+"G12:Boss: it is already broken": {
+"steps": [
+"<b>Press Run first</b> and read the note: the hero hits the wall on square 3.",
+"<b>The fix is to go round it:</b> right 2, then <code class=\"qkey\">hero.moveDown(1);</code>, along, and back up.",
+"<b>Replace the one wrong line</b> with the route round: right 2, down 1, right 2, up 1, right 2."
+],
+"cz": {
+"code": "hero.moveRight(2);\nhero.move___(1);   // round the wall\nhero.moveRight(2);\nhero.moveUp(1);\nhero.moveRight(2);",
+"opts": [
+"Down",
+"Up",
+"Right"
+],
+"ans": "Down",
+"why": "The wall is in the top row, so the way round is down a row and back up. Up is off the map, and Right walks into the wall."
+},
+"remind": "Run it first and read the note · fix the line that is wrong, not everything",
+"table": {
+"head": [
+"What the note says",
+"What it means"
+],
+"rows": [
+[
+"bumped into a wall",
+"the route has to go round square 3"
+]
+]
+}
+},
+"C:Boss: one rule, written once": {
+"steps": [
+"<b>One step forward</b> means: attack if an enemy is in front, otherwise move.",
+"<b>Write that once:</b> <code class=\"qkey\">function forward() {</code> with the if and else inside.",
+"<b>Call it in a loop</b> enough times to clear the corridor: <code>for (let i = 0; i &lt; 12; i++) { forward(); }</code>"
+],
+"cz": {
+"code": "for (let i = 0; i < 12; i++) {\n  ___\n}",
+"opts": [
+"forward();",
+"function forward() {}",
+"forward"
+],
+"ans": "forward();",
+"why": "forward(); runs your rule once per lap. Writing function again would define it rather than run it, and bare forward names it without the brackets that make it go."
+},
+"remind": "function forward() { one decision } · a loop calls it · each action written once",
+"table": {
+"head": [
+"<code>look(\"right\")</code> says",
+"<code>forward()</code> does"
+],
+"rows": [
+[
+"<code>\"foe\"</code>",
+"attacks"
+],
+[
+"anything else",
+"steps right"
+]
+]
+}
+},
+"G1:Walk to the flag": {
+"steps": [
+"<b>Three squares</b> to the flag.",
+"<b>Name the move and how far:</b> <code class=\"qkey\">hero.moveRight(3);</code>",
+"<b>Type it</b> and press Run."
+],
+"cz": {
+"code": "hero.___(3);",
+"opts": [
+"moveRight",
+"moveright",
+"MoveRight"
+],
+"ans": "moveRight",
+"why": "Names must be exact, capitals included: moveRight, with a small m and a capital R."
+},
+"remind": "hero.moveRight(3) · the dot joins who to what",
+"table": null
+},
+"G4:Look before you step": {
+"steps": [
+"<b><code>hero.look(\"right\")</code> asks</b> what is in the next square.",
+"<b>Show the answer:</b> <code class=\"qkey\">hero.say(hero.look(\"right\"));</code>",
+"<b>Then walk four squares,</b> over the gem to the flag: <code>hero.moveRight(4);</code>"
+],
+"cz": {
+"code": "hero.say(hero.___(\"right\"));",
+"opts": [
+"look",
+"say",
+"see"
+],
+"ans": "look",
+"why": "look asks the question and hands back a word; say then shows that word. see is not a move the hero knows."
+},
+"remind": "hero.say(hero.look(\"right\")) · the inside call asks, the outside one shows",
+"table": null
+},
+"G8:If there is a wall": {
+"steps": [
+"<b>Take one step right</b> and the wall is straight ahead.",
+"<b>Ask before the next step:</b> <code class=\"qkey\">if (hero.look(\"right\") === \"wall\") {</code> and step down inside the braces.",
+"<b>Then</b> <code>hero.moveRight(3);</code> along the bottom row to the flag."
+],
+"cz": {
+"code": "if (hero.look(\"right\") ___ \"wall\") {\n  hero.moveDown(1);\n}",
+"opts": [
+"===",
+"=",
+"+"
+],
+"ans": "===",
+"why": "=== asks whether two things are the same. A single = tries to change the answer instead of testing it, and + adds."
+},
+"remind": "if (hero.look(\"right\") === \"wall\") { step down } · then walk on",
+"table": null
+}
+};
+for (const [k, gd] of Object.entries(QGUIDE)){
+  const i = L.findIndex(l => l.kind === 'quest' && qgKey(l) === k);
+  if (i < 0) continue;
+  CLOZE[i] = gd.cz;
+  L[i].remind = gd.remind;
+}
+/* the three steps drawn by hand keep their own pictures */
+['Not a wall', 'The wall and the edge', 'Plan B, plan C'].forEach(t => { const l = L.find(x => x.title === t && x.g === 'QS'); if (l) l.ownPic = true; });
 const BUGS = {
  10:{lines:['<ul>','  <li>tacos</li>','  <li>camping','  <li>naps</li>','</ul>'],bad:[2],why:'camping never got its closing tag. The browser guesses where it ends, and guesses are how layouts go sideways.',fix:'  <li>camping</li>'},
  14:{lines:['p {','  color red;','}'],bad:[1],why:'The colon is missing between property and value. CSS silently drops the whole line and the paragraph stays black.',fix:'  color: red;'},

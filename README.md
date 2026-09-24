@@ -250,6 +250,19 @@ what `look` answers there and what each question says yes or no to; the one
 line to change, before and after, with the new part highlighted; then a
 fill-the-gap on the new word, where a wrong pick says why it is wrong.
 
+**Every Quest board is taught that way now**: the sixteen levels in the track,
+the fourteen grade bosses and the three prep boards inside the grades. Each
+lesson shows a drawing of its board with the route the answer takes and every
+event on the way numbered (a gem, a switch, a fight, a lost heart, a wait).
+The drawing is generated in the page from a replay of the answer on the real
+board, so it cannot drift from the level. Under the lesson sit three steps
+with the key line highlighted, a table where one helps (fight arithmetic, loop
+laps, spike timing), a fill-the-gap on that lesson's idea, and a reminder
+line of its own. `qcover_test.js` fails the build if any Quest lesson is
+missing one of those. *The witch down the hall* now gives you one heart, so
+the board itself insists on stepping out of her row first, which is what the
+lesson teaches.
+
 Those three are judged by their boards, not by which operator you typed: any
 rule that gets the hero there passes, and a rule that leaves out the new idea
 fails visibly, with the hero stuck on the board. `ladder_test.js` holds them to

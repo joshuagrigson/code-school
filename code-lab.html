@@ -1239,6 +1239,21 @@ body.noedit .btnrow{container-type:normal}
 #status .reqok summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
 #status .reqok .story{padding-left:18px}
 body.questlsn .prevwrap{min-height:min(290px, 42vh)}
+
+/* ---- K to 3: the Run button asks to be pressed once the answer is there ---- */
+body.runready #btnRun{animation:runpulse 1.5s ease-in-out infinite}
+@keyframes runpulse{0%,100%{box-shadow:0 0 0 0 rgba(26,143,112,.55),var(--sh1)}55%{box-shadow:0 0 0 8px rgba(26,143,112,0),var(--sh1)}}
+@media (prefers-reduced-motion:reduce){body.runready #btnRun{animation:none;outline:3px solid var(--accent);outline-offset:2px}}
+#status.runnow{display:flex;align-items:center;gap:10px;background:var(--panel);color:var(--ink);border-color:var(--accent);box-shadow:inset 3px 0 0 var(--accent)}
+#status.runnow .rnarrow{flex:0 0 auto;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--btn);color:#fff;font-weight:700;font-size:.85rem;line-height:1}
+/* on a phone the status line sits under the pinned buttons, out of sight, so
+   the prompt rides on the Run button itself */
+@media (max-width:760px){
+  body.runready #btnRun{position:relative;overflow:visible}
+  body.runready #btnRun::after{content:'Finished? Tap Run';position:absolute;left:0;bottom:calc(100% + 9px);white-space:nowrap;
+    background:var(--btn);color:#fff;font-size:.8rem;font-weight:650;padding:6px 11px;border-radius:9px;box-shadow:var(--sh2);pointer-events:none;z-index:6}
+  body.runready #btnRun::before{content:'';position:absolute;left:18px;bottom:calc(100% + 3px);border:6px solid transparent;border-top-color:var(--btn);border-bottom:0;pointer-events:none;z-index:6}
+}
 </style>
 </head>
 <body>
@@ -9987,10 +10002,54 @@ function previewOnly(){
   shPaint();
   statusEl.className='wait';
   statusEl.innerHTML = (L[idx] && L[idx].kind === 'shell') ? SHELL_TIP
+    : runNudgeOn() ? '✍️ Type your answer in the dark box. When you have finished, press the green <b>▶ Run</b> button to check it.'
     : '✍️ The page below updates as you type. Press <b>▶ Run</b> (or ' + KEY_MOD + '+Enter) when you want the coach to grade it.';
   btnNext.style.display='none';
+  runNudge();
+}
+/* ---- Kindergarten to Grade 3: say "press Run" in so many words ----------
+   The youngest learners type the answer, watch the page change, and wait for
+   something to happen. Nothing does until Run is pressed. So in the first
+   four grades, once typing pauses and the code in the box would pass, the
+   status line says so and points at Run, and the button pulses until it is
+   pressed. Nothing is graded or recorded here: the verdict, the tick and the
+   XP still wait for Run. A Terminal lesson is left alone, because there the
+   Enter key is what runs a line. */
+const RUN_NUDGE_GRADES = new Set(['K', 'G1', 'G2', 'G3']);
+let nudgeTimer = null;
+function runNudgeOn(){
+  const l = L[idx];
+  return !!l && RUN_NUDGE_GRADES.has(l.g) && l.kind !== 'shell' && !sandbox && !hub && !drillOn && !lessonDone(idx);
+}
+/* the same judgement runCheck makes, with none of its side effects */
+function wouldPass(les, code){
+  if (!code.trim()) return false;
+  const keepReq = reqLog, keepLint = lintRange;
+  try {
+    if (les.lang === 'html' && htmlLint(code)) return false;
+    if (les.lang === 'css' && cssLint(code)) return false;
+    if ((les.lang === 'js' || les.lang === 'arc') && jsSyntaxError(code)) return false;
+    return !!normRes(les, code).ok;
+  } catch (e) { return false; }
+  finally { reqLog = keepReq; lintRange = keepLint; }
+}
+function runNudgeOff(){
+  clearTimeout(nudgeTimer);
+  document.body.classList.remove('runready');
+}
+function runNudge(){
+  runNudgeOff();
+  if (!runNudgeOn() || graded) return;
+  const at = idx;
+  nudgeTimer = setTimeout(() => {
+    if (at !== idx || !runNudgeOn() || graded || !wouldPass(L[idx], edEl.value)) return;
+    document.body.classList.add('runready');
+    statusEl.className = 'wait runnow';
+    statusEl.innerHTML = '<span class="rnarrow" aria-hidden="true">\u2191</span><span><b>Finished?</b> Press the green <b>\u25B6 Run</b> button to check your answer.</span>';
+  }, 650);
 }
 function runCheck(){
+  runNudgeOff();
   if (hub || drillOn) return;
   syncHl();
   if (sandbox) return;
@@ -12863,6 +12922,10 @@ function ghostSay(key, tokTxt){
   return true;
 }
 function ghostTalk(consumed, before){
+  /* every entry in GT describes JavaScript; in an HTML or CSS lesson "of" and
+     "for" are English, and "{" means something else entirely */
+  const les = L[idx];
+  if (!les || !(les.lang === 'js' || (les.lang === 'arc' && les.kind !== 'shell'))) return;
   const toks = consumed.match(/screen\.textContent|Math\.floor|Math\.random|console\.log|document\.getElementById|'[^']*'|"[^"]*"|\b[A-Za-z_$][\w$]*\b|[=;,+*\[({]/g) || [];
   for (const t of toks){
     let key = null;
@@ -13066,7 +13129,7 @@ edEl.addEventListener('input', ()=>{
   syncHl(); errEl.innerHTML='';
   updateGhost();
   outEl.srcdoc = buildDoc(L[idx], edEl.value);
-  if (graded) previewOnly();
+  if (graded) previewOnly(); else runNudge();
 });
 /* Lines run in the terminal come back up and become the editor's contents,
    so Run has the whole session to grade and the person can see the script

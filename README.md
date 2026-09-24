@@ -504,6 +504,14 @@ The phone is a first-class layout, not a narrowed desktop.
 - Live preview on every keystroke; JS lessons enforce the house rule —
   *working it out is not showing it* — via the universal `.textContent =` check
   plus a `new Function` syntax gate with friendly error rewrites.
+- **Kindergarten to Grade 3 are told to press Run.** Young learners type the
+  answer, watch the page change, and wait. So in those four grades, once typing
+  pauses and the code would pass, the line under the buttons says *Finished?
+  Press the green Run button*, and Run pulses until it is pressed (on a phone,
+  a bubble sits on the button itself). Nothing is graded until Run is pressed,
+  and Terminal lessons, where Enter runs each line, are left alone.
+- The favicon is the Code Lab mark, embedded like everything else: SVG for
+  current browsers, a PNG fallback, and an iPhone/iPad home-screen icon.
 - **Give me a lead** reveals the answer in 4 word-snapped steps (scaffold, don't solve).
 - **Ask a question**: offline keyword-matched answer bank (~230 entries).
 - **Free play** sandbox (self-saving, uncheckable, unbreakable).

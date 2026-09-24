@@ -30,7 +30,7 @@ each grade. Portfolio pieces, Beyond and the Review Desk sit outside that count.
 | Portfolio | Five client jobs graded by a sign-off checklist, unlocked by the grades they need |
 | **Beyond** | **15 lessons after graduation: reading and fixing code you did not write, verifying what a machine wrote, writing a spec, asking a question that gets answered, commit messages, READMEs, shipping, secrets, untrusted input, accessibility, transferring to the next language, and performance** |
 | **Review Desk** | **10 lessons on reading code a machine wrote — see below** |
-| **Quest** | **13 levels where your code drives a hero across a board that fights back** |
+| **Quest** | **16 levels where your code drives a hero across a board that fights back** |
 | **The Deep** | **650 generated Quest floors, each one proved winnable before you see it** |
 | **Grade bosses** | **14 Quest boards, one at the end of every grade from Kindergarten to College, each asking for that grade's idea somewhere it was never taught — and each one required to finish the grade** |
 | **The Sound Room** | **8 lessons where your code is the instrument** |
@@ -228,11 +228,21 @@ lifted from a place that already worked out how to make programming feel like
 something rather than like homework — and what was taken is the mechanic, not
 the artwork.
 
-**Quest** (from CodeCombat) is thirteen levels where your code drives a
+**Quest** (from CodeCombat) is sixteen levels where your code drives a
 character across a board. `hero.moveRight(4)`, `hero.attack()`, `hero.look("right")`.
-Level one is five lines in a row; level eight takes the controls away and asks
+Level one is five lines in a row; level eleven takes the controls away and asks
 you to write a `turn(hero)` function that something else calls sixty times,
-which is the Screeps idea and a genuinely different way to think. In between:
+which is the Screeps idea and a genuinely different way to think.
+
+That level used to arrive straight after the first `look`, and its answer needed
+`!==`, `&&`, `||`, `else if` and `look("down")`, none of which the track had
+taught. Three levels now come first, each adding one of those words on a board
+where the previous level's rule fails, so the new word is needed rather than
+decorative. *Not a wall* starts from the rule most people write first
+(`=== "clear"`) and shows it refusing to step onto a gem. *Two things at once*
+adds the map's edge and `&&`. *Plan B, plan C* adds looking down, `||` and an
+`else if` chain. The last of those rules, moved inside `turn`, is the answer to
+level eleven, so that level teaches one idea: who runs the rule. In between:
 an off-by-one that eats a corridor, an enemy that hits back if your maths is
 wrong, and a switch that has to be stood on before a door three screens away
 will open.

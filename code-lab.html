@@ -1522,6 +1522,34 @@ body.dark .qmworld{box-shadow:0 0 0 1px #3c2d4a,0 24px 60px -20px rgba(0,0,0,.8)
   .crumb:has(#crMap){gap:8px}
   .crumb:has(#crMap)>span{letter-spacing:.1em}
 }
+/* ---- the Sound Room's rhythm strip, drawn as the same pads as its stage ----
+   It is a small piece of hardware in either theme: a dark faceplate with the
+   sixteen pads on it. Every pad carries a solid colour under its gradient so
+   the text on it is measured against what is actually there. */
+.rhythm .rgrid{margin-bottom:4px;gap:3px;padding:10px 10px 9px;border-radius:12px;position:relative;
+  background:radial-gradient(circle at 7px 7px,#5a5570 0 1.6px,rgba(0,0,0,0) 2.2px),radial-gradient(circle at calc(100% - 7px) 7px,#5a5570 0 1.6px,rgba(0,0,0,0) 2.2px),
+    linear-gradient(180deg,#2d2a3d,#1d1b29) #221f30;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.1),inset 0 -2px 0 rgba(0,0,0,.35),0 0 0 1px rgba(10,8,18,.55),0 8px 18px -12px rgba(10,8,18,.7)}
+.rhythm .rcell{border:0;border-radius:6px;padding:4px 0 3px;background:linear-gradient(180deg,#2d2a40,#232132) #282538;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07),inset 0 -2px 0 rgba(0,0,0,.35)}
+.rhythm .rcell .rnum{color:#b9b5d6;border-bottom-color:rgba(255,255,255,.1)}
+.rhythm .rcell .rch{color:#ebe8fb}
+.rhythm .rcell .rct{color:#b9b5d6}
+/* the beat columns stay green: the panel's own words call them that */
+.rhythm .rcell.beat{box-shadow:inset 0 3px 0 #39e6b0,inset 0 -2px 0 rgba(0,0,0,.35)}
+.rhythm .rcell.beat .rnum,.rhythm .rcell.beat .rct b{color:#7ff2cf}
+.rhythm .rcell.hit{background:linear-gradient(180deg,#1f9a74,#11684e) #177a5c;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35),inset 0 -2px 0 rgba(0,0,0,.25),0 0 10px -2px rgba(57,230,176,.75)}
+.rhythm .rcell.hit.beat{box-shadow:inset 0 3px 0 #b8ffe9,inset 0 -2px 0 rgba(0,0,0,.25),0 0 10px -2px rgba(57,230,176,.75)}
+.rhythm .rcell.hit .rch{color:#fff}
+.rhythm .rcell.hit .rnum,.rhythm .rcell.hit .rct,.rhythm .rcell.hit.beat .rnum,.rhythm .rcell.hit.beat .rct b{color:#e6fff5}
+.rhythm .rcell.hold{background:linear-gradient(180deg,#584422,#3f3019) #4a3a1c;box-shadow:inset 0 0 0 1px rgba(242,193,78,.35)}
+.rhythm .rcell.hold .rch,.rhythm .rcell.hold .rnum,.rhythm .rcell.hold .rct{color:#ffdc94}
+.rhythm .rcell.want{outline:2px solid #f2c14e;outline-offset:1px}
+.rhythm .rkey .k{border:0;background:#282538;color:#ebe8fb;box-shadow:inset 0 -2px 0 rgba(0,0,0,.35)}
+.rhythm .rkey .k.hit{background:#177a5c;color:#fff}
+.rhythm .rkey .k.hold{background:#4a3a1c;color:#ffdc94}
+.rhythm .rcell.hold.beat{box-shadow:inset 0 3px 0 #39e6b0,inset 0 0 0 1px rgba(242,193,78,.35)}
 /*cd:D*/
 /* ---- the adventurer: creator, sheet, chip, toasts ----
    Class colours live in variables so one change of class re-lights the stage,
@@ -9303,8 +9331,8 @@ function shellRun(SPEC, CODE){
 
 
 const ARC_CSS = "\n*{box-sizing:border-box}\nbody{margin:0;font:14px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#11131a;color:#e8e6e1;padding:12px}\n.verdict{border-radius:9px;padding:9px 12px;margin:0 0 10px;font-weight:600;font-size:.86rem;line-height:1.45}\n.verdict.win{background:#12432f;color:#8fe7bd;border:1px solid #1d6a4b}\n.verdict.lose{background:#43241c;color:#f0b49c;border:1px solid #79402e}\n.verdict.idle{background:#1b1f28;color:#9aa2b0;border:1px solid #2a3040}\n.verdict small{display:block;font-weight:400;opacity:.85;margin-top:3px}\n.ttl{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:#7c8598;margin:12px 0 6px}\nbutton{font:inherit;font-weight:600;border:none;border-radius:8px;padding:7px 14px;cursor:pointer;background:#2b6b57;color:#eafff6}\nbutton:hover{background:#35836a}\n/* Dimming a button with opacity drags its label under the bar too: a\n   disabled control still has to be readable, so the ground dims and the\n   text does not. */\nbutton[disabled]{background:#39414f;color:#c3cad6;cursor:default}\n.verdict{display:flex;gap:11px;align-items:flex-start;padding:11px 13px;border-radius:12px;font-size:.9rem}\n.verdict .vm{width:22px;height:22px;flex:0 0 auto;margin-top:1px}\n.verdict .vt{min-width:0}\n.verdict.win{background:linear-gradient(180deg,#12432f,#0f3727)}\n.verdict.lose{background:linear-gradient(180deg,#43241c,#381d17)}\n";
-const QUEST_CSS = "\nbody{padding:10px 12px}\n#board{--c:30px;--pad:10px;--x:0;--y:0;position:relative;margin:2px auto 0;padding:0;width:calc(var(--w) * var(--c) + 2 * var(--pad));height:calc(var(--h) * var(--c) + 2 * var(--pad));border:var(--pad) solid transparent;border-image-slice:28;border-image-width:1;border-image-repeat:stretch;border-radius:12px;background:#10131a}\n.floor,.clipA,.clipB{position:absolute;inset:0;pointer-events:none}\n.floor{z-index:1}\n.clipA{z-index:3;overflow:hidden}\n.clipB{z-index:80;overflow:hidden}\n.qc,.it,.fx,.glow,.downl{position:absolute;left:0;top:0;width:var(--c);height:var(--c);transform:translate(calc(var(--x) * var(--c)),calc(var(--y) * var(--c)))}\n.qc{background:center/100% 100% no-repeat}\n.deco0{z-index:2}\n.it.exit,.it.sw{z-index:4}\n.it svg{position:absolute;display:block;overflow:visible}\n.mob{transition:transform var(--mv) cubic-bezier(.3,.75,.3,1)}\n#board.still .mob,#board.still .mob *{transition:none!important}\n/* walls: open sides get a darker edge so a run of wall has a silhouette */\n.qw.el{box-shadow:inset 2px 0 0 rgba(0,0,0,.3)}\n.qw.er{box-shadow:inset -2px 0 0 rgba(0,0,0,.42)}\n.qw.el.er{box-shadow:inset 2px 0 0 rgba(0,0,0,.3),inset -2px 0 0 rgba(0,0,0,.42)}\n.qw.deco:after{content:'';position:absolute;left:25%;top:62.5%;width:50%;height:37.5%;background:center/100% 100% no-repeat}\n.z-cellar .qw.deco:before{content:'';position:absolute;left:10%;top:40%;width:80%;height:70%;border-radius:50%;background:radial-gradient(closest-side,rgba(255,170,70,.45),rgba(255,140,50,0));animation:glowf 1.6s ease-in-out infinite alternate}\n.z-halls .qw.deco:after,.z-abyss .qw.deco:after{animation:rune 3.2s ease-in-out infinite alternate}\n@keyframes rune{from{opacity:.55}to{opacity:1}}\n.wsh{background:linear-gradient(rgba(0,0,0,.46),rgba(0,0,0,.14) 34%,rgba(0,0,0,0) 62%)}\n/* light sources: they glow on the floor under whatever stands there */\n.glow{width:calc(var(--c) * 3);height:calc(var(--c) * 3);margin:calc(var(--c) * -1) 0 0 calc(var(--c) * -1);border-radius:50%;transition:opacity .4s}\n.glow.gone{opacity:0}\n/* the glow breathes on a pseudo-element: `scale` on the glow itself would\n   scale its translate too, and a fire at the far end of the row would drift */\n.gfire:before,.pflare:before{content:'';position:absolute;inset:0;border-radius:50%}\n.gfire:before{background:radial-gradient(closest-side,rgba(255,140,50,.42),rgba(255,110,40,.12) 55%,rgba(255,110,40,0));animation:glowf 1.1s ease-in-out infinite alternate}\n@keyframes glowf{from{opacity:.7;scale:.94}to{opacity:1;scale:1.05}}\n.gexit{background:radial-gradient(closest-side,rgba(57,230,176,.42),rgba(57,230,176,.1) 55%,rgba(57,230,176,0));animation:breath 3.4s ease-in-out infinite alternate}\n.ggem{width:calc(var(--c) * 2);height:calc(var(--c) * 2);margin:calc(var(--c) * -.5) 0 0 calc(var(--c) * -.5);background:radial-gradient(closest-side,rgba(63,212,255,.28),rgba(63,212,255,0))}\n@keyframes breath{from{opacity:.7}to{opacity:1}}\n/* fire */\n.flame svg{left:6%;width:88%;top:-40%;height:117%}\n.fl{transform-box:fill-box;transform-origin:50% 100%}\n.fl1{animation:fa .8s ease-in-out infinite alternate}\n.fl2{animation:fb .63s ease-in-out infinite alternate}\n.fl3{animation:fc .47s ease-in-out infinite alternate}\n@keyframes fa{from{transform:scale(1,.94) skewX(-3deg)}to{transform:scale(.96,1.06) skewX(3deg)}}\n@keyframes fb{from{transform:scale(.95,1.05) skewX(4deg)}to{transform:scale(1.04,.93) skewX(-3deg)}}\n@keyframes fc{from{transform:scale(1,.9)}to{transform:scale(.92,1.1)}}\n.emb{animation:emb 1.5s linear infinite;opacity:0}\n.e2{animation-delay:-.5s}.e3{animation-delay:-1s}\n@keyframes emb{0%{transform:translateY(0);opacity:0}20%{opacity:1}100%{transform:translateY(-16px);opacity:0}}\n/* spikes: down in the plate when safe, up when hot */\n.spikes svg{inset:0;width:100%;height:100%}\n.spk path{transform-box:fill-box;transform-origin:50% 100%;transform:scaleY(.16);transition:transform .12s cubic-bezier(.2,.9,.3,1.3)}\n.spikes.hot .spk path{transform:none}\n.spikes:before{content:'';position:absolute;inset:-4%;border-radius:50%;background:radial-gradient(closest-side,rgba(255,110,50,.55),rgba(255,90,40,.18) 60%,rgba(255,80,40,0));opacity:0;transition:opacity .12s}\n.spikes.hot:before{opacity:1}\n/* the way out */\n.exit svg{inset:0;width:100%;height:100%}\n.swirl{animation:swirl 7s linear infinite}\n@keyframes swirl{to{transform:rotate(360deg)}}\n.exbeam{position:absolute;left:24%;right:24%;bottom:38%;height:110%;border-radius:50% 50% 0 0/24% 24% 0 0;background:linear-gradient(to top,rgba(57,230,176,.34),rgba(57,230,176,0));animation:breath 2.6s ease-in-out infinite alternate;pointer-events:none}\n.exit.won svg{animation:won 1.3s ease-out}\n@keyframes won{30%{transform:scale(1.18)}100%{transform:none}}\n/* switch and door */\n.sw svg{left:4%;top:6%;width:92%;height:92%}\n.sw .on{display:none}.sw.on .on{display:inline}.sw.on .off{display:none}\n.sw .pl{transition:transform .15s}.sw.on .pl{transform:translateY(1.6px)}\n.door svg{inset:0;width:100%;height:100%}\n.door .leaf{transform-box:fill-box;transform-origin:50% 0;transition:transform .55s cubic-bezier(.5,0,.3,1),opacity .35s .3s}\n.door .hole{transition:opacity .5s .2s}\n.door.open .leaf{transform:scaleY(.06);opacity:0}\n.door.open .hole{opacity:0}\n/* gems */\n.gem:before{content:'';position:absolute;left:32%;right:32%;bottom:16%;height:12%;border-radius:50%;background:rgba(0,0,0,.45);transition:opacity .3s}\n.gem svg{left:19%;top:6%;width:62%;height:62%;animation:gbob 1.9s ease-in-out infinite alternate;animation-delay:var(--d)}\n@keyframes gbob{to{transform:translateY(-9%)}}\n.gem .tw{transform-box:fill-box;transform-origin:50% 50%;animation:tw 2.6s ease-in-out infinite;animation-delay:var(--d)}\n@keyframes tw{0%,55%,100%{transform:scale(0);opacity:0}72%{transform:scale(1.1) rotate(45deg);opacity:1}}\n.gem.gone svg{opacity:0;transform:translateY(-45%) scale(.4);transition:opacity .3s,transform .3s;animation:none}\n.gem.gone:before{opacity:0}\n/* the cast */\n.act:before{content:'';position:absolute;left:17%;right:17%;bottom:3%;height:20%;border-radius:50%}\n.hero:before{background:radial-gradient(closest-side,rgba(57,230,176,.26),rgba(57,230,176,0));box-shadow:0 0 0 1.5px rgba(57,230,176,.55)}\n.foe:before{background:radial-gradient(closest-side,rgba(255,77,109,.2),rgba(255,77,109,0));box-shadow:0 0 0 1px rgba(255,77,109,.35)}\n.fig{position:absolute;inset:0}\n/* the sprite box; the kits' idle loops move the parts inside it */\n.bod,.amb,.kb{position:absolute;left:-13%;top:-24%;width:126%;height:126%}\n.amb{z-index:3;pointer-events:none}\n.amb svg,.kb svg{inset:0;width:100%;height:100%;overflow:visible}\n.act.dying:before,.act.dying .pips{opacity:0;transition:opacity .25s}\n.pose{position:absolute;inset:0;display:none}\n.pose.on{display:block}\n.pose svg{width:100%;height:100%}\n.act.bump .fig{animation:bump .24s ease-out}\n@keyframes bump{35%{transform:translate(calc(var(--bx) * var(--c) * .16),calc(var(--by) * var(--c) * .16))}}\n.hero.flash .pose.on{animation:hurt .38s ease-out}\n@keyframes hurt{0%,60%{filter:sepia(1) saturate(7) hue-rotate(-45deg) brightness(1.05)}100%{filter:none}}\n.hero.fall:before{opacity:0;transition:opacity .4s}\n.hero.fall .fig{transition:transform .7s cubic-bezier(.5,0,.8,.4),opacity .7s;transform:translateY(calc(var(--c) * .22)) scale(.4);opacity:.12}\n.act.dead{opacity:0;transition:opacity .45s}\n.pips{position:absolute;left:0;right:0;top:-14%;display:flex;justify-content:center;gap:2px;z-index:2}\n.pips i{width:calc(var(--c) * .15);height:calc(var(--c) * .15);max-width:7px;max-height:7px;border-radius:50%;background:#3a2330;box-shadow:0 0 0 1px #140c14}\n.pips i.on{background:#ff4d6d}\n#board.lost #hero{z-index:86!important}\n/* the light: a pool that walks with the hero, a vignette, and dust */\n.pool{position:absolute;left:0;top:0;width:calc(var(--c) * 30);height:calc(var(--c) * 30);margin:calc(var(--c) * -14.5) 0 0 calc(var(--c) * -14.5);transform:translate(calc(var(--x) * var(--c)),calc(var(--y) * var(--c)));background:radial-gradient(circle closest-side,rgba(var(--lit),.13),rgba(var(--lit),.06) 9%,rgba(0,0,0,0) 17%,rgba(3,4,9,.22) 32%,rgba(3,4,9,.3))}\n.vig{position:absolute;inset:0;box-shadow:inset 0 0 calc(var(--c) * .8) rgba(0,0,0,.6);background:radial-gradient(ellipse at 50% 45%,rgba(0,0,0,0) 58%,rgba(0,0,0,.26))}\n.motes{position:absolute;inset:0}\n.mote{position:absolute;width:3px;height:3px;border-radius:50%;background:rgb(var(--mote));box-shadow:0 0 5px rgba(var(--mote),.9);opacity:0;animation:mote 9s linear infinite}\n@keyframes mote{0%{transform:translate(0,0);opacity:0}18%{opacity:.75}80%{opacity:.45}100%{transform:translate(var(--dx),calc(var(--c) * -2.4));opacity:0}}\n/* moments */\n.fxl{position:absolute;inset:0;z-index:90;pointer-events:none}\n.dim{position:absolute;inset:0;z-index:85;background:rgba(12,4,12,.55);opacity:0;transition:opacity .6s;pointer-events:none}\n#board.lost .dim{opacity:1}\n.fx svg{position:absolute;inset:0;width:100%;height:100%}\n.spark:before,.spark:after{content:'';position:absolute;left:50%;top:40%;width:calc(var(--c) * .9);height:calc(var(--c) * .9);margin:calc(var(--c) * -.45) 0 0 calc(var(--c) * -.45);background:radial-gradient(closest-side,#fffbe0,#ffd35a 40%,rgba(255,180,60,0));clip-path:polygon(50% 0,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0 50%,40% 40%);animation:spark .45s ease-out forwards}\n.spark:after{transform:rotate(45deg) scale(.6);animation-delay:.04s}\n@keyframes spark{0%{transform:scale(.2);opacity:1}100%{transform:scale(1.5) rotate(30deg);opacity:0}}\n.burst .pt{position:absolute;left:50%;top:45%;width:calc(var(--c) * .13);height:calc(var(--c) * .13);margin:calc(var(--c) * -.065) 0 0 calc(var(--c) * -.065);border-radius:2px;animation:pt .7s cubic-bezier(.2,.7,.3,1) forwards}\n.pt.gm{background:#9eeaff;box-shadow:0 0 6px #3fd4ff;transform:rotate(45deg)}\n.pt.sp{background:#ffe08a;border-radius:50%;box-shadow:0 0 5px #ffb547}\n.pt.dust{background:rgba(190,170,150,.7);border-radius:50%;width:calc(var(--c) * .2);height:calc(var(--c) * .2);animation-duration:.9s}\n.pt.emb{background:#ffb547;border-radius:50%;box-shadow:0 0 5px #ff7a2f}\n@keyframes pt{0%{transform:translate(0,0) scale(1) rotate(45deg);opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(.2) rotate(45deg);opacity:0}}\n.ring:before{content:'';position:absolute;inset:14%;border-radius:50%;border:2px solid;animation:ring .65s ease-out forwards}\n.gring:before{border-color:#9eeaff;box-shadow:0 0 12px rgba(63,212,255,.7)}\n.swring:before{border-color:#7dffd2;box-shadow:0 0 14px rgba(57,230,176,.8),inset 0 0 12px rgba(57,230,176,.5)}\n@keyframes ring{0%{transform:scale(.4);opacity:1}100%{transform:scale(1.7);opacity:0}}\n.spikehit{background:radial-gradient(closest-side,rgba(255,90,60,.7),rgba(255,60,40,0));animation:fade .5s forwards}\n@keyframes fade{to{opacity:0}}\n.float{display:flex;justify-content:center;align-items:flex-start;margin-top:calc(var(--c) * -.3);animation:up .9s ease-out forwards}\n@keyframes up{0%{transform:translate(calc(var(--x) * var(--c)),calc(var(--y) * var(--c) + 4px));opacity:0}15%{opacity:1}100%{transform:translate(calc(var(--x) * var(--c)),calc(var(--y) * var(--c) - var(--c) * .35));opacity:0}}\n.pflare{width:calc(var(--c) * 3);height:calc(var(--c) * 3);margin:calc(var(--c) * -1) 0 0 calc(var(--c) * -1)}\n.pflare:before{background:radial-gradient(closest-side,rgba(234,255,246,.95),rgba(57,230,176,.55) 35%,rgba(57,230,176,0));animation:flareA 1.3s ease-out forwards;opacity:0}\n@keyframes flareA{0%{opacity:0;scale:.3}20%{opacity:1}100%{opacity:0;scale:1.5}}\n.cf{position:absolute;left:50%;top:40%;width:calc(var(--c) * .12);height:calc(var(--c) * .2);border-radius:1px;animation:cf 1.9s cubic-bezier(.15,.7,.4,1) forwards;opacity:0}\n.cf.c0{background:#f2c14e}.cf.c1{background:#39e6b0}.cf.c2{background:#3fd4ff}.cf.c3{background:#ffffff;border-radius:50%;width:calc(var(--c) * .1);height:calc(var(--c) * .1)}\n@keyframes cf{0%{transform:translate(0,0);opacity:1}55%{transform:translate(var(--dx),var(--dy)) rotate(var(--rot));opacity:1}100%{transform:translate(var(--dx),calc(var(--dy) + var(--c) * 1.4)) rotate(var(--rot));opacity:0}}\n.downl{display:flex;justify-content:center;align-items:flex-start;margin-top:calc(var(--c) * .56);pointer-events:none}\n.downl,.float{width:var(--c);white-space:nowrap}\n.fx.float,.downl{overflow:visible}\n.float.low{margin-top:calc(var(--c) * .08)}\n.bub{position:absolute;left:0;top:0;z-index:6;transform:translate(calc((var(--x) + .5) * var(--c)),calc((var(--y) - .28) * var(--c))) translate(-50%,-100%);background:#f7f3ea;color:#22262e;border-radius:10px;padding:3px 9px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,.5)}\n.bub:after{content:'';position:absolute;left:50%;bottom:-4px;margin-left:-4px;border:4px solid transparent;border-bottom:0;border-top-color:#f7f3ea}\n.bub.below{transform:translate(calc((var(--x) + .5) * var(--c)),calc((var(--y) + .98) * var(--c))) translate(-50%,0)}\n.bub.below:after{bottom:auto;top:-4px;border:4px solid transparent;border-top:0;border-bottom-color:#f7f3ea}\n/* the HUD */\n.qbar{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap;margin-top:9px}\n#hud{display:flex;align-items:center;gap:6px 14px;flex-wrap:wrap;margin:0;flex:1 1 auto;font-size:.8rem;color:#c3cad6}\n.hs{display:inline-flex;align-items:center;gap:1px}\n.hi{display:block;width:17px;height:17px}\n.hi svg{display:block;width:100%;height:100%}\n.hg .hi{width:16px;height:16px}\n.hi.pop{animation:lose .55s ease-out}\n@keyframes lose{0%{transform:scale(1.2) rotate(-10deg)}45%{transform:scale(.88) rotate(8deg)}100%{transform:none}}\n.hg b{color:#f3f1ec;margin-left:5px}\n.hm{gap:7px}\n.ml{font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:#aab2c0}\n.meter{display:block;width:62px;height:6px;border-radius:4px;background:#232836;box-shadow:inset 0 0 0 1px #363d4e;overflow:hidden}\n.meter i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#1c9a74,#39e6b0);transition:width .2s}\n.meter.warm i{background:linear-gradient(90deg,#b7802a,#f2c14e)}\n.meter.hot i{background:linear-gradient(90deg,#b52f45,#ff4d6d)}\n.mn{font-variant-numeric:tabular-nums;color:#c3cad6;white-space:nowrap}\n.mn b{color:#f7f5ef}\nbutton.ghost{background:#2a3142;color:#dde3ee}\nbutton.ghost:hover{background:#354056}\n#replay{background:linear-gradient(180deg,#139073,#0c6a54);color:#effff8;box-shadow:0 1px 0 rgba(255,255,255,.2) inset,0 4px 12px -4px rgba(0,0,0,.6)}\n#replay:hover{background:linear-gradient(180deg,#16a07f,#0e755d)}\n#replay[disabled]{background:#39414f;color:#c3cad6;box-shadow:none}\n.qbtns{display:flex;gap:6px;margin-left:auto}\n.qbtns button{padding:5px 11px;font-size:.78rem;border-radius:8px}\n.note{font-size:.76rem;color:#d9b77e;min-height:1.3em;margin-top:4px}\n.verdict{margin:6px 0 0;padding:7px 11px;align-items:center;gap:9px}\n.verdict .vt{line-height:1.4}\n.verdict small{display:inline;margin:0;font-size:.8rem}\n.verdict small:before{content:\" \\2014  \";opacity:.7}\n.verdict .vm{width:20px;height:20px}\n.trow{display:flex;align-items:center;gap:10px;margin-top:8px;min-width:0}\n.trow .ttl{margin:0;flex:0 0 auto;padding-bottom:6px}\n#trace{display:flex;gap:4px;flex:1 1 auto;min-width:0;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;margin-top:0;padding-bottom:6px;position:relative;scrollbar-width:thin;scrollbar-color:#3a4254 transparent}\n#trace .blk{flex:0 0 auto}\n.blk{font:600 11px/1 ui-monospace,Menlo,Consolas,monospace;padding:5px 7px;border-radius:6px;background:#232936;color:#9fb4c9;border-left:3px solid #3d4b61}\n.blk.mv{border-left-color:#4f9ad8;color:#a9d1f0}\n.blk.at{border-left-color:#d8714f;color:#f0b8a4}\n.blk.sy{border-left-color:#c5a03f;color:#e8d29a}\n.blk.now{background:#31405a;color:#fff;box-shadow:0 0 0 1px #5a7ba8}\n.blk.bump{border-left-color:#8a5a2b;opacity:.75;text-decoration:line-through}\n@media (max-width:420px){.hi{width:15px;height:15px}.meter{width:44px}#hud{gap:6px 10px}}\n@media (prefers-reduced-motion:reduce){\n  #board *,#board *:before,#board *:after{animation:none!important}\n  .mob,.glow,.door .leaf,.door .hole,.spk path,.gem svg,.dim{transition:none!important}\n  .motes,.fx.burst,.fx.confetti,.fx.spark{display:none}\n  .fx.float{margin-top:calc(var(--c) * -.45)}\n  .fx.float.low{margin-top:0}\n}\n.float span{display:block;padding:2px 5px;border-radius:6px;font:800 11px/1.1 -apple-system,'Segoe UI',Roboto,sans-serif;color:#fff;background:#b3122f;box-shadow:0 2px 6px rgba(0,0,0,.5)}\n.float.hitn span{background:#4a2a08;color:#ffe08a;box-shadow:0 0 0 1px #c9922e,0 2px 6px rgba(0,0,0,.5)}\n.float.wake span,.float.miss span{background:#3a3150;color:#ffe08a}\n.downl span{display:block;padding:3px 8px;border-radius:7px;font:800 11px/1.1 -apple-system,'Segoe UI',Roboto,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:#8a1f33;box-shadow:0 0 0 1px #ff4d6d,0 4px 12px rgba(0,0,0,.6);animation:dl .35s ease-out}\n@keyframes dl{from{transform:translateY(6px);opacity:0}}\n";
-const SOUND_CSS = "\n#deck{background:#171a22;border-radius:10px;padding:10px;overflow-x:auto}\n.trk{display:flex;align-items:center;gap:7px;margin-bottom:5px}\n.tname{flex:0 0 74px;font:600 10px/1 ui-monospace,Menlo,monospace;color:#8b94a6;text-align:right;letter-spacing:.04em}\n.steps{position:relative;display:flex;gap:1px}\n.st{width:13px;height:21px;border-radius:2px;background:#232936;flex:0 0 auto}\n.st.bar{background:#303b52}\n.st.on{box-shadow:inset 0 0 0 1px rgba(255,255,255,.22)}\n.st.hold{opacity:.42}\n.st.lit{transform:scaleY(1.45);filter:brightness(1.9) saturate(1.3);box-shadow:0 0 12px currentColor}\n.st{transition:transform .07s ease-out,filter .07s ease-out}\n#hit{font-size:1rem;padding:11px 22px;border-radius:10px;font-weight:700;letter-spacing:.01em;box-shadow:0 2px 0 #1d4a3c}\n#hit:active{transform:translateY(1px);box-shadow:0 1px 0 #1d4a3c}\n#sctl.going #hit{background:#b8472f;box-shadow:0 2px 0 #7d2e1d}\n#play{position:absolute;top:-3px;bottom:-3px;width:2px;background:#f0d98a;border-radius:2px;left:0;display:none;pointer-events:none;z-index:3}\n#bars{display:flex;gap:1px;margin:0 0 5px 81px}\n.bn{width:55px;font:600 9px/1 ui-monospace,monospace;color:#8b94a6;flex:0 0 auto}\n#sctl{display:flex;gap:9px;align-items:center;margin-top:11px;flex-wrap:wrap;font-size:.79rem;color:#aab2c0}\n#fx{margin-top:9px;font:600 11px/1.6 ui-monospace,Menlo,monospace;color:#8b94a6}\n.slnums{display:flex;gap:1px;margin:3px 0 0 81px}\n.slnums i{width:13px;flex:0 0 auto;font:600 8px/1.4 ui-monospace,monospace;font-style:normal;color:#8b94a6;text-align:center}\n.slnums i.b{color:#e8edf5}\n.rb{background:#171a22;border:1px solid #262c3a;border-radius:10px;padding:10px 12px;margin:0 0 10px}\n.rbh{font:600 12px/1.5 ui-monospace,Menlo,monospace;color:#c9d3e6;margin-bottom:6px}\n.rbh b{color:#f0d98a}\n.rbh code{color:#8fd0ab}\n.rbg{display:flex;gap:2px;margin:4px 0 6px;overflow-x:auto}\n.rbg i{flex:0 0 21px;width:21px;text-align:center;border-radius:4px;background:#232936;font-style:normal;padding:2px 0}\n.rbg i.on{background:#2e6b4d}\n.rbg i.hd{background:#3b4a3f}\n.rbg i.bt{box-shadow:inset 0 2px 0 #f0d98a}\n.rbg i span{display:block;font:600 8px/1.3 ui-monospace,monospace;color:#8b94a6}\n.rbg i em{display:block;font:700 12px/1.4 ui-monospace,monospace;font-style:normal;color:#e8edf5}\n.rbg i.on em{color:#c8f5dc}\n.rbg i.on span,.rbg i.hd span{color:#dff7e8}\n.rbp{font:12px/1.55 -apple-system,Segoe UI,Roboto,sans-serif;color:#aab2c0;margin:0}\n.rbp b{color:#e8edf5}\n.rbw{font:600 12px/1.5 -apple-system,Segoe UI,Roboto,sans-serif;color:#f0c98a;margin:5px 0 0}\n";
+const QUEST_CSS = "\nbody{padding:10px 12px}\n#board{--c:30px;--pad:10px;--x:0;--y:0;position:relative;margin:2px auto 0;padding:0;width:calc(var(--w) * var(--c) + 2 * var(--pad));height:calc(var(--h) * var(--c) + 2 * var(--pad));border:var(--pad) solid transparent;border-image-slice:28;border-image-width:1;border-image-repeat:stretch;border-radius:12px;background:#10131a}\n.floor,.clipA,.clipB{position:absolute;inset:0;pointer-events:none}\n.floor{z-index:1}\n.clipA{z-index:3;overflow:hidden}\n.clipB{z-index:80;overflow:hidden}\n.qc,.it,.fx,.glow,.downl{position:absolute;left:0;top:0;width:var(--c);height:var(--c);transform:translate(calc(var(--x) * var(--c)),calc(var(--y) * var(--c)))}\n.qc{background:center/100% 100% no-repeat}\n.deco0{z-index:2}\n.it.exit,.it.sw{z-index:4}\n.it svg{position:absolute;display:block;overflow:visible}\n.mob{transition:transform var(--mv) cubic-bezier(.3,.75,.3,1)}\n#board.still .mob,#board.still .mob *{transition:none!important}\n/* walls: open sides get a darker edge so a run of wall has a silhouette */\n.qw.el{box-shadow:inset 2px 0 0 rgba(0,0,0,.3)}\n.qw.er{box-shadow:inset -2px 0 0 rgba(0,0,0,.42)}\n.qw.el.er{box-shadow:inset 2px 0 0 rgba(0,0,0,.3),inset -2px 0 0 rgba(0,0,0,.42)}\n.qw.deco:after{content:'';position:absolute;left:25%;top:62.5%;width:50%;height:37.5%;background:center/100% 100% no-repeat}\n.z-cellar .qw.deco:before{content:'';position:absolute;left:10%;top:40%;width:80%;height:70%;border-radius:50%;background:radial-gradient(closest-side,rgba(255,170,70,.45),rgba(255,140,50,0));animation:glowf 1.6s ease-in-out infinite alternate}\n.z-halls .qw.deco:after,.z-abyss .qw.deco:after{animation:rune 3.2s ease-in-out infinite alternate}\n@keyframes rune{from{opacity:.55}to{opacity:1}}\n.wsh{background:linear-gradient(rgba(0,0,0,.46),rgba(0,0,0,.14) 34%,rgba(0,0,0,0) 62%)}\n/* light sources: they glow on the floor under whatever stands there */\n.glow{width:calc(var(--c) * 3);height:calc(var(--c) * 3);margin:calc(var(--c) * -1) 0 0 calc(var(--c) * -1);border-radius:50%;transition:opacity .4s}\n.glow.gone{opacity:0}\n/* the glow breathes on a pseudo-element: `scale` on the glow itself would\n   scale its translate too, and a fire at the far end of the row would drift */\n.gfire:before,.pflare:before{content:'';position:absolute;inset:0;border-radius:50%}\n.gfire:before{background:radial-gradient(closest-side,rgba(255,140,50,.42),rgba(255,110,40,.12) 55%,rgba(255,110,40,0));animation:glowf 1.1s ease-in-out infinite alternate}\n@keyframes glowf{from{opacity:.7;scale:.94}to{opacity:1;scale:1.05}}\n.gexit{background:radial-gradient(closest-side,rgba(57,230,176,.42),rgba(57,230,176,.1) 55%,rgba(57,230,176,0));animation:breath 3.4s ease-in-out infinite alternate}\n.ggem{width:calc(var(--c) * 2);height:calc(var(--c) * 2);margin:calc(var(--c) * -.5) 0 0 calc(var(--c) * -.5);background:radial-gradient(closest-side,rgba(63,212,255,.28),rgba(63,212,255,0))}\n@keyframes breath{from{opacity:.7}to{opacity:1}}\n/* fire */\n.flame svg{left:6%;width:88%;top:-40%;height:117%}\n.fl{transform-box:fill-box;transform-origin:50% 100%}\n.fl1{animation:fa .8s ease-in-out infinite alternate}\n.fl2{animation:fb .63s ease-in-out infinite alternate}\n.fl3{animation:fc .47s ease-in-out infinite alternate}\n@keyframes fa{from{transform:scale(1,.94) skewX(-3deg)}to{transform:scale(.96,1.06) skewX(3deg)}}\n@keyframes fb{from{transform:scale(.95,1.05) skewX(4deg)}to{transform:scale(1.04,.93) skewX(-3deg)}}\n@keyframes fc{from{transform:scale(1,.9)}to{transform:scale(.92,1.1)}}\n.emb{animation:emb 1.5s linear infinite;opacity:0}\n.e2{animation-delay:-.5s}.e3{animation-delay:-1s}\n@keyframes emb{0%{transform:translateY(0);opacity:0}20%{opacity:1}100%{transform:translateY(-16px);opacity:0}}\n/* spikes: down in the plate when safe, up when hot */\n.spikes svg{inset:0;width:100%;height:100%}\n.spk path{transform-box:fill-box;transform-origin:50% 100%;transform:scaleY(.16);transition:transform .12s cubic-bezier(.2,.9,.3,1.3)}\n.spikes.hot .spk path{transform:none}\n.spikes:before{content:'';position:absolute;inset:-4%;border-radius:50%;background:radial-gradient(closest-side,rgba(255,110,50,.55),rgba(255,90,40,.18) 60%,rgba(255,80,40,0));opacity:0;transition:opacity .12s}\n.spikes.hot:before{opacity:1}\n/* the way out */\n.exit svg{inset:0;width:100%;height:100%}\n.swirl{animation:swirl 7s linear infinite}\n@keyframes swirl{to{transform:rotate(360deg)}}\n.exbeam{position:absolute;left:24%;right:24%;bottom:38%;height:110%;border-radius:50% 50% 0 0/24% 24% 0 0;background:linear-gradient(to top,rgba(57,230,176,.34),rgba(57,230,176,0));animation:breath 2.6s ease-in-out infinite alternate;pointer-events:none}\n.exit.won svg{animation:won 1.3s ease-out}\n@keyframes won{30%{transform:scale(1.18)}100%{transform:none}}\n/* switch and door */\n.sw svg{left:4%;top:6%;width:92%;height:92%}\n.sw .on{display:none}.sw.on .on{display:inline}.sw.on .off{display:none}\n.sw .pl{transition:transform .15s}.sw.on .pl{transform:translateY(1.6px)}\n.door svg{inset:0;width:100%;height:100%}\n.door .leaf{transform-box:fill-box;transform-origin:50% 0;transition:transform .55s cubic-bezier(.5,0,.3,1),opacity .35s .3s}\n.door .hole{transition:opacity .5s .2s}\n.door.open .leaf{transform:scaleY(.06);opacity:0}\n.door.open .hole{opacity:0}\n/* gems */\n.gem:before{content:'';position:absolute;left:32%;right:32%;bottom:16%;height:12%;border-radius:50%;background:rgba(0,0,0,.45);transition:opacity .3s}\n.gem svg{left:19%;top:6%;width:62%;height:62%;animation:gbob 1.9s ease-in-out infinite alternate;animation-delay:var(--d)}\n@keyframes gbob{to{transform:translateY(-9%)}}\n.gem .tw{transform-box:fill-box;transform-origin:50% 50%;animation:tw 2.6s ease-in-out infinite;animation-delay:var(--d)}\n@keyframes tw{0%,55%,100%{transform:scale(0);opacity:0}72%{transform:scale(1.1) rotate(45deg);opacity:1}}\n.gem.gone svg{opacity:0;transform:translateY(-45%) scale(.4);transition:opacity .3s,transform .3s;animation:none}\n.gem.gone:before{opacity:0}\n/* the cast */\n.act:before{content:'';position:absolute;left:17%;right:17%;bottom:3%;height:20%;border-radius:50%}\n.hero:before{background:radial-gradient(closest-side,rgba(57,230,176,.26),rgba(57,230,176,0));box-shadow:0 0 0 1.5px rgba(57,230,176,.55)}\n.foe:before{background:radial-gradient(closest-side,rgba(255,77,109,.2),rgba(255,77,109,0));box-shadow:0 0 0 1px rgba(255,77,109,.35)}\n.fig{position:absolute;inset:0}\n/* the sprite box; the kits' idle loops move the parts inside it */\n.bod,.amb,.kb{position:absolute;left:-13%;top:-24%;width:126%;height:126%}\n.amb{z-index:3;pointer-events:none}\n.amb svg,.kb svg{inset:0;width:100%;height:100%;overflow:visible}\n.act.dying:before,.act.dying .pips{opacity:0;transition:opacity .25s}\n.pose{position:absolute;inset:0;display:none}\n.pose.on{display:block}\n.pose svg{width:100%;height:100%}\n.act.bump .fig{animation:bump .24s ease-out}\n@keyframes bump{35%{transform:translate(calc(var(--bx) * var(--c) * .16),calc(var(--by) * var(--c) * .16))}}\n/* a hit is a flash, not a coat of red paint: a hot blink that lets the\n   stumble underneath read */\n.hero.flash .pose.on{animation:hurt .34s ease-out}\n@keyframes hurt{0%,16%{filter:sepia(1) saturate(4) hue-rotate(-40deg) brightness(1.5)}100%{filter:none}}\n.hero.fall:before{opacity:0;transition:opacity .4s}\n.hero.fall .fig{transition:transform .7s cubic-bezier(.5,0,.8,.4),opacity .7s;transform:translateY(calc(var(--c) * .22)) scale(.4);opacity:.12}\n.act.dead{opacity:0;transition:opacity .45s}\n.pips{position:absolute;left:0;right:0;top:-14%;display:flex;justify-content:center;gap:2px;z-index:2}\n.pips i{width:calc(var(--c) * .15);height:calc(var(--c) * .15);max-width:7px;max-height:7px;border-radius:50%;background:#3a2330;box-shadow:0 0 0 1px #140c14}\n.pips i.on{background:#ff4d6d}\n#board.lost #hero{z-index:86!important}\n/* the light: a pool that walks with the hero, a vignette, and dust */\n.pool{position:absolute;left:0;top:0;width:calc(var(--c) * 30);height:calc(var(--c) * 30);margin:calc(var(--c) * -14.5) 0 0 calc(var(--c) * -14.5);transform:translate(calc(var(--x) * var(--c)),calc(var(--y) * var(--c)));background:radial-gradient(circle closest-side,rgba(var(--lit),.13),rgba(var(--lit),.06) 9%,rgba(0,0,0,0) 17%,rgba(3,4,9,.22) 32%,rgba(3,4,9,.3))}\n.vig{position:absolute;inset:0;box-shadow:inset 0 0 calc(var(--c) * .8) rgba(0,0,0,.6);background:radial-gradient(ellipse at 50% 45%,rgba(0,0,0,0) 58%,rgba(0,0,0,.26))}\n.motes{position:absolute;inset:0}\n.mote{position:absolute;width:3px;height:3px;border-radius:50%;background:rgb(var(--mote));box-shadow:0 0 5px rgba(var(--mote),.9);opacity:0;animation:mote 9s linear infinite}\n@keyframes mote{0%{transform:translate(0,0);opacity:0}18%{opacity:.75}80%{opacity:.45}100%{transform:translate(var(--dx),calc(var(--c) * -2.4));opacity:0}}\n/* moments */\n.fxl{position:absolute;inset:0;z-index:90;pointer-events:none}\n.dim{position:absolute;inset:0;z-index:85;background:rgba(12,4,12,.55);opacity:0;transition:opacity .6s;pointer-events:none}\n#board.lost .dim{opacity:1}\n.fx svg{position:absolute;inset:0;width:100%;height:100%}\n.spark:before,.spark:after{content:'';position:absolute;left:50%;top:40%;width:calc(var(--c) * .9);height:calc(var(--c) * .9);margin:calc(var(--c) * -.45) 0 0 calc(var(--c) * -.45);background:radial-gradient(closest-side,#fffbe0,#ffd35a 40%,rgba(255,180,60,0));clip-path:polygon(50% 0,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0 50%,40% 40%);animation:spark .45s ease-out forwards}\n.spark:after{transform:rotate(45deg) scale(.6);animation-delay:.04s}\n@keyframes spark{0%{transform:scale(.2);opacity:1}100%{transform:scale(1.5) rotate(30deg);opacity:0}}\n.burst .pt{position:absolute;left:50%;top:45%;width:calc(var(--c) * .13);height:calc(var(--c) * .13);margin:calc(var(--c) * -.065) 0 0 calc(var(--c) * -.065);border-radius:2px;animation:pt .7s cubic-bezier(.2,.7,.3,1) forwards}\n.pt.gm{background:#9eeaff;box-shadow:0 0 6px #3fd4ff;transform:rotate(45deg)}\n.pt.sp{background:#ffe08a;border-radius:50%;box-shadow:0 0 5px #ffb547}\n.pt.dust{background:rgba(190,170,150,.7);border-radius:50%;width:calc(var(--c) * .2);height:calc(var(--c) * .2);animation-duration:.9s}\n.pt.emb{background:#ffb547;border-radius:50%;box-shadow:0 0 5px #ff7a2f}\n@keyframes pt{0%{transform:translate(0,0) scale(1) rotate(45deg);opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(.2) rotate(45deg);opacity:0}}\n.ring:before{content:'';position:absolute;inset:14%;border-radius:50%;border:2px solid;animation:ring .65s ease-out forwards}\n.gring:before{border-color:#9eeaff;box-shadow:0 0 12px rgba(63,212,255,.7)}\n.swring:before{border-color:#7dffd2;box-shadow:0 0 14px rgba(57,230,176,.8),inset 0 0 12px rgba(57,230,176,.5)}\n@keyframes ring{0%{transform:scale(.4);opacity:1}100%{transform:scale(1.7);opacity:0}}\n.spikehit{background:radial-gradient(closest-side,rgba(255,90,60,.7),rgba(255,60,40,0));animation:fade .5s forwards}\n@keyframes fade{to{opacity:0}}\n.float{display:flex;justify-content:center;align-items:flex-start;margin-top:calc(var(--c) * -.3);animation:up .9s ease-out forwards}\n@keyframes up{0%{transform:translate(calc(var(--x) * var(--c)),calc(var(--y) * var(--c) + 4px));opacity:0}15%{opacity:1}100%{transform:translate(calc(var(--x) * var(--c)),calc(var(--y) * var(--c) - var(--c) * .35));opacity:0}}\n.pflare{width:calc(var(--c) * 3);height:calc(var(--c) * 3);margin:calc(var(--c) * -1) 0 0 calc(var(--c) * -1)}\n.pflare:before{background:radial-gradient(closest-side,rgba(234,255,246,.95),rgba(57,230,176,.55) 35%,rgba(57,230,176,0));animation:flareA 1.3s ease-out forwards;opacity:0}\n@keyframes flareA{0%{opacity:0;scale:.3}20%{opacity:1}100%{opacity:0;scale:1.5}}\n.cf{position:absolute;left:50%;top:40%;width:calc(var(--c) * .12);height:calc(var(--c) * .2);border-radius:1px;animation:cf 1.9s cubic-bezier(.15,.7,.4,1) forwards;opacity:0}\n.cf.c0{background:#f2c14e}.cf.c1{background:#39e6b0}.cf.c2{background:#3fd4ff}.cf.c3{background:#ffffff;border-radius:50%;width:calc(var(--c) * .1);height:calc(var(--c) * .1)}\n@keyframes cf{0%{transform:translate(0,0);opacity:1}55%{transform:translate(var(--dx),var(--dy)) rotate(var(--rot));opacity:1}100%{transform:translate(var(--dx),calc(var(--dy) + var(--c) * 1.4)) rotate(var(--rot));opacity:0}}\n.downl{display:flex;justify-content:center;align-items:flex-start;margin-top:calc(var(--c) * .56);pointer-events:none}\n.downl,.float{width:var(--c);white-space:nowrap}\n.fx.float,.downl{overflow:visible}\n.float.low{margin-top:calc(var(--c) * .08)}\n.bub{position:absolute;left:0;top:0;z-index:6;transform:translate(calc((var(--x) + .5) * var(--c)),calc((var(--y) - .28) * var(--c))) translate(-50%,-100%);background:#f7f3ea;color:#22262e;border-radius:10px;padding:3px 9px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,.5)}\n.bub:after{content:'';position:absolute;left:50%;bottom:-4px;margin-left:-4px;border:4px solid transparent;border-bottom:0;border-top-color:#f7f3ea}\n.bub.below{transform:translate(calc((var(--x) + .5) * var(--c)),calc((var(--y) + .98) * var(--c))) translate(-50%,0)}\n.bub.below:after{bottom:auto;top:-4px;border:4px solid transparent;border-top:0;border-bottom-color:#f7f3ea}\n/* the HUD */\n.qbar{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap;margin-top:9px}\n#hud{display:flex;align-items:center;gap:6px 14px;flex-wrap:wrap;margin:0;flex:1 1 auto;font-size:.8rem;color:#c3cad6}\n.hs{display:inline-flex;align-items:center;gap:1px}\n.hi{display:block;width:17px;height:17px}\n.hi svg{display:block;width:100%;height:100%}\n.hg .hi{width:16px;height:16px}\n.hi.pop{animation:lose .55s ease-out}\n@keyframes lose{0%{transform:scale(1.2) rotate(-10deg)}45%{transform:scale(.88) rotate(8deg)}100%{transform:none}}\n.hg b{color:#f3f1ec;margin-left:5px}\n.hm{gap:7px}\n.ml{font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:#aab2c0}\n.meter{display:block;width:62px;height:6px;border-radius:4px;background:#232836;box-shadow:inset 0 0 0 1px #363d4e;overflow:hidden}\n.meter i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#1c9a74,#39e6b0);transition:width .2s}\n.meter.warm i{background:linear-gradient(90deg,#b7802a,#f2c14e)}\n.meter.hot i{background:linear-gradient(90deg,#b52f45,#ff4d6d)}\n.mn{font-variant-numeric:tabular-nums;color:#c3cad6;white-space:nowrap}\n.mn b{color:#f7f5ef}\nbutton.ghost{background:#2a3142;color:#dde3ee}\nbutton.ghost:hover{background:#354056}\n#replay{background:linear-gradient(180deg,#139073,#0c6a54);color:#effff8;box-shadow:0 1px 0 rgba(255,255,255,.2) inset,0 4px 12px -4px rgba(0,0,0,.6)}\n#replay:hover{background:linear-gradient(180deg,#16a07f,#0e755d)}\n#replay[disabled]{background:#39414f;color:#c3cad6;box-shadow:none}\n.qbtns{display:flex;gap:6px;margin-left:auto}\n.qbtns button{padding:5px 11px;font-size:.78rem;border-radius:8px}\n.note{font-size:.76rem;color:#d9b77e;min-height:1.3em;margin-top:4px}\n.verdict{margin:6px 0 0;padding:7px 11px;align-items:center;gap:9px}\n.verdict .vt{line-height:1.4}\n.verdict small{display:inline;margin:0;font-size:.8rem}\n.verdict small:before{content:\" \\2014  \";opacity:.7}\n.verdict .vm{width:20px;height:20px}\n.trow{display:flex;align-items:center;gap:10px;margin-top:8px;min-width:0}\n.trow .ttl{margin:0;flex:0 0 auto;padding-bottom:6px}\n#trace{display:flex;gap:4px;flex:1 1 auto;min-width:0;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;margin-top:0;padding-bottom:6px;position:relative;scrollbar-width:thin;scrollbar-color:#3a4254 transparent}\n#trace .blk{flex:0 0 auto}\n.blk{font:600 11px/1 ui-monospace,Menlo,Consolas,monospace;padding:5px 7px;border-radius:6px;background:#232936;color:#9fb4c9;border-left:3px solid #3d4b61}\n.blk.mv{border-left-color:#4f9ad8;color:#a9d1f0}\n.blk.at{border-left-color:#d8714f;color:#f0b8a4}\n.blk.sy{border-left-color:#c5a03f;color:#e8d29a}\n.blk.now{background:#31405a;color:#fff;box-shadow:0 0 0 1px #5a7ba8}\n.blk.bump{border-left-color:#8a5a2b;opacity:.75;text-decoration:line-through}\n/* a wide, short frame (the desktop preview) puts the HUD beside the board,\n   so the board gets the whole height; fit() decides, per board */\nbody.side{display:grid;grid-template-columns:max-content var(--sw,210px);column-gap:16px;justify-content:center;align-content:start;align-items:start}\nbody.side #board{grid-column:1;grid-row:1/span 4;margin:2px 0 0}\nbody.side .qbar{grid-column:2;grid-row:1;margin:2px 0 0;flex-direction:column;align-items:stretch;gap:11px;padding:11px 10px 10px;border-radius:12px;background:linear-gradient(180deg,#1b1f2a,#161922);box-shadow:inset 0 0 0 1px #2a3142,0 12px 26px -16px rgba(0,0,0,.9)}\nbody.side #hud{gap:8px 12px}\nbody.side .hm{flex:1 1 100%}\nbody.side .hm .meter{flex:1 1 auto;width:auto}\nbody.side .qbtns{margin:0;gap:6px}\nbody.side .qbtns button{padding:6px 9px;font-size:.76rem;white-space:nowrap}\nbody.side #replay{flex:1 1 auto}\nbody.side #mute{flex:0 0 auto;min-width:36px}\nbody.side .mlb{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}\nbody.side .note{grid-column:2;grid-row:2;margin:8px 3px 0;min-height:0}\nbody.side .verdict{grid-column:2;grid-row:3;margin:8px 0 0;padding:9px 11px;font-size:.84rem}\nbody.side .verdict small{display:block;margin-top:2px}\nbody.side .verdict small:before{content:none}\n/* the trace is one long row: it must not size the columns, only fill them */\nbody.side .trow{grid-column:1/-1;grid-row:5;width:0;min-width:100%}\n@media (max-width:420px){.hi{width:15px;height:15px}.meter{width:44px}#hud{gap:6px 10px}}\n@media (prefers-reduced-motion:reduce){\n  #board *,#board *:before,#board *:after{animation:none!important}\n  .mob,.glow,.door .leaf,.door .hole,.spk path,.gem svg,.dim{transition:none!important}\n  .motes,.fx.burst,.fx.confetti,.fx.spark{display:none}\n  .fx.float{margin-top:calc(var(--c) * -.45)}\n  .fx.float.low{margin-top:0}\n}\n.float span{display:block;padding:2px 5px;border-radius:6px;font:800 11px/1.1 -apple-system,'Segoe UI',Roboto,sans-serif;color:#fff;background:#b3122f;box-shadow:0 2px 6px rgba(0,0,0,.5)}\n.float.hitn span{background:#4a2a08;color:#ffe08a;box-shadow:0 0 0 1px #c9922e,0 2px 6px rgba(0,0,0,.5)}\n.float.wake span,.float.miss span{background:#3a3150;color:#ffe08a}\n.downl span{display:block;padding:3px 8px;border-radius:7px;font:800 11px/1.1 -apple-system,'Segoe UI',Roboto,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:#8a1f33;box-shadow:0 0 0 1px #ff4d6d,0 4px 12px rgba(0,0,0,.6);animation:dl .35s ease-out}\n@keyframes dl{from{transform:translateY(6px);opacity:0}}\n";
+const SOUND_CSS = "\nbody{background:radial-gradient(130% 440px at 50% 0,#1e1932,#12111b 72%) no-repeat #12111b}\n/* ---- the rig: a console with walnut cheeks, the stage and the screen on top ---- */\n.rig{--beat:.5s;position:relative;margin:0 0 10px;padding:10px 20px 10px;border-radius:14px;\n  background:linear-gradient(180deg,#2c2a3c,#1d1c29 38%,#191824);\n  box-shadow:inset 0 1px 0 rgba(255,255,255,.1),inset 0 -2px 0 rgba(0,0,0,.4),0 10px 26px -10px rgba(0,0,0,.8),0 0 0 1px #0c0b12}\n.rig:before,.rig:after{content:'';position:absolute;top:0;bottom:0;width:12px;border-radius:14px 0 0 14px;\n  background:repeating-linear-gradient(176deg,rgba(0,0,0,0) 0 5px,rgba(40,18,6,.28) 5px 7px,rgba(0,0,0,0) 7px 11px),linear-gradient(90deg,#8a4f2a,#6b3a1d 55%,#4a2812);\n  box-shadow:inset -1px 0 0 rgba(0,0,0,.45),inset 1px 1px 0 rgba(255,210,160,.25)}\n.rig:before{left:0}\n.rig:after{right:0;transform:scaleX(-1)}\n.rtop{display:grid;grid-template-columns:minmax(0,250px) minmax(0,1fr);gap:10px}\n/* the stage */\n.stage{position:relative;height:172px;border-radius:10px;overflow:hidden;background:#171328;\n  box-shadow:inset 0 0 0 1px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.06);isolation:isolate}\n.stage .bg{position:absolute;inset:0;width:100%;height:100%;display:block}\n.stage .bulb{transition:opacity .12s}\n.rig.going .stage .bulb.b0{opacity:.35}\n.rig.going .stage.bx .bulb.b0{opacity:1}.rig.going .stage.bx .bulb.b1{opacity:.35}\n.stage .beam{opacity:.55;transition:opacity .4s}\n.rig.going .stage .beam{opacity:1}\n.stage .pool{transition:opacity .4s}\n.rig.going .stage .pool{opacity:.3}\n.stage .neon{opacity:.82}\n.stage.zap .neon{animation:neon .32s ease-out}\n@keyframes neon{0%{opacity:1;filter:brightness(1.8)}100%{opacity:.82}}\n.spk{position:absolute;bottom:12px;width:19%;max-width:46px;aspect-ratio:40/64;z-index:2}\n.spk.sl{left:4%}.spk.sr{right:4%}\n.spk svg{display:block;width:100%;height:100%}\n.spk .cone{transform-box:fill-box;transform-origin:50% 50%}\n.spk.th .cone{animation:thump .16s ease-out}\n@keyframes thump{0%{transform:scale(1.12)}100%{transform:none}}\n.hero{position:absolute;left:50%;bottom:6px;width:112px;height:112px;margin-left:-56px;z-index:3}\n.hero .groove,.hero .bod,.hero .pose,.hero .hfx,.hero .fxo{position:absolute;inset:0}\n.hero .pose{display:none}.hero .pose.on{display:block}\n.hero svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}\n.hero .hfx{pointer-events:none;z-index:2}\n.rig.going .hero .groove{animation:groove var(--beat) cubic-bezier(.3,0,.5,1) .08s infinite}\n@keyframes groove{0%{transform:translateY(0) scale(1,1)}12%{transform:translateY(1px) scale(1.03,.96)}45%{transform:translateY(-3px) scale(.99,1.02)}100%{transform:translateY(0) scale(1,1)}}\n.hero .fxo.amb.pulse svg{animation:rpulse .4s ease-out}\n@keyframes rpulse{0%{transform:scale(1.14);filter:brightness(1.6)}100%{transform:none}}\n/* the screen */\n.scr{position:relative;display:flex;flex-direction:column;min-width:0;height:172px;border-radius:10px;padding:8px 10px 7px;\n  background:radial-gradient(120% 90% at 30% 0,#10302c,#081716 60%,#060f10);\n  box-shadow:inset 0 0 0 1px #000,inset 0 0 0 3px #1f1e2c,inset 0 0 22px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.06)}\n.scr:after{content:'';position:absolute;inset:3px;border-radius:8px;pointer-events:none;\n  background:linear-gradient(115deg,rgba(255,255,255,.07),rgba(255,255,255,0) 38%),repeating-linear-gradient(0deg,rgba(0,0,0,.18) 0 1px,rgba(0,0,0,0) 1px 3px)}\n#viz{display:block;flex:1;width:100%;min-height:0}\n.lcd{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;padding-top:6px;border-top:1px solid rgba(143,240,214,.14)}\n.ro{display:flex;flex-direction:column;line-height:1.1}\n.ro em{font:700 9px/1.2 system-ui,-apple-system,Segoe UI,sans-serif;font-style:normal;letter-spacing:.14em;text-transform:uppercase;color:#7fc7b4}\n.ro b{font:700 17px/1.1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#b8ffe9;text-shadow:0 0 8px rgba(57,230,176,.55);font-variant-numeric:tabular-nums}\n.ro b i{font:700 10px/1 ui-monospace,Menlo,monospace;font-style:normal;color:#8fd9c4;margin-left:3px;text-shadow:none}\n.leds{display:flex;gap:7px;margin-left:auto;padding:8px 10px;border-radius:999px;background:#0e0d16;box-shadow:inset 0 0 0 1px #000,inset 0 1px 3px rgba(0,0,0,.7),0 1px 0 rgba(255,255,255,.06)}\n.leds i{width:10px;height:10px;border-radius:50%;background:#173a33;box-shadow:inset 0 1px 2px rgba(0,0,0,.6)}\n.leds i:first-child{background:#3a2c14}\n.leds i.on{background:#6bffcf;box-shadow:0 0 9px #39e6b0,inset 0 -1px 1px rgba(0,0,0,.3)}\n.leds i:first-child.on{background:#ffd06b;box-shadow:0 0 9px #ffb547}\n/* the transport */\n#sctl{display:flex;gap:10px 14px;align-items:center;margin-top:10px;flex-wrap:wrap;font-size:.79rem;color:#b6b3cc}\n#hit{display:inline-flex;align-items:center;gap:9px;font-size:.95rem;padding:7px 18px 7px 8px;border-radius:999px;font-weight:700;letter-spacing:.01em;color:#fff;\n  background:linear-gradient(180deg,#1ca47d,#107a5b);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 0 0 1px #0a3d2e,0 3px 0 #0a4a37,0 6px 18px -4px rgba(57,230,176,.55)}\n#hit:hover{background:linear-gradient(180deg,#22b58b,#12855f)}\n#hit:active{transform:translateY(2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 0 0 1px #0a3d2e,0 1px 0 #0a4a37}\n#hit:focus-visible{outline:2px solid #b8ffe9;outline-offset:3px}\n#hit .pi{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.25);box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}\n#hit .pi svg{width:15px;height:15px;display:block}\n#sctl.going #hit{background:linear-gradient(180deg,#c9523a,#9c3a26);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 0 0 1px #4d1a10,0 3px 0 #5e2114,0 6px 18px -4px rgba(255,107,74,.6)}\n.tm{font:700 13px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:#b8ffe9;background:#0a1716;border-radius:7px;padding:7px 10px;\n  box-shadow:inset 0 0 0 1px #000,inset 0 0 0 2px #1f2a2a;font-variant-numeric:tabular-nums;letter-spacing:.02em}\n.mst{flex:1 1 60px;min-width:40px;max-width:210px;margin-left:auto;height:12px;padding:3px;border-radius:999px;background:#0e0d16;box-shadow:inset 0 0 0 1px #000,0 1px 0 rgba(255,255,255,.06)}\n.mst i{display:block;height:100%;border-radius:999px;position:relative;overflow:hidden;\n  background:repeating-linear-gradient(90deg,rgba(0,0,0,0) 0 4px,#0e0d16 4px 5px),linear-gradient(90deg,#39e6b0 0 62%,#f2c14e 62% 84%,#ff4d6d 84%)}\n.mst i:after{content:'';position:absolute;top:0;bottom:0;right:0;width:calc(100% - var(--l,0) * 100%);background:rgba(14,13,22,.84)}\n.mst+.leds{margin-left:0}\n.cap{margin:8px 2px 12px;font-size:.78rem;line-height:1.45;color:#b1adca}\n/* ---- the deck: channel strips and the pads ---- */\n#deck{position:relative;overflow-x:auto;border-radius:12px;background:#15141f;padding:0 0 4px;\n  box-shadow:inset 0 0 0 1px #262436,0 8px 20px -12px rgba(0,0,0,.8);scrollbar-color:#3a3752 transparent}\n#dk{--cw:14px;--sw:136px;position:relative;width:max-content;min-width:100%}\n.row{display:flex;align-items:stretch}\n.corner,.strip{position:sticky;left:0;z-index:6;flex:0 0 var(--sw);width:var(--sw);box-sizing:border-box}\n.corner{background:#1b1a28;border-right:1px solid #2d2b42;display:flex;align-items:center;padding:0 10px}\n.corner span{font:700 9px/1 system-ui,-apple-system,Segoe UI,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#a09cc0}\n.lane{flex:1 1 auto;display:grid;grid-template-columns:repeat(var(--n),minmax(var(--cw),1fr));column-gap:2px;padding:0 10px 0 8px;min-width:0}\n/* the ruler */\n.rul{height:26px;border-bottom:1px solid #26243a;background:linear-gradient(180deg,#1f1d2d,#191826)}\n.rul .corner{background:linear-gradient(180deg,#1f1d2d,#1b1a28)}\n#bars .bn{grid-column:span 16;position:relative;display:flex;align-items:center;gap:6px;font:700 11px/1 ui-monospace,Menlo,monospace;color:#f3e3c8;padding-left:5px;\n  background:linear-gradient(90deg,#f2c14e 0 2px,rgba(0,0,0,0) 2px) left bottom/100% 9px no-repeat,\n    repeating-linear-gradient(90deg,rgba(214,209,255,.3) 0 1px,rgba(0,0,0,0) 1px calc(25% + .5px)) left bottom/100% 5px no-repeat}\n#bars .bn:after{content:'';flex:1;height:1px;margin-right:6px;background:linear-gradient(90deg,rgba(242,193,78,.35),rgba(242,193,78,0))}\n/* a track row */\n.trk{height:40px;background:linear-gradient(90deg,var(--cb),rgba(0,0,0,0) 60%)}\n.trk+.trk{border-top:1px solid rgba(255,255,255,.035)}\n.strip{display:flex;align-items:center;gap:8px;padding:0 8px 0 10px;background:linear-gradient(90deg,#211f31,#1b1a28);border-right:1px solid #2d2b42;\n  box-shadow:8px 0 12px -8px rgba(0,0,0,.7)}\n.strip:before{content:'';position:absolute;left:3px;top:7px;bottom:7px;width:3px;border-radius:3px;background:var(--c);box-shadow:0 0 8px var(--cg)}\n.ico{flex:0 0 30px;width:30px;height:30px;border-radius:9px;display:block;\n  background:radial-gradient(circle at 35% 28%,rgba(255,255,255,.16),rgba(255,255,255,0) 62%),linear-gradient(180deg,#34304a,#26233a);\n  box-shadow:inset 0 0 0 1px rgba(255,255,255,.1),0 0 0 1px rgba(0,0,0,.5),0 0 12px -4px var(--cg)}\n.ico svg{display:block;width:26px;height:26px;margin:2px}\n.tn{flex:1;min-width:0}\n.tn b{display:block;font:800 11px/1.25 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.05em;color:#f4f1ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}\n.tn small{display:block;font:600 10px/1.3 system-ui,-apple-system,Segoe UI,sans-serif;color:#aeaacb}\n.vu{display:flex;gap:2px;height:28px;flex:0 0 auto}\n.vu i{position:relative;width:4px;border-radius:1.5px;overflow:hidden;\n  background:repeating-linear-gradient(0deg,rgba(0,0,0,0) 0 2px,#15141f 2px 3px),linear-gradient(0deg,#39e6b0 0 58%,#f2c14e 58% 82%,#ff4d6d 82%)}\n.vu i:after{content:'';position:absolute;left:0;right:0;top:0;height:calc(100% - var(--l,0) * 100%);background:rgba(21,20,31,.86)}\n.vu i+i:after{height:calc(100% - var(--r,0) * 100%)}\n/* pads: rest, beat groups, measure lines, the column under the playhead */\n.st{grid-row:1;margin:5px 0;border-radius:5px;background:linear-gradient(180deg,#252335,#1e1c2c);\n  box-shadow:inset 0 1px 0 rgba(255,255,255,.05),inset 0 -2px 0 rgba(0,0,0,.3);position:relative}\n.st.g{background:linear-gradient(180deg,#2c2a40,#242236)}\n.st.b:before{content:'';position:absolute;left:3px;right:3px;top:3px;height:2px;border-radius:2px;background:rgba(214,209,255,.14)}\n.st.m:after{content:'';position:absolute;left:-3px;top:-6px;bottom:-6px;width:2px;margin-left:-1px;background:rgba(242,193,78,.34)}\n.st.cur{background:linear-gradient(180deg,#3d3a58,#34314d)}\n/* notes: a hit glows in its instrument's colour; a held note is one bar */\n.nt{grid-row:1;position:relative;z-index:2;margin:5px 0;border-radius:5px;background:linear-gradient(180deg,var(--c3),var(--c) 48%,var(--c2));\n  box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -2px 0 rgba(0,0,0,.25),0 0 0 1px rgba(0,0,0,.45),0 0 10px -1px var(--cg)}\n.nt.h{background:linear-gradient(180deg,var(--ca),var(--cb));box-shadow:inset 0 0 0 1px var(--cg),0 0 0 1px rgba(0,0,0,.45)}\n.nt.h .hd,.nt.h .fl{position:absolute;left:0;top:0;bottom:0;border-radius:5px}\n.nt.h .hd{width:calc((100% + 2px) / var(--h) - 2px);min-width:8px;background:linear-gradient(180deg,var(--c3),var(--c) 48%,var(--c2));\n  box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -2px 0 rgba(0,0,0,.25),0 0 10px -1px var(--cg)}\n.nt.h:after{content:'';position:absolute;right:4px;top:50%;width:4px;height:4px;margin-top:-2px;border-radius:50%;background:var(--c3);opacity:.7}\n.nt.h .fl{right:0;background:linear-gradient(90deg,rgba(255,255,255,0),var(--c) 70%,var(--c3));opacity:0;transform-origin:0 50%;transform:scaleX(0)}\n.nt.clip{border-radius:5px 8px 8px 5px}\n.nt.hit{animation:padhit .3s cubic-bezier(.2,.8,.3,1)}\n.nt.h.hit{animation:none}\n.nt.h.hit .hd{animation:padhit .3s cubic-bezier(.2,.8,.3,1)}\n@keyframes padhit{0%{transform:scale(1.18,1.3);filter:brightness(2.1) saturate(1.3)}100%{transform:none;filter:none}}\n.nt.go .fl{animation:fill var(--hd,.5s) linear forwards}\n@keyframes fill{0%{opacity:.85;transform:scaleX(0)}90%{opacity:.85}100%{opacity:.35;transform:scaleX(1)}}\n.nt.acc:before{content:'';position:absolute;left:50%;top:50%;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;pointer-events:none;\n  background:radial-gradient(closest-side,rgba(255,255,255,.85),var(--cg) 45%,rgba(0,0,0,0));animation:burst .42s ease-out forwards}\n.nt.h.acc:before{left:0;margin-left:-11px}\n@keyframes burst{0%{transform:scale(.3);opacity:1}100%{transform:scale(1.6);opacity:0}}\n.nt.was{filter:brightness(1.35)}\n/* the slice numbers */\n.slr{height:20px}\n.slr .corner{background:#1b1a28}\n.slnums i{grid-row:1;font:600 9px/20px ui-monospace,Menlo,monospace;font-style:normal;color:#a09cc0;text-align:center}\n.slnums i.b{color:#f3e3c8;font-weight:800}\n#play{position:absolute;left:0;top:0;bottom:4px;width:2px;margin-left:-1px;z-index:5;display:none;pointer-events:none;border-radius:2px;\n  background:linear-gradient(180deg,#fff2c4,#f2c14e);box-shadow:0 0 10px 1px rgba(242,193,78,.75)}\n#play:before{content:'';position:absolute;left:-5px;top:0;border:6px solid transparent;border-top:8px solid #f2c14e;border-bottom:0}\n/* the effects rack */\n#fx{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}\n.knob{display:flex;align-items:center;gap:7px;padding:5px 12px 5px 5px;border-radius:12px;background:linear-gradient(180deg,#22202f,#1b1a26);\n  box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 0 0 1px #2b2940}\n.knob svg{width:38px;height:38px;display:block}\n.kt b{display:block;font:700 11px/1.3 ui-monospace,Menlo,monospace;color:#f4f1ff}\n.kt small{display:block;font:600 10px/1.3 system-ui,-apple-system,Segoe UI,sans-serif;color:#aeaacb}\n/* the verdict, in the room's own glass */\n.verdict{margin:0 0 10px}\n.verdict.win{background:linear-gradient(90deg,rgba(57,230,176,.16),rgba(57,230,176,.05) 60%),#141f1e;border:1px solid rgba(57,230,176,.32);color:#b9f5dd;\n  box-shadow:inset 3px 0 0 #39e6b0,0 6px 18px -10px rgba(57,230,176,.5)}\n.verdict.win small{color:#a8d8c5;opacity:1}\n.verdict.lose{background:linear-gradient(90deg,rgba(255,107,74,.16),rgba(255,107,74,.05) 60%),#211716;border:1px solid rgba(255,107,74,.36);color:#ffc6b3;box-shadow:inset 3px 0 0 #ff6b4a}\n.verdict.lose small{color:#f0bca9;opacity:1}\n.verdict.idle{background:#1a1926;border:1px solid #2d2b42;color:#c9c5e0}\n.verdict.idle small{color:#aeaacb;opacity:1}\n.deckgap{height:10px}\n/* the reading of each rhythm string, as pads */\n.rb{background:linear-gradient(180deg,#1c1b28,#181722);border:1px solid #2b2940;border-radius:12px;padding:10px 12px;margin:0 0 10px}\n.rbh{font:600 12px/1.5 ui-monospace,Menlo,monospace;color:#d6d2ee;margin-bottom:6px}\n.rbh b{color:#f2c14e}\n.rbh code{color:#8ff0d6}\n.rbg{display:flex;gap:3px;margin:6px 0 8px;overflow-x:auto;padding:2px 1px 4px}\n.rbg i{flex:0 0 22px;width:22px;text-align:center;border-radius:6px;background:linear-gradient(180deg,#27253a,#201e30);font-style:normal;padding:2px 0 3px;\n  box-shadow:inset 0 1px 0 rgba(255,255,255,.05),inset 0 -2px 0 rgba(0,0,0,.3)}\n.rbg i.on{background:linear-gradient(180deg,#2fbf8f,#15785a);box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 0 9px -2px rgba(57,230,176,.8)}\n.rbg i.hd{background:linear-gradient(180deg,#5a4520,#43331a);box-shadow:inset 0 0 0 1px rgba(242,193,78,.4)}\n.rbg i.bt{box-shadow:inset 0 2px 0 #f2c14e,inset 0 -2px 0 rgba(0,0,0,.3)}\n.rbg i.on.bt{box-shadow:inset 0 2px 0 #ffe08a,inset 0 1px 0 rgba(255,255,255,.4),0 0 9px -2px rgba(57,230,176,.8)}\n.rbg i span{display:block;font:600 8px/1.3 ui-monospace,monospace;color:#a09cc0}\n.rbg i em{display:block;font:700 12px/1.4 ui-monospace,monospace;font-style:normal;color:#ece9ff}\n.rbg i.on em{color:#fff}\n.rbg i.on span{color:#e6fff5}\n.rbg i.hd span,.rbg i.hd em{color:#ffe7b0}\n.rbp{font:12px/1.55 -apple-system,Segoe UI,Roboto,sans-serif;color:#bcb8d4;margin:0}\n.rbp b{color:#f4f1ff}\n.rbw{font:600 12px/1.5 -apple-system,Segoe UI,Roboto,sans-serif;color:#f5c98c;margin:5px 0 0}\n/* phones: the stage and the screen stay side by side, smaller */\n@media (max-width:480px){\n  body{padding:10px 8px}\n  .rig{padding:8px 14px;border-radius:12px}\n  .rig:before,.rig:after{width:8px}\n  .rtop{grid-template-columns:118px minmax(0,1fr);gap:7px}\n  .stage,.scr{height:134px}\n  .hero{width:84px;height:84px;margin-left:-42px;bottom:5px}\n  .spk{bottom:9px;width:22%}\n  .spk.sl{left:2%}.spk.sr{right:2%}\n  .scr{padding:6px 7px 5px}\n  .lcd{gap:9px}\n  .ro b{font-size:14px}\n  .leds{gap:5px;padding:7px 8px}.leds i{width:8px;height:8px}\n  #sctl{gap:8px}\n  #hit{padding:6px 13px 6px 6px;font-size:.88rem;gap:7px}\n  #hit .pi{width:24px;height:24px}\n  .mst{display:none}\n  .leds{margin-left:auto}\n  .tm{font-size:12px;padding:7px 8px}\n  #dk{--cw:12px;--sw:108px}\n  .strip{gap:6px;padding:0 5px 0 9px}\n  .ico{flex-basis:26px;width:26px;height:26px;border-radius:8px}\n  .ico svg{width:22px;height:22px}\n  .vu i{width:3px}\n  .lane{padding:0 8px 0 6px;column-gap:2px}\n  .trk{height:36px}\n  .st,.nt{margin:4px 0}\n}\n/* a short frame (the desktop preview under a long coach note): the transport\n   moves up beside the screen, so the stage, the screen and Play all fit */\n@media (max-height:330px) and (min-width:481px){\n  body{padding-top:8px}\n  .rig{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:8px 20px}\n  .stage,.scr{height:118px}\n  .hero{width:84px;height:84px;margin-left:-42px;bottom:4px}\n  .rtop{grid-template-columns:minmax(0,200px) minmax(0,1fr)}\n  #sctl{flex-direction:column;align-items:stretch;margin-top:0;gap:8px;width:170px}\n  #hit{justify-content:flex-start}\n  .tm{text-align:center}\n  .mst{display:none}\n  .leds{margin:0;justify-content:center}\n}\n@media (prefers-reduced-motion:reduce){\n  .rig.going .hero .groove,.spk.th .cone,.stage.zap .neon,.nt.hit,.nt.h.hit .hd,.nt.go .fl,.nt.acc:before,.hero .fxo.amb.pulse svg{animation:none!important}\n  .nt.acc:before{display:none}\n  .stage .bulb,.stage .beam,.stage .pool{transition:none}\n}\n";
 const CONSOLE_CSS = "\n.term{background:#0d1017;border:1px solid #232936;border-radius:9px;padding:12px 14px;\n  font:13px/1.65 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word;color:#d7dbe2;min-height:60px}\n.term .pyerr{display:block;margin-top:10px;padding:9px 11px;border-radius:7px;background:#3a1f18;color:#f4b9a2;border-left:3px solid #c2542e;font-weight:600}\n.term .pyerr i{display:block;font-style:normal;font-weight:400;opacity:.8;font-size:.9em;margin-top:3px}\n.term .cursor{display:inline-block;width:7px;height:15px;background:#3f7d63;vertical-align:-2px;animation:bl 1.1s steps(2) infinite}\n@keyframes bl{50%{opacity:0}}\n.term .empty{color:#5f6879;font-style:italic}\ntable.tt{width:100%;border-collapse:collapse;font:12px/1.5 ui-monospace,Menlo,Consolas,monospace;margin-top:4px}\ntable.tt th{text-align:left;font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:#7c8598;padding:0 8px 5px;font-weight:600}\ntable.tt td{padding:6px 8px;border-top:1px solid #222834;vertical-align:top;word-break:break-word}\ntable.tt tr.p td:first-child{color:#6fd3a4}\ntable.tt tr.f td:first-child{color:#e8896a}\ntable.tt tr.f{background:#241a17}\ntable.tt .hid{color:#7c8598;font-style:italic}\ntable.tt .why{color:#e8896a;display:block;font-size:.92em;margin-top:2px}\n.rank{display:inline-block;background:#2a3142;color:#c6d0e0;border-radius:5px;padding:2px 7px;font-size:.68rem;font-weight:700;letter-spacing:.06em}\n";
 
 /* The hero on the board is YOUR character, if you made one. */
@@ -12989,7 +13017,7 @@ function questView(){
   var W = SPEC.w, H = SPEC.h, N = R.frames.length;
   var RM = false;
   try { RM = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e){}
-  var CELL = 30, PAD = 10;
+  var CELL = 30, PAD = 10, CMAX = 56;
   var T = N > 26 ? 110 : 260;          /* one frame of replay, in ms */
   var MV = Math.min(Math.round(T * 0.88), 220);   /* one step of movement */
   var board = document.getElementById("board");
@@ -13096,7 +13124,9 @@ function questView(){
     host._show = function(pose, dir, again){
       var k = pose + "_" + dir + (SMALL ? "_s" : "");
       if (host._k === k && !again) return;
-      if (host._k && host._p[host._k]) host._p[host._k].classList.remove("on");
+      /* every other pose off, not just the last one: a resize that crosses the
+         small-sprite size forgets which one was on, and two would stand stacked */
+      for (var pk in host._p) if (pk !== k) host._p[pk].classList.remove("on");
       if (!host._p[k]){
         var e = document.createElement("div"); e.className = "pose";
         e.innerHTML = make(pose, dir, k);
@@ -13115,6 +13145,13 @@ function questView(){
   }
   var hero = actor("hero"); hero.el.id = "hero";
   var heroDir = "r", heroPose = "idle", heroTimer = [], walkN = 0, heroBusy = 0, stepFx = null, winFx = null;
+  /* the ending keeps its own timers and, once it has played, the last word:
+     a stumble still settling from the final blow must not stand the hero
+     back up after the fall, or wipe the ending before it plays */
+  var endT = [], fin = false;
+  /* how long the current frame holds before the next one: a swing holds
+     until the blow has landed and whoever took it has gone down */
+  var hold = T;
   /* one walk frame per replay frame: each step's motion fills exactly one */
   hero.bod.style.setProperty("--wf", T + "ms");
   sprite(hero.bod, function(pose, dir, k){ return avatarSvg(HERO_LOOK, {id:"qh_" + k, pose:pose, dir:dir, small:SMALL}); }, 0);
@@ -13177,6 +13214,7 @@ function questView(){
     clearTimeout(board["_" + cls]); board["_" + cls] = setTimeout(function(){ board.classList.remove(cls); }, ms);
   }
   function setHero(pose, again){
+    if (fin) return;
     heroPose = pose; hero.bod._show(pose, heroDir, again);
     /* the red of a hit belongs to the stumble; the next move washes it out */
     if (pose !== "hurt") hero.el.classList.remove("flash");
@@ -13249,12 +13287,20 @@ function questView(){
     at(hero.el, f.x, f.y); z(hero.el, f.y, 3);
     at(pool, f.x, f.y);
     if (!live){
-      clear(heroTimer); hero.el.classList.remove("fall", "flash"); heroBusy = 0; stepFx = winFx = null;
+      clear(heroTimer); clear(endT); fin = false; hero.el.classList.remove("fall", "flash"); heroBusy = 0; stepFx = winFx = null;
       board.classList.remove("hfx-shake", "ffx-shake"); setHero("idle");
     }
     /* your blow lands a beat into the swing, at the class's own moment */
     var swung = live && /attack/.test(f.cmd || "") && !/^bumped/.test(f.note || "");
     var hitAt = swung ? HD.hit : 0, hitMs = Math.min(FK.dur.grubb.hit, Math.max(240, T * 1.5));
+    /* A frame lasts T, but a swing holds until its blow has landed (the
+       Architect's bolt takes 290ms, longer than a whole frame) and, on a
+       kill, until the foe has started to fold - otherwise the hero walks
+       into a square whose owner has not been hit yet */
+    if (live){
+      var kill = swung && foes.some(function(a){ var s = f.foes[a.i], p = prev.foes[a.i]; return s && p && p.alive && !s.alive; });
+      hold = swung ? Math.max(T, hitAt + (kill ? hitMs + (T < 200 ? 60 : 140) : (T < 200 ? 50 : 110))) : T;
+    }
     /* the foes */
     foes.forEach(function(a){
       var s = f.foes[a.i]; if (!s) return;
@@ -13373,6 +13419,8 @@ function questView(){
           a.busy = Math.max(a.busy, Date.now() + start + FD(a)[k.cast ? "cast" : "attack"]);
         });
         if (fast) landAt = Math.min(landAt, T - 10);
+        /* a slow replay waits for the blow to land and be felt */
+        else hold = Math.max(hold, landAt + 90);
         heroBusy = Date.now() + landAt;
         soon(function(){
           /* already walking on: the number and the effect, not the stumble */
@@ -13410,7 +13458,7 @@ function questView(){
   function ending(){
     var f = R.frames[N - 1];
     if (R.won){
-      clear(heroTimer); setHero("win", true);
+      clear(heroTimer); setHero("win", true); fin = true;
       /* the class's victory loop plays on until the next replay */
       winFx = heroFx("win", f.x, f.y, 0, 0);
       if (exitEl) exitEl.classList.add("won");
@@ -13429,17 +13477,17 @@ function questView(){
       }
     } else if (R.error && (f.hp <= 0 || /pit/.test(R.why || ""))){
       var pit = /pit/.test(R.why || "");
-      clear(heroTimer);
-      /* the last blow lands first, then the fall */
-      later(heroTimer, function(){
-        setHero("down", true); if (pit) hero.el.classList.add("fall");
+      /* the last blow lands first (and its stumble plays), then the fall */
+      later(endT, function(){
+        clear(heroTimer); setHero("down", true); fin = true;
+        if (pit) hero.el.classList.add("fall");
         board.classList.add("lost");
         var l = mk("downl", fxl, "<span></span>"); l.firstChild.textContent = pit ? "Fell in" : "Down"; at(l, f.x, f.y);
       }, Math.max(T, 280, heroBusy - Date.now() + 320));
     }
   }
   function reset(){
-    clear(pend);
+    clear(pend); clear(endT);
     board.classList.remove("lost");
     fxl.innerHTML = ""; bub = null;
     if (exitEl) exitEl.classList.remove("won");
@@ -13475,9 +13523,11 @@ function questView(){
     if (f.switchesOn.length > prev.switchesOn.length) sfx("SWITCH");
     if (f.doorsOpen.length > prev.doorsOpen.length) sfx("DOOR", 0.05);
   }
-  var at0 = 0, timer = null;
+  var at0 = 0, timer = null, running = false;
   function step(){
+    timer = null;
     if (at0 >= N){ stop(); return; }
+    hold = T;
     sound(R.frames[at0], at0 > 0 ? R.frames[at0 - 1] : null);
     draw(R.frames[at0], at0 > 0 ? R.frames[at0 - 1] : null);
     var blocks = trace.querySelectorAll(".blk");
@@ -13486,13 +13536,14 @@ function questView(){
     var cur = trace.querySelector(".blk.now");
     if (cur) trace.scrollLeft = Math.max(0, cur.offsetLeft - trace.clientWidth / 2);
     at0++;
-    if (at0 >= N) stop();
+    /* one frame at a time rather than an interval: a swing's frame holds longer */
+    if (at0 >= N) stop(); else timer = setTimeout(step, hold);
   }
   function stop(){
-    if (!timer) return;
-    clearInterval(timer); timer = null; document.getElementById("replay").disabled = false;
-    /* let the last step land before the ending plays over it */
-    later(heroTimer, ending, MV + 40);
+    if (!running) return;
+    running = false; clearTimeout(timer); timer = null; document.getElementById("replay").disabled = false;
+    /* let the last step (or the last blow) land before the ending plays over it */
+    later(endT, ending, Math.max(MV + 40, hold));
     if (!live) return;
     if (R.won){ sfx("WINA", 0.05); sfx("WINB", 0.17); sfx("WINC", 0.3); }
     else if (/pit/.test(R.why || "")) sfx("PIT", 0.05);
@@ -13500,19 +13551,21 @@ function questView(){
   }
   function go(){
     at0 = 0; live = true; document.getElementById("replay").disabled = true;
-    clearInterval(timer); reset();
+    clearTimeout(timer); reset();
     draw(R.frames[0], null);
-    timer = setInterval(step, T);
+    running = true; timer = setTimeout(step, T);
     at0 = 1;
     if (N < 2) stop();
   }
   document.getElementById("replay").onclick = go;
   var mute = document.getElementById("mute");
   if (mute){
-    mute.textContent = sndOn ? "🔊 Sound on" : "🔇 Sound off";
+    /* the words stay in the button (its name) even where only the icon shows */
+    var muteLbl = function(){ mute.innerHTML = "<span aria-hidden=\"true\">" + (sndOn ? "🔊" : "🔇") + "</span><span class=\"mlb\"> Sound " + (sndOn ? "on" : "off") + "</span>"; mute.title = sndOn ? "Sound on" : "Sound off"; };
+    muteLbl();
     mute.onclick = function(){
       sndOn = !sndOn;
-      mute.textContent = sndOn ? "🔊 Sound on" : "🔇 Sound off";
+      muteLbl();
       try { parent.postMessage({questSound: sndOn}, "*"); } catch (e){}
     };
   }
@@ -13520,7 +13573,7 @@ function questView(){
      stay in view; the verdict and the trace may scroll below them in a short
      frame, but only when the board would otherwise shrink to a squint. */
   function place(c){
-    CELL = c; PAD = c >= 34 ? 14 : c >= 27 ? 11 : 9;
+    CELL = c; PAD = padOf(c);
     board.style.setProperty("--c", c + "px"); board.style.setProperty("--pad", PAD + "px");
     var small = Math.round(c * 1.26) <= 32;
     if (small !== SMALL){
@@ -13529,8 +13582,11 @@ function questView(){
       foes.forEach(function(a){ a.bod._k = null; a.bod._show(a.pose, a.dir); });
     }
   }
+  function padOf(c){ return c >= 34 ? 14 : c >= 27 ? 11 : 9; }
   function fit(){
-    var qbar = document.querySelector(".qbar");
+    var qbar = document.querySelector(".qbar"), bd = document.body, was = bd.classList.contains("side");
+    /* stacked first: the board over the HUD, measured as it stands */
+    bd.classList.remove("side");
     var top = board.getBoundingClientRect().top + window.scrollY, bh = board.offsetHeight;
     /* everything that is not the board, down to the HUD, and down to the end */
     var coreRest = qbar.getBoundingClientRect().bottom + window.scrollY - bh + 10;
@@ -13540,8 +13596,21 @@ function questView(){
     var hCore = Math.floor((window.innerHeight - coreRest - frame) / H);
     var wFit = Math.floor((Math.min(window.innerWidth - 26, 720) - frame) / W);
     var c = hAll >= 30 ? hAll : Math.max(hAll, Math.min(hCore, 38));
-    c = Math.max(22, Math.min(52, wFit, c));
-    if (c === CELL) return;
+    c = Math.max(22, Math.min(CMAX, wFit, c));
+    /* side by side: the HUD takes a column (and a 16px gap), and the board
+       takes the whole height. Worth it only when it buys a bigger board, which
+       it does in the short, wide preview on a desktop */
+    var side = false, sw = window.innerWidth < 640 ? 196 : 210;
+    if (window.innerWidth >= 540){
+      var cs = CMAX;
+      for (var k = 0; k < 2; k++){
+        var pf = 2 * padOf(cs);
+        cs = Math.min(CMAX, Math.floor((window.innerHeight - 24 - pf) / H), Math.floor((Math.min(window.innerWidth - 42 - sw, 760) - pf) / W));
+      }
+      if (cs >= 22 && cs >= c + 2){ side = true; c = cs; }
+    }
+    if (side){ bd.classList.add("side"); bd.style.setProperty("--sw", sw + "px"); }
+    if (c === CELL && side === was) return;
     board.classList.add("still");
     place(c);
     void board.offsetWidth;
@@ -13967,119 +14036,520 @@ function soundKit(){
   return {bus:bus, room:room, voice:voice, noise:noise};
 }
 
-const SOUND_VIEW = [
-/* declared first because the track loop below fills it: a var used before its
-   own line is hoisted as undefined, and .push on undefined threw inside the
-   preview on every Sound Room lesson */
-'var ALLCELLS = [];',
-'var SC = soundRun(CODE);',
-'var deck = document.getElementById("deck");',
-'/* the board shows what you made - a second, empty measure you never wrote was',
-'   on it before, and at lesson two a bar you did not write is a question */',
-'var MEAS = Math.max(SC.measures, 1), COLS = MEAS * 16;',
-'var HUE = {};',
-'var PAL = ["#4f9ad8","#d8714f","#5fbf8a","#c07fd0","#d8b44f","#4fc3c3","#e07a9f","#8a9ad8"];',
-'Object.keys(SOUND_RECIPES).forEach(function(k, i){ HUE[k] = PAL[i % PAL.length]; });',
-'var bars = document.getElementById("bars");',
-'for (var m = 1; m <= MEAS; m++){ var b = document.createElement("span"); b.className = "bn"; b.textContent = m; b.style.width = (16 * 14 - 1) + "px"; bars.appendChild(b); }',
-'var used = SC.used.length ? SC.used : [1];',
-'used.forEach(function(t){',
-'  var row = document.createElement("div"); row.className = "trk";',
-'  var nm = document.createElement("span"); nm.className = "tname"; nm.textContent = "track " + t; row.appendChild(nm);',
-'  var steps = document.createElement("div"); steps.className = "steps";',
-'  var cells = [];',
-'  for (var i = 0; i < COLS; i++){',
-'    var c = document.createElement("i"); c.className = "st" + (i % 4 === 0 ? " bar" : "");',
-'    steps.appendChild(c); cells.push(c);',
-'  }',
-'  (SC.tracks[t] || []).forEach(function(nn){',
-'    var col = (nn.m - 1) * 16 + nn.step;',
-'    for (var h = 0; h < (nn.hold || 1); h++){',
-'      var c = cells[col + h]; if (!c) continue;',
-'      c.classList.add("on"); if (h) c.classList.add("hold");',
-'      c.style.background = HUE[nn.sound] || "#4f9ad8"; c.title = nn.sound;',
-'    }',
-'  });',
-'  row.appendChild(steps); deck.appendChild(row); ALLCELLS.push(cells);',
-'});',
-'/* slice numbers under the rows, so "slice 5" is a column you can point at */',
-'var nums = document.createElement("div"); nums.className = "slnums";',
-'for (var i = 0; i < COLS; i++){ var n = document.createElement("i"); n.textContent = (i % 16) + 1; if (i % 4 === 0) n.className = "b"; nums.appendChild(n); }',
-'deck.appendChild(nums);',
-'var head = document.getElementById("play");',
-'document.getElementById("deck").style.position = "relative";',
-'var fx = document.getElementById("fx");',
-'fx.innerHTML = SC.effects.length',
-'  ? SC.effects.map(function(e){ return "track " + e.track + " \u2192 " + e.effect + " " + e.value; }).join("<br>")',
-'  : "";',
-'var ctx = null, playing = false, litCol = -1, KIT = soundKit();',
-'function play(){',
-'  if (playing) return;',
-'  ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();',
-'  if (ctx.state === "suspended") ctx.resume();',
-'  playing = true;',
-'  var btn = document.getElementById("hit"); btn.textContent = "\u25A0 Stop";',
-'  document.getElementById("sctl").classList.add("going");',
-'  var spb = 60 / SC.tempo, sps = spb / 4, t0 = ctx.currentTime + 0.08;',
-'  var master = KIT.bus(ctx);',
-'  /* every track goes to the room a little, so even one kick sounds like it',
-'     happened somewhere rather than in a vacuum */',
-'  var verb = KIT.room(ctx, 1.5, 2.6), send = ctx.createGain();',
-'  send.gain.value = 0.14; send.connect(verb); verb.connect(master);',
-'  var outs = {};',
-'  used.forEach(function(t){',
-'    var g = ctx.createGain(); g.gain.value = 1; var last = g;',
-'    SC.effects.filter(function(e){ return e.track === t; }).forEach(function(e){',
-'      if (e.effect === "VOLUME") g.gain.value = Math.pow(10, e.value / 20);',
-'      if (e.effect === "FILTER"){ var f = ctx.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = e.value; last.connect(f); last = f; }',
-'      if (e.effect === "PAN" && ctx.createStereoPanner){ var p = ctx.createStereoPanner(); p.pan.value = e.value / 100; last.connect(p); last = p; }',
-'      if (e.effect === "DELAY" || e.effect === "REVERB"){',
-'        var d = ctx.createDelay(1.0); d.delayTime.value = e.effect === "DELAY" ? spb / 2 : 0.09;',
-'        var fb = ctx.createGain(); fb.gain.value = Math.min(0.72, e.value / 130);',
-'        last.connect(d); d.connect(fb); fb.connect(d); d.connect(master);',
-'      }',
-'    });',
-'    last.connect(master); last.connect(send); outs[t] = g;',
-'  });',
-'  used.forEach(function(t){',
-'    (SC.tracks[t] || []).forEach(function(nn){',
-'      var col = (nn.m - 1) * 16 + nn.step;',
-'      KIT.voice(ctx, nn.sound, t0 + col * sps, outs[t]);',
-'    });',
-'  });',
-'  var total = COLS * sps;',
-'  head.style.display = "block";',
-'  var start = performance.now();',
-'  (function tickHead(){',
-'    if (!playing) return;',
-'    var p = (performance.now() - start) / (total * 1000);',
-'    if (p >= 1) { stop(); return; }',
-'    head.style.left = (81 + p * COLS * 14) + "px";',
-'    /* the note you wrote lights up on the beat it plays: the whole point of',
-'       the Sound Room is that the code and the sound are the same thing */',
-'    var col = Math.floor(p * COLS);',
-'    if (col !== litCol){',
-'      ALLCELLS.forEach(function(cells){ if (cells[litCol]) cells[litCol].classList.remove("lit"); });',
-'      litCol = col;',
-'      ALLCELLS.forEach(function(cells){',
-'        var c = cells[col];',
-'        if (c && c.classList.contains("on") && !c.classList.contains("hold")) c.classList.add("lit");',
-'      });',
-'    }',
-'    requestAnimationFrame(tickHead);',
-'  })();',
-'  setTimeout(stop, total * 1000 + 300);',
-'}',
-'function stop(){',
-'  playing = false; head.style.display = "none";',
-'  ALLCELLS.forEach(function(cells){ cells.forEach(function(c){ c.classList.remove("lit"); }); });',
-'  litCol = -1;',
-'  document.getElementById("sctl").classList.remove("going");',
-'  document.getElementById("hit").textContent = "\u25B6 Play it";',
-'  if (ctx) { try { ctx.close(); } catch(e){} ctx = null; }',
-'}',
-'document.getElementById("hit").onclick = function(){ playing ? stop() : play(); };'
-].join('\n');
+/* The Sound Room's stage, run inside the preview. It is a function here so it
+   reads like code, and it goes into the frame as text (see SOUND_VIEW): CODE,
+   SOUND_RECIPES, HERO_LOOK, HERO_NAME and WON are set above it, and soundRun,
+   soundKit, avatarSvg and heroAnimKit arrive the same way. Plain ES5, like the
+   rest of what ships into a frame. */
+function soundView(){
+  var RM = false;
+  try { RM = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e){}
+  var SC = soundRun(CODE);
+  /* the board shows what you made - a second, empty measure you never wrote
+     would be a question at lesson two */
+  var MEAS = Math.max(SC.measures, 1), COLS = MEAS * 16;
+  var used = SC.used.length ? SC.used : [1];
+  var INK = "#2a1d33";
+
+  /* ---- one colour per instrument, so a kick is the same orange everywhere ---- */
+  var HUE = {KICK:"#ff6b4a", SNARE:"#ffb547", HAT:"#f2d14e", OPENHAT:"#d6ec6a", CLAP:"#ff7ab8", TOM:"#ff8f5e",
+    RIM:"#e8c170", SHAKER:"#b7e05a", BASS:"#9b6bff", SUBBASS:"#7f7bff", PLUCK:"#3fd4ff", PAD:"#39e6b0",
+    BELL:"#7fd8ff", LEAD:"#ff4d8d", ARP:"#4fe0d0", CHOIR:"#c49bff", STAB:"#e36bff", BLIP:"#6bffb8"};
+  var LOW = {KICK:1, TOM:1, BASS:1, SUBBASS:1}, CRACK = {SNARE:1, CLAP:1, RIM:1};
+  function hue(s){ return HUE[s] || "#8fb4ff"; }
+  function rgb(h){ var n = parseInt(h.slice(1), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; }
+  function mix(h, w, t){ var a = rgb(h), b = rgb(w); return "rgb(" + a.map(function(v, i){ return Math.round(v + (b[i] - v) * t); }).join(",") + ")"; }
+  function rgba(h, a){ return "rgba(" + rgb(h).join(",") + "," + a + ")"; }
+  /* every sound gets its colour family as custom properties, once */
+  var css = [];
+  Object.keys(HUE).concat(["_"]).forEach(function(k){
+    var c = k === "_" ? "#8fb4ff" : HUE[k];
+    css.push(".s-" + k + "{--c:" + c + ";--c2:" + mix(c, "#000000", 0.38) + ";--c3:" + mix(c, "#ffffff", 0.5)
+      + ";--cg:" + rgba(c, 0.55) + ";--ca:" + rgba(c, 0.3) + ";--cb:" + rgba(c, 0.13) + "}");
+  });
+  var pst = document.createElement("style"); pst.textContent = css.join("\n"); document.head.appendChild(pst);
+  function sk(s){ return "s-" + (HUE[s] ? s : "_"); }
+
+  /* ---- the instruments, drawn: @c colour, @d its shade, @l its light, @i ink, @k cream ---- */
+  var SW = ' stroke="@i" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"';
+  function stick(x1, y1, x2, y2){
+    var d = "M" + x1 + " " + y1 + "L" + x2 + " " + y2;
+    return '<path d="' + d + '" stroke="@i" stroke-width="3.4" stroke-linecap="round"/><path d="' + d + '" stroke="#f0cf9c" stroke-width="1.7" stroke-linecap="round"/>';
+  }
+  function cym(cy, rx){
+    return '<ellipse cx="16" cy="' + cy + '" rx="' + rx + '" ry="2.6" fill="@c"' + SW + '/><path d="M' + (16 - rx + 3) + " " + (cy - 0.6) + "Q16 " + (cy - 2.4) + " " + (16 + rx - 4) + " " + (cy - 0.8)
+      + '" stroke="@l" stroke-width="1.1" fill="none" stroke-linecap="round"/><ellipse cx="16" cy="' + (cy - 0.8) + '" rx="2.4" ry="1.3" fill="@d"/>';
+  }
+  var ICON = {
+    KICK: '<path d="M8.5 26 6 30M23.5 26 26 30" stroke="@i" stroke-width="2" stroke-linecap="round"/><circle cx="16" cy="15" r="12.2" fill="@c"' + SW + '/>'
+      + '<circle cx="16" cy="15" r="9" fill="#f6ead6" stroke="@d" stroke-width="1"/><circle cx="16" cy="15" r="4" fill="none" stroke="@c" stroke-width="1.8"/>'
+      + '<path d="M9.4 11a7.6 7.6 0 0 1 5-4.2" stroke="#fff" stroke-width="1.3" fill="none" stroke-linecap="round" opacity=".9"/>'
+      + '<circle cx="16" cy="3.8" r="1.1" fill="@i"/><circle cx="27.2" cy="15" r="1.1" fill="@i"/><circle cx="4.8" cy="15" r="1.1" fill="@i"/>',
+    SNARE: stick(6, 3.5, 18, 12) + stick(26, 3.5, 14, 12)
+      + '<path d="M5 15v8.5c0 2 5 3.6 11 3.6s11-1.6 11-3.6V15" fill="@c"' + SW + '/><path d="M8 17.5l2.4 7.4 2.4-7.4 2.4 7.4 2.4-7.4 2.4 7.4 2.4-7.4" stroke="@d" stroke-width="1.2" fill="none" stroke-linejoin="round"/>'
+      + '<ellipse cx="16" cy="15" rx="11" ry="3.6" fill="#f6ead6"' + SW + '/><path d="M8.4 14.2q3-1.6 7-1.8" stroke="#fff" stroke-width="1.1" fill="none" stroke-linecap="round"/>',
+    HAT: '<path d="M16 12v15M16 27l-6 3M16 27l6 3" stroke="@i" stroke-width="2" stroke-linecap="round"/>' + cym(15, 11) + cym(11.6, 11),
+    OPENHAT: '<path d="M16 9v18M16 27l-6 3M16 27l6 3" stroke="@i" stroke-width="2" stroke-linecap="round"/>' + cym(16.5, 11) + cym(8.2, 11)
+      + '<path d="M2.5 12h2.2M27.3 12h2.2" stroke="@l" stroke-width="1.4" stroke-linecap="round"/>',
+    CLAP: '<g transform="rotate(-22 12 20)"><rect x="6.2" y="9" width="10" height="17" rx="5" fill="#f2c7a0"' + SW + '/><path d="M8.6 12.5q1.4-1.6 3.4-1.8" stroke="#fff" stroke-width="1.1" fill="none" stroke-linecap="round"/><rect x="6.2" y="22.5" width="10" height="5" rx="1.6" fill="@c"' + SW + '/></g>'
+      + '<g transform="rotate(22 20 20)"><rect x="15.8" y="9" width="10" height="17" rx="5" fill="#e9b88f"' + SW + '/><rect x="15.8" y="22.5" width="10" height="5" rx="1.6" fill="@d"' + SW + '/></g>'
+      + '<path d="M16 1.8v3.4M10.4 3.4l1.6 2.6M21.6 3.4 20 6" stroke="@c" stroke-width="1.8" stroke-linecap="round"/>',
+    TOM: '<path d="M8 25.5 6 30.5M24 25.5l2 5" stroke="@i" stroke-width="2" stroke-linecap="round"/><path d="M5 11v11c0 2.4 5 4.2 11 4.2s11-1.8 11-4.2V11" fill="@c"' + SW + '/>'
+      + '<path d="M9 13.5v11M16 14.6v11.5M23 13.5v11" stroke="@d" stroke-width="1.2"/><ellipse cx="16" cy="11" rx="11" ry="4" fill="#f6ead6"' + SW + '/>'
+      + '<path d="M8.6 10q3.4-1.9 7.6-2" stroke="#fff" stroke-width="1.1" fill="none" stroke-linecap="round"/>' + stick(24, 2.5, 18.5, 9),
+    RIM: stick(27, 4, 9, 15.5) + '<path d="M4 17v7c0 2 5.4 3.4 12 3.4S28 26 28 24v-7" fill="@c"' + SW + '/><ellipse cx="16" cy="17" rx="12" ry="3.6" fill="#f6ead6"' + SW + '/>'
+      + '<path d="M5.2 11.6 3 9.6M8 10.2l-.4-3M3.6 14.6l-2.6-.4" stroke="@l" stroke-width="1.5" stroke-linecap="round"/>',
+    SHAKER: '<g transform="rotate(-30 16 16)"><ellipse cx="16" cy="16" rx="7.6" ry="11" fill="@c"' + SW + '/><path d="M8.6 14.4h14.8" stroke="@d" stroke-width="1.4"/><path d="M12.2 9.4q1.6-3 4.2-3.4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/></g>'
+      + '<path d="M3.2 21.5q-1.6-3 0-6.2M28.8 10.5q1.6 3 0 6.2M6.6 25.4q-2-1.6-2.6-4" stroke="@l" stroke-width="1.5" fill="none" stroke-linecap="round"/>',
+    BASS: '<path d="M14.6 17.4 26.6 5.4" stroke="@i" stroke-width="4.2" stroke-linecap="round"/><path d="M14.6 17.4 26.6 5.4" stroke="#b07a4e" stroke-width="2.4" stroke-linecap="round"/>'
+      + '<path d="M17.4 12.2l2.4 2.4M20.2 9.4l2.4 2.4" stroke="#f3e3c8" stroke-width=".9"/>'
+      + '<path d="M24.8 2.6l4.6 4.6 1.6-1.8-4.4-4.6Z" fill="@d"' + SW + '/><circle cx="28.6" cy="2.8" r=".9" fill="#f3e3c8"/><circle cx="30.4" cy="4.8" r=".9" fill="#f3e3c8"/>'
+      + '<circle cx="10.4" cy="21.6" r="8" fill="@c"' + SW + '/><circle cx="16" cy="16" r="5.4" fill="@c"' + SW + '/>'
+      + '<circle cx="10.4" cy="21.6" r="7.2" fill="@c"/><circle cx="16" cy="16" r="4.6" fill="@c"/>'
+      + '<path d="M8.4 18.2l5.4 5.4M11 15.8l5.2 5.2" stroke="@i" stroke-width="2" stroke-linecap="round"/><path d="M12.6 19.6l4-4" stroke="#f3e3c8" stroke-width=".8"/>'
+      + '<path d="M4.8 18.8q1.2-3.4 4.6-4.6" stroke="#fff" stroke-width="1.3" fill="none" stroke-linecap="round" opacity=".85"/>',
+    SUBBASS: '<rect x="3.5" y="3.5" width="25" height="25" rx="5" fill="#2b2536"' + SW + '/><circle cx="16" cy="16" r="10" fill="@d" stroke="@i" stroke-width="1.2"/>'
+      + '<circle cx="16" cy="16" r="7.2" fill="@c"/><circle cx="16" cy="16" r="4.4" fill="@d"/><circle cx="16" cy="16" r="2.6" fill="@l"/><path d="M10.4 11.6a7 7 0 0 1 4-3" stroke="#fff" stroke-width="1.2" fill="none" stroke-linecap="round"/>',
+    PLUCK: '<path d="M8 28.5V5.5c7 0 10.5 4.6 12.6 9.6 1.8 4.2 4.4 7.4 6.2 13.4Z" fill="@cb" stroke="@c" stroke-width="3" stroke-linejoin="round"/>'
+      + '<path d="M8 28.5V5.5c7 0 10.5 4.6 12.6 9.6 1.8 4.2 4.4 7.4 6.2 13.4Z" fill="none" stroke="@i" stroke-width="1.2" stroke-linejoin="round"/>'
+      + '<path d="M11.6 7v21.5M15.2 8.8v19.7M18.6 12v16.5M22 18v10.5" stroke="#f6ead6" stroke-width="1.1"/><path d="M5.6 29h22" stroke="@i" stroke-width="2.2" stroke-linecap="round"/>',
+    PAD: '<path d="M4 9q3-5 6 0t6 0 6 0 6 0" stroke="@l" stroke-width="1.8" fill="none" stroke-linecap="round"/>'
+      + '<rect x="2.5" y="13" width="27" height="15" rx="3" fill="@c"' + SW + '/><rect x="4.6" y="17.6" width="22.8" height="8.6" rx="1" fill="#f6ead6" stroke="@i" stroke-width="1"/>'
+      + '<path d="M8.4 17.6v8.6M12.2 17.6v8.6M16 17.6v8.6M19.8 17.6v8.6M23.6 17.6v8.6" stroke="@i" stroke-width=".8"/>'
+      + '<path d="M7.4 17.6h2v4.6h-2ZM11.2 17.6h2v4.6h-2ZM18.8 17.6h2v4.6h-2ZM22.6 17.6h2v4.6h-2Z" fill="@i"/><circle cx="6.6" cy="15.3" r="1" fill="@l"/><circle cx="10" cy="15.3" r="1" fill="@l"/>',
+    BELL: '<path d="M16 3.6v2.4" stroke="@i" stroke-width="2.4" stroke-linecap="round"/><path d="M16 5.8c-5.4 0-8 4.2-8 9.4 0 4-1.6 6.4-3.4 8.2h22.8c-1.8-1.8-3.4-4.2-3.4-8.2 0-5.2-2.6-9.4-8-9.4Z" fill="@c"' + SW + '/>'
+      + '<circle cx="16" cy="26.2" r="2.6" fill="@d"' + SW + '/><path d="M11 12.4q.8-3.2 3.6-4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/><path d="M4.6 23.4h22.8" stroke="@i" stroke-width="1.6" stroke-linecap="round"/>',
+    LEAD: '<rect x="2.5" y="6" width="27" height="20" rx="4" fill="@c"' + SW + '/><rect x="5.2" y="9" width="21.6" height="10" rx="2" fill="#1c1428" stroke="@i" stroke-width="1"/>'
+      + '<path d="M7 17l4.4-6.2V17l4.4-6.2V17l4.4-6.2V17l4-6" stroke="@l" stroke-width="1.4" fill="none" stroke-linejoin="round"/>'
+      + '<circle cx="9" cy="22.6" r="1.8" fill="#f6ead6" stroke="@i" stroke-width="1"/><circle cx="15" cy="22.6" r="1.8" fill="#f6ead6" stroke="@i" stroke-width="1"/><path d="M19.6 22.6h6.4" stroke="@d" stroke-width="2.2" stroke-linecap="round"/>',
+    ARP: '<path d="M10.2 24.4V13.2l8-3.2v11.2l8-3.2V6.8" stroke="@i" stroke-width="1.8" fill="none" stroke-linejoin="round"/><path d="M10.2 13.2l16-6.4" stroke="@i" stroke-width="3" stroke-linecap="round"/>'
+      + '<ellipse cx="7.6" cy="25" rx="3.4" ry="2.6" transform="rotate(-20 7.6 25)" fill="@c"' + SW + '/><ellipse cx="15.6" cy="21.8" rx="3.4" ry="2.6" transform="rotate(-20 15.6 21.8)" fill="@c"' + SW + '/>'
+      + '<ellipse cx="23.6" cy="18.6" rx="3.4" ry="2.6" transform="rotate(-20 23.6 18.6)" fill="@c"' + SW + '/><path d="M5.8 24.2q1-1.2 2.4-1.4" stroke="#fff" stroke-width="1" fill="none" stroke-linecap="round"/>',
+    CHOIR: '<path d="M3 29c0-4 2.4-6.4 5.6-6.4S14.2 25 14.2 29M17.8 29c0-4 2.4-6.4 5.6-6.4S29 25 29 29" fill="@d"' + SW + '/><path d="M9.4 29.5c0-5 2.8-8 6.6-8s6.6 3 6.6 8" fill="@c"' + SW + '/>'
+      + '<circle cx="8.6" cy="17.6" r="3.8" fill="#f2c7a0"' + SW + '/><circle cx="23.4" cy="17.6" r="3.8" fill="#e9b88f"' + SW + '/><circle cx="16" cy="14.4" r="4.4" fill="#f2c7a0"' + SW + '/>'
+      + '<ellipse cx="16" cy="16" rx="1.2" ry="1.5" fill="@i"/><ellipse cx="8.6" cy="19" rx=".9" ry="1.1" fill="@i"/><ellipse cx="23.4" cy="19" rx=".9" ry="1.1" fill="@i"/>'
+      + '<path d="M23 4.6v4.6M23 4.6l3 .9" stroke="@l" stroke-width="1.4" stroke-linecap="round"/><circle cx="22" cy="9.4" r="1.4" fill="@l"/>',
+    STAB: '<path d="M16 2.5l3 7.2 7.6-2.4-3.8 6.8 6.8 3.9-7.8 1.4 1.2 7.8-7-4-7 4 1.2-7.8-7.8-1.4 6.8-3.9-3.8-6.8 7.6 2.4Z" fill="@c"' + SW + '/>'
+      + '<path d="M16 9.6l1.8 4.4 4.4.2-3.4 2.9 1.2 4.3-4-2.5-4 2.5 1.2-4.3-3.4-2.9 4.4-.2Z" fill="@l"/><path d="M11.4 8.4l-1.6-2.8" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/>',
+    BLIP: '<path d="M10 7h2v2h-2zM20 7h2v2h-2zM12 9h8v2h2v2h2v6h-2v-2h-2v4h-2v-2h-2v2h-2v-2h-2v2h-2v-4H8v2H6v-6h2v-2h2V9Z" fill="@c" stroke="@i" stroke-width="1.2" stroke-linejoin="round"/>'
+      + '<path d="M11 13h2v2h-2zM19 13h2v2h-2z" fill="@i"/><path d="M11 9.4h3" stroke="#fff" stroke-width="1.1"/><path d="M4 26.5h3v-2h3v2h3v-2h3v2h3v-2h3v2h3v-2h3" stroke="@l" stroke-width="1.3" fill="none"/>',
+    _: '<path d="M13 23.6V7.4l10-2.4v4.6l-10 2.4" stroke="@i" stroke-width="1.8" fill="@c" stroke-linejoin="round"/><ellipse cx="9.6" cy="23.8" rx="4.2" ry="3.2" transform="rotate(-20 9.6 23.8)" fill="@c"' + SW + '/>'
+  };
+  function icon(s){
+    var c = hue(s);
+    return '<svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">' + (ICON[s] || ICON._).replace(/@c/g, c).replace(/@d/g, mix(c, "#000000", 0.4))
+      .replace(/@l/g, mix(c, "#ffffff", 0.55)).replace(/@i/g, INK).replace(/@cb/g, rgba(c, 0.25)) + '</svg>';
+  }
+
+  function mk(tag, cls, parent, html){
+    var e = document.createElement(tag); if (cls) e.className = cls;
+    if (html) e.innerHTML = html;
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+
+  /* ---- the deck: a ruler, one lane per track, the slice numbers under it ---- */
+  var deck = document.getElementById("deck"), dk = document.getElementById("dk");
+  dk.style.setProperty("--n", COLS);
+  if (COLS > 16) deck.classList.add("wide");
+  var rul = mk("div", "row rul", dk);
+  mk("div", "corner", rul, "<span>Bar</span>");
+  var bars = mk("div", "lane", rul); bars.id = "bars";
+  for (var m = 1; m <= MEAS; m++){ var bn = mk("span", "bn", bars); bn.textContent = m; }
+  var rows = [], starts = [];
+  for (var c0 = 0; c0 < COLS; c0++) starts.push([]);
+  var CUR = [];   /* the pads in each column, for the column the playhead is on */
+  for (var c1 = 0; c1 < COLS; c1++) CUR.push([]);
+  used.forEach(function(t, ti){
+    var notes = SC.tracks[t] || [], snd = [];
+    notes.forEach(function(n){ if (snd.indexOf(n.sound) < 0) snd.push(n.sound); });
+    var row = mk("div", "row trk " + sk(snd[0] || ""), dk);
+    var strip = mk("div", "strip", row);
+    mk("span", "ico", strip, icon(snd[0] || ""));
+    var tn = mk("span", "tn", strip);
+    mk("b", "", tn).textContent = snd.length ? snd.join(" · ") : "empty";
+    mk("small", "", tn).textContent = "track " + t;
+    var vu = mk("span", "vu", strip, "<i></i><i></i>");
+    vu.setAttribute("aria-hidden", "true");
+    var lane = mk("div", "lane", row);
+    for (var i = 0; i < COLS; i++){
+      var st = mk("i", "st" + (Math.floor(i / 4) % 2 ? " g" : "") + (i % 4 === 0 ? " b" : "") + (i && i % 16 === 0 ? " m" : ""), lane);
+      /* placed, not flowed: an auto-placed pad steps round a note placed over it */
+      st.style.gridColumn = i + 1;
+      CUR[i].push(st);
+    }
+    var R = {el:row, vu:vu, lvl:0, tau:0.2, vol:1};
+    SC.effects.forEach(function(e){ if (e.track === t && e.effect === "VOLUME") R.vol = Math.pow(10, e.value / 20); });
+    notes.forEach(function(nn){
+      var col = (nn.m - 1) * 16 + nn.step; if (col >= COLS) return;
+      /* fitMedia strikes once a beat and lets it ring: drawn as the beat it fills */
+      var h = Math.min(nn.hold || (nn.from === "fitMedia" ? 4 : 1), COLS - col);
+      var e = mk("b", "nt " + sk(nn.sound) + (h > 1 ? " h" : "") + (nn.from === "fitMedia" ? " clip" : ""), lane,
+        h > 1 ? '<i class="hd"></i><i class="fl"></i>' : "");
+      e.style.gridColumn = (col + 1) + " / span " + h;
+      e.style.setProperty("--h", h);
+      e.title = nn.sound;
+      starts[col].push({el:e, row:R, sound:nn.sound, hold:h, acc:col % 16 === 0 || !!LOW[nn.sound] && col % 4 === 0});
+    });
+    rows.push(R);
+  });
+  /* slice numbers under the rows, so "slice 5" is a column you can point at */
+  var sl = mk("div", "row slr", dk);
+  mk("div", "corner", sl, "<span>Slice</span>");
+  var nums = mk("div", "lane slnums", sl);
+  for (var k = 0; k < COLS; k++){ var ni = mk("i", k % 4 === 0 ? "b" : "", nums); ni.textContent = (k % 16) + 1; }
+  var head = mk("div", "", dk); head.id = "play"; head.setAttribute("aria-hidden", "true");
+
+  /* ---- the effects, as knobs on a rack ---- */
+  var fx = document.getElementById("fx");
+  var RANGE = {VOLUME:[-24, 6, " dB"], FILTER:[120, 9000, " Hz"], DELAY:[0, 100, "%"], PAN:[-100, 100, ""], REVERB:[0, 100, "%"]};
+  SC.effects.forEach(function(e){
+    var r = RANGE[e.effect], f = (e.value - r[0]) / (r[1] - r[0]);
+    if (e.effect === "FILTER") f = Math.log(e.value / r[0]) / Math.log(r[1] / r[0]);
+    var a = -135 + f * 270, rad = function(d){ return (d - 90) * Math.PI / 180; };
+    var x = function(d){ return (20 + 14 * Math.cos(rad(d))).toFixed(1); }, y = function(d){ return (20 + 14 * Math.sin(rad(d))).toFixed(1); };
+    var big = (a + 135) > 180 ? 1 : 0;
+    var arc = f > 0.005 ? '<path d="M' + x(-135) + " " + y(-135) + "A14 14 0 " + big + " 1 " + x(a) + " " + y(a) + '" stroke="#39e6b0" stroke-width="3" fill="none" stroke-linecap="round"/>' : "";
+    var val = e.effect === "PAN" ? (e.value === 0 ? "centre" : Math.abs(e.value) + (e.value < 0 ? " L" : " R")) : (e.value > 0 && e.effect === "VOLUME" ? "+" : "") + e.value + r[2];
+    var kn = mk("div", "knob", fx,
+      '<svg viewBox="0 0 40 40" aria-hidden="true" focusable="false"><path d="M' + x(-135) + " " + y(-135) + 'A14 14 0 1 1 ' + x(135) + " " + y(135) + '" stroke="#2c2a40" stroke-width="3" fill="none" stroke-linecap="round"/>' + arc
+      + '<circle cx="20" cy="20" r="9.6" fill="#322f45" stroke="' + INK + '" stroke-width="1.6"/><circle cx="18" cy="17.6" r="5" fill="#46425e" opacity=".7"/>'
+      + '<path d="M20 20L' + (20 + 7.4 * Math.cos(rad(a))).toFixed(1) + " " + (20 + 7.4 * Math.sin(rad(a))).toFixed(1) + '" stroke="#f3e3c8" stroke-width="2.2" stroke-linecap="round"/></svg>'
+      + '<span class="kt"><b></b><small></small></span>');
+    kn.querySelector("b").textContent = e.effect + " " + val;
+    kn.querySelector("small").textContent = "track " + e.track;
+  });
+  if (!SC.effects.length) fx.style.display = "none";
+
+  /* ---- the stage ---- */
+  var stage = document.getElementById("stage"), rig = document.getElementById("rig");
+  var bulbs = "";
+  for (var bi = 0; bi < 9; bi++){
+    var bx = 14 + bi * 26.5, by = 9 + Math.sin(Math.PI * (bi + 0.5) / 9) * 11;
+    bulbs += '<circle class="bulb b' + (bi % 2) + '" cx="' + bx.toFixed(1) + '" cy="' + by.toFixed(1) + '" r="2.6" fill="' + ["#ffcf6b", "#ff8fb8", "#8ff0d6"][bi % 3] + '"/>';
+  }
+  var panels = "";
+  for (var py = 0; py < 3; py++) for (var px = 0; px < 8; px++){
+    var X = 2 + px * 30 + (py % 2 ? 15 : 0), Y = 16 + py * 30;
+    panels += '<path d="M' + X + " " + (Y + 13) + "L" + (X + 13) + " " + Y + "L" + (X + 26) + " " + (Y + 13) + "L" + (X + 13) + " " + (Y + 26) + 'Z" fill="url(#sgP)"/>'
+      + '<path d="M' + (X + 2.4) + " " + (Y + 13) + "L" + (X + 13) + " " + (Y + 2.4) + "L" + (X + 23.6) + " " + (Y + 13) + '" fill="none" stroke="#4a3a78" stroke-width=".8" opacity=".7"/>';
+  }
+  var planks = "";
+  for (var pk = 0; pk < 7; pk++) planks += '<path d="M' + (pk * 40 - 20) + ' 150L' + (pk * 34 + 3) + ' 116" stroke="#24170f" stroke-width="1" opacity=".7"/>';
+  var noteP = "M199 30v22.6a5.6 4.4 0 1 1-2.4-3.6V26l14 4.6v6.4l-11.6-3.8";
+  stage.insertAdjacentHTML("afterbegin",
+    '<svg class="bg" viewBox="0 0 240 150" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false"><defs>'
+    + '<linearGradient id="sgW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a1f49"/><stop offset="1" stop-color="#171328"/></linearGradient>'
+    + '<linearGradient id="sgP" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3a2d63"/><stop offset=".55" stop-color="#2b2150"/><stop offset="1" stop-color="#1e1838"/></linearGradient>'
+    + '<linearGradient id="sgF" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5a3b28"/><stop offset="1" stop-color="#2e1d14"/></linearGradient>'
+    + '<linearGradient id="sgB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd98a" stop-opacity=".5"/><stop offset="1" stop-color="#ffb547" stop-opacity="0"/></linearGradient>'
+    + '<radialGradient id="sgR" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#8a3d6a"/><stop offset=".7" stop-color="#5e2750"/><stop offset="1" stop-color="#3f1a3a"/></radialGradient>'
+    + '<radialGradient id="sgG" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ff4d8d" stop-opacity=".42"/><stop offset="1" stop-color="#ff4d8d" stop-opacity="0"/></radialGradient>'
+    + '</defs><rect width="240" height="150" fill="url(#sgW)"/>' + panels
+    + '<rect width="240" height="150" fill="#120e22" opacity=".28"/>'
+    + '<g class="neon"><circle cx="203" cy="41" r="24" fill="url(#sgG)"/><path d="' + noteP + '" fill="none" stroke="#ff4d8d" stroke-width="6" stroke-linejoin="round" opacity=".25"/>'
+    + '<path d="' + noteP + '" fill="none" stroke="#ff7fae" stroke-width="2.4" stroke-linejoin="round"/><path d="' + noteP + '" fill="none" stroke="#ffe0ec" stroke-width=".9" stroke-linejoin="round"/></g>'
+    + '<path d="M0 6Q120 40 240 6" fill="none" stroke="#0d0a18" stroke-width="1"/>' + bulbs
+    + '<path class="beam" d="M104 0h32l48 130H56Z" fill="url(#sgB)"/>'
+    + '<path d="M0 116h240v34H0Z" fill="url(#sgF)"/>' + planks
+    + '<path d="M0 116h240" stroke="#a0714c" stroke-width="1.4"/><path d="M0 118.2h240" stroke="#1f140d" stroke-width="1.2" opacity=".8"/>'
+    + '<ellipse cx="120" cy="134" rx="58" ry="11.5" fill="url(#sgR)" stroke="#2a1d33" stroke-width="1.4"/><ellipse cx="120" cy="134" rx="48" ry="8.2" fill="none" stroke="#c9922e" stroke-width=".9" stroke-dasharray="3 2.4" opacity=".75"/>'
+    + '<ellipse class="pool" cx="120" cy="132" rx="40" ry="7" fill="#ffd98a" opacity=".16"/>'
+    + '</svg>');
+  function speaker(side){
+    return '<div class="spk ' + side + '"><svg viewBox="0 0 40 64" aria-hidden="true" focusable="false">'
+      + '<rect x="3" y="2" width="34" height="60" rx="4" fill="#221d2e" stroke="' + INK + '" stroke-width="2"/><rect x="5.5" y="4.5" width="29" height="55" rx="2.6" fill="#1a1624"/>'
+      + '<path d="M6.4 6h27" stroke="#4a4160" stroke-width="1.2" stroke-linecap="round"/>'
+      + '<circle cx="20" cy="17" r="6.4" fill="#2e2840" stroke="' + INK + '" stroke-width="1.4"/><circle cx="20" cy="17" r="3" fill="#8a82a8"/><circle cx="19" cy="16" r="1" fill="#e6e0ff"/>'
+      + '<g class="cone"><circle cx="20" cy="42" r="13" fill="#2e2840" stroke="' + INK + '" stroke-width="1.6"/><circle cx="20" cy="42" r="10.4" fill="#3b3452"/>'
+      + '<circle cx="20" cy="42" r="7.4" fill="#4a4266" stroke="#2a2440" stroke-width="1"/><circle cx="20" cy="42" r="3.6" fill="#6f678f"/><path d="M13.4 37.4a8 8 0 0 1 4.6-3.6" stroke="#a79fcf" stroke-width="1.1" fill="none" stroke-linecap="round"/></g>'
+      + '<circle cx="7.6" cy="58" r=".9" fill="#5a5174"/><circle cx="32.4" cy="58" r=".9" fill="#5a5174"/></svg></div>';
+  }
+  stage.insertAdjacentHTML("beforeend", speaker("sl") + speaker("sr"));
+
+  /* ---- the hero: your character, playing its class's moves in time ---- */
+  var HK = heroAnimKit();
+  var kst = document.createElement("style"); kst.textContent = HK.css; document.head.appendChild(kst);
+  var HC = /^(builder|sleuth|architect|bard)$/.test(HERO_LOOK && HERO_LOOK.cls) ? HERO_LOOK.cls : "builder";
+  var HD = HK.dur[HC], T0 = Date.now(), nfx = 0;
+  var heroEl = document.getElementById("hero"), groove = heroEl.querySelector(".groove"), bod = heroEl.querySelector(".bod"), hfx = heroEl.querySelector(".hfx");
+  heroEl.classList.add("hc-" + HC);
+  var poses = {}, poseK = null;
+  function show(pose, again){
+    if (poseK === pose && !again) return;
+    if (poseK && poses[poseK]) poses[poseK].classList.remove("on");
+    if (!poses[pose]){ poses[pose] = mk("div", "pose", bod, avatarSvg(HERO_LOOK, {id:"sh_" + pose, pose:pose, dir:"r"})); }
+    bod.style.setProperty("--ad", -((Date.now() - T0) % 600000) + "ms");
+    if (poseK === pose) void bod.offsetWidth;
+    poses[pose].classList.add("on"); poseK = pose;
+  }
+  var amb = null, ambK = "";
+  function ambient(want){
+    if (ambK === want) return;
+    if (amb){ amb.parentNode.removeChild(amb); amb = null; }
+    ambK = want;
+    var svg = want && !RM ? HK.fx(HC, want, {id:"ha" + (++nfx), dir:"r"}) : "";
+    if (svg){ amb = mk("div", "fxo amb", hfx, svg); amb.style.setProperty("--ad", bod.style.getPropertyValue("--ad")); }
+  }
+  function oneFx(name){
+    if (RM) return;
+    var svg = HK.fx(HC, name, {id:"hx" + (++nfx), dir:"r"}); if (!svg) return;
+    var e = mk("div", "fxo", hfx, svg);
+    setTimeout(function(){ if (e.parentNode) e.parentNode.removeChild(e); }, HD[name] || 600);
+  }
+  /* standing still: the class idle, with the Architect's runes and the Bard's notes */
+  function rest(){ show("idle"); ambient(HC === "architect" || HC === "bard" ? "idle" : ""); }
+  var bowT = null;
+  function bow(){
+    clearTimeout(bowT);
+    show("win", true); ambient("win");
+    bowT = setTimeout(function(){ if (!playing) rest(); }, Math.max(1800, HD.win * 2));
+  }
+  heroEl.setAttribute("aria-label", HERO_NAME + " on the stage");
+  if (WON) bow(); else rest();
+
+  /* ---- the screen ---- */
+  var cv = document.getElementById("viz"), g2 = cv.getContext && cv.getContext("2d");
+  var CW = 0, CH = 0;
+  /* the shape of your song, worked out from the score: every hit adds its
+     recipe's loudness and dies away over its recipe's length */
+  var SPS0 = 60 / SC.tempo / 4, ENV = [];
+  for (var e0 = 0; e0 < COLS; e0++) ENV.push(0);
+  used.forEach(function(t){
+    (SC.tracks[t] || []).forEach(function(nn){
+      var col = (nn.m - 1) * 16 + nn.step, r = SOUND_RECIPES[nn.sound] || {gain:0.5, dur:0.3}, g = Math.min(1.4, r.gain);
+      for (var j = col; j < COLS && j < col + 32; j++) ENV[j] += g * Math.exp(-((j - col) * SPS0) / Math.max(0.06, r.dur * 0.5));
+    });
+  });
+  var EMAX = Math.max.apply(null, ENV.concat([0.001]));
+  function sizeCv(){
+    if (!g2) return;
+    var r = cv.getBoundingClientRect(), d = window.devicePixelRatio || 1;
+    CW = r.width; CH = r.height;
+    if (!CW || !CH) return;
+    cv.width = Math.round(CW * d); cv.height = Math.round(CH * d);
+    g2.setTransform(d, 0, 0, d, 0, 0);
+  }
+  function rr(x, y, w, h, r){
+    g2.beginPath(); g2.moveTo(x + r, y); g2.lineTo(x + w - r, y); g2.quadraticCurveTo(x + w, y, x + w, y + r);
+    g2.lineTo(x + w, y + h - r); g2.quadraticCurveTo(x + w, y + h, x + w - r, y + h); g2.lineTo(x + r, y + h);
+    g2.quadraticCurveTo(x, y + h, x, y + h - r); g2.lineTo(x, y + r); g2.quadraticCurveTo(x, y, x + r, y); g2.closePath();
+  }
+  /* the song's outline, lit up to where the playhead is */
+  function drawShape(p, live){
+    var mid = CH * 0.5, n = Math.min(COLS, Math.floor(CW / 3)), w = CW / n, amp = CH * (live ? 0.2 : 0.34);
+    var idleG = g2.createLinearGradient(0, mid - amp, 0, mid + amp);
+    idleG.addColorStop(0, "rgba(155,107,255,.55)"); idleG.addColorStop(0.5, "rgba(63,212,255,.8)"); idleG.addColorStop(1, "rgba(155,107,255,.55)");
+    for (var i = 0; i < n; i++){
+      var a = 0, c0 = Math.floor(i * COLS / n), c1 = Math.max(c0 + 1, Math.floor((i + 1) * COLS / n));
+      for (var j = c0; j < c1; j++) a = Math.max(a, ENV[j]);
+      var hgt = Math.max(1, Math.pow(a / EMAX, 0.7) * amp), done = (i + 0.5) / n <= p;
+      g2.fillStyle = done ? (live ? "rgba(143,240,214,.34)" : "#8ff0d6") : (live ? "rgba(120,110,190,.22)" : idleG);
+      rr(i * w + w * 0.18, mid - hgt, Math.max(1, w * 0.64), hgt * 2, Math.min(1.5, w * 0.3)); g2.fill();
+    }
+  }
+  function grid(){
+    g2.strokeStyle = "rgba(143,240,214,.07)"; g2.lineWidth = 1; g2.beginPath();
+    for (var gx = 0; gx <= 8; gx++){ var x = Math.round(gx * CW / 8) + 0.5; g2.moveTo(x, 0); g2.lineTo(x, CH); }
+    for (var gy = 0; gy <= 4; gy++){ var y = Math.round(gy * CH / 4) + 0.5; g2.moveTo(0, y); g2.lineTo(CW, y); }
+    g2.stroke();
+  }
+  function drawIdle(p){
+    if (!g2 || !CW) return;
+    g2.clearRect(0, 0, CW, CH); grid();
+    drawShape(p || 0, false);
+    g2.strokeStyle = "rgba(143,240,214,.3)"; g2.lineWidth = 1; g2.beginPath(); g2.moveTo(0, CH / 2 + 0.5); g2.lineTo(CW, CH / 2 + 0.5); g2.stroke();
+  }
+  var an = null, FD = null, TD = null, PEAK = [], mlvl = 0, meter = document.getElementById("mst");
+  function drawLive(p){
+    if (!g2 || !CW) return;
+    g2.clearRect(0, 0, CW, CH); grid();
+    drawShape(p, true);
+    if (!an) return;
+    an.getByteFrequencyData(FD); an.getByteTimeDomainData(TD);
+    /* spectrum: log-spaced bands, so the kick and the hat both get room */
+    var nb = Math.max(14, Math.min(36, Math.floor(CW / 12))), bw = CW / nb, top = CH - 3;
+    var grd = g2.createLinearGradient(0, CH, 0, 0);
+    grd.addColorStop(0, "#39e6b0"); grd.addColorStop(0.45, "#3fd4ff"); grd.addColorStop(0.75, "#9b6bff"); grd.addColorStop(1, "#ff4d8d");
+    var lo = 2, hi = FD.length * 0.7;
+    for (var b = 0; b < nb; b++){
+      var f0 = Math.floor(lo * Math.pow(hi / lo, b / nb)), f1 = Math.max(f0 + 1, Math.floor(lo * Math.pow(hi / lo, (b + 1) / nb))), v = 0;
+      for (var q = f0; q < f1; q++) v = Math.max(v, FD[q]);
+      var hgt = Math.pow(v / 255, 2.4) * top * 0.86;
+      PEAK[b] = Math.max(hgt, (PEAK[b] || 0) - 1.4);
+      g2.fillStyle = grd; g2.globalAlpha = 0.7;
+      rr(b * bw + 1.5, top - hgt, bw - 3, Math.max(2, hgt), 2); g2.fill();
+      g2.globalAlpha = 1; g2.fillStyle = "#e9fff8"; g2.fillRect(b * bw + 1.5, top - PEAK[b] - 3, bw - 3, 1.6);
+    }
+    /* the oscilloscope: the actual waveform leaving the speakers */
+    g2.beginPath();
+    var step = TD.length / CW;
+    for (var x = 0; x < CW; x++){ var s = (TD[Math.floor(x * step)] - 128) / 128, y = CH * 0.42 - s * CH * 0.26; if (x) g2.lineTo(x, y); else g2.moveTo(x, y); }
+    g2.strokeStyle = "rgba(143,240,214,.22)"; g2.lineWidth = 5; g2.stroke();
+    g2.strokeStyle = "#d8fff3"; g2.lineWidth = 1.4; g2.stroke();
+    /* the master meter under the screen reads the same waveform's peak */
+    var pk = 0; for (var z = 0; z < TD.length; z += 4) pk = Math.max(pk, Math.abs(TD[z] - 128) / 128);
+    mlvl = Math.max(pk, mlvl * 0.9); meter.style.setProperty("--l", Math.min(1, mlvl * 1.1).toFixed(3));
+  }
+  sizeCv(); drawIdle(0);
+  window.addEventListener("resize", function(){ sizeCv(); if (playing) drawLive(lastP); else drawIdle(lastP); placeHead(lastP); });
+
+  /* ---- readouts ---- */
+  var posEl = document.getElementById("pos"), tmEl = document.getElementById("tm"), leds = document.querySelectorAll(".leds i");
+  var SPB = 60 / SC.tempo, SPS = SPB / 4, TOTAL = COLS * SPS;
+  function clock(s){ s = Math.max(0, s); var mm = Math.floor(s / 60), ss = s - mm * 60; return mm + ":" + (ss < 10 ? "0" : "") + ss.toFixed(1); }
+  tmEl.textContent = clock(0) + " / " + clock(TOTAL);
+  rig.style.setProperty("--beat", SPB + "s");
+  /* one walk frame per beat, so a step fills the beat it is on; the Builder's
+     stomp shakes the stage on the downbeat itself, not after a swing */
+  bod.style.setProperty("--wf", Math.round(SPB * 1000) + "ms");
+  stage.style.setProperty("--shd", "0ms");
+
+  /* ---- the playhead ---- */
+  var lane0 = dk.querySelector(".trk .lane"), lastP = 0;
+  function placeHead(p){
+    if (!lane0) return 0;
+    var gap = 2, x = lane0.offsetLeft + p * (lane0.offsetWidth + gap) - gap / 2;
+    head.style.transform = "translateX(" + x.toFixed(1) + "px)";
+    return x;
+  }
+  function follow(x){
+    /* keep the playhead in sight on a long song: turn the page when it nears the edge */
+    var sw = lane0 ? lane0.offsetLeft : 0, vis = deck.clientWidth - sw;
+    if (x - deck.scrollLeft > sw + vis - 28 || x - deck.scrollLeft < sw) deck.scrollLeft = Math.max(0, x - sw - 24);
+  }
+
+  /* ---- playing it ---- */
+  var ctx = null, playing = false, litCol = -1, beatN = -1, KIT = soundKit(), t0 = 0, raf = 0, stopT = null, lastT = 0, perfStart = 0;
+  var btn = document.getElementById("hit"), sctl = document.getElementById("sctl");
+  function label(on){
+    btn.innerHTML = on
+      ? '<span class="pi" aria-hidden="true"><svg viewBox="0 0 16 16"><rect x="3.5" y="3.5" width="9" height="9" rx="1.6" fill="currentColor"/></svg></span><span>Stop</span>'
+      : '<span class="pi" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M5 3.2v9.6c0 .6.7 1 1.2.7l7.4-4.8c.5-.3.5-1 0-1.3L6.2 2.5C5.7 2.2 5 2.6 5 3.2Z" fill="currentColor"/></svg></span><span>Play it</span>';
+  }
+  label(false);
+  function retrig(el, cls){ el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); }
+  function onBeat(n){
+    var inBar = n % 4;
+    for (var i = 0; i < leds.length; i++) leds[i].classList.toggle("on", i === inBar);
+    posEl.textContent = (Math.floor(n / 4) + 1) + "." + (inBar + 1);
+    stage.classList.toggle("bx", n % 2 === 1);
+    if (RM) return;
+    /* each class plays the beat its own way: the Bard strums, the others step
+       in place on the beat with their own footfall (dust, a glint, a rune ring) */
+    if (HC !== "bard"){ show(n % 2 ? "walk2" : "walk", true); oneFx("step"); }
+    if (HC === "builder" && inBar === 0) retrig(stage, "hfx-shake");
+    if (HC === "architect" && amb) retrig(amb, "pulse");
+  }
+  function onCol(col){
+    for (var i = 0; litCol >= 0 && i < CUR[litCol].length; i++) CUR[litCol][i].classList.remove("cur");
+    litCol = col;
+    for (var j = 0; j < CUR[col].length; j++) CUR[col][j].classList.add("cur");
+    starts[col].forEach(function(s){
+      var r = SOUND_RECIPES[s.sound] || {gain:0.5, dur:0.3};
+      s.row.lvl = Math.max(s.row.lvl, Math.min(1, (0.55 + r.gain * 0.4) * Math.min(1.15, s.row.vol)));
+      s.row.tau = Math.max(0.08, Math.min(0.7, r.dur * 0.6 + (s.hold > 1 ? s.hold * SPS * 0.5 : 0)));
+      if (RM){ s.el.classList.add("was"); return; }
+      retrig(s.el, "hit");
+      if (s.acc) retrig(s.el, "acc");
+      if (s.hold > 1){ s.el.style.setProperty("--hd", (s.hold * SPS).toFixed(3) + "s"); retrig(s.el, "go"); }
+      if (LOW[s.sound]){ retrig(stage.querySelector(".sl"), "th"); retrig(stage.querySelector(".sr"), "th"); }
+      if (CRACK[s.sound]) retrig(stage, "zap");
+    });
+    if (col % 4 === 0) onBeat(col / 4);
+  }
+  function tick(){
+    if (!playing) return;
+    var now = ctx ? ctx.currentTime : (performance.now() - perfStart) / 1000;
+    var el = now - t0, p = el / TOTAL, dt = Math.max(0, Math.min(0.1, now - lastT)), col = -1; lastT = now;
+    if (p >= 1){ finish(); return; }
+    if (el >= 0){
+      var x = placeHead(p); follow(x); lastP = p;
+      col = Math.floor(el / SPS);
+      if (col !== litCol && col < COLS){
+        /* a frame can jump a slice at a fast tempo: play every slice it passed */
+        for (var c = litCol + 1; c < col; c++) if (c >= 0) starts[c].length && onCol(c);
+        onCol(col);
+      }
+      tmEl.textContent = clock(el) + " / " + clock(TOTAL);
+    }
+    rows.forEach(function(r){
+      r.lvl *= Math.exp(-dt / r.tau);
+      r.vu.style.setProperty("--l", r.lvl.toFixed(3));
+      r.vu.style.setProperty("--r", Math.max(0, r.lvl * 0.94 - 0.03).toFixed(3));
+    });
+    if (!RM) drawLive(Math.max(0, p)); else if (col % 4 === 0) drawIdle(Math.max(0, p));
+    raf = requestAnimationFrame(tick);
+  }
+  function play(){
+    if (playing) return;
+    try {
+      ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
+      if (ctx.state === "suspended") ctx.resume();
+    } catch (e){ ctx = null; }
+    playing = true; clearTimeout(bowT);
+    label(true); btn.setAttribute("aria-pressed", "true");
+    sctl.classList.add("going"); rig.classList.add("going");
+    t0 = (ctx ? ctx.currentTime : 0) + 0.08; perfStart = performance.now(); lastT = t0;
+    if (ctx){
+      /* the analyser sits after the whole mix, before the speakers: what you
+         see on the screen is exactly what you hear */
+      an = ctx.createAnalyser(); an.fftSize = 2048; an.smoothingTimeConstant = 0.72;
+      FD = new Uint8Array(an.frequencyBinCount); TD = new Uint8Array(an.fftSize);
+      an.connect(ctx.destination);
+      var master = KIT.bus(ctx, an);
+      /* every track goes to the room a little, so even one kick sounds like it
+         happened somewhere rather than in a vacuum */
+      var verb = KIT.room(ctx, 1.5, 2.6), send = ctx.createGain();
+      send.gain.value = 0.14; send.connect(verb); verb.connect(master);
+      var outs = {};
+      used.forEach(function(t){
+        var g = ctx.createGain(); g.gain.value = 1; var last = g;
+        SC.effects.filter(function(e){ return e.track === t; }).forEach(function(e){
+          if (e.effect === "VOLUME") g.gain.value = Math.pow(10, e.value / 20);
+          if (e.effect === "FILTER"){ var f = ctx.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = e.value; last.connect(f); last = f; }
+          if (e.effect === "PAN" && ctx.createStereoPanner){ var pn = ctx.createStereoPanner(); pn.pan.value = e.value / 100; last.connect(pn); last = pn; }
+          if (e.effect === "DELAY" || e.effect === "REVERB"){
+            var d = ctx.createDelay(1.0); d.delayTime.value = e.effect === "DELAY" ? SPB / 2 : 0.09;
+            var fb = ctx.createGain(); fb.gain.value = Math.min(0.72, e.value / 130);
+            last.connect(d); d.connect(fb); fb.connect(d); d.connect(master);
+          }
+        });
+        last.connect(master); last.connect(send); outs[t] = g;
+      });
+      used.forEach(function(t){
+        (SC.tracks[t] || []).forEach(function(nn){
+          var col = (nn.m - 1) * 16 + nn.step;
+          KIT.voice(ctx, nn.sound, t0 + col * SPS, outs[t]);
+        });
+      });
+    } else t0 = 0.08;
+    litCol = -1;
+    head.style.display = "block"; placeHead(0); deck.scrollLeft = 0;
+    if (HC === "bard" && !RM){ show("win", true); ambient("win"); }
+    else if (HC !== "architect") ambient("");
+    raf = requestAnimationFrame(tick);
+    stopT = setTimeout(finish, TOTAL * 1000 + 400);
+  }
+  function stop(){
+    playing = false; cancelAnimationFrame(raf); clearTimeout(stopT);
+    head.style.display = "none";
+    dk.querySelectorAll(".hit,.acc,.go,.was,.cur").forEach(function(e){ e.classList.remove("hit", "acc", "go", "was", "cur"); });
+    rows.forEach(function(r){ r.lvl = 0; r.vu.style.setProperty("--l", 0); r.vu.style.setProperty("--r", 0); });
+    for (var i = 0; i < leds.length; i++) leds[i].classList.remove("on");
+    litCol = -1; lastP = 0; posEl.textContent = "1.1";
+    sctl.classList.remove("going"); rig.classList.remove("going"); stage.classList.remove("bx", "zap", "hfx-shake");
+    label(false); btn.setAttribute("aria-pressed", "false");
+    tmEl.textContent = clock(0) + " / " + clock(TOTAL);
+    if (ctx){ try { ctx.close(); } catch (e){} ctx = null; }
+    an = null; PEAK = []; mlvl = 0; meter.style.setProperty("--l", 0);
+    drawIdle(0);
+  }
+  /* the end of the song, not the Stop button: the hero takes a bow if the room passed you */
+  function finish(){ var ok = playing; stop(); if (ok && WON) bow(); else rest(); }
+  btn.onclick = function(){ if (playing){ stop(); rest(); } else play(); };
+}
+const SOUND_VIEW = '(' + soundView.toString() + ')();';
 
 /* Every rhythm you typed, read back in slices and beats - live, on each
    keystroke, in the same panel as the board. This is the piece the room was
@@ -14135,22 +14605,39 @@ function rhythmRead(SC){
   return out.join('');
 }
 function soundDoc(les, code){
-  let banner, read = '';
+  let banner, read = '', SC = null;
   if (!code.trim()) banner = arcVerdict('idle', 'Nothing on the tracks yet.', 'Write a line on the right and it appears here.');
   else {
-    const SC = soundRun(code);
+    SC = soundRun(code);
     banner = SC.error
       ? arcVerdict('lose', '❌ The music stopped', SC.error)
       : arcVerdict('win', '🎵 ' + SC.notes + ' note' + (SC.notes === 1 ? '' : 's') + ' on ' + SC.used.length + ' track' + (SC.used.length === 1 ? '' : 's'),
           SC.tempo + ' BPM · ' + SC.measures + ' measure' + (SC.measures === 1 ? '' : 's') + ' · ' + (SC.sounds.join(', ') || 'nothing yet'));
     read = rhythmRead(SC);
   }
-  const body = banner + read
-    + '<div id="deck"><div id="bars"></div><div id="play"></div></div>'
-    + '<div id="fx"></div>'
-    + '<div id="sctl"><button id="hit">▶ Play it</button><span>Nothing here is a recording &mdash; every sound is built out of an oscillator and an envelope when you press play.</span></div>';
-  const js = 'var CODE=' + JSON.stringify(code) + ';var SOUND_RECIPES=' + JSON.stringify(SOUND_RECIPES) + ';\n'
-    + soundRun.toString() + '\n' + soundKit.toString() + '\n' + SOUND_VIEW;
+  const ok = !!SC && !SC.error;
+  /* the hero takes a bow when Run passes the lesson; while you type it is
+     only a rehearsal, so it waits in its idle */
+  const won = ok && graded && wouldPass(les, code);
+  const look = advLook() || {cls:'builder', skin:2, hair:0, hairC:1, eyes:0, acc:0, tint:0};
+  /* the stage and the screen come first: in a short frame the thing that must
+     stay in view is the music, and the words about it can scroll */
+  const rig = '<div id="rig" class="rig"><div class="rtop">'
+    + '<div id="stage" class="stage"><div id="hero" class="hero" role="img"><div class="groove"><div class="bod"></div></div><div class="hfx"></div></div></div>'
+    + '<div class="scr"><canvas id="viz" aria-hidden="true"></canvas><div class="lcd">'
+    + '<span class="ro"><em>Tempo</em><b>' + (SC ? SC.tempo : 120) + '<i>BPM</i></b></span>'
+    + '<span class="ro"><em>Bars</em><b>' + (ok ? Math.max(SC.measures, 1) : 1) + '</b></span>'
+    + '<span class="ro"><em>Beat</em><b id="pos">1.1</b></span></div></div></div>'
+    + '<div id="sctl"><button id="hit" aria-pressed="false">▶ Play it</button><span class="tm" id="tm">0:00.0</span>'
+    + '<span class="mst" aria-hidden="true"><i id="mst"></i></span>'
+    + '<span class="leds" aria-hidden="true"><i></i><i></i><i></i><i></i></span></div></div>';
+  const deck = '<div id="deck"><div id="dk"></div></div><div id="fx"></div>'
+    + '<p class="cap">Nothing here is a recording &mdash; every sound is built out of an oscillator and an envelope when you press play.</p>';
+  const body = ok ? rig + deck + banner + read : banner + rig + deck + read;
+  const js = 'var CODE=' + JSON.stringify(code) + ';var SOUND_RECIPES=' + JSON.stringify(SOUND_RECIPES)
+    + ';var HERO_LOOK=' + JSON.stringify(look) + ';var HERO_NAME=' + JSON.stringify((adv && adv.name) || 'Your hero')
+    + ';var WON=' + (won ? 'true' : 'false') + ';\n'
+    + soundRun.toString() + '\n' + soundKit.toString() + '\n' + avatarSvg.toString() + '\n' + heroAnimKit.toString() + '\n' + SOUND_VIEW;
   return arcPage(SOUND_CSS, body, js);
 }
 
@@ -15741,7 +16228,8 @@ function questPic(les){
   }
   ev.forEach((e, n) => {
     /* two things on one square sit side by side rather than on top of each other */
-    const k = ev.slice(0, n).filter(q => q.c === e.c && q.r === e.r).length;
+    /* ...and read left to right in the order they happen, ending at the corner */
+    const same = ev.filter(q => q.c === e.c && q.r === e.r), k = same.length - 1 - same.indexOf(e);
     const bx = x0 + e.c * cell + cell - 5 - 15 * k, by = y0 + e.r * cell + 5;
     o += '<circle cx="' + bx + '" cy="' + by + '" r="7.5" style="fill:#b3542e;stroke:var(--panel2);stroke-width:1.5"/><text x="' + bx + '" y="' + (by + .5) + '" style="font-size:10px;font-weight:700;fill:#fff">' + (n + 1) + '</text>';
   });

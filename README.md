@@ -156,6 +156,17 @@ re-deal, the crown, the unlock, the XP and the streak.
 
 ## The Sound Room shows its working
 
+**The studio.** The Sound Room's preview is a drawn studio console. Your hero
+performs on a little stage (string lights, spotlight, speakers) in its own
+class style — the Bard strums with notes flying, the Builder stomps and shakes
+the stage on the downbeat, the Sleuth taps along, the Architect's runes pulse —
+and takes a bow when the beat passes. A screen shows a live spectrum and
+waveform while it plays (tapped after the mix, so the sound is unchanged), with
+tempo, bar and beat readouts. Every track has a channel strip with a drawn
+instrument icon, its own colour and a level meter; the grid is glowing pads,
+held notes as solid bars, and a playhead that sweeps in time with the audio.
+Effects show as drawn knobs. Nothing plays until you press Play.
+
 The room's whole language is a sixteen-character string, and for a while it
 taught that language by assertion: *beats 2 and 4 — slices 5 and 13*, with
 nothing on screen connecting the first half of that sentence to the second.
@@ -436,6 +447,10 @@ It is drawn now, in one art direction shared with everything it meets:
   cleared, glowing where you left off, with your hero standing on it), and each
   level's monsters wait beside it. Nothing is locked. A Map button on every
   Quest lesson goes back to it.
+- **Fights read clearly.** A swing holds until its blow lands and a kill holds
+  until the monster falls, so the hero never walks on before the hit. A loss
+  ends on the hero knocked down with a DOWN label; on a wide, short preview the
+  HUD moves beside the board so the board can be bigger.
 - **A character sheet** with your hero in a class frame, your stats, and the
   badges as drawn medals.
 

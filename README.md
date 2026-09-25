@@ -449,6 +449,11 @@ jumps to any lesson or action from anywhere.
   someone arriving mid-course meets "4 ready to review" instead of a wall.
 - **The mistakes book.** Every miss is collected and drilled until it is
   cleared. A mistake you never see again is a mistake you keep.
+- **The arcade, up front.** The arcade is the one place with games in it, so it
+  is not a tile among tiles. It has its own button in the header, next to Hub,
+  lit whenever you are in the arcade or inside one of its rooms. On the hub it
+  is a band just under the next step: all seven rooms as picture doors with
+  your progress on each, one tap from the room itself.
 - **Placement.** The welcome offers three doors. "I already know some of this"
   asks one question per grade and ticks off whatever you can prove, stopping at
   the first miss so nobody is skipped past a gap.

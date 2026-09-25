@@ -1310,6 +1310,29 @@ body.redoready #btnReDo .bl{display:inline!important}
     background:var(--btn);color:#fff;font-size:.8rem;font-weight:650;padding:6px 11px;border-radius:9px;box-shadow:var(--sh2);pointer-events:none;z-index:6}
   body.redoready #btnReDo::before{content:'';position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 3px);border:6px solid transparent;border-top-color:var(--btn);border-bottom:0;pointer-events:none;z-index:6}
 }
+
+/* ---- the arcade on the hub: a band of doors, not a tile ---- */
+.hubtiles,body.noedit .hubtiles{grid-template-columns:repeat(4,1fr)}
+.hubarc{margin:18px 0 6px;padding:16px 18px 18px;border:1px solid var(--line);border-radius:var(--r4,18px);background:var(--panel2);box-shadow:var(--sh1)}
+.hubarch{display:flex;align-items:flex-end;justify-content:space-between;gap:12px 20px;flex-wrap:wrap;margin-bottom:14px}
+.hubarch h3{margin:0 0 4px;font:660 1.35rem/1.15 var(--serif);letter-spacing:-.012em}
+.hubarch p{margin:0;color:var(--soft);font-size:.9rem;max-width:62ch}
+.hubarcgo{display:inline-flex;align-items:center;gap:8px}
+.hubarcgo .ic{width:18px;height:18px}
+.hubdoors{display:grid;grid-template-columns:repeat(auto-fill,minmax(126px,1fr));gap:10px}
+.hubdoor{display:flex;flex-direction:column;padding:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel);color:var(--ink);cursor:pointer;font-family:inherit;text-align:left;transition:transform .15s,box-shadow .15s,border-color .15s}
+.hubdoor:hover{transform:translateY(-2px);box-shadow:var(--sh2);border-color:var(--line2)}
+.hubdoor:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.hubdoor svg{display:block;width:100%;height:auto;aspect-ratio:2/1}
+.hubdoor .hdn{display:flex;flex-direction:column;gap:2px;padding:9px 11px 10px}
+.hubdoor .hdn b{font:650 .9rem/1.25 var(--sans)}
+.hubdoor .hdn i{font-style:normal;font-size:.74rem;color:var(--soft);font-variant-numeric:tabular-nums}
+@media (max-width:760px){.hubdoors{grid-template-columns:repeat(2,1fr)}.hubdoor:last-child:nth-child(odd){grid-column:1/-1;flex-direction:row;align-items:center}.hubdoor:last-child:nth-child(odd) svg{width:calc(50% - 5px);flex:0 0 auto}.hubtiles,body.noedit .hubtiles{grid-template-columns:repeat(2,1fr)}}
+@media (prefers-reduced-motion:reduce){.hubdoor{transition:none}.hubdoor:hover{transform:none}}
+
+/* the header gained an Arcade button: on phones every button gives a little room back */
+@media (max-width:480px){header .hbtn{padding-left:7px!important;padding-right:7px!important}header .hact{gap:4px}header .hact .hbtn:has(.bl){flex:1 1 auto!important;min-width:0}}
+@media (max-width:380px){header .hbtn{font-size:.78rem}header .hbtn{padding-left:6px!important;padding-right:6px!important}}
 </style>
 </head>
 <body>
@@ -1325,6 +1348,7 @@ body.redoready #btnReDo .bl{display:inline!important}
     <button class="hbtn" id="btnReplay" style="display:none"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 3.8h8v5.8a4 4 0 0 1-8 0z"/><path d="M8 5.8H4.8a3.2 3.2 0 0 0 3.6 3.9M16 5.8h3.2a3.2 3.2 0 0 1-3.6 3.9M9.5 20.2h5M12 13.6v6.6"/></svg><span class="bl">Do it all again</span></button>
     <button class="hbtn" id="btnAdv" title="Your character sheet">+ Character</button>
     <button class="hbtn" id="btnHub" title="The hub: one screen that always knows what you should do next"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3.5 10.8 12 3.8l8.5 7"/><path d="M5.5 9.6V19a1.5 1.5 0 0 0 1.5 1.5h3.5v-5.5h3v5.5H17a1.5 1.5 0 0 0 1.5-1.5V9.6"/></svg><span class="bl">Hub</span></button>
+    <button class="hbtn" id="btnArcade" title="The arcade: seven rooms of games and lessons"><span class="bl">Arcade</span></button>
     <button class="hbtn" id="btnSandbox"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 19.5h3.8L19.1 8.7a2.7 2.7 0 0 0-3.8-3.8L4.5 15.7z"/><path d="m13.6 6.6 3.8 3.8"/></svg><span class="bl">Free play</span></button>
     <button class="hbtn" id="btnQA"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20.8 12a8.6 8.6 0 0 1-12.5 7.7L3.2 21l1.3-4.9A8.6 8.6 0 1 1 20.8 12z"/><path d="M9.7 9.6a2.4 2.4 0 0 1 4.6.9c0 1.6-2.3 1.9-2.3 3.3"/><path d="M12 16.6v.1"/></svg><span class="bl">Ask<span class="qaw">&nbsp;a question</span></span></button>
   </div>
@@ -12790,7 +12814,26 @@ function hubRing(dn, total) {
     + '<circle cx="40" cy="40" r="34" class="rf" stroke-dasharray="' + (C * pct).toFixed(1) + ' ' + C.toFixed(1) + '"/>'
     + '<text x="40" y="38">' + dn + '</text><text x="40" y="54" class="rs">of ' + total + '</text></svg>';
 }
+/* The arcade is the one place on the hub with games in it, so it gets a band
+   of its own doors, not a tile among the counters. Each door goes straight in. */
+function arcCount(gid){
+  if (gid === 'DP') return 'floor ' + deepFloor + ' of ' + DEEP_FLOORS;
+  if (gid === 'LP') return lpUnitsDone() + ' of ' + LP_UNITS.length + ' units';
+  const items = L.map((l, i) => ({l, i})).filter(x => x.l.g === gid);
+  return items.filter(x => beyondDone.has(x.i)).length + ' of ' + items.length;
+}
+function arcadeBand(){
+  const doors = ARC_GRADES.map(gid => { const g = GRADES.find(x => x.id === gid) || {name: gid};
+    return '<button class="hubdoor" data-act="arcgo" data-g="' + gid + '">' + (ARC_ART[gid] || '')
+      + '<span class="hdn"><b>' + esc(g.name) + '</b><i>' + arcCount(gid) + '</i></span></button>'; }).join('');
+  return '<section class="hubarc" aria-label="The arcade"><div class="hubarch"><div><h3>The arcade</h3>'
+    + '<p>Seven rooms of games and lessons: move a hero with code, make music, beat hidden tests, and more.'
+    + (adv ? '' : ' Make a character on the way in and it plays as you.') + '</p></div>'
+    + '<button class="hubgo hubarcgo" data-act="arcade">' + ico('pad') + ' Open the arcade</button></div>'
+    + '<div class="hubdoors">' + doors + '</div></section>';
+}
 function openHub() {
+  arcadeView = false;
   hub = true; sandbox = false; drillOn = false; drill = null; lpS = null; syncModeUI();
   ghostTalkOff(); killGhost();
   document.querySelectorAll('.predcard,.navtip').forEach(x => x.remove());
@@ -12806,12 +12849,12 @@ function openHub() {
       : 'Pick up exactly where you were. Nothing here expires.') + '</span></div>' + hubRing(dn, total) + '</div>'
     + '<button class="hubnext" data-act="' + nt.act + '"' + (nt.i != null ? ' data-i="' + nt.i + '"' : '') + '>'
       + '<span class="hnl">' + esc(nt.label) + '</span><span class="hnw">' + nt.why + '</span></button>'
+    + arcadeBand()
     + '<div class="hubtiles">'
       + '<button class="hubtile' + (due ? ' live' : '') + '" data-act="warmup"><b>' + due + '</b><span>ready to review</span></button>'
       + '<button class="hubtile' + (mist ? ' warn' : '') + '" data-act="mistakes"><b>' + mist + '</b><span>in your mistakes book</span></button>'
       + '<button class="hubtile" data-act="sandbox"><b class="hti">' + ico('brush') + '</b><span>free play</span></button>'
       + '<button class="hubtile" data-act="place"><b class="hti">' + ico('bolt') + '</b><span>test out of what you know</span></button>'
-      + '<button class="hubtile" data-act="arcade"><b class="hti">' + ico('pad') + '</b><span>' + (adv ? 'the arcade' : 'the arcade &mdash; make a character') + '</span></button>'
     + '</div>'
     + '<div class="hubtracks">'
       + hubTrack('The school', dn, total, 'K through College, plus the Hustle and the Machine Room')
@@ -13204,6 +13247,7 @@ function lpUnitsDone(){ return LP_UNITS.filter((_, u) => lpCrown(u) > 0).length;
 /* ---------------------------------------------------------------- the path */
 let lpS = null;   /* the session in progress */
 function lpOpen(){
+  arcadeView = true;
   hub = true; sandbox = false; drillOn = false; drill = null; lpS = null; syncModeUI();
   ghostTalkOff(); killGhost();
   document.querySelectorAll('.predcard,.navtip').forEach(x => x.remove());
@@ -13400,7 +13444,9 @@ function lpEnd(cleared){
   renderNav();
 }
 
+let arcadeView = false;
 function openArcade(){
+  arcadeView = true;
   hub = true; sandbox = false; drillOn = false; drill = null; lpS = null; syncModeUI();
   ghostTalkOff(); killGhost();
   document.querySelectorAll('.predcard,.navtip').forEach(x => x.remove());
@@ -13851,6 +13897,8 @@ $('#btnAdv').onclick = advOpen;
 advChip();
 
 $('#btnHub').onclick = () => openHub();
+$('#btnArcade').innerHTML = ico('pad') + '<span class="bl">Arcade</span>';
+$('#btnArcade').onclick = () => openArcade();
 
 /* ---- THE SHAPE OF IT, and SAYING IT BACK -----------------------------------
    Two mechanics with unusually strong evidence behind them, and neither is a
@@ -14346,7 +14394,9 @@ function syncModeUI(){
      and read as a dead button. */
   const here = (btn, on) => { if (!btn) return;
     if (on) btn.setAttribute('aria-current', 'page'); else btn.removeAttribute('aria-current'); };
-  here($('#btnHub'), hub);
+  here($('#btnHub'), hub && !arcadeView);
+  /* the arcade button is lit in the arcade, on the Learn Python path, and inside any arcade room's lesson */
+  here($('#btnArcade'), (hub && arcadeView) || (!hub && !sandbox && !drillOn && !!L[idx] && ARC_GRADES.includes(L[idx].g)));
   here($('#btnSandbox'), sandbox);
 }
 function phFor(lang, kind){

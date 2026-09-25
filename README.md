@@ -400,11 +400,49 @@ whatever is in the way, wait when the spikes are up. Beating par means you
 found something better than the machine did.
 
 **The Adventurer** (from Codédex) is the character all of it belongs to: a name,
-a face, and one of four classes — Builder, Sleuth, Architect, Bard — which are
-dispositions towards programming rather than costumes. The class picks your
+a drawn hero, and one of four classes — Builder, Sleuth, Architect, Bard — which
+are dispositions towards programming rather than costumes. The class picks your
 badge track and which arcade door opens first. The figure walking the Quest
-board is the face you chose. Twelve badges, each one earned by something that
+board is the hero you made. Fourteen badges, each one earned by something that
 ran.
+
+### The hero, the monsters and the map
+
+The hero used to be an emoji, so it looked like whatever font the machine had.
+It is drawn now, in one art direction shared with everything it meets:
+
+- **A character creator.** Your hero stands on a lit stage while you pick a
+  name, a class and a look: 8 skin tones, 12 hairstyles, 10 hair colours, 6
+  eye styles, eye colour, 10 extras and an outfit tint per class. Randomise
+  only ever picks a look that works. Each class dresses and carries its own
+  thing — the Builder's apron and hammer, the Sleuth's coat and magnifier, the
+  Architect's robe and glowing staff, the Bard's cape and lute.
+- **Every class moves its own way.** The Builder stomps and slams the hammer
+  hard enough to shake the board; the Sleuth takes quick light steps and lunges
+  with a spotlight; the Architect glides and fires a rune bolt; the Bard skips
+  and hits a power chord that sends out sound waves. The creator's stage plays
+  the same moves, so switching class visibly changes how the hero moves.
+- **Ten monsters, each with its own moves.** Grubb, Mott, the Ogre, the Imp,
+  the Warg, the Demon, Vex, the Wisp, Mordra and the Drake. The imp hovers and
+  swoops, the warg wags and lunges, the casters charge and fire beams down
+  their row, the drake sleeps until something wakes it and then breathes fire.
+- **A board for every zone.** The four Quest zones (the Cellar Steps, the
+  Guardroom, the Thinking Halls, the Lower Vault) and the Deep each have their
+  own tileset: walls with depth, animated fire, pits, spikes that visibly rise
+  and fall, a portal exit, a light that follows the hero, hearts and gems and a
+  moves meter as the HUD.
+- **A map to choose levels from.** Entering Quest opens an illustrated map: the
+  road runs through the four zones, every level is a medallion (gold when
+  cleared, glowing where you left off, with your hero standing on it), and each
+  level's monsters wait beside it. Nothing is locked. A Map button on every
+  Quest lesson goes back to it.
+- **A character sheet** with your hero in a class frame, your stats, and the
+  badges as drawn medals.
+
+Old saves keep working: a save from before the drawn hero carries only an emoji
+face, so a hero is grown from that face and the name — the same save always
+grows the same hero. Every sprite and animation is inline SVG and CSS inside
+the one file, and `prefers-reduced-motion` stills all of it.
 
 The two ideas taken from **Brilliant** and **CodinGame** are already everywhere
 in the school rather than parked in a grade: one concept then immediately a

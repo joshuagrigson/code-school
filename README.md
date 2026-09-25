@@ -34,11 +34,11 @@ each grade. Portfolio pieces, Beyond and the Review Desk sit outside that count.
 | **The Deep** | **650 generated Quest floors, each one proved winnable before you see it** |
 | **Grade bosses** | **14 Quest boards, one at the end of every grade from Kindergarten to College, each asking for that grade's idea somewhere it was never taught — and each one required to finish the grade** |
 | **The Sound Room** | **8 lessons where your code is the instrument** |
-| **The Kata Table** | **7 puzzles marked on tests you were never shown** |
+| **The Puzzle Vault** | **7 vaults shut by tests you were never shown: a tumbler per test, keys cut by school lessons, a relic wall and a jigsaw the whole school fills in** |
 | **Python** | **13 lessons: a second language, from `print` to a working report** |
 | **The Terminal** | **13 lessons: folders, files, pipes and git, typed by hand into a shell that lives in the page** |
 | **Learn Python** | **The Duolingo mechanic pointed at Python: a path of 21 units, eight quick cards a session, five kinds of card, every one built from real code by the engine** |
-| **Arcade prep** | **28 small Terminal, Python, Sound Room, Kata and Quest lessons inside the grades themselves — K through College — so each arcade room is somewhere you have already been** |
+| **Arcade prep** | **28 small Terminal, Python, Sound Room, Puzzle Vault and Quest lessons inside the grades themselves — K through College — so each arcade room is somewhere you have already been** |
 
 Reviews double as test-out exams (⚡): pass one first and it ticks the lessons
 it examined — not the challenge, the prep or the boss, which the walk then takes
@@ -89,14 +89,14 @@ graduation — that is what "part of the main lessons" has to mean. Five ladders
   real `TypeError` → a docstring.
 - **Sound Room** K → 2 → 5 → 9: copy one line and hear it → colour in slices 1
   and 9 → the tempo is a number → a loop lays two bars.
-- **Kata Table** 7 → 8 → 9 → 11 → 12 → College: `double` → `sign` with the
+- **Puzzle Vault** 7 → 8 → 9 → 11 → 12 → College: `double` → `sign` with the
   case the examples never show → `sumAll` → `nameOf` → fix `lastOf`, which
   starts off by one → `isEven`, returning the expression.
 - **Quest** 1 → 4 → 8: walk to the flag by name → `say(look())` → an `if` that
   steps round a wall.
 
 Each one ends with a note saying which room it is a first taste of. Every Quest
-board and kata was proved on the real engine before it was written in — the
+board and puzzle was proved on the real engine before it was written in — the
 answer wins and the starting code does not — and the browser test does the
 same for all 28 through the page's own grader.
 
@@ -263,14 +263,14 @@ fill-the-gap on the new word, where a wrong pick says why it is wrong.
 
 **Every lesson in the school is taught that way now**, not only Quest: all 209
 other lessons (K through College, the Hustle, the Portfolio, the Machine Room,
-Beyond, the Review Desk, the Sound Room, the Kata Table, Python and the
+Beyond, the Review Desk, the Sound Room, the Puzzle Vault, Python and the
 Terminal) and all 21 Learn Python units.
 
 - **What you are making**, generated from the lesson's own answer: the page it
   builds (drawn into a shadow root, so the lesson's styles stay inside and
   nothing in it runs or fetches; images become a labelled box), what it prints
   (Python, worked out by the in-page interpreter), the tests it must pass
-  (Kata) or the folders it starts in (Terminal). JavaScript answers are run
+  (the Puzzle Vault) or the folders it starts in (Terminal). JavaScript answers are run
   once and what they show is kept; `allcover_test.js` re-runs them to prove the
   pictures still match. The Deep draws each floor's board from the route its
   generator proved, without handing that route to Show me.
@@ -334,13 +334,22 @@ sine wave falling from 150Hz to 45Hz in fifty-five thousandths of a second, a
 hi-hat is filtered noise. The last lesson asks for eight bars with an
 arrangement, which turns out to be a loop with an `if` on the bar number.
 
-**The Kata Table** (from Codewars and CheckiO) is seven puzzles, ranked 8kyu to
-5kyu, where you are shown two examples and marked on six or eight. The hidden
+**The Puzzle Vault** (after Codewars and CheckiO) is seven puzzles, from a brass
+lock to a master lock, where you are shown two examples and marked on six or eight. The hidden
 ones are deliberately the boring inputs — the empty string, the single item,
 the all-negative list, the zero in the middle — because that is where real code
 dies. Passing every example in the brief and failing the tests behind it is the
 most useful hour in the whole place. The tests also catch a function that
 quietly edits the list it was handed.
+
+Each puzzle is drawn as a vault door with one tumbler per test. Run it and your
+hero works the tumblers in turn with its class move; a passing test clicks home,
+a failing one jams and its row in the table says why, and a door with every
+tumbler turned swings open on that vault's relic. The vault hall holds the seven
+doors, a key ring (Functions, Loops, Strings, Lists, Conditions and Objects,
+each cut by the school lesson that teaches it — a missing key never locks a door,
+it links to that lesson), the relic wall, and a picture that gains one jigsaw
+piece for every core lesson finished anywhere in the school.
 
 **Python** (from Sololearn) is thirteen short lessons and a real interpreter.
 Not a transpiler and not a pretend one: a tokeniser that synthesises
@@ -470,7 +479,7 @@ blocks, highlighting the one currently running.
 
 ### One engine, two jobs
 
-Quest, the Sound Room and the Kata Table each have exactly one simulator, and
+Quest, the Sound Room and the Puzzle Vault each have exactly one simulator, and
 it is a pure function. The coach grades its result; the preview animates the
 same result. There is no second copy for the two to disagree about, which is
 the failure that makes a game like this feel rigged — a board showing the hero
@@ -478,9 +487,11 @@ on the flag while the marker says you missed it. `questRun` is written
 self-contained on purpose: the preview gets it by calling `.toString()` on it
 and injecting it into the iframe.
 
-Python, the katas and the Terminal do not need a script in the preview at all —
-the interpreter, the test runner and the shell live in the page, and the preview
-is handed the finished console, table or transcript as static HTML. `shellRun`
+Python and the Terminal do not need a script in the preview at all — the
+interpreter and the shell live in the page, and the preview is handed the
+finished console or transcript as static HTML. The Puzzle Vault's test runner
+lives in the page too; its preview gets the finished table plus the word for
+each test, `set` or `jam`, and only plays the door. `shellRun`
 records the working directory on every transcript line as it was *before* the
 command ran, which is what the prompt needs and what a post-hoc replay gets
 wrong. It also keeps running after a line fails, the way a real prompt does —
@@ -545,7 +556,7 @@ picture the interface relies on is drawn as SVG inside the file.
   toolbar, tab bar and footer. Labelled header buttons drop their icon on narrow
   phones so the words still fit.
 - **The sidebar marks each kind of lesson** (review, reps, challenge, terminal,
-  Python, sound, kata, boss) with its own coloured glyph. The original title
+  Python, sound, puzzle, boss) with its own coloured glyph. The original title
   text stays in the markup, visually hidden, so search, screen readers and the
   tests read exactly what they read before.
 - **Arcade doors, the welcome card and the Learn Python path** have their own
@@ -598,6 +609,8 @@ The sweep is the one that finds them.
 
 The phone is a first-class layout, not a narrowed desktop.
 
+- Run takes you to the Result tab: the button lives on the Code tab and what it
+  made lives on Result, so pressing it switches for you.
 - Two deliberate header rows — who you are and how far you have got, then the
   actions sharing the width evenly — instead of a ragged wrap.
 - The tab bar pads past the home indicator (`env(safe-area-inset-bottom)`),
@@ -711,9 +724,9 @@ chain of `if`s, the old line is still the one that runs. Write the requirements
 last, then test them against wrong answers, not just against your own solution.
 
 **The arcade's two new languages.** `lang:'arc'` (Quest, the Sound Room, the
-Kata Table, the Terminal) and `lang:'py'` bypass the JavaScript branch of
+Puzzle Vault, the Terminal) and `lang:'py'` bypass the JavaScript branch of
 `runCheck` entirely, because that branch insists on a `screen.textContent =`
-line, which is right for a page and wrong for a level, a song, a kata and a
+line, which is right for a page and wrong for a level, a song, a puzzle and a
 `print()`. They are graded by running them: the engine's own result is a better
 error than anything a regex could say about it. `normRes` skips the DOMParser
 for both, and `stylePass` is replaced by `pyStyle` for Python, because the
@@ -777,7 +790,7 @@ it.
 makes forty claims about what the interpreter does — that `input()` always
 hands back text, that `[::-1]` reverses, that `round(2.675, 2)` is `2.67` — and
 each one is a case in `py_claims.js`, run against the interpreter in the page.
-The kata lessons promise that particular naive answers fail particular hidden
+The Puzzle Vault lessons promise that particular naive answers fail particular hidden
 tests; those are `kata_claims.js`. One claim was wrong on the first run: the
 unguarded `titleCase` was said to hand back `undefined`, and it actually stops
 with a TypeError. The prose changed, not the code.

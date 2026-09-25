@@ -3383,7 +3383,7 @@ QU('You are not driving',
  'You wrote judgement instead of a journey, and something else ran it sixty times. That is how every colony, swarm and autonomous agent is written, and it is why the skill it trains is different: you are no longer debugging what happened, you are debugging what you would have decided.',
  'Not there yet. <code>turn(hero)</code> is called sixty times and makes one move each time, using only what <code>hero.look(...)</code> can see. Start from your <i>Plan B, plan C</i> rule: right if the next square is not a wall or the edge, otherwise down if the square below is not a wall or the edge, otherwise up.',
  'Code that is handed control on a schedule rather than calling out itself is <b>inversion of control</b>, and the joke name for it is the <b>Hollywood principle</b>: do not call us, we will call you. A single pass is a <b>tick</b>; the whole arrangement is an <b>event loop</b>.',
- 'This is exactly how the game Screeps works &mdash; your JavaScript runs one tick at a time on a server that keeps running while you are asleep, and if your rules are bad your colony starves overnight. It is also how every React component, every Unity script and every embedded controller is written.');
+ 'This is exactly how coding games where your program runs a colony work &mdash; your JavaScript runs one tick at a time on a server that keeps running while you are asleep, and if your rules are bad your colony starves overnight. It is also how every React component, every Unity script and every embedded controller is written.');
 
 /* ---- The Sound Room ----------------------------------------------------
    The checker does not listen to anything. It reads the SCORE the code built
@@ -3502,7 +3502,7 @@ SN('Long sounds, laid across bars',
  '<p><code>makeBeat</code> is for placing hits inside a bar. When you want something to simply <b>be there</b> across a stretch of the piece, there is a second tool:</p>'
  + '<pre class="czcode">fitMedia(PAD, 6, 1, 5);</pre>'
  + '<p>Which sound, which track, start at measure 1, stop before measure 5. Note that last bit: the end is where it <b>stops</b>, not the last bar it plays &mdash; measure 1 to 5 covers bars 1, 2, 3 and 4. It is the same half-open range you get from <code>for (let i = 0; i &lt; 4; i++)</code>, and it catches everyone at least once.</p>'
- + '<p>In this room, <code>fitMedia</code> lays the sound down once per beat across that range. In EarSketch, where it comes from, it stretches a real recorded clip to fill the space. Same job, different machinery, and it is worth knowing which one you are using: ours is honest about being built rather than recorded.</p>'
+ + '<p>In this room, <code>fitMedia</code> lays the sound down once per beat across that range. In music-coding tools built on sample libraries, it stretches a real recorded clip to fill the space. Same job, different machinery, and it is worth knowing which one you are using: ours is honest about being built rather than recorded.</p>'
  + '<p><code>PAD</code> and <code>CHOIR</code> are chords &mdash; three or four notes at once &mdash; which is why they fill the space the way a single bass note cannot.</p>',
  'Lay a <code>PAD</code> across measures 1 to 4 on track 6, keeping everything else.',
  'setTempo(100);\nfor (let m = 1; m < 5; m++) {\n  makeBeat(KICK, 1, m, "0---0---0---0---");\n  makeBeat(SNARE, 2, m, "----0-------0---");\n  makeBeat(BASS, 4, m, "0+++----0+++----");\n}',
@@ -6048,7 +6048,7 @@ function safeJs(s){ return s.replace(/<\/(scr)/gi, '<\\/$1'); }
    here for the two to disagree about.
    ======================================================================== */
 
-/* ---- Python, for the Sololearn track -------------------------------- */
+/* ---- Python, the Python track ------------------------------------- */
 /* ============================================================================
    A Python interpreter, small enough to read, honest enough to teach with.
 
@@ -7660,7 +7660,7 @@ return {run, tokenize, parse, str, repr, typeName,
         PyList, PyTuple, PyDict, PySet, PyFloat, PyFunc, PyRange, eq};
 })();
 
-/* ---- Quest, for the CodeCombat track -------------------------------- */
+/* ---- Quest, code that moves a hero --------------------------------- */
 /* ============================================================================
    QUEST - code that drives a hero across a board.
 
@@ -8025,11 +8025,11 @@ function questRun(SPEC, CODE){
           atExit:atExit, allGems:allGems, allFoes:allFoes, lines:(CODE.trim() ? CODE.trim().split('\n').length : 0)};
 }
 
-/* ---- The Sound Room, for the EarSketch track ------------------------ */
+/* ---- The Sound Room, code that makes music ------------------------ */
 /* ============================================================================
    THE SOUND ROOM - code that makes music.
 
-   EarSketch hands you a library of recorded loops. This file has no library
+   Most music-coding tools hand you a library of recorded loops. This file has no library
    and no internet, so every sound here is BUILT: an oscillator, an envelope,
    a burst of filtered noise. That turns out to be the better lesson anyway,
    because a kick drum stops being a file you were given and becomes a pitch
@@ -8189,11 +8189,11 @@ var SOUND_RECIPES = {
   BLIP:    {kind:'tone', f0:1320, f1:1980, dur:0.09, type:'square', gain:0.26}
 };
 
-/* ---- The Kata Table, for the Codewars / CheckiO track --------------- */
+/* ---- The Kata Table, puzzles with hidden tests ---------------------- */
 /* ============================================================================
    THE KATA TABLE - a puzzle, and a set of tests you cannot see all of.
 
-   Codewars' idea, and it is a good one: the examples you are shown are not the
+   The idea, and it is a good one: the examples you are shown are not the
    examples you are marked on. Passing the three in the brief and failing the
    eleven behind it is the single most useful lesson in the whole place,
    because it is exactly what happens the first time somebody else uses your
@@ -10959,7 +10959,7 @@ function openSandbox(){
 
 /* wiring */
 
-/* ---- Brilliant-style interactive teaching ----------------------------------
+/* ---- Interactive teaching --------------------------------------------------
    Four mechanics, one law: the interaction itself teaches.
    PRED  - commit to a prediction, then the machine settles it.
    TRYIT - drag a knob, watch real code and the page respond together.
@@ -11050,16 +11050,16 @@ const TRACE = {
    The rule stays the same: the interaction itself teaches, and none of it
    replaces typing the real thing.
    PICS   - one picture per big idea (dual coding: words + a diagram stick better
-            than words alone).                              Brilliant, Khan
+            than words alone).
    TILES  - build the line from word tiles, with a couple of wrong tiles mixed
-            in (Duolingo sentence tiles, Tynker block-to-text bridge).
-   CLOZE  - one blank in real code, tap the right piece (Hedy's pink blank,
-            Grasshopper's fill-the-gap).
+            in (sentence tiles, a block-to-text bridge).
+   CLOZE  - one blank in real code, tap the right piece (fill-the-gap
+            in the middle of real code).
    BUGS   - one line is wrong: find it before the computer does (PRIMM
             "investigate"; errors are the curriculum).
    RECALL - a one-question quiz on an EARLIER lesson at the top of the page,
             spaced out by how well you knew it last time; a miss comes back
-            sooner (Duolingo spaced repetition + mistake review).
+            sooner (spaced repetition + mistake review).
    TWIST  - after the tick, one small change to make to your own working
             code (PRIMM "modify": play with it until it clicks).
    All keyed by lesson index like PRED/SHUF/TRACE. -------------------------- */
@@ -12623,7 +12623,7 @@ teachEl.addEventListener('click',(e)=>{
       are looking.
 
    2. MISTAKES YOU CAN ACTUALLY GO BACK TO. Every miss is collected in one place
-      and drilled until it is cleared. Duolingo's Mistakes page, Anki's lapses.
+      and drilled until it is cleared.
       A mistake you never see again is a mistake you keep.
 
    3. NEVER HAVING TO DECIDE. Math Academy's real insight is not the algorithm,
@@ -12651,7 +12651,7 @@ function allItems() {
 function itemState(id) { return srs.q[id] || [0, 0, 0, 0]; }
 /* New questions are let in a few at a time. Without this, anyone who arrives with
    half the school already finished is met by a wall of eighty "due" items, which
-   reads as debt rather than an invitation. Anki and Duolingo both meter new
+   reads as debt rather than an invitation. Good flashcard systems meter new
    material for exactly this reason: the backlog drains, it never announces itself. */
 const NEW_PER_SESSION = 4;
 function dueItems() {
@@ -13475,7 +13475,7 @@ function openArcade(){
       : '<button class="hubnext" data-act="adv"><span class="hnl">Make a character first</span>'
         + '<span class="hnw">Twenty seconds. It decides which figure walks the Quest board, which badges you are collecting, and whose name goes on the certificate.</span></button>')
     + '<div class="arclist">' + rows + '</div>'
-    + '<p class="hubtip">Every one of these came from somewhere real: Quest from CodeCombat, the Sound Room from EarSketch, the Kata Table from Codewars and CheckiO, the character and the badges from Codédex, the Python track from Sololearn, the Learn Python path from Duolingo, the Terminal from the exercises every bootcamp runs in its first week. What we took was the mechanic, not the artwork.</p>';
+    + '<p class="hubtip">Every room is built on a way of learning that already works: code that moves a hero, code that makes music, puzzles with hidden tests, a character that is yours, bite-size daily practice, and the terminal drills every developer learns in week one.</p>';
   goalEl.innerHTML = '<b>THE ARCADE.</b> Seven ways to write code that does something other than sit on a page.';
   remindBox.style.display = 'none';
   $('#scaffold').style.display = 'none';
@@ -13694,7 +13694,7 @@ document.addEventListener('keydown', (e) => {
 });
 
 /* ============================== THE ADVENTURER =============================
-   Codédex opens by asking who you are before it asks you to do anything, and
+   Asking who you are before asking you to do anything:
    it turns out that costs nothing and changes a surprising amount: the hero
    walking the Quest board is yours, the certificate has your name on it, and
    the badge shelf is a record of things you actually did rather than hours

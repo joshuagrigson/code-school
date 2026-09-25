@@ -451,6 +451,9 @@ It is drawn now, in one art direction shared with everything it meets:
   own tileset: walls with depth, animated fire, pits, spikes that visibly rise
   and fall, a portal exit, a light that follows the hero, hearts and gems and a
   moves meter as the HUD.
+- **The Deep is Quest's floor.** It is not a door of its own: the Quest map's road
+  ends at its stairway, which shows your floor, and the Quest card in the arcade
+  carries a small picture of it and how far down you are.
 - **A map to choose levels from.** Entering Quest opens an illustrated map: the
   road runs through the four zones, every level is a medallion (gold when
   cleared, glowing where you left off, with your hero standing on it), and each

@@ -703,6 +703,13 @@ The phone is a first-class layout, not a narrowed desktop.
   buttons read left to right from a nudge (amber, one bar) to a lead (orange, two)
   to the full answer (red, three, tagged ANSWER); your backup's button wears their
   face; Start over, Talk it through and Editor look have real labels and tooltips.
+- **A painted world.** Every place is drawn in three to five layers with light
+  shafts, textured surfaces and ambient life (waving flags, drifting clouds,
+  smoke, petals and snow); the Journey map runs one long day from the Yard at dawn
+  to the Legend's gold. Animations pause off screen and stop under reduced motion.
+- **Arcade world previews.** Each arcade door is a painted scene; opening one shows
+  everyone who lives in that world (real sprites, one line each), a zoomable look
+  at its real map or board, your progress and an Enter button.
 - **Boss trials, gear and the tier ceremony.** Each grade ends in a boss fight:
   every objective the coach sees on Run is a hit, a Run with no hits is the boss's
   attack (nothing is lost), and a pass turns the boss to stone and drops a piece of

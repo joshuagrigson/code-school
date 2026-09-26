@@ -479,6 +479,15 @@ It is drawn now, in one art direction shared with everything it meets:
   and a grey. Randomise rolls the species, body, beard and face too, and only
   ever picks a look that works. Old saves draw exactly as they did. Under the stage a tier bar names the tier and form you have
   reached, and **See your final form** shows your class as a Legend.
+- **Legends worth reaching.** Each class's final form has its own silhouette:
+  a crown of blades and gold wings (knight), an antler crown and glowing leaf
+  cloak (ranger), an astral halo and floating crystals (mage), storm horns
+  (skald), a burning mane (barbarian), coral pauldrons and a water cloak
+  (guard), a flame aura (monk), tesla pylons (artificer). Every outfit is built
+  from real parts (rivets, stitching, folds, boots), and heroes, monsters and
+  bosses carry a soft core shadow and a lit edge. The stage's Stand, Walk,
+  Attack and Cheer buttons play each class's own moves, and a hero cheers when
+  a Quest board is cleared or a Vault door opens.
 - **Every class moves its own way.** The knight chops and shakes the board, the
   barbarian cleaves and shakes it harder, the ranger looses an arrow, the mage
   casts a bolt, the guard thrusts, the monk throws a flurry, the skald drums

@@ -693,6 +693,16 @@ The phone is a first-class layout, not a narrowed desktop.
   Deep, the Bards' Hall, the Forge, the Citadel Vaults, Market Town, the Guild Hall,
   the Serpent Isles, the Far Watchtower). A marker walks the road as you finish
   lessons.
+- **Call for backup.** Make a second character in the same creator (every
+  option the hero has, its own name) and call them into any lesson. If your code
+  has a problem the coach can see, your backup strikes at it: the exact spot gets
+  a red underline (your code is never changed) and a one-line hint. Every further
+  press asks one guiding question, broad to specific, with "I get it" and "Still
+  stuck"; the answer itself stays behind Show me. Each class has its own voice.
+- **A toolbar that says what everything is.** Run is the biggest button; the help
+  buttons read left to right from a nudge (amber, one bar) to a lead (orange, two)
+  to the full answer (red, three, tagged ANSWER); your backup's button wears their
+  face; Start over, Talk it through and Editor look have real labels and tooltips.
 - **Boss trials, gear and the tier ceremony.** Each grade ends in a boss fight:
   every objective the coach sees on Run is a hit, a Run with no hits is the boss's
   attack (nothing is lost), and a pass turns the boss to stone and drops a piece of

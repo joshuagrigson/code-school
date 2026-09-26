@@ -1184,8 +1184,8 @@ body.dark .nic-py{color:#86b3e8}body.dark .nic-note{color:#ea8fbd}body.dark .nic
 /* on the hub the row sizes to its own buttons, which a size container cannot do */
 body.noedit .btnrow{container-type:normal}
 @container (max-width:720px){
-  #btnReDo .bl,#btnDuck .bl{display:none}
-  #btnReDo,#btnDuck{padding-left:10px;padding-right:10px}
+  body:not(.lsOn) #btnReDo .bl,body:not(.lsOn) #btnDuck .bl{display:none}
+  body:not(.lsOn) #btnReDo,body:not(.lsOn) #btnDuck{padding-left:10px;padding-right:10px}
 }
 @container (max-width:560px){
   .btnrow button{padding-left:10px;padding-right:10px}
@@ -2291,8 +2291,6 @@ body.lsOn #btnNext:hover{background:#f4c85e linear-gradient(180deg,#ffe79b,#f4c8
   body.lsOn #btnRun .lskbd{display:inline-block;margin-left:6px;font-family:var(--mono);font-size:.62rem;font-weight:600;padding:2px 5px;border-radius:5px;background:#0d5641;color:#e3f5ec;text-shadow:none;vertical-align:1px}
 }
 /* after a pass the gold Next button joins the row: two helpers fold to their icons to make room */
-body.lsOn .btnrow:has(#btnNext[style*="inline-block"]) :is(#btnLead,#btnSol) .bl{display:none}
-body.lsOn .btnrow:has(#btnNext[style*="inline-block"]) :is(#btnLead,#btnSol){padding-left:11px;padding-right:11px}
 body.lsOn .btnrow button:focus-visible{outline:2px solid var(--accent)!important;outline-offset:2px}
 body.lsOn #status{border-radius:12px}
 body.lsOn #status.ok{box-shadow:inset 0 0 0 1px var(--goodline),0 8px 18px -14px rgba(14,85,65,.6)}
@@ -3270,6 +3268,273 @@ body.jyOvOn{overflow:hidden}
 .jynd>b{color:#fff;font-family:var(--serif);font-size:1.05rem}.jynd>span:last-child{font-size:.8rem;color:#c9bedb}
 .jyndr{display:flex;align-items:center;gap:10px}.jyndr b{display:block;font-size:.9rem;color:#fff}.jyndr span span{display:block;font-size:.76rem;color:#c3b8d4}
 .jynd .jyb{align-self:flex-start}
+
+/* ==== the lesson bar: every button says what it is ===========================
+   RUN | HELP (getting stronger) | BACKUP | TOOLS. Run is the biggest and always
+   green; the help ladder goes amber, orange, red with one, two, three bars (how
+   much each gives away) and Show me wears an "answer" tag; the backup button is
+   violet with your sidekick's face and name; the tools are quiet outlines with
+   real labels. Every id and handler is where it was. */
+:root{--bkHelp:#b7791f;--bkHelpBg:#fff6e0;--bkHelpLn:#f0d9a2;--bkLead:#c25a14;--bkLeadBg:#fff0e3;--bkLeadLn:#f3c9a4;
+  --bkShow:#b3243f;--bkShowBg:#fdecef;--bkShowLn:#f1b8c3;--bkBk:#6a45c9;--bkBkBg:#f2edff;--bkBkLn:#d4c6fb;
+  --bkTool:#3f4650;--bkToolBg:#f3f2ee;--bkToolLn:#d6d2c8;--bkIcInk:#fff;--bkSmall:#4f5359}
+body.dark{--bkHelp:#f2c14e;--bkHelpBg:#2a2415;--bkHelpLn:#5a4a22;--bkLead:#ff9a55;--bkLeadBg:#2c1f16;--bkLeadLn:#5e3a22;
+  --bkShow:#ff6f8a;--bkShowBg:#2d1820;--bkShowLn:#5f2a37;--bkBk:#b89cff;--bkBkBg:#221c33;--bkBkLn:#43366b;
+  --bkTool:#d3d7de;--bkToolBg:#1f2226;--bkToolLn:#3a3e45;--bkIcInk:#1a1410;--bkSmall:#b9bcc2}
+#bkBar .bkrow,#bkBar .bkg,#bkBar .bkgr{display:contents}
+#bkBar .bkgl,#bkBar .bksep,#bkBar small,#bkBar .bkpips,#bkBar .bktag,#bkBar .bl2{display:none}
+#bkBar .bkic{display:inline-grid;place-items:center}
+#bkBar .bkt{display:inline-flex;flex-direction:column;align-items:flex-start}
+#bkBar .bkface{display:inline-block;position:relative;width:24px;height:24px;border-radius:50%;background:#2a1d33;flex:0 0 auto}
+#bkBar .bkfc{position:absolute;inset:0;border-radius:50%;overflow:hidden}
+#bkBar .bkface svg,#bkBar .bkface img{position:absolute;inset:0;width:100%;height:100%}
+#bkBar .bkdot{display:none}
+#btnBk[hidden]{display:none!important}
+
+/* ---- in a lesson ---- */
+body.lsOn #bkBar{display:block;padding:7px 10px 9px}
+body.lsOn #bkBar>.bkrow{display:grid;grid-template-columns:auto 1px minmax(0,1fr);grid-template-areas:"run s1 help" "bk s2 tools" "next next next";
+  column-gap:12px;row-gap:6px;align-items:end}
+body.lsOn #bkBar .bkg{display:flex;flex-direction:column;gap:6px;min-width:0}
+body.lsOn #bkBar .bkgr{display:flex;gap:7px;min-width:0}
+body.lsOn #bkBar .bkg-run{grid-area:run}body.lsOn #bkBar .bkg-help{grid-area:help}
+body.lsOn #bkBar .bkg-bk{grid-area:bk}body.lsOn #bkBar .bkg-tools{grid-area:tools}
+body.lsOn #bkBar .s-help{grid-area:s1}body.lsOn #bkBar .s-tools{grid-area:s2}
+body.lsOn #bkBar .bksep{display:block;width:1px;align-self:stretch;background:var(--line2);margin-top:14px;border-radius:1px}
+body.lsOn #bkBar .s-bk{display:none}
+body.lsOn #bkBar .bkgl{display:flex;align-items:center;gap:6px;font:700 .56rem/1 var(--mono);letter-spacing:.13em;text-transform:uppercase;color:var(--soft);padding-left:2px;white-space:nowrap}
+body.lsOn #bkBar .bkarr{flex:1;height:2px;min-width:28px;border-radius:2px;position:relative;background:linear-gradient(90deg,var(--bkHelp),var(--bkLead),var(--bkShow))}
+body.lsOn #bkBar .bkarr::after{content:'';position:absolute;right:-3px;top:-3px;border:4px solid transparent;border-left:6px solid var(--bkShow);border-right:0}
+body.lsOn #bkBar #btnNext{grid-area:next;justify-self:stretch;height:42px;margin:2px 4px 0}
+body.lsOn #bkBar:has(#btnHelp[style*="none"]) .s-help,body.lsOn #bkBar:has(#btnHelp[style*="none"]) .bkg-help{display:none}
+body.lsOn #bkBar:has(#btnBk[hidden]) .bkg-bk{display:none}
+
+body.lsOn #bkBar button.bkb{position:relative;display:flex;align-items:center;gap:8px;height:46px;padding:0 12px 0 8px;border-radius:12px;border:1.5px solid var(--bkToolLn);
+  background:var(--bkToolBg);color:var(--ink);font-family:inherit;font-size:.82rem;font-weight:640;line-height:1.1;white-space:nowrap;text-shadow:none;
+  box-shadow:0 2px 0 var(--bkToolLn);transition:transform .08s,box-shadow .12s,filter .12s,border-color .12s;min-width:0}
+body.lsOn #bkBar button.bkb:hover{filter:brightness(1.03);transform:translateY(-1px);box-shadow:0 3px 0 var(--bkToolLn),0 6px 12px -8px rgba(0,0,0,.35)}
+body.lsOn #bkBar button.bkb:active{transform:translateY(1px);box-shadow:0 1px 0 var(--bkToolLn)}
+body.lsOn #bkBar button.bkb .bkic{width:28px;height:28px;border-radius:8px;flex:0 0 auto}
+body.lsOn #bkBar button.bkb .bkic .ic{width:18px;height:18px;opacity:1;stroke-width:2}
+body.lsOn #bkBar button.bkb small{display:block;font-size:.66rem;font-weight:520;color:var(--bkSmall);margin-top:2px}
+body.lsOn #bkBar button.bkb .bl{display:inline}
+body.lsOn #bkBar .bkpips{display:flex;gap:3px;margin-top:4px}
+body.lsOn #bkBar .bkpips i{width:11px;height:4px;border-radius:2px;background:currentColor;opacity:.25}
+/* the help ladder: amber, orange, red; one, two, three bars */
+body.lsOn #bkBar #btnHelp{background:var(--bkHelpBg);border-color:var(--bkHelpLn);box-shadow:0 2px 0 var(--bkHelpLn)}
+body.lsOn #bkBar #btnLead{background:var(--bkLeadBg);border-color:var(--bkLeadLn);box-shadow:0 2px 0 var(--bkLeadLn)}
+body.lsOn #bkBar #btnSol{background:var(--bkShowBg);border-color:var(--bkShowLn);box-shadow:0 2px 0 var(--bkShowLn)}
+body.lsOn #bkBar #btnHelp .bkic{background:var(--bkHelp);color:var(--bkIcInk)}
+body.lsOn #bkBar #btnLead .bkic{background:var(--bkLead);color:var(--bkIcInk)}
+body.lsOn #bkBar #btnSol .bkic{background:var(--bkShow);color:var(--bkIcInk)}
+body.lsOn #bkBar #btnHelp .bkpips{color:var(--bkHelp)}body.lsOn #bkBar #btnLead .bkpips{color:var(--bkLead)}body.lsOn #bkBar #btnSol .bkpips{color:var(--bkShow)}
+body.lsOn #bkBar #btnHelp .bkpips i:nth-child(1),body.lsOn #bkBar #btnLead .bkpips i:nth-child(-n+2),body.lsOn #bkBar #btnSol .bkpips i{opacity:1}
+body.lsOn #bkBar .bktag{display:block;position:absolute;top:-8px;right:8px;font:700 .56rem/1 var(--mono);letter-spacing:.07em;text-transform:uppercase;background:var(--bkShow);color:var(--bkIcInk);border-radius:6px;padding:3px 6px;box-shadow:0 0 0 2px var(--panel)}
+/* Run: the biggest, always green */
+body.lsOn #bkBar #btnRun{height:48px;padding:0 16px 0 10px;font-size:1.02rem;font-weight:680;color:#fff;border:0;background:#0b6450 linear-gradient(180deg,#0f7a60,#0b6450);
+  box-shadow:0 3px 0 #084a3b,0 8px 18px -10px rgba(12,95,74,.8),inset 0 1px 0 rgba(255,255,255,.22)}
+body.lsOn #bkBar #btnRun:hover{background:#0c6a54 linear-gradient(180deg,#0f7f63,#0c6a54)}
+body.lsOn #bkBar #btnRun .bkic{background:rgba(255,255,255,.18);color:#fff}
+body.lsOn #bkBar #btnRun .lskbd{background:rgba(0,0,0,.28);color:#eafff6}
+/* the backup: violet, with their face and name */
+body.lsOn #bkBar #btnBk{background:var(--bkBkBg);border-color:var(--bkBkLn);box-shadow:0 2px 0 var(--bkBkLn);padding-left:6px}
+body.lsOn #bkBar #btnBk .bkface{width:36px;height:36px;box-shadow:0 0 0 2px var(--bkBk);background:radial-gradient(circle at 50% 30%,#4b3a66,#221833)}
+body.lsOn #bkBar #btnBk.none .bkface img,body.lsOn #bkBar #btnBk.none .bkface svg{filter:grayscale(1) brightness(.55);opacity:.7}
+body.lsOn #bkBar #btnBk .bkdot{display:grid;place-items:center;position:absolute;right:-4px;bottom:-4px;width:16px;height:16px;border-radius:50%;background:#16704f;color:#fff;font:800 11px/1 var(--mono);box-shadow:0 0 0 2px var(--bkBkBg)}
+body.lsOn #bkBar #btnBk.out .bkdot{background:var(--bkBk);color:var(--bkIcInk)}
+body.lsOn #bkBar #btnBk.out{border-color:var(--bkBk)}
+/* the tools: quiet outlines */
+body.lsOn #bkBar .bk-tool{font-weight:560;color:var(--bkTool)}
+body.lsOn #bkBar .bk-tool .bkic{border:1.5px solid var(--bkToolLn);color:var(--bkTool);background:var(--panel)}
+body.lsOn #bkBar .bk-redo .bkic{color:#2f5fb8}body.dark.lsOn #bkBar .bk-redo .bkic{color:#8fb0ff}
+body.lsOn #bkBar .bk-look .bkic{color:#6a45c9}body.dark.lsOn #bkBar .bk-look .bkic{color:#c9b6ff}
+body.lsOn #bkBar .bkduckic{width:21px!important;height:21px!important}
+body.lsOn #bkBar button.bkb:focus-visible{outline:2.5px solid var(--accent)!important;outline-offset:2px}
+body.redoready.lsOn #bkBar #btnReDo{border-color:var(--accent)}
+
+/* wide: one row */
+@container (min-width:1080px){
+  body.lsOn #bkBar>.bkrow{grid-template-columns:auto 1px auto 1px auto 1px auto 1fr;grid-template-areas:"run s1 help s2 bk s3 tools next"}
+  body.lsOn #bkBar .s-bk{display:block;grid-area:s2}body.lsOn #bkBar .s-tools{grid-area:s3}
+  body.lsOn #bkBar #btnNext{align-self:end;justify-self:end;height:48px}
+}
+/* narrow: the sublines go before any label does */
+@container (max-width:600px){
+  body.lsOn #bkBar button.bkb small{display:none}
+  body.lsOn #bkBar button.bkb{padding-right:10px}
+}
+/* a phone (or a narrow column): Run across the top, then a grid of icon-over-label tiles */
+@container (max-width:520px){
+  body.lsOn #bkBar>.bkrow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-areas:none;gap:6px}
+  body.lsOn #bkBar .bkg,body.lsOn #bkBar .bkgr{display:contents}
+  body.lsOn #bkBar .bkgl,body.lsOn #bkBar .bksep{display:none}
+  body.lsOn #bkBar #btnRun{grid-column:1/-1;height:46px;justify-content:center;font-size:1.05rem}
+  body.lsOn #bkBar:has(#btnNext[style*="inline-block"]) #btnRun{grid-column:1/3}
+  body.lsOn #bkBar #btnNext{grid-column:3/5;grid-row:1;height:46px;padding:0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  body.lsOn #bkBar button.bkb:not(#btnRun){flex-direction:column;justify-content:center;height:60px;padding:5px 3px;gap:3px;font-size:.72rem;white-space:normal;text-align:center}
+  body.lsOn #bkBar button.bkb:not(#btnRun) .bkt{align-items:center}
+  body.lsOn #bkBar button.bkb:not(#btnRun) .bkic{width:26px;height:26px}
+  body.lsOn #bkBar button.bkb .bkpips{margin-top:3px}
+  body.lsOn #bkBar button.bkb .bkpips i{width:9px;height:3px}
+  body.lsOn #bkBar #btnLead .bkw1{display:none}
+  body.lsOn #bkBar #btnLead .bkw2{display:inline-block}
+  body.lsOn #bkBar #btnLead .bkw2::first-letter{text-transform:uppercase}
+  body.lsOn #bkBar #btnBk .bl{display:none}body.lsOn #bkBar #btnBk .bl2{display:inline}
+  body.lsOn #bkBar #btnBk{padding-left:3px}
+  body.lsOn #bkBar #btnBk .bkface{width:28px;height:28px}
+  body.lsOn #bkBar #btnBk .bkdot{width:13px;height:13px;font-size:9px;right:-5px;bottom:-3px}
+  body.lsOn #bkBar .bktag{top:-7px;right:3px;font-size:.5rem;padding:2px 5px}
+  body.lsOn #bkBar .bk-tool .bl{line-height:1.12}
+}
+@media (max-width:700px){body.lsOn #bkBar{padding:8px}}
+@media (min-width:701px) and (max-height:820px){
+  body.lsOn #bkBar .bkgl{display:none}
+  body.lsOn #bkBar .bksep{margin-top:0}
+  body.lsOn #bkBar button.bkb{height:42px}
+  body.lsOn #bkBar #btnRun{height:44px}
+  body.lsOn #bkBar button.bkb small{display:none}
+}
+/* the bar is two rows now: the typing box keeps its room and the preview gives a little */
+@media (min-width:701px){ body.lsOn .edwrap{flex-grow:2} }
+@media (prefers-reduced-motion:reduce){body.lsOn #bkBar button.bkb{transition:none}body.lsOn #bkBar button.bkb:hover{transform:none}}
+
+/* ---- one tooltip for the bar ---- */
+#bkTip{position:fixed;z-index:60;max-width:270px;padding:8px 11px;border-radius:10px;background:#17191b;color:#fff;font-size:.8rem;line-height:1.38;box-shadow:0 10px 26px -10px rgba(0,0,0,.5);pointer-events:none}
+#bkTip b{display:block;margin-bottom:2px;font-size:.84rem}
+#bkTip::after{content:'';position:absolute;left:var(--ax,20px);bottom:-6px;transform:translateX(-50%);border:6px solid transparent;border-top-color:#17191b;border-bottom:0}
+#bkTip.below::after{bottom:auto;top:-6px;border-top:0;border-bottom:6px solid #17191b}
+body.dark #bkTip{background:#f5f4f0;color:#17191b}body.dark #bkTip::after{border-top-color:#f5f4f0}body.dark #bkTip.below::after{border-bottom-color:#f5f4f0}
+#bkTip[hidden]{display:none}
+
+/* ==== the backup's card, above the editor ==== */
+#bkCard{flex:0 0 auto;position:relative;display:flex;gap:12px;align-items:flex-start;margin:0 0 8px;padding:10px 12px 11px 10px;border-radius:14px;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--cc,#6a45c9) 11%,var(--panel)),var(--panel));color:var(--ink);
+  box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--cc,#6a45c9) 42%,var(--line)),0 8px 18px -14px rgba(42,29,51,.55);animation:bkCardIn .38s cubic-bezier(.2,.9,.3,1.2)}
+#bkCard.cl-none{--cc:#6a45c9;--ccd:#2c1f7a;--ccl:#c4b6ff;--cct:#5540c0}
+body.dark #bkCard.cl-none{--cct:#c4b6ff}
+@keyframes bkCardIn{from{opacity:0;transform:translateY(-6px) scale(.98)}}
+#bkCard.bkbye{animation:bkCardOut .45s ease-in forwards}
+@keyframes bkCardOut{to{opacity:0;transform:translateX(24px)}}
+#bkCard .bkfig{position:relative;flex:0 0 86px;height:86px;border-radius:12px;overflow:visible;
+  background:radial-gradient(80% 70% at 50% 20%,color-mix(in srgb,var(--cc) 55%,#2a1d33),#1c1426 75%);box-shadow:inset 0 0 0 1.5px rgba(255,246,230,.14)}
+#bkCard .bkfig::after{content:'';position:absolute;left:14%;right:14%;bottom:6px;height:8px;border-radius:50%;background:rgba(0,0,0,.35)}
+#bkCard .bkfig .bkhero,#bkCard .bkfig .bkfx{position:absolute;left:50%;bottom:4px;width:92px;height:92px;transform:translateX(-50%);pointer-events:none;z-index:1}
+#bkCard .bkfig svg{width:100%;height:100%;display:block;overflow:visible}
+#bkCard .bkfig.bust{flex-basis:56px;height:56px;border-radius:50%;overflow:hidden}
+#bkCard .bkfig.bust::after{display:none}
+#bkCard .bkfig.bust .bkhero{width:56px;height:56px;bottom:0}
+#bkCard .bkfig.ghost .bkhero{filter:brightness(0) opacity(.45)}
+#bkCard .bkqm{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);z-index:2;font:800 1.9rem/1 var(--serif);color:#f2c14e;text-shadow:0 2px 0 #2a1d33}
+#bkCard .bkbody{flex:1 1 auto;min-width:0}
+#bkCard .bkhd{display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px;margin-bottom:3px}
+#bkCard .bknm{font-family:var(--serif);font-size:1.02rem}
+#bkCard .bkcl{font-size:.74rem;font-weight:650;color:var(--cct)}
+#bkCard .bksteps{display:inline-flex;gap:4px;align-items:center}
+#bkCard .bksteps i{width:7px;height:7px;border-radius:50%;background:color-mix(in srgb,var(--cc) 25%,var(--panel));box-shadow:inset 0 0 0 1.2px var(--cct)}
+#bkCard .bksteps i.p{background:var(--cct);opacity:.55}
+#bkCard .bksteps i.on{background:var(--cct);width:18px;border-radius:4px}
+#bkCard .bkhome{margin-left:auto;display:inline-flex;align-items:center;gap:5px;min-height:32px;padding:4px 10px;border-radius:9px;border:1px solid var(--line2);background:var(--panel);color:var(--ink);font:inherit;font-size:.76rem;font-weight:600;cursor:pointer}
+#bkCard .bkhome .ic{width:15px;height:15px}
+#bkCard .bkhome:hover{background:var(--panel2)}
+#bkCard .bkvoice{margin:0 0 4px;font-size:.84rem;font-style:italic;color:var(--cct)}
+#bkCard .bkhit{display:flex;gap:7px;align-items:flex-start;margin:0 0 6px;padding:6px 9px;border-radius:9px;font-size:.84rem;line-height:1.4;
+  background:#fdecec;color:#8c1d1d;box-shadow:inset 3px 0 0 #d43c3c}
+body.dark #bkCard .bkhit{background:#3a1b1d;color:#ffb3ad}
+#bkCard .bkhit .ic{width:16px;height:16px;margin-top:2px;flex:0 0 auto;stroke-width:2.2}
+#bkCard .bkhit code,#bkCard .bkq code{font-family:var(--mono);font-size:.86em;padding:0 3px;border-radius:4px;background:rgba(127,127,127,.14)}
+#bkCard .bkq{margin:0;font-size:.95rem;font-weight:600;line-height:1.42}
+#bkCard .bkctx{display:block;margin-top:2px;font-size:.8rem;font-weight:450;color:var(--soft)}
+#bkCard .bkplan{margin:5px 0 0;padding-left:1.4em;font-size:.84rem;font-weight:500;line-height:1.45}
+#bkCard .bkrun{margin:5px 0 0;font-size:.8rem;color:var(--soft)}
+#bkCard .bkbtns{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+#bkCard .bkbtns button{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:6px 13px;border-radius:10px;font:inherit;font-size:.82rem;font-weight:650;cursor:pointer}
+#bkCard .bkbtns .ic{width:16px;height:16px}
+#bkCard .bkgo{border:0;background:var(--ccd);color:#fff;box-shadow:0 2px 0 rgba(0,0,0,.25)}
+body.dark #bkCard .bkgo{background:var(--ccl);color:#1a1422}
+#bkCard .bksec{border:1.5px solid color-mix(in srgb,var(--cc) 55%,var(--line2));background:var(--panel);color:var(--ink)}
+#bkCard .bklink{border:0;background:none;color:var(--soft);text-decoration:underline;text-underline-offset:3px}
+#bkCard button:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px}
+#bkCard.m-offer .bkq{font-weight:500;font-size:.9rem}
+/* the entrances, each class its own way */
+.bkin[data-in="walk"] .bkhero{animation:bkInWalk .7s cubic-bezier(.25,.8,.3,1)}
+.bkin[data-in="dart"] .bkhero{animation:bkInDart .45s cubic-bezier(.2,.9,.3,1)}
+.bkin[data-in="blink"] .bkhero{animation:bkInBlink .6s ease-out}
+.bkin[data-in="hop"] .bkhero{animation:bkInHop .7s ease-out}
+.bkin[data-in="leap"] .bkhero{animation:bkInLeap .55s cubic-bezier(.3,.1,.5,1.4)}
+@keyframes bkInWalk{from{opacity:0;translate:46px 0}40%{opacity:1}}
+@keyframes bkInDart{from{opacity:0;translate:70px 0;scale:.9 1}}
+@keyframes bkInBlink{from{opacity:0;scale:.3;filter:brightness(3)}60%{opacity:1;scale:1.08}}
+@keyframes bkInHop{from{opacity:0;translate:36px -30px}50%{opacity:1;translate:12px -18px}75%{translate:0 0}88%{translate:0 -6px}}
+@keyframes bkInLeap{from{opacity:0;translate:0 -80px}70%{opacity:1;translate:0 4px}}
+
+/* ---- beside the hero on the perch ---- */
+.lsperch .bkperch{display:none}
+.lsperch.bkduo .bkperch{display:block}
+.lsperch .bkperch .bkhero,.lsperch .bkperch .bkfx{position:absolute;left:30%;bottom:10px;height:min(108px,calc(100% - 34px));aspect-ratio:1;transform:translateX(-50%);pointer-events:none;z-index:2}
+.lsperch .bkperch svg{width:100%;height:100%;display:block;overflow:visible}
+.lsperch.bkduo>.lshero,.lsperch.bkduo>.lsfx{left:66%;height:min(112px,calc(100% - 34px))}
+
+/* ---- the strike: a streak and an impact on the spot ---- */
+#errlay .redpen.bkpen{background:rgba(212,40,40,.2);text-decoration:underline wavy #d42020 2.5px;text-underline-offset:4px;box-shadow:0 0 0 1.5px rgba(212,40,40,.55);animation:bkPen 1.2s ease-out}
+@keyframes bkPen{0%{background:rgba(255,80,60,.65)}100%{background:rgba(212,40,40,.2)}}
+.bkstreak{position:fixed;z-index:55;height:5px;margin-top:-2.5px;transform-origin:0 50%;border-radius:4px;pointer-events:none;
+  background:linear-gradient(90deg,transparent,var(--c1) 40%,#fff 80%,var(--c2));box-shadow:0 0 10px var(--c1)}
+.bkimpact{position:fixed;z-index:56;width:64px;height:64px;margin:-32px 0 0 -32px;pointer-events:none;animation:bkBoom .65s ease-out forwards}
+.bkimpact svg{width:100%;height:100%;overflow:visible}
+@keyframes bkBoom{0%{opacity:0;transform:scale(.3) rotate(-20deg)}25%{opacity:1;transform:scale(1.15)}100%{opacity:0;transform:scale(1.4) rotate(6deg)}}
+
+/* ---- in the Run theater ---- */
+.bkthmate{position:absolute;inset:0;pointer-events:none;z-index:1}
+.bkthmate .bkhero,.bkthmate .bkfx{position:absolute;left:30%;bottom:6px;height:min(96px,calc(100% - 10px));aspect-ratio:1;transform:translateX(-50%);pointer-events:none}
+.bkthmate svg{width:100%;height:100%;display:block;overflow:visible}
+#lsThMate.bkduo>.lshero,#lsThMate.bkduo>.lsfx{left:68%}
+
+/* ---- in a boss trial: fighting beside you ---- */
+.jyarena .bkah{display:none;position:absolute;left:3%;bottom:10px;width:112px;height:112px;z-index:1}
+.jyarena.bkon .bkah{display:block}
+.jyarena.bkon .jyah{left:16%;z-index:2}
+.bkahf{position:relative;width:100%;height:100%}
+.bkahf>img,.bkahf>svg{position:absolute;inset:0;width:100%;height:100%}
+.bkahf.av-idle>img{animation:jyBob 3.4s .4s ease-in-out infinite}
+.bkahf.av-attack>img{animation:jyStrike .5s .12s ease-out}
+.bkahf.av-cheer>img{animation:jyHop .7s .15s ease-out 2}
+.bkahf.av-hurt>img{animation:jyShake .5s ease-out}
+@container (max-width:460px){ .jyarena .bkah{width:80px;height:80px;left:0} .jyarena.bkon .jyah{left:18%} }
+#lsTh .jythar .jyarena .bkah{width:78px;height:78px;left:0}
+#lsTh .jythar .jyarena.bkon .jyah{left:17%}
+
+/* ---- the creator: Hero / Backup ---- */
+.bksw{display:inline-flex;gap:4px;padding:4px;margin:0 0 10px;border-radius:12px;background:var(--panel2);box-shadow:inset 0 0 0 1px var(--line2)}
+.bksw button{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:6px 14px;border:0;border-radius:9px;background:none;color:var(--soft);font:inherit;font-size:.86rem;font-weight:650;cursor:pointer}
+.bksw button .ic{width:17px;height:17px}
+.bksw button[aria-pressed="true"]{background:var(--panel);color:var(--ink);box-shadow:0 1px 0 var(--line2),0 3px 8px -5px rgba(0,0,0,.4),inset 0 0 0 1.5px var(--cc,#12705a)}
+.bksw button:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px}
+.advclnote q{font-style:italic}
+#advArmory,#advBackupB{border:1px solid var(--line2);background:none;border-radius:12px;padding:11px 12px;cursor:pointer;font-family:inherit;font-size:.93rem;font-weight:560;color:var(--ink)}
+#advArmory:hover,#advBackupB:hover{background:var(--panel2)}
+#advArmory:focus-visible,#advBackupB:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px}
+
+@media (max-width:760px){
+  /* while the backup talks, the bar stops floating over the line it struck */
+  body.bkOut.tab-code .btnrow{position:static}
+}
+@media (max-width:700px){
+  #bkCard{gap:10px;padding:9px 10px 10px 9px}
+  #bkCard .bkfig{flex-basis:62px;height:66px}
+  #bkCard .bkfig .bkhero,#bkCard .bkfig .bkfx{width:70px;height:70px}
+  #bkCard .bkq{font-size:.9rem}
+  #bkCard .bkctx{display:none}
+  #bkCard .bkhome span{display:none}
+  #bkCard .bkhome{min-width:40px;min-height:40px;justify-content:center;padding:4px}
+  #bkCard .bkhome .ic{width:18px;height:18px}
+  #bkCard .bkbtns button{min-height:44px}
+  #bkCard .bkvoice{font-size:.8rem;margin-bottom:3px}
+  #bkCard .bkhit{font-size:.8rem;padding:5px 8px}
+}
+@media (prefers-reduced-motion:reduce){
+  #bkCard,#bkCard.bkbye,.bkin .bkhero,#errlay .redpen.bkpen,.bkimpact,.bkahf>img{animation:none!important}
+  .bkstreak,.bkimpact{display:none}
+}
 </style>
 </head>
 <body>
@@ -3305,16 +3570,28 @@ body.jyOvOn{overflow:hidden}
       <div class="edwrap"><pre id="hl"></pre><pre id="errlay"></pre><textarea id="ed" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea><div class="shpane" id="shPane"><div id="shOut"></div><div class="shline"><span class="shps" id="shPs">you@codelab:<i>~</i>$</span><input id="shIn" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" aria-label="Terminal: type a command and press Enter"></div></div></div>
       <div class="edgrip" id="edGrip" title="Drag to resize the typing box"><i></i></div>
       <div id="ghosttalk"></div>
-      <div class="btnrow">
-        <button id="btnRun" title="Run your code — the coach grades only when you press this (Ctrl+Enter works too)"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7.5 5.3v13.4c0 .8.9 1.3 1.6.9l11-6.7a1 1 0 0 0 0-1.8l-11-6.7c-.7-.4-1.6.1-1.6.9z" fill="currentColor" stroke="none"/></svg><span class="bl">Run</span></button>
-        <button id="btnHelp" title="A hint that points without telling"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.2 17.6h5.6M10.2 20.8h3.6"/><path d="M12 3.2a5.9 5.9 0 0 0-3.5 10.6c.6.5 1 1.2 1 2v.4h5v-.4c0-.8.4-1.5 1-2A5.9 5.9 0 0 0 12 3.2z"/></svg><span class="bl">Help me</span></button>
-        <button id="btnLead" title="Reveals the answer in 4 steps - you finish the thought"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3.5 20.5h5v-5h5v-5h5v-5h2"/><path d="M3.5 20.5v-2"/></svg><span class="bl">Give me a lead</span></button>
-        <button id="btnSol" title="Shows the full answer"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2.2 12s3.5-6.8 9.8-6.8 9.8 6.8 9.8 6.8-3.5 6.8-9.8 6.8S2.2 12 2.2 12z"/><circle cx="12" cy="12" r="2.9"/></svg><span class="bl">Show me</span></button>
-        <button id="btnReDo" title="Back to the starting code" aria-label="Start over"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.2 13a8 8 0 1 0 2.4-6.1"/><path d="M3.8 4.2v4.9h4.9"/></svg><span class="bl">Start over</span></button>
-        <button id="btnDuck" aria-label="Duck: explain your code line by line" title="Rubber-duck debugging: explain your code out loud, one line at a time — you will usually catch your own bug"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="9.3" cy="7.6" r="3.4"/><path d="M6.1 8.6 2.9 9.6l3.4 1"/><path d="M12.1 9.7c2.5.8 5.3.3 8-1.5.5 5.9-3 10.6-8.6 10.6h-1.8a5.6 5.6 0 0 1-4.3-9.2"/><circle cx="10.2" cy="6.8" r=".55" fill="currentColor"/></svg><span class="bl">Duck</span></button>
-        <button id="btnTheme" title="Looks — fifteen editor themes, all of them yours from the start" aria-label="Editor looks"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3.2a8.8 8.8 0 1 0 0 17.6c1 0 1.6-.9 1.3-1.8l-.3-.9a1.7 1.7 0 0 1 1.6-2.2h2.4a4.2 4.2 0 0 0 4.2-4.2c0-4.8-4-8.5-9.2-8.5z"/><circle cx="7.6" cy="11.4" r="1.05" fill="currentColor" stroke="none"/><circle cx="9.8" cy="7.3" r="1.05" fill="currentColor" stroke="none"/><circle cx="14.6" cy="7.4" r="1.05" fill="currentColor" stroke="none"/></svg></button>
+      <div class="btnrow bkbar" id="bkBar"><div class="bkrow">
+        <div class="bkg bkg-run"><span class="bkgl" aria-hidden="true">Run</span><div class="bkgr">
+        <button id="btnRun" class="bkb bk-run" aria-label="Run"><span class="bkic"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.5v13a1 1 0 0 0 1.5.9l10.2-6.5a1 1 0 0 0 0-1.7L9.5 4.6A1 1 0 0 0 8 5.5z" fill="currentColor" stroke="none"/></svg></span><span class="bl">Run</span></button>
+        </div></div>
+        <i class="bksep s-help" aria-hidden="true"></i>
+        <div class="bkg bkg-help"><span class="bkgl" aria-hidden="true">Help <span class="bkarr"></span> stronger</span><div class="bkgr">
+        <button id="btnHelp" class="bkb bk-help" aria-label="Help me: a nudge"><span class="bkic"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1 2V16h5.2v-.2c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/></svg></span><span class="bkt"><span class="bl">Help me</span><small>a nudge</small><span class="bkpips" aria-hidden="true"><i></i><i></i><i></i></span></span></button>
+        <button id="btnLead" class="bkb bk-lead" aria-label="Give me a lead: one step at a time"><span class="bkic"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="2.8" y="15" width="6" height="5" rx="1.3" fill="currentColor" stroke="none"/><rect x="9.4" y="10" width="6" height="5" rx="1.3" fill="currentColor" stroke="none" opacity=".85"/><rect x="16" y="5" width="5.2" height="5" rx="1.3" fill="currentColor" stroke="none" opacity=".7"/></svg></span><span class="bkt"><span class="bl"><span class="bkw1">Give me </span><span class="bkw2">a lead</span></span><small>one step at a time</small><span class="bkpips" aria-hidden="true"><i></i><i></i><i></i></span></span></button>
+        <button id="btnSol" class="bkb bk-show" aria-label="Show me: the full answer"><span class="bktag" aria-hidden="true">answer</span><span class="bkic"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg></span><span class="bkt"><span class="bl">Show me</span><small>the full answer</small><span class="bkpips" aria-hidden="true"><i></i><i></i><i></i></span></span></button>
+        </div></div>
+        <i class="bksep s-bk" aria-hidden="true"></i>
+        <div class="bkg bkg-bk"><span class="bkgl" aria-hidden="true">Backup</span><div class="bkgr">
+        <button id="btnBk" class="bkb bk-bk none" type="button" aria-label="Call for backup"><span class="bkface" aria-hidden="true"></span><span class="bkt"><span class="bl">Call for backup</span><span class="bl2">Backup</span><small class="bksub">make your sidekick</small></span></button>
+        </div></div>
+        <i class="bksep s-tools" aria-hidden="true"></i>
+        <div class="bkg bkg-tools"><span class="bkgl" aria-hidden="true">Tools</span><div class="bkgr">
+        <button id="btnReDo" class="bkb bk-tool bk-redo" aria-label="Start over"><span class="bkic"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3.5 12a8.5 8.5 0 1 0 2.8-6.3"/><path d="M3.3 4v5h5"/></svg></span><span class="bl">Start over</span></button>
+        <button id="btnDuck" class="bkb bk-tool bk-duck" aria-label="Talk it through: explain your code to the duck, line by line"><span class="bkic"><svg class="ic bkduckic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3.5 13.5c0-1 .8-1.6 1.8-1.5 1.6.2 2.6.5 3.7.2-.8-.7-1.3-1.7-1.3-2.9A4 4 0 0 1 11.7 5.3a4 4 0 0 1 3.9 4.6l3.6-.9c.6-.1 1 .5.8 1-.8 2.8-2.2 6.9-8.8 6.9-5.1 0-7.7-1.7-7.7-3.4z" fill="#f2c14e" stroke="#8a6212" stroke-width="1.2" stroke-linejoin="round"/><path d="M7.6 9.2 4.2 8.4c-.6-.1-.9.6-.4 1l2.7 1.7" fill="#ff9a3c" stroke="#8a4a12" stroke-width="1" stroke-linejoin="round"/><circle cx="10.3" cy="8.4" r="1" fill="#2a1d33" stroke="none"/><path d="M12.5 12.4c1.4.3 3 .1 4.4-.9" fill="none" stroke="#8a6212" stroke-width="1.1" stroke-linecap="round"/></svg></span><span class="bl"><span class="bkw1">Talk it </span><span class="bkw2">through</span></span></button>
+        <button id="btnTheme" class="bkb bk-tool bk-look" aria-label="Editor look"><span class="bkic"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3a9 9 0 1 0 0 18c1.2 0 1.8-.9 1.8-1.8 0-1.2-1-1.4-1-2.6 0-1 .8-1.8 1.8-1.8H17a4 4 0 0 0 4-4C21 6.6 17 3 12 3z"/><circle cx="7.5" cy="11" r="1.3" fill="#e0556a" stroke="none"/><circle cx="10" cy="7" r="1.3" fill="#f2c14e" stroke="none"/><circle cx="15" cy="7.4" r="1.3" fill="#3fa2e0" stroke="none"/></svg></span><span class="bl"><span class="bkw1">Editor </span><span class="bkw2">look</span></span></button>
+        </div></div>
         <button id="btnNext" title="Ctrl+Enter also works">Next lesson &rarr;</button>
-      </div>
+      </div></div>
       <div id="status" role="status" aria-live="polite" aria-atomic="true">Start typing in the box above.</div>
       <div class="prevwrap">
         <div class="prevlabel"><span class="dots"><i></i><i></i><i></i></span> your page &mdash; what your code makes</div>
@@ -21947,7 +22224,7 @@ function runCheck(){
   const was = live && lessonDone(idx);
   S.res = null; S.proj = null;
   lsRunCheck0();
-  if (live){ lsAfterRun(was); tfAfterRun(was); jyAfterRun(was); }
+  if (live){ lsAfterRun(was); tfAfterRun(was); jyAfterRun(was); bkAfterRun(was); }
 }
 function lsRunCheck0(){
   runNudgeOff();
@@ -22641,6 +22918,7 @@ function loadLesson(i){
   if (lessonDone(idx)) runCheck(); else previewOnly();
   lsLoadEnd();
   jyLoadEnd();
+  bkLoaded();
   shFocus();
   const cp=$('#crPrev'), cn=$('#crNext');
   if (cp) cp.onclick=()=>{ const o=ORDER.indexOf(idx); if (o>0) loadLesson(ORDER[o-1]); };
@@ -27053,7 +27331,7 @@ function advWatch(){
 }
 function advPlate(){
   const d = advDraft, nm = d.name.trim();
-  return '<b>' + (nm ? esc(nm) : 'Your hero') + '</b><span>' + (d.cls ? 'the ' + advNameOf(d.cls) : 'choose a class') + '</span>';
+  return '<b>' + (nm ? esc(nm) : bkPlateName(d)) + '</b><span>' + (d.cls ? 'the ' + advNameOf(d.cls) : 'choose a class') + '</span>';
 }
 function advPanelHtml(){
   const d = advDraft, tab = d.tab, lk = advDraftLook(), sp = advSpeciesId(lk.species);
@@ -27104,14 +27382,14 @@ function advPanelHtml(){
 }
 function advGoState(){
   const d = advDraft, nm = d.name.trim(), ok = nm.length >= 1 && !!d.cls;
-  return {ok, text: ok ? 'Begin as ' + nm + ' the ' + advNameOf(d.cls) : 'Pick a name and a class'};
+  return {ok, text: bkGoText(d, nm, ok) || (ok ? 'Begin as ' + nm + ' the ' + advNameOf(d.cls) : 'Pick a name and a class')};
 }
 function advMaker(){
   const d = advDraft, g = advGoState();
   const cc = d.cls ? ADV_CLASSES.find(c => c.id === d.cls) : null;
   return '<div class="advmk cl-' + (d.cls || 'none') + '" id="advMk">'
-    + '<div class="advtop"><h2 id="advTitle">' + (adv ? 'Change your character' : 'Who is doing this?') + '</h2>'
-    +   '<p class="advintro">This is the hero who walks the Quest board and the name on your certificate. Nothing is locked in &mdash; change any of it later.</p></div>'
+    + '<div class="advtop">' + bkSwitchHtml(d) + '<h2 id="advTitle">' + bkMkTitle(d) + '</h2>'
+    +   '<p class="advintro">' + bkMkIntro(d) + '</p></div>'
     + '<div class="advstagecol"><div class="advstage" id="advStage"><div class="advscene" id="advScene">' + advBackdrop()
     +   '<button class="advhero" id="advHero" data-pose="' + d.pose + '" aria-label="Your hero. Show the next pose">' + advHeroFrames() + '</button></div>'
     +   '<div class="advposes" role="group" aria-label="Preview a pose">' + ADV_POSES.map(p =>
@@ -27123,13 +27401,13 @@ function advMaker(){
     +     '<span><span class="fw1">See your </span><span class="fw2">final form</span></span></button></div>'
     + '</div>'
     + '<div class="advside">'
-    +   '<label class="advlab" for="advName">What should we call you?</label>'
-    +   '<input id="advName" maxlength="24" autocomplete="nickname" spellcheck="false" placeholder="A name, a handle, anything" value="' + advAttr(d.name) + '">'
-    +   '<div class="advlab" id="advClsLab">What kind of programmer are you going to be?</div>'
+    +   '<label class="advlab" for="advName">' + bkNameLab(d) + '</label>'
+    +   '<input id="advName" maxlength="24" autocomplete="nickname" spellcheck="false" placeholder="' + bkNamePh(d) + '" value="' + advAttr(d.name) + '">'
+    +   '<div class="advlab" id="advClsLab">' + bkClsLab(d) + '</div>'
     +   '<div class="advcl" role="group" aria-labelledby="advClsLab">' + ADV_CLASSES.map(c =>
           '<button data-cls="' + c.id + '" class="cl-' + c.id + (c.id === d.cls ? ' on' : '') + '" aria-pressed="' + (c.id === d.cls) + '">'
           + '<span class="clp" aria-hidden="true">' + advClsPortrait(c.id) + '</span><span class="clt"><b>' + c.name + '</b><span>' + c.blurb + '</span></span></button>').join('') + '</div>'
-    +   '<p class="advclnote" id="advClNote" aria-live="polite">' + (cc ? cc.long : 'It decides which badges you are working on and which door the hub opens first &mdash; and you can switch any time.') + '</p>'
+    +   '<p class="advclnote" id="advClNote" aria-live="polite">' + bkClsNote(d, cc) + '</p>'
     +   '<div class="advlab" id="advSpLab">Species</div>'
     +   '<div class="advopts advsps" role="group" aria-labelledby="advSpLab">' + advSpeciesHtml() + '</div>'
     +   '<div class="advlookhd"><span class="advlab" id="advLookLab">Appearance</span>'
@@ -27165,7 +27443,7 @@ function advPaint(what){
   if (what.stage) $('#advPeek').innerHTML = advPeekSvg();
   if (what.cls){
     document.querySelectorAll('#advMk [data-cls]').forEach(b => { const on = b.dataset.cls === d.cls; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); });
-    const cc = ADV_CLASSES.find(c => c.id === d.cls); if (cc) $('#advClNote').textContent = cc.long;
+    const cc = ADV_CLASSES.find(c => c.id === d.cls); if (cc) $('#advClNote').innerHTML = bkClsNote(d, cc);
   }
   if (what.panel){
     const a = document.activeElement, pn = $('#advPanel');
@@ -27287,7 +27565,7 @@ function advSheet(){
         return '<div class="bdg tier-' + b.tier + (on ? '' : ' locked') + '"><i>' + advMedal(b, 'advmd-' + b.id, !on) + '</i><b>' + b.name + '</b><small>'
           + b.why + '</small><span class="sronly">' + (on ? 'Earned, ' + b.tier : 'Not yet earned') + '</span></div>';
       }).join('') + '</div>'
-    + '<div class="advfoot sh"><button id="advEdit">Change name, look or class</button><button id="advArmory" type="button">The Armory</button>'
+    + '<div class="advfoot sh"><button id="advEdit">Change name, look or class</button><button id="advArmory" type="button">The Armory</button><button id="advBackupB" type="button">Your backup</button>'
     + '<button id="advCancel">Close</button></div>'
     + '</div>';
 }
@@ -27297,6 +27575,7 @@ $('#advOv').addEventListener('click', (e) => {
   const d = advDraft;
   const t = e.target.closest('button');
   if (d && t && $('#advMk') && $('#advMk').contains(t)){
+    if (t.dataset.who){ bkSwitch(t.dataset.who); return; }
     if (t.dataset.cls){ d.cls = t.dataset.cls; d.name = $('#advName').value; advPaint({cls:true, stage:true, panel:true, look:true}); return; }
     if (t.dataset.sp){
       /* a new species keeps the choices it can: skin and hair wrap into its own lists (a
@@ -27339,17 +27618,22 @@ $('#advOv').addEventListener('click', (e) => {
     const card = $('#advCard'); card.className = 'wcard advmkc'; card.innerHTML = advMaker();
     advWatch(); advStagePlay(); $('#advName').focus({preventScroll:true}); $('#advOv').scrollTop = 0; return;
   }
+  if (e.target.closest('#advBackupB')){ bkOpenMaker(''); return; }
   if (e.target.closest('#advCancel')){ return advClose(); }
   if (e.target.closest('#advGo')){
+    if (d && d.who === 'backup'){ bkGo(d); return; }
     const nm = ($('#advName').value || '').trim().slice(0, 24);
     if (!nm || !d || !d.cls) return;
-    const fresh = !adv, face = adv && adv.face;
+    const fresh = !adv, face = adv && adv.face, bkWas = bkRaw();
     const look = advCleanLook(d.look, d.cls);
     adv = {name:nm, cls:d.cls, look, badges:(adv && adv.badges) || [], tierSeen:advTier()};
     /* a character from before the drawn hero keeps its emoji, so a save code
        taken to an older copy of the school still has a face to show */
     if (face) adv.face = face;
-    advSave(); advDraft = null; advChip(); advClose();
+    /* the backup stays (one made before the hero joins it now) */
+    if (bkWas){ adv.backup = bkWas; try { localStorage.removeItem('advBackup'); } catch (e) {} }
+    bkGoOther(d);
+    advSave(); advDraft = null; advChip(); advClose(); bkBtnPaint();
     if (fresh){
       /* one toast for the birth and the badge that comes with it */
       const c = advClass(), b = BADGES.find(x => x.id === 'born');
@@ -27880,6 +28164,7 @@ function syncModeUI(){
   document.body.classList.toggle('questlsn', live && !sandbox && !!L[idx] && L[idx].kind === 'quest');
   document.body.classList.toggle('lsOn', live && !sandbox && !!L[idx]);
   if (!(live && !sandbox)) lsTheaterClose(false);
+  bkSync(live && !sandbox && !!L[idx]);
   if (!live){
     edEl.placeholder = phFor('js');
     /* a note pointing at the typing box has nothing to point at now */
@@ -29548,6 +29833,7 @@ function lsTheaterFill(){
   nx.innerHTML = String(btnNext.textContent).replace(/ in \d+…/, '').replace(/\s*[→]\s*$/, '') + lsIc('right');
   lsHero(S.want, true);
   if (S.bub) lsBubble(S.bub[0], S.bub[1]);
+  bkTheater();
 }
 function lsTheaterClose(toCode){
   const body = document.body;
@@ -35106,7 +35392,7 @@ function jyBossId(gid){ return gid === 'K' || gid === 'C' ? gid : gid.slice(1); 
 function jyArenaHtml(les){
   const b = jyBossInfo(les.g);
   return '<div class="jyarena" data-g="' + les.g + '"><div class="jyfloor" aria-hidden="true"></div>'
-    + '<div class="jyah" aria-hidden="true"><div class="jyahf"></div></div>'
+    + bkArenaSlot() + '<div class="jyah" aria-hidden="true"><div class="jyahf"></div></div>'
     + '<div class="jyvs" aria-hidden="true">VS</div>'
     + '<div class="jyab" aria-hidden="true"><div class="jyabf"></div></div>'
     + '<div class="jyhp"><span class="jyhpn"><b>' + esc(b.name) + '</b> ' + esc(b.title) + '</span><span class="jyhpb" role="meter" aria-label="' + esc(b.name) + '’s strength" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><i></i></span><span class="jyhpt"></span></div>'
@@ -35155,6 +35441,7 @@ function jyLoadStart(i){
 }
 function jyLoadEnd(){
   const les = L[idx]; if (!les || !les.boss) return;
+  bkArenaSync();
   const S = lsS();
   jyFightPaint(S.won || lessonDone(idx) ? 'stone' : 'idle', S.won ? 'cheer' : 'idle', '');
 }
@@ -35436,6 +35723,755 @@ document.addEventListener('keydown', (e) => { if (JY_OV.open && e.key === 'Escap
   const ab = document.getElementById('btnArmory'); if (ab) ab.onclick = () => jyArmoryOpen('');
   jyHeader();
 })();
+
+/* ==== Call for backup =========================================================
+   A second character, made in the same creator as the hero, who comes when you
+   call. Called while you are stuck, the backup looks at the code you typed the
+   way the coach would (the syntax spot, the lint range, the checklist, the
+   answer's key pieces) and, when it can see what is wrong, swings its class
+   attack at that exact spot: a red underline goes under it (your code is never
+   changed, and the preview still waits for Run) and a one-line hint says what
+   is off there. Then it asks questions instead of telling: one per press, broad
+   to specific (what should this do? which line does it? what is missing at
+   this spot?), "I get it" or "Still stuck" after each, ending in a nudge toward
+   Step it down. It never gives the answer: that stays Show me.
+   Stored as adv.backup = {name, cls, look}; old saves have none. Its tier
+   follows the hero's (and the Armory's chosen form). Someone with no hero yet
+   can still have a backup: it waits under its own key and joins the hero the
+   moment one is made. */
+var BK = {init: false, out: false, level: 0, sig: '', mode: '', n: 0, t: [], from: '', last: null, got: false, fx: 0, les: -1, tipT: 0};
+var BK_NAMES = ['Pip', 'Bram', 'Juno', 'Tamsin', 'Odo', 'Wren', 'Kit', 'Rook', 'Suki', 'Fen', 'Ivo', 'Mags', 'Nell', 'Orrin', 'Bea', 'Tavi', 'Moss', 'Rue'];
+/* how each class talks: short, kind, plain */
+var BK_VOICE = {
+  knight: {how: 'Knights talk steady and brave', greet: 'Here, shield up. We take it one line at a time.', strike: 'There! That spot.', get: 'Good. Go and win it.',
+    stuck: 'No shame in that. Narrower, then.', home: 'Call and I will come.', win: 'Held the line. Well fought!', idle: 'Steady. What next?'},
+  ranger: {how: 'Rangers talk quiet and sharp', greet: 'I followed your tracks. The trail goes cold here.', strike: 'Marked it. Right there.', get: 'Then take the shot.',
+    stuck: 'Fine. I will narrow the trail.', home: 'I will be in the trees.', win: 'Clean shot.', idle: 'Watching. Call when you need me.'},
+  mage: {how: 'Mages talk curious and thoughtful', greet: 'A knot in the spell. Let us study it together.', strike: 'Behold: the flaw in the rune.', get: 'Then cast it again.',
+    stuck: 'Then a smaller question.', home: 'Back to my books.', win: 'The spell holds!', idle: 'Pondering. Ask again any time.'},
+  skald: {how: 'Skalds talk playful and bright', greet: 'Ta-da! Your backup is here, with questions!', strike: 'Ba-dum! Found a sour note.', get: 'Then play it again!',
+    stuck: 'Let me hum it slower.', home: 'Encore whenever you like!', win: 'Now that is a song!', idle: 'Humming along. Call me back in!'},
+  barbarian: {how: 'Barbarians talk blunt and loud', greet: 'Backup here. Show me the bug.', strike: 'SMASH. Look there.', get: 'Good. Go.',
+    stuck: 'Smaller question. Here.', home: 'Shout if it bites again.', win: 'HA! Crushed it!', idle: 'Ready to smash.'},
+  warden: {how: 'Guards talk careful and patient', greet: 'On watch. Let us check the edges.', strike: 'Halt: this spot.', get: 'Then go carefully.',
+    stuck: 'Let me point closer.', home: 'I will keep watch.', win: 'Safe and sound.', idle: 'On watch.'},
+  monk: {how: 'Monks talk calm and slow', greet: 'Breathe. We will find it together.', strike: 'Here. Be still and look.', get: 'Good. Trust your hands.',
+    stuck: 'That is fine. A smaller step.', home: 'Peace. Call when you need me.', win: 'Balanced. Well done.', idle: 'Breathing. Ask when ready.'},
+  artificer: {how: 'Artificers talk quick and handy', greet: 'Tools out! Let us take this apart.', strike: 'Zap! Loose part here.', get: 'Then bolt it on and Run.',
+    stuck: 'Let me zoom in.', home: 'Back to the workshop.', win: 'It works! It works!', idle: 'Tinkering. Call me back.'}
+};
+function bkVoice(cls){ return BK_VOICE[advClsId(cls)] || BK_VOICE.knight; }
+function bkRm(){ return matchMedia('(prefers-reduced-motion: reduce)').matches; }
+
+/* ---- who the backup is ---- */
+function bkRaw(){
+  let b = adv && adv.backup;
+  if (!b){ try { b = JSON.parse(localStorage.getItem('advBackup') || 'null'); } catch (e) { b = null; } }
+  return b && typeof b === 'object' ? b : null;
+}
+function bkGet(){
+  const b = bkRaw();
+  if (!b || !String(b.name || '').trim()) return null;
+  const cls = advClsId(b.cls);
+  return {name: String(b.name).trim().slice(0, 24), cls, look: advCleanLook(b.look && typeof b.look === 'object' ? b.look : {}, cls)};
+}
+function bkSave(b){
+  const clean = {name: String(b.name).trim().slice(0, 24), cls: advClsId(b.cls), look: advCleanLook(b.look, b.cls)};
+  if (adv){ adv.backup = clean; advSave(); try { localStorage.removeItem('advBackup'); } catch (e) {} }
+  else { try { localStorage.setItem('advBackup', JSON.stringify(clean)); } catch (e) {} }
+  bkBtnPaint();
+}
+/* the tier follows the hero's (and the form the Armory has them wear) */
+function bkLook(){ const b = bkGet(); if (!b) return null; return advLookOf({cls: b.cls, look: b.look, wear: adv ? adv.wear : null}); }
+function bkClsName(b){ return advNameOf((b || bkGet() || {}).cls) || 'Knight'; }
+function bkSvg(pose, o){
+  const lk = bkLook(); if (!lk) return '';
+  return avatarSvg(lk, Object.assign({id: 'bk' + (++BK.n), pose: pose || 'idle'}, o || {}));
+}
+function bkFx(pose, dir){
+  const lk = bkLook(); if (!lk || bkRm()) return '';
+  return ADV_KIT.fx(lk.cls, pose, {id: 'bkf' + (++BK.n), tier: lk.tier, dir: dir || 'r'}) || '';
+}
+function bkRandom(){
+  const hc = adv ? advClsId(adv.cls) : '';
+  const cs = ADV_CLASSES.map(c => c.id).filter(c => c !== hc);
+  const cls = cs[Math.floor(Math.random() * cs.length)];
+  const names = BK_NAMES.filter(n => !adv || n !== adv.name);
+  return {name: names[Math.floor(Math.random() * names.length)], cls, look: advRandomLook(cls)};
+}
+
+/* ---- the button in the lesson bar ---- */
+var BK_TIPS = {
+  btnRun: ['Run', 'Runs your code and has the coach check it (' + KEY_MOD + '+Enter).'],
+  btnHelp: ['Help me', 'A hint that points at the problem without telling you the answer.'],
+  btnLead: ['Give me a lead', 'Reveals the answer one step at a time. You finish the thought.'],
+  btnSol: ['Show me', 'Shows the full answer. Try the two on its left first.'],
+  btnBk: ['Call for backup', 'Your sidekick strikes at the broken spot and asks you questions until it clicks (' + KEY_MOD + '+B).'],
+  btnReDo: ['Start over', 'Puts the starting code back so you can try again from the top.'],
+  btnDuck: ['Talk it through', 'Explain your code to the rubber duck one line at a time: most bugs give themselves away.'],
+  btnTheme: ['Editor look', 'Pick a look for the editor: fifteen themes, all yours from the start.']
+};
+function bkBtnPaint(){
+  const btn = document.getElementById('btnBk'); if (!btn) return;
+  const b = bkGet(), lk = bkLook();
+  const face = btn.querySelector('.bkface'), sub = btn.querySelector('.bksub'), lab = btn.querySelector('.bl'), l2 = btn.querySelector('.bl2');
+  btn.className = 'bkb bk-bk' + (b ? ' cl-' + b.cls : ' none') + (BK.out ? ' out' : '');
+  /* an <img>, so nothing the sprite draws past its box can widen the page */
+  const svg = avatarSvg(lk || {cls: 'knight', species: 'human', tier: 0, skin: 2, hair: 0, hairC: 1, eyes: 0, acc: 0, tint: 0}, {id: 'bkbtn' + (++BK.n), crop: 'head'});
+  if (face) face.innerHTML = '<span class="bkfc">' + (typeof jyImg === 'function' ? jyImg(svg, 'bkfimg') : svg) + '</span><i class="bkdot" aria-hidden="true">' + (BK.out ? '?' : '+') + '</i>';
+  if (lab) lab.textContent = BK.out ? 'Next question' : 'Call for backup';
+  if (l2) l2.textContent = BK.out ? 'Ask again' : 'Backup';
+  if (sub) sub.textContent = b ? b.name + ' the ' + bkClsName(b) : 'make your sidekick';
+  btn.setAttribute('aria-label', (BK.out ? 'Next question from ' + (b ? b.name : 'your backup') : 'Call for backup' + (b ? ': ' + b.name + ' the ' + bkClsName(b) : ''))
+    + ' (' + KEY_MOD + '+B)');
+}
+/* one tooltip for the whole bar: on hover with a mouse, and on keyboard focus */
+function bkTipInit(){
+  const tip = document.createElement('div'); tip.id = 'bkTip'; tip.setAttribute('role', 'tooltip'); tip.hidden = true;
+  document.body.appendChild(tip);
+  const bar = document.querySelector('.btnrow'); if (!bar) return;
+  Object.keys(BK_TIPS).forEach(id => {
+    const e = document.getElementById(id); if (!e) return;
+    e.removeAttribute('title');
+    e.setAttribute('aria-describedby', ((e.getAttribute('aria-describedby') || '') + ' bkTip').trim());
+  });
+  const show = (e) => {
+    const t = BK_TIPS[e.id]; if (!t || e.offsetParent === null) return;
+    const r = e.getBoundingClientRect();
+    tip.innerHTML = '<b>' + t[0] + '</b>' + t[1]; tip.hidden = false;
+    const w = tip.offsetWidth, h = tip.offsetHeight;
+    let x = Math.max(8, Math.min(innerWidth - w - 8, r.left + r.width / 2 - w / 2)), y = r.top - h - 10;
+    const below = y < 60; if (below) y = r.bottom + 10;
+    tip.style.left = x + 'px'; tip.style.top = y + 'px';
+    tip.style.setProperty('--ax', Math.max(12, Math.min(w - 12, r.left + r.width / 2 - x)) + 'px');
+    tip.classList.toggle('below', below);
+  };
+  const hide = () => { clearTimeout(BK.tipT); tip.hidden = true; };
+  const fine = matchMedia('(hover: hover) and (pointer: fine)');
+  bar.addEventListener('mouseover', (ev) => { if (!fine.matches) return; const b = ev.target.closest('button'); if (!b || !BK_TIPS[b.id]) return; clearTimeout(BK.tipT); BK.tipT = setTimeout(() => { if (Date.now() - (BK.pd || 0) > 600) show(b); }, 350); });
+  bar.addEventListener('mouseout', (ev) => { const b = ev.target.closest('button'); if (b && !b.contains(ev.relatedTarget)) hide(); });
+  bar.addEventListener('focusin', (ev) => { const b = ev.target.closest('button'); if (b && BK_TIPS[b.id] && b.matches(':focus-visible') && Date.now() - (BK.pd || 0) > 600) show(b); });
+  /* a press is not a question about the button: no tip after it */
+  bar.addEventListener('pointerdown', () => { BK.pd = Date.now(); hide(); }, true);
+  bar.addEventListener('focusout', hide);
+  bar.addEventListener('click', hide);
+  addEventListener('scroll', hide, true);
+  addEventListener('keydown', (ev) => { if (ev.key === 'Escape') hide(); });
+}
+function bkInit(){
+  if (BK.init) return; BK.init = true;
+  const btn = document.getElementById('btnBk');
+  if (btn) btn.addEventListener('click', () => bkPress());
+  bkTipInit();
+  bkBtnPaint();
+  /* Ctrl/Cmd + B, anywhere in a lesson */
+  document.addEventListener('keydown', (e) => {
+    if (!(e.ctrlKey || e.metaKey) || e.shiftKey || e.altKey || String(e.key).toLowerCase() !== 'b') return;
+    const b = document.getElementById('btnBk');
+    if (!b || b.hidden || hub || drillOn || sandbox || !L[idx]) return;
+    if (document.getElementById('advOv') && document.getElementById('advOv').classList.contains('open')) return;
+    e.preventDefault(); bkPress();
+  });
+}
+/* the lesson is live (or not): the button shows only where there is a task */
+function bkSync(on){
+  bkInit();
+  const btn = document.getElementById('btnBk');
+  if (btn) btn.hidden = !on;
+  if (!on && BK.out) bkHome(true);
+}
+/* a lesson opens: the backup goes home quietly, and the bar shows who would come */
+function bkLoaded(){
+  bkInit();
+  if (BK.out || document.getElementById('bkCard')) bkHome(true);
+  BK.level = 0; BK.sig = ''; BK.les = idx;
+  bkBtnPaint();
+}
+
+/* ---- the card: the backup's words, above the editor ---- */
+function bkCardEl(){
+  let c = document.getElementById('bkCard');
+  if (!c){
+    c = document.createElement('section'); c.id = 'bkCard'; c.setAttribute('aria-label', 'Your backup');
+    const ew = document.querySelector('.edwrap'); if (!ew) return null;
+    ew.parentNode.insertBefore(c, ew);
+    c.addEventListener('click', bkCardClick);
+    c.addEventListener('keydown', (e) => { if (e.key === 'Escape'){ e.preventDefault(); bkHome(false); bkFocusBtn(); } });
+  }
+  return c;
+}
+function bkFocusBtn(){ const b = document.getElementById('btnBk'); if (b && b.offsetParent !== null) try { b.focus({preventScroll: true}); } catch (e) {} }
+function bkPerchOn(){ const p = document.getElementById('lsPerch'); return !!p && p.offsetParent !== null && getComputedStyle(p).display !== 'none'; }
+var BK_HOME_IC = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3.5 11 12 4l8.5 7"/><path d="M5.8 9.4V19a1.4 1.4 0 0 0 1.4 1.4h3.3v-5h3v5h3.3a1.4 1.4 0 0 0 1.4-1.4V9.4"/></svg>';
+var BK_HIT_IC = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 20 18.5 5.5M14.5 4.2l5.3 5.3M3.6 15.8l4.6 4.6"/></svg>';
+function bkCardPaint(o){
+  const c = bkCardEl(); if (!c) return;
+  const b = bkGet();
+  c.className = 'bkcard' + (b ? ' cl-' + b.cls : ' cl-none') + ' m-' + o.mode + (bkPerchOn() && b ? ' duo' : '');
+  let h = '';
+  if (o.mode === 'offer'){
+    h = '<div class="bkfig ghost" aria-hidden="true"><div class="bkhero">' + avatarSvg(advRandomLook('monk'), {id: 'bkgh' + (++BK.n)}) + '</div><span class="bkqm">?</span></div>'
+      + '<div class="bkbody"><div class="bkhd"><b class="bknm">Who comes when you call?</b></div>'
+      + '<p class="bkq">Your backup is a second character: they swing at the broken spot in your code and ask the questions that get you unstuck. Make one now, or let the dice pick.</p>'
+      + '<div class="bkbtns"><button type="button" class="bkgo" data-bk="make">Make your backup</button><button type="button" class="bksec" data-bk="surprise">' + ADV_DICE + 'Surprise me</button><button type="button" class="bklink" data-bk="notnow">Not now</button></div></div>';
+  } else {
+    const steps = o.steps || 0, at = o.at || 0;
+    let dots = '';
+    if (steps > 1){ for (let k = 0; k < steps; k++) dots += '<i' + (k < at ? ' class="p"' : k === at ? ' class="on"' : '') + '></i>'; }
+    h = '<div class="bkfig" aria-hidden="true"><div class="bkhero"></div><div class="bkfx"></div></div>'
+      + '<div class="bkbody"><div class="bkhd"><b class="bknm">' + esc(b.name) + '</b><span class="bkcl">the ' + bkClsName(b) + ' &middot; your backup</span>'
+      + (steps > 1 ? '<span class="bksteps" role="img" aria-label="Question ' + (at + 1) + ' of ' + steps + ', broad to specific">' + dots + '</span>' : '')
+      + '<button type="button" class="bkhome" data-bk="home" aria-label="Send ' + esc(b.name) + ' home">' + BK_HOME_IC + '<span>Send home</span></button></div>'
+      + '<div class="bklive" aria-live="polite">'
+      + (o.voice ? '<p class="bkvoice">' + o.voice + '</p>' : '')
+      + (o.hit ? '<p class="bkhit">' + BK_HIT_IC + '<span>' + o.hit + '</span></p>' : '')
+      + (o.q ? '<p class="bkq">' + o.q + '</p>' : '') + '</div>'
+      + (o.btns ? '<div class="bkbtns">' + o.btns + '</div>' : '') + '</div>';
+  }
+  c.innerHTML = h;
+  if (o.mode !== 'offer') bkPose(o.pose || 'idle', !!o.enter);
+}
+function bkCardClick(e){
+  const t = e.target.closest('[data-bk]'); if (!t) return;
+  const k = t.dataset.bk;
+  if (k === 'home'){ bkHome(false); bkFocusBtn(); }
+  else if (k === 'notnow'){ bkHome(true); bkFocusBtn(); }
+  else if (k === 'make') bkOpenMaker('call');
+  else if (k === 'surprise'){ const r = bkRandom(); bkSave(r); announce(r.name + ' the ' + bkClsName(r) + ' is your backup now.'); bkComeOut(); }
+  else if (k === 'got') bkGot();
+  else if (k === 'stuck') bkStuck();
+  else if (k === 'down'){ if (typeof tfDownOpen === 'function') tfDownOpen('fill'); }
+  else if (k === 'lead'){ const l = document.getElementById('btnLead'); if (l) l.click(); }
+  else if (k === 'next') bkPress();
+}
+
+/* ---- the figure: in the perch beside the hero, or in the card ---- */
+function bkPerchEl(){
+  const p = document.getElementById('lsPerch'); if (!p) return null;
+  let e = document.getElementById('bkPerch');
+  if (!e){ e = document.createElement('div'); e.id = 'bkPerch'; e.className = 'bkperch'; e.setAttribute('aria-hidden', 'true'); e.innerHTML = '<div class="bkhero"></div><div class="bkfx"></div>'; p.appendChild(e); }
+  return e;
+}
+function bkHosts(){
+  const out = [];
+  const card = document.getElementById('bkCard');
+  const perch = BK.out && bkPerchOn() ? bkPerchEl() : null;
+  if (perch) out.push({el: perch, dir: 'l'});
+  if (card){ const f = card.querySelector('.bkfig:not(.ghost)'); if (f) out.push({el: f, dir: 'r', bust: !!perch}); }
+  const th = document.getElementById('bkThMate'); if (th && BK.out && document.body.classList.contains('lsTheater')) out.push({el: th, dir: 'l'});
+  return out;
+}
+function bkPose(pose, enter){
+  const lk = bkLook(); if (!lk) return;
+  BK.t.forEach(clearTimeout); BK.t = [];
+  const p = document.getElementById('lsPerch'); if (p) p.classList.toggle('bkduo', BK.out && bkPerchOn());
+  bkHosts().forEach(hst => {
+    const hb = hst.el.querySelector('.bkhero'), fb = hst.el.querySelector('.bkfx'); if (!hb) return;
+    if (hst.bust){ hb.innerHTML = avatarSvg(lk, {id: 'bkb' + (++BK.n), crop: 'bust'}); if (fb) fb.innerHTML = ''; hst.el.classList.add('bust'); return; }
+    hst.el.classList.remove('bust');
+    hb.innerHTML = avatarSvg(lk, {id: 'bkh' + (++BK.n), pose, dir: hst.dir});
+    if (fb) fb.innerHTML = bkFx(pose === 'cheer' ? 'cheer' : pose, hst.dir);
+    if (enter && !bkRm()){ hst.el.classList.remove('bkin'); void hst.el.offsetWidth; hst.el.classList.add('bkin'); hst.el.dataset.in = BK_ENTER[lk.cls] || 'walk'; }
+  });
+  const dur = (ADV_KIT.dur[lk.cls] || ADV_KIT.dur.knight);
+  if (pose === 'attack' || pose === 'hurt') BK.t.push(setTimeout(() => bkPose('idle'), (dur[pose] || 600) + 250));
+  bkArenaPaint(null);
+}
+/* each class arrives its own way */
+var BK_ENTER = {knight: 'walk', ranger: 'dart', mage: 'blink', skald: 'hop', barbarian: 'leap', warden: 'walk', monk: 'blink', artificer: 'dart'};
+
+/* ---- come out, go home ---- */
+function bkPress(){
+  bkInit();
+  if (hub || drillOn || sandbox || !L[idx]) return;
+  if (!bkGet()){ BK.mode = 'offer'; document.body.classList.add('bkOut'); bkCardPaint({mode: 'offer'}); bkShowCard(); const g = document.querySelector('#bkCard [data-bk="make"]'); if (g) try { g.focus({preventScroll: true}); } catch (e) {} return; }
+  if (!BK.out){ bkComeOut(); return; }
+  bkAsk(false);
+}
+function bkComeOut(){
+  const b = bkGet(); if (!b) return;
+  BK.out = true; BK.got = false; BK.les = idx;
+  document.body.classList.add('bkOut');
+  if (BK.sig === '') BK.level = 0;
+  bkBtnPaint();
+  const p = document.getElementById('lsPerch'); if (p) bkPerchEl();
+  bkAsk(true);
+  bkArenaSync();
+}
+function bkHome(quiet){
+  const b = bkGet(), c = document.getElementById('bkCard');
+  BK.t.forEach(clearTimeout); BK.t = [];
+  const was = BK.out;
+  BK.out = false; BK.mode = ''; BK.got = false;
+  document.body.classList.remove('bkOut');
+  bkUnpen();
+  const p = document.getElementById('lsPerch'); if (p) p.classList.remove('bkduo');
+  const pe = document.getElementById('bkPerch'); if (pe) pe.remove();
+  const th = document.getElementById('bkThMate'); if (th) th.remove();
+  const thm = document.getElementById('lsThMate'); if (thm) thm.classList.remove('bkduo');
+  document.querySelectorAll('.jyarena').forEach(a => a.classList.remove('bkon'));
+  if (c){
+    if (!quiet && was && b && !bkRm()){ c.id = ''; c.classList.add('bkbye'); const v = c.querySelector('.bklive'); if (v) v.innerHTML = '<p class="bkvoice">' + bkVoice(b.cls).home + '</p>'; setTimeout(() => c.remove(), 480); }
+    else c.remove();
+  }
+  if (!quiet && was && b) announce(b.name + ' goes home. ' + bkVoice(b.cls).home);
+  bkBtnPaint();
+}
+function bkShowCard(){
+  const c = document.getElementById('bkCard'); if (!c) return;
+  try { c.scrollIntoView({block: innerWidth <= 700 ? 'start' : 'nearest', behavior: bkRm() ? 'auto' : 'smooth'}); } catch (e) {}
+}
+
+/* ---- what the backup can see in your code ---- */
+function bkLang(les){ if (les.kind === 'shell') return ''; return les.lang === 'arc' ? 'js' : les.lang; }
+function bkReqs(les, code){
+  const keepReq = reqLog, keepLint = lintRange;
+  try {
+    if (les.proj){
+      let doc = null; try { doc = new DOMParser().parseFromString(buildDoc(les, code), 'text/html'); } catch (e) {}
+      const miss = les.stories.filter(st => { try { return !st.c(code, doc); } catch (e) { return true; } }).map(st => ({t: st.t, ok: false, src: ''}));
+      return {ok: !miss.length, miss, msg: ''};
+    }
+    reqLog = [];
+    const r = normRes(les, code);
+    return {ok: !!r.ok, miss: reqLog.filter(x => !x.ok), msg: reqLog.length >= 2 ? '' : String(r.msg || '')};
+  } catch (e) { return {ok: false, miss: [], msg: ''}; }
+  finally { reqLog = keepReq; lintRange = keepLint; }
+}
+function bkLineOf(code, a){ return String(code).slice(0, a).split('\n').length; }
+function bkOneLine(msg){
+  let t = plain(msg).replace(/^[^A-Za-z0-9<"'(]+/, '');
+  t = t.split(/ — | &mdash; | - (?=[a-z])|\bdid you mean\b/i)[0];
+  const s = t.match(/^[^.!?]*[.!?]/); if (s && s[0].length > 20) t = s[0];
+  t = t.trim(); if (t.length > 120) t = t.slice(0, 118).replace(/\s+\S*$/, '') + '…';
+  return esc(t);
+}
+function bkTagWord(n){ return {h1: 'heading', h2: 'heading', h3: 'heading', h4: 'heading', h5: 'heading', h6: 'heading', p: 'paragraph', li: 'list item', ul: 'list', ol: 'list', a: 'link', button: 'button', div: 'box', span: 'span', em: 'leaning part', strong: 'bold part', style: 'style block', script: 'script'}[n] || 'element'; }
+/* a problem the coach can pin to characters, said as a hint and asked as a question */
+function bkFromSpot(x, code){
+  const L0 = '<b>Line ' + x.line + ':</b> ';
+  const nm = x.name ? '<code>&lt;' + esc(x.name) + '&gt;</code>' : '', ch = x.ch ? '<code>' + esc(x.ch) + '</code>' : '';
+  const r = {a: x.a, b: x.b, line: x.line, kind: x.kind};
+  if (x.kind === 'quote'){ r.hit = L0 + 'a quote opens here and never closes.'; r.q = 'Quotes come in pairs. Where should this one’s partner go?'; }
+  else if (x.kind === 'tag'){ r.hit = L0 + 'this tag never gets the mark that ends it.'; r.q = 'A tag is a name between two pointy brackets. Which of the two is this one missing?'; }
+  else if (x.kind === 'elem'){ r.hit = L0 + 'this ' + nm + ' opens, but nothing closes it.'; r.q = 'What does the browser need to see after the words to know the ' + bkTagWord(x.name) + ' has ended?'; }
+  else if (x.kind === 'stray' && x.name){ r.hit = L0 + 'this closer has nothing open to close.'; r.q = 'Which opening tag was this closer meant for? Is that one really open?'; }
+  else if (x.kind === 'open'){ r.hit = L0 + 'this ' + ch + ' opens and never closes.'; r.q = 'Where does the part that starts with this ' + ch + ' end? What goes there?'; }
+  else if (x.kind === 'stray'){ r.hit = L0 + 'this ' + ch + ' has nothing to close.'; r.q = 'Which opener was this ' + ch + ' meant to close? Count them.'; }
+  else if (x.kind === 'wrong'){ r.hit = L0 + 'this ' + ch + ' does not match the one it is closing.'; r.q = 'Which opener is this trying to close, and is it the same kind of bracket?'; }
+  else return null;
+  return r;
+}
+function bkFromLint(msg, range, code, lang){
+  if (!range) return null;
+  const line = bkLineOf(code, range.a), m = plain(msg);
+  const r = {a: range.a, b: range.b, line, kind: 'lint', hit: '<b>Line ' + line + ':</b> ' + bkOneLine(msg)};
+  if (/no value yet/.test(m)) r.q = 'What should this property be set to? The goal card says.';
+  else if (/semicolon/.test(m)) r.q = 'What mark ends every property line in CSS?';
+  else if (/is not a real( HTML)? tag|does not exist|numbered sizes/.test(m)){ r.hit = '<b>Line ' + line + ':</b> the browser does not know this tag.'; r.q = 'Is that a tag the browser knows? Read it letter by letter against the goal.'; }
+  else if (/jumbled/.test(m)) r.q = 'In a closing tag, where exactly does the slash go?';
+  else if (/again, but the one before it is still open/.test(m)) r.q = 'Did you mean to open a second one, or to close the first?';
+  else if (/BLOCK and is not allowed/.test(m)) r.q = 'Can a big block like this sit inside a paragraph? Where else could it go?';
+  else if (/isn.t finished|mid-thought/.test(m)) r.q = 'This line stops mid-thought. What is it still waiting for?';
+  else if (/closed .* but there is no open|closes something that was never opened/.test(m)) r.q = 'Which opening tag was this closer meant for? Is it really open?';
+  else r.q = lang === 'css' ? 'Read the marked line: property, colon, value, semicolon. Which piece is off?'
+    : lang === 'py' ? 'Read the marked line out loud. What does Python expect to see there?'
+    : lang === 'html' ? 'Read the marked tag slowly. Is it exactly what you meant?' : 'Read the marked part out loud. What is it waiting for?';
+  return r;
+}
+/* tokens, for lining your code up against the answer's shape */
+function bkToks(code, lang){
+  const out = [], css = lang === 'css', html = lang === 'html';
+  const re = html ? /(<\/?[A-Za-z][\w-]*)|(>)|("[^"\n]*"?|'[^'\n]*'?)|([A-Za-z_][\w-]*)|(\d+(?:\.\d+)?)|(\S)/g
+    : css ? /(\/\*[\s\S]*?\*\/)|("[^"\n]*"?|'[^'\n]*'?)|([#.]?-?[A-Za-z_][\w-]*)|(\d+(?:\.\d+)?[a-z%]*)|(\S)/g
+    : /(\/\/[^\n]*|#[^\n]*|\/\*[\s\S]*?\*\/)|("(?:[^"\\\n]|\\.)*"?|'(?:[^'\\\n]|\\.)*'?|`(?:[^`\\]|\\.)*`?)|([A-Za-z_$][\w$]*)|(\d+(?:\.\d+)?)|(===|!==|==|!=|<=|>=|=>|&&|\|\||\+=|-=|\+\+|--|\*\*|\/\/)|(\S)/g;
+  let m, inTag = false;
+  const py = lang === 'py';
+  while ((m = re.exec(code))){
+    let t = m[0], k = 'p';
+    if (html){
+      if (m[1]){ k = 'tag'; inTag = true; t = t.toLowerCase(); }
+      else if (m[2]){ k = 'p'; inTag = false; }
+      else if (!inTag){
+        /* the words between tags are yours: one free token for the whole run */
+        const e = code.indexOf('<', m.index); const end = e < 0 ? code.length : e;
+        const txt = code.slice(m.index, end);
+        if (txt.trim()){ const last = out[out.length - 1]; if (last && last.k === 'txt') last.b = m.index + txt.trimEnd().length; else out.push({a: m.index, b: m.index + txt.trimEnd().length, t: '', k: 'txt'}); }
+        re.lastIndex = end; continue;
+      }
+      else if (m[3]) k = 'str'; else if (m[4]) { k = 'id'; t = t.toLowerCase(); } else if (m[5]) k = 'num';
+    } else if (css){
+      if (m[1]) continue; if (m[2]) k = 'str'; else if (m[3]) k = 'id'; else if (m[4]) k = 'num';
+    } else {
+      if (m[1]){ if (m[1][0] === '#' && !py) { re.lastIndex = m.index + 1; out.push({a: m.index, b: m.index + 1, t: '#', k: 'p'}); continue; } continue; }
+      if (m[2]) k = 'str'; else if (m[3]) k = 'id'; else if (m[4]) k = 'num'; else if (m[5]) k = 'op';
+    }
+    out.push({a: m.index, b: m.index + m[0].length, t, k});
+  }
+  return out;
+}
+var BK_SIGNS = {'+': 'the sign that glues two things together', '-': 'a sign that takes away', '=': 'the sign that puts a value into a box', '==': 'a sign that compares', '(': 'an opening bracket', ')': 'a closing bracket',
+  '{': 'an opening curly brace', '}': 'a closing curly brace', '[': 'an opening square bracket', ']': 'a closing square bracket', '.': 'a dot that reaches inside something', ':': 'a colon', '>': 'the mark that ends a tag', '/': 'a slash'};
+function bkTokSay(tok){ return (typeof TF_OPS !== 'undefined' && TF_OPS[tok.t]) || BK_SIGNS[tok.t] || (tok.k === 'id' ? 'a name' : tok.k === 'num' ? 'a number' : tok.k === 'tag' ? 'a tag' : 'a sign'); }
+function bkSame(x, y){ return x.k === y.k && (x.k === 'txt' || x.k === 'str' || x.t === y.t); }
+/* the first key piece of the answer your code does not have, and where in YOUR code it belongs */
+function bkDiff(les, code){
+  const lang = bkLang(les), sol = String(les.sol || '');
+  if (!lang || !sol.trim() || typeof tfPieces !== 'function') return null;
+  const U = bkToks(code, lang), S = bkToks(sol, lang);
+  if (!U.length || !S.length || U.length * S.length > 250000) return null;
+  const n = U.length, m = S.length, T = [];
+  for (let i = 0; i <= n; i++) T.push(new Uint16Array(m + 1));
+  for (let i = n - 1; i >= 0; i--) for (let j = m - 1; j >= 0; j--) T[i][j] = bkSame(U[i], S[j]) ? T[i + 1][j + 1] + 1 : Math.max(T[i + 1][j], T[i][j + 1]);
+  const pairU = new Array(m).fill(-1);
+  for (let i = 0, j = 0; i < n && j < m;){ if (bkSame(U[i], S[j])){ pairU[j] = i; i++; j++; } else if (T[i + 1][j] >= T[i][j + 1]) i++; else j++; }
+  let pieces = []; try { pieces = tfPieces(les).filter(p => p.w >= 2); } catch (e) {}
+  let miss = []; try { miss = tfMissingRanges(les, code); } catch (e) {}
+  const keyAt = (tok) => pieces.find(p => tok.a < p.b && tok.b > p.a);
+  const cand = [];
+  S.forEach((tok, j) => {
+    if (pairU[j] > -1 || tok.k === 'txt' || tok.k === 'str') return;
+    const pc = keyAt(tok), req = miss.find(r => tok.a < r.b && tok.b > r.a);
+    if (!pc && !(req && tok.t !== ';' && tok.t !== ',')) return;
+    cand.push({j, pc: pc || {say: bkTokSay(tok)}, req, score: (req ? 10 : 0) + (pc ? 5 : 0) - j / 1000});
+  });
+  if (!cand.length) return null;
+  cand.sort((x, y) => y.score - x.score);
+  const c = cand[0], j = c.j;
+  let pj = j - 1; while (pj >= 0 && pairU[pj] < 0) pj--;
+  let nj = j + 1; while (nj < m && pairU[nj] < 0) nj++;
+  const ui0 = pj >= 0 ? pairU[pj] + 1 : 0, ui1 = nj < m ? pairU[nj] - 1 : n - 1;
+  let a, b, wrong = false;
+  const region = [];
+  for (let i = ui0; i <= ui1; i++) if (U[i].k !== 'txt') region.push(U[i]);
+  if (region.length){
+    wrong = true; a = region[0].a; b = region[region.length - 1].b;
+    const nl = code.indexOf('\n', a); if (nl > -1 && nl < b) b = code.slice(a, nl).trimEnd().length + a;
+  } else {
+    const at = pj >= 0 ? pairU[pj] : ui1 + 1 < n ? ui1 + 1 : n - 1;
+    if (at < 0 || !U[at]) return null;
+    a = U[at].a; b = U[at].b;
+  }
+  if (b <= a) return null;
+  const line = bkLineOf(code, a), L0 = '<b>Line ' + line + ':</b> ';
+  const item = c.req ? '“' + bkOneLine(c.req.t) + '”' : '';
+  return {a, b, line, kind: wrong ? 'wrong-token' : 'missing', say: c.pc.say,
+    hit: L0 + (wrong ? 'this part does not match what the goal needs' + (item ? ' for ' + item : '') + '.' : 'something is missing right after this' + (item ? ', for ' + item : '') + '.'),
+    q: wrong ? 'What should be here instead? Hint: it is ' + c.pc.say + '.' : 'What belongs right after the marked spot? Hint: it is ' + c.pc.say + '.'};
+}
+/* JavaScript that will not parse and no bracket or quote to blame: the first line that cannot be read on its own */
+function bkBadLine(code){
+  const ls = code.split('\n'); let a = 0;
+  for (let i = 0; i < ls.length; i++){
+    const t = ls[i].trim();
+    if (t && !/[{(\[,]$/.test(t) && !/^[}\])]/.test(t) && !/^(else|catch|finally)\b/.test(t) && jsSyntaxError(t)){
+      const lead = ls[i].match(/^\s*/)[0].length;
+      return {a: a + lead, b: a + ls[i].trimEnd().length, line: i + 1, kind: 'parse', hit: '<b>Line ' + (i + 1) + ':</b> the computer cannot read this line.',
+        q: 'Read line ' + (i + 1) + ' piece by piece. Is something missing between two of its pieces, or is there one too many?'};
+    }
+    a += ls[i].length + 1;
+  }
+  return null;
+}
+function bkAnalyse(){
+  const les = L[idx], code = edEl.value, lang = bkLang(les);
+  const an = {les, code, lang, empty: !code.trim() || code.trim() === String(les.start || '').trim(), issue: null, pass: false, miss: [], msg: ''};
+  const keepLint = lintRange;
+  try {
+    if (lang && code.trim()){
+      if (lang === 'html'){
+        const sp = typeof tfSpot === 'function' ? tfSpot(code, 'html') : null;
+        if (sp) an.issue = bkFromSpot(sp.x, code);
+        if (!an.issue){ const m = htmlLint(code); if (m) an.issue = bkFromLint(m, lintRange, code, lang); }
+      } else if (lang === 'css'){
+        const m = cssLint(code); if (m) an.issue = bkFromLint(m, lintRange, code, lang);
+      } else if (lang === 'js'){
+        const err = jsSyntaxError(code);
+        if (err){
+          const sp = typeof tfSpot === 'function' ? tfSpot(code, 'js') : null;
+          if (sp) an.issue = bkFromSpot(sp.x, code);
+          if (!an.issue){ const m = friendlySyntax(err, code); an.issue = bkFromLint(m, lintRange, code, lang); }
+          if (!an.issue) an.issue = bkBadLine(code);
+        } else if (les.lang === 'js'){ const nm = nearMissJS(code); if (nm) an.issue = bkFromLint(nm.msg, nm.range, code, lang); }
+      } else if (lang === 'py'){
+        const sp = typeof tfSpot === 'function' ? tfSpot(code, 'py') : null;
+        if (sp) an.issue = bkFromSpot(sp.x, code);
+      }
+    }
+  } catch (e) { an.issue = null; }
+  finally { lintRange = keepLint; }
+  if (!an.empty || les.kind === 'shell'){
+    const r = bkReqs(les, code);
+    an.pass = r.ok && !an.issue; an.miss = r.miss; an.msg = r.msg;
+  }
+  if (!an.issue && !an.pass && !an.empty && lang){
+    try { an.issue = bkDiff(les, code); } catch (e) { an.issue = null; }
+    /* an engine that names a line (Python, the arcade) */
+    if (!an.issue && an.msg){ const mm = plain(an.msg).match(/\bline (\d+)\b/i); if (mm){ const ln = +mm[1], ls = code.split('\n'); if (ls[ln - 1] && ls[ln - 1].trim()){ let a = 0; for (let k = 0; k < ln - 1; k++) a += ls[k].length + 1; const lead = ls[ln - 1].match(/^\s*/)[0].length;
+      an.issue = {a: a + lead, b: a + ls[ln - 1].trimEnd().length, line: ln, kind: 'engine', hit: '<b>Line ' + ln + ':</b> ' + bkOneLine(an.msg), q: 'Read line ' + ln + ' out loud. What does the computer find there that it did not expect?'}; } } }
+  }
+  if (an.issue && (an.issue.b <= an.issue.a || !code.slice(an.issue.a, an.issue.b).trim())){
+    let a = an.issue.a; while (a > 0 && !code[a].trim()) a--; an.issue.a = a; an.issue.b = Math.max(a + 1, an.issue.b);
+  }
+  an.sig = an.pass ? 'pass' : an.issue ? an.issue.kind + '|' + code.slice(an.issue.a, an.issue.b) : an.miss.length ? 'miss|' + plain(an.miss[0].t) : an.empty ? 'empty' : 'msg|' + plain(an.msg).slice(0, 40);
+  return an;
+}
+/* the plan, in the lesson's own subgoal labels */
+function bkPlan(les){
+  let steps = [];
+  try { if (SHAPE[idx] && SHAPE[idx].steps) steps = SHAPE[idx].steps.map(esc); } catch (e) {}
+  if (steps.length < 2){ try { const f = tfFlowFor(les, idx); if (f){ const tr = f.find(c => c.t === 'tr' && c.sub && c.sub.length >= 2); if (tr) steps = tr.sub.slice(); } } catch (e) {} }
+  if (steps.length < 2){ try { const g = LGUIDE[idx]; if (g && g.steps) steps = g.steps.map(s => (String(s).match(/^<b>([^<]{3,80})<\/b>/) || [])[1]).filter(Boolean).map(s => esc(s.replace(/\.$/, ''))); } catch (e) {} }
+  return steps.slice(0, 5);
+}
+function bkGoalQ(les){
+  const k = les.kind, g = les.g;
+  if (k === 'quest') return 'Where should the hero end up, and what has to happen on the way there?';
+  if (k === 'shell') return 'When this works, what will be different on the machine, and what will the terminal tell you?';
+  if (g === 'SR') return 'When this works, what should you hear? Hum it before you type it.';
+  if (g === 'KT') return 'What should your function hand back for the first example in the goal? Say it before you code it.';
+  if (les.lang === 'py') return 'When this works, what should the program print, exactly?';
+  if (les.lang === 'css') return 'When this works, what should look different on the page?';
+  if (les.lang === 'js') return 'When this works, what should appear on the screen?';
+  return 'Picture the page when this works. What should it show?';
+}
+function bkLadder(an){
+  const les = an.les, rungs = [], plan = bkPlan(les), it = an.issue;
+  rungs.push({k: 'goal', q: bkGoalQ(les) + ' <span class="bkctx">The goal card up top says it in one line: say it in your own words.</span>'});
+  if (plan.length >= 2) rungs.push({k: 'plan', q: 'The plan has ' + plan.length + ' steps. Which one is your code on right now?<ol class="bkplan">' + plan.map(s => '<li>' + s + '</li>').join('') + '</ol>'});
+  const item = an.miss.length ? bkOneLine(an.miss[0].t) : an.msg && !it ? bkOneLine(an.msg) : '';
+  if (an.empty) rungs.push({k: 'start', q: 'What is the very first thing you will type? Just the first step: the rest can wait.'});
+  else if (item) rungs.push({k: 'line', q: 'Your code does not do this yet: <b>“' + item + '”</b>. Which line is supposed to make that happen?'});
+  else rungs.push({k: 'line', q: it ? 'Which line is supposed to make that happen? Look at the one I marked.' : 'Which line is supposed to make that happen? Point at it.'});
+  if (it) rungs.push({k: 'spot', q: it.q});
+  let down = false; try { down = tfDownOk(les); } catch (e) {}
+  const lead = document.getElementById('btnLead'), leadOn = lead && lead.style.display !== 'none' && lead.offsetParent !== null;
+  if (down) rungs.push({k: 'nudge', q: 'Still foggy? That is fine. Step it down: the same task with most of it written for you and a few gaps to fill. It still passes the lesson.', btns: '<button type="button" class="bkgo" data-bk="down">Step it down</button>'});
+  else if (leadOn) rungs.push({k: 'nudge', q: 'Still foggy? Try <b>Give me a lead</b>: it shows the answer a step at a time and you finish the thought.', btns: '<button type="button" class="bkgo" data-bk="lead">Give me a lead</button>'});
+  else rungs.push({k: 'nudge', q: 'Still foggy? Read the goal card once more, change one small thing, and press Run. Every Run teaches you something.'});
+  return rungs;
+}
+
+/* ---- the strike ---- */
+function bkPen(a, b){
+  const code = edEl.value;
+  a = Math.max(0, Math.min(a, code.length)); b = Math.max(a, Math.min(b, code.length));
+  errEl.innerHTML = hlEsc(code.slice(0, a)) + '<span class="redpen bkpen">' + hlEsc(code.slice(a, b)) + '</span>' + hlEsc(code.slice(b)) + '\n';
+  /* bring the line into view */
+  const cs = getComputedStyle(edEl), lh = parseFloat(cs.lineHeight) || 22, top = parseFloat(cs.paddingTop) || 12;
+  const ln = code.slice(0, a).split('\n').length - 1, y = top + ln * lh;
+  if (y < edEl.scrollTop || y + lh > edEl.scrollTop + edEl.clientHeight) edEl.scrollTop = Math.max(0, y - edEl.clientHeight / 3);
+  errEl.scrollTop = edEl.scrollTop; errEl.scrollLeft = edEl.scrollLeft; hlEl.scrollTop = edEl.scrollTop;
+}
+function bkUnpen(){ if (errEl && errEl.querySelector('.bkpen')) errEl.innerHTML = ''; }
+function bkSlash(){
+  if (bkRm()) return;
+  const pen = errEl.querySelector('.bkpen'), b = bkGet(); if (!pen || !b) return;
+  const r = pen.getBoundingClientRect(); if (!r.width) return;
+  const hs = bkHosts().filter(h => !h.bust), from = hs.length ? hs[0].el.getBoundingClientRect() : null;
+  const x1 = r.left + Math.min(r.width, 60) / 2, y1 = r.top + r.height / 2;
+  const cc = ADV_CC[b.cls] || ADV_CC.knight;
+  if (from && document.body.animate){
+    const x0 = from.left + from.width / 2, y0 = from.top + from.height * .45;
+    const len = Math.hypot(x1 - x0, y1 - y0), ang = Math.atan2(y1 - y0, x1 - x0) * 180 / Math.PI;
+    const st = document.createElement('div'); st.className = 'bkstreak'; st.setAttribute('aria-hidden', 'true');
+    st.style.cssText = 'left:' + x0 + 'px;top:' + y0 + 'px;width:' + len + 'px;transform:rotate(' + ang + 'deg);--c1:' + cc[2] + ';--c2:' + cc[0];
+    document.body.appendChild(st);
+    st.animate([{transform: 'rotate(' + ang + 'deg) scaleX(0)', opacity: 1}, {transform: 'rotate(' + ang + 'deg) scaleX(1)', opacity: 1, offset: .55}, {transform: 'rotate(' + ang + 'deg) scaleX(1)', opacity: 0}], {duration: 520, easing: 'cubic-bezier(.3,.7,.3,1)'}).onfinish = () => st.remove();
+    setTimeout(() => st.remove(), 900);
+  }
+  const hit = document.createElement('div'); hit.className = 'bkimpact'; hit.setAttribute('aria-hidden', 'true');
+  hit.style.left = x1 + 'px'; hit.style.top = y1 + 'px';
+  hit.innerHTML = '<svg viewBox="-30 -30 60 60"><path d="M-22 14 20-16M-18 20 22-10" stroke="' + cc[2] + '" stroke-width="3.2" stroke-linecap="round"/><path d="M-22 14 20-16" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/>'
+    + [0, 1, 2, 3, 4, 5, 6, 7].map(k => { const a = k * Math.PI / 4, r1 = 9, r2 = 17 + (k % 2) * 6; return '<path d="M' + (Math.cos(a) * r1).toFixed(1) + ' ' + (Math.sin(a) * r1).toFixed(1) + 'L' + (Math.cos(a) * r2).toFixed(1) + ' ' + (Math.sin(a) * r2).toFixed(1) + '" stroke="#ff5a4e" stroke-width="2.2" stroke-linecap="round"/>'; }).join('') + '</svg>';
+  setTimeout(() => { document.body.appendChild(hit); setTimeout(() => hit.remove(), 700); }, 260);
+}
+function bkCanStrike(it){ return !!it && !document.body.classList.contains('atprompt') && it.b <= edEl.value.length; }
+/* the swing: the attack pose, then the red line lands on the spot (never a change to your code) */
+function bkStrike(it, delay){
+  const code = edEl.value, rm = bkRm();
+  const go = () => {
+    if (!BK.out || edEl.value !== code) return;
+    bkPose('attack');
+    setTimeout(() => { if (!BK.out || edEl.value !== code) return; bkPen(it.a, it.b); bkSlash(); }, rm ? 0 : 180);
+  };
+  if (delay && !rm) BK.t.push(setTimeout(go, delay)); else go();
+}
+
+/* ---- one question per press ---- */
+function bkAsk(first){
+  const b = bkGet(); if (!b) return;
+  const v = bkVoice(b.cls), an = bkAnalyse();
+  BK.last = an;
+  if (an.pass){
+    bkUnpen();
+    BK.level = 0; BK.sig = 'pass';
+    bkCardPaint({mode: 'ask', enter: first, pose: 'cheer', voice: first ? v.greet : v.idle,
+      q: 'I can’t find anything wrong with this. Press <b>Run</b> and let the coach decide.'});
+    bkShowCard(); return;
+  }
+  if (an.sig !== BK.sig){
+    /* a new problem: start broad again (but not all over again if you have already heard the goal question) */
+    BK.level = first || BK.sig === '' ? 0 : Math.min(1, BK.level);
+    BK.sig = an.sig;
+  } else if (!first) BK.level++;
+  const rungs = bkLadder(an), at = Math.min(BK.level, rungs.length - 1), r = rungs[at];
+  BK.level = at;
+  const struck = bkCanStrike(an.issue);
+  bkUnpen();
+  const voice = first ? v.greet : BK.got ? v.idle : an.issue && struck ? v.strike : '';
+  BK.got = false;
+  bkCardPaint({mode: 'ask', enter: first, pose: 'idle', voice, hit: struck ? an.issue.hit : '', q: r.q, steps: rungs.length, at,
+    btns: r.k === 'nudge' ? (r.btns || '') + '<button type="button" class="bksec" data-bk="next">Ask me again</button>'
+      : '<button type="button" class="bkgo" data-bk="got">I get it</button><button type="button" class="bksec" data-bk="stuck">Still stuck</button>'});
+  if (struck) bkStrike(an.issue, first ? 700 : 0);
+  bkShowCard();
+}
+function bkGot(){
+  const b = bkGet(); if (!b) return;
+  const v = bkVoice(b.cls); BK.got = true;
+  bkCardPaint({mode: 'got', pose: 'cheer', voice: v.get, q: 'Fix it, then press <b>Run</b>. Stuck again? Press <b>Next question</b> (' + KEY_MOD + '+B).', steps: 0});
+  try { edEl.focus({preventScroll: true}); } catch (e) {}
+}
+function bkStuck(){
+  const b = bkGet(); if (!b) return;
+  const an = bkAnalyse();
+  if (an.sig !== BK.sig){ bkAsk(false); return; }
+  BK.level++;
+  const rungs = bkLadder(an), at = Math.min(BK.level, rungs.length - 1), r = rungs[at]; BK.level = at;
+  const struck = bkCanStrike(an.issue), had = !!errEl.querySelector('.bkpen');
+  bkCardPaint({mode: 'ask', pose: 'idle', voice: bkVoice(b.cls).stuck, hit: an.issue && struck ? an.issue.hit : '', q: r.q, steps: rungs.length, at,
+    btns: r.k === 'nudge' ? (r.btns || '') + '<button type="button" class="bksec" data-bk="next">Ask me again</button>'
+      : '<button type="button" class="bkgo" data-bk="got">I get it</button><button type="button" class="bksec" data-bk="stuck">Still stuck</button>'});
+  if (struck && !had) bkStrike(an.issue, 0);
+  const f = document.querySelector('#bkCard [data-bk="stuck"], #bkCard [data-bk="down"], #bkCard [data-bk="lead"], #bkCard [data-bk="next"]'); if (f) try { f.focus({preventScroll: true}); } catch (e) {}
+}
+
+/* ---- after a Run ---- */
+function bkAfterRun(was){
+  if (!BK.out || sandbox || hub || drillOn || !L[idx]) return;
+  const b = bkGet(), S = lsS(); if (!b) return;
+  const v = bkVoice(b.cls);
+  if (S.quiet) return;
+  const ok = !!(S.res && S.res.ok) || (S.proj ? S.proj.every(Boolean) : false);
+  if (ok){
+    BK.level = 0; BK.sig = 'pass';
+    bkCardPaint({mode: 'win', pose: 'cheer', voice: '<b>' + v.win + '</b>', q: 'You did that yourself. Send me home, or keep me around for the next one.',
+      btns: '<button type="button" class="bkgo" data-bk="home">Send ' + esc(b.name) + ' home</button>'});
+    bkArenaPaint(L[idx].boss ? 'attack' : 'cheer');
+    if (L[idx].boss) BK.t.push(setTimeout(() => bkArenaPaint('cheer'), 700));
+  } else {
+    const hits = (S.fresh || []).filter(Boolean).length;
+    if (L[idx].boss){ bkArenaPaint(hits ? 'attack' : 'hurt'); BK.t.push(setTimeout(() => bkArenaPaint('idle'), 900)); }
+    const q = document.querySelector('#bkCard .bkq');
+    if (document.getElementById('bkCard') && !BK.got && q && !document.querySelector('#bkCard .bkrun')) q.insertAdjacentHTML('afterend', '<p class="bkrun">Not yet. Press <b>Next question</b> when you want another nudge.</p>');
+  }
+  bkTheater();
+}
+/* ---- the Run theater: the backup stands beside the hero ---- */
+function bkTheater(){
+  const th = document.getElementById('lsTh'); if (!th) return;
+  let m = document.getElementById('bkThMate');
+  const hero = document.getElementById('lsThMate');
+  if (hero) hero.classList.toggle('bkduo', BK.out && !!bkGet());
+  if (!BK.out || !bkGet()){ if (m) m.remove(); return; }
+  if (!m){ m = document.createElement('div'); m.id = 'bkThMate'; m.className = 'bkthmate'; m.setAttribute('aria-hidden', 'true'); m.innerHTML = '<div class="bkhero"></div><div class="bkfx"></div>';
+    if (hero) hero.appendChild(m); else th.appendChild(m); }
+  const S = lsS(), lk = bkLook();
+  m.querySelector('.bkhero').innerHTML = avatarSvg(lk, {id: 'bkt' + (++BK.n), pose: S.won ? 'cheer' : 'idle', dir: 'l'});
+  m.querySelector('.bkfx').innerHTML = bkFx(S.won ? 'cheer' : 'idle', 'l');
+}
+/* ---- a boss trial: the backup fights beside you ---- */
+function bkArenaSlot(){ return '<div class="bkah" aria-hidden="true"><div class="bkahf"></div></div>'; }
+function bkArenaSync(){ bkArenaPaint(null); }
+function bkArenaPaint(pose){
+  const on = BK.out && !!bkGet() && L[idx] && L[idx].boss;
+  document.querySelectorAll('.jyarena').forEach(ar => {
+    ar.classList.toggle('bkon', !!on);
+    let f = ar.querySelector('.bkahf');
+    if (!f){ const jh = ar.querySelector('.jyah'); if (!jh) return; jh.insertAdjacentHTML('beforebegin', bkArenaSlot()); f = ar.querySelector('.bkahf'); }
+    if (!on){ f.innerHTML = ''; return; }
+    if (!pose && f.firstChild) return;
+    const p = pose || (lsS().won ? 'cheer' : 'idle');
+    f.className = 'bkahf av-' + p;
+    f.innerHTML = typeof jyAvImg === 'function' ? jyAvImg(avatarSvg(bkLook(), {id: 'bka' + (++BK.n), pose: p})) : avatarSvg(bkLook(), {id: 'bka' + (++BK.n), pose: p});
+  });
+}
+
+/* ---- the creator: a Hero / Backup switch at the top ---- */
+function bkDraft(who){
+  if (who === 'backup'){
+    const b = bkGet();
+    return {who: 'backup', name: b ? b.name : '', cls: b ? b.cls : null, look: b ? advCleanLook(b.look, b.cls) : advRandomLook('monk'), tab: 'skin', pose: 'idle', final: false};
+  }
+  const had = adv ? advLookOf(adv) : null;
+  return {who: 'hero', name: (adv && adv.name) || '', cls: adv ? advClsId(adv.cls) : null, look: had ? advCleanLook(had, had.cls) : advRandomLook('knight'), tab: 'skin', pose: 'idle', final: false};
+}
+function bkIsBk(d){ return !!d && d.who === 'backup'; }
+function bkSwitchHtml(d){
+  const bk = bkIsBk(d);
+  return '<div class="bksw" role="group" aria-label="Who are you making?">'
+    + '<button type="button" data-who="hero" aria-pressed="' + !bk + '"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3.2 5 6v5.6c0 4.4 3 7.8 7 9.2 4-1.4 7-4.8 7-9.2V6z"/></svg>Hero</button>'
+    + '<button type="button" data-who="backup" aria-pressed="' + bk + '"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19.5c.6-3.4 2.7-5.3 5.5-5.3s4.9 1.9 5.5 5.3"/><path d="M16.5 8.5v5M14 11h5"/></svg>Backup</button></div>';
+}
+function bkMkTitle(d){ return bkIsBk(d) ? (bkGet() ? 'Change your backup' : 'Make your backup') : (adv ? 'Change your character' : 'Who is doing this?'); }
+function bkMkIntro(d){ return bkIsBk(d) ? 'Your backup comes when you call: they swing at the broken spot in your code and ask the questions that get you unstuck. Dress them any way you like.'
+  : 'This is the hero who walks the Quest board and the name on your certificate. Nothing is locked in &mdash; change any of it later.'; }
+function bkNameLab(d){ return bkIsBk(d) ? 'What is your backup called?' : 'What should we call you?'; }
+function bkNamePh(d){ return bkIsBk(d) ? 'A name for your sidekick' : 'A name, a handle, anything'; }
+function bkClsLab(d){ return bkIsBk(d) ? 'What kind of fighter are they?' : 'What kind of programmer are you going to be?'; }
+function bkClsNote(d, cc){
+  if (!bkIsBk(d)) return cc ? cc.long : 'It decides which badges you are working on and which door the hub opens first &mdash; and you can switch any time.';
+  if (!cc) return 'The class decides how your backup fights and how they talk to you.';
+  const v = bkVoice(cc.id); return v.how + ': <q>' + v.greet + '</q>';
+}
+function bkGoText(d, nm, ok){ return bkIsBk(d) ? (ok ? 'Save ' + nm + ' as your backup' : 'Pick a name and a class') : null; }
+function bkPlateName(d){ return bkIsBk(d) ? 'Your backup' : 'Your hero'; }
+var BK_MK = {from: ''};
+function bkOpenMaker(from){
+  BK_MK.from = from || '';
+  advDraft = bkDraft('backup');
+  const card = $('#advCard'); card.className = 'wcard advmkc'; card.innerHTML = advMaker();
+  $('#advOv').classList.add('open');
+  advWatch(); advStagePlay();
+  const f = card.querySelector('#advName'); if (f) f.focus({preventScroll: true});
+  $('#advOv').scrollTop = 0;
+}
+function bkSwitch(who){
+  const d = advDraft; if (!d || (d.who || 'hero') === who) return;
+  const nmEl = $('#advName'); if (nmEl) d.name = nmEl.value;
+  const keep = Object.assign({}, d); delete keep.other;
+  const nx = d.other && (d.other.who || 'hero') === who ? d.other : bkDraft(who);
+  nx.other = keep; nx.pose = d.pose;
+  advDraft = nx;
+  const card = $('#advCard'); card.innerHTML = advMaker();
+  advWatch(); advStagePlay();
+  const b = card.querySelector('[data-who="' + who + '"]'); if (b) b.focus({preventScroll: true});
+  announce(who === 'backup' ? 'Making your backup.' : 'Making your hero.');
+}
+/* Save on the Backup side: the backup (and a hero left half-changed on the other side, if it is complete) */
+function bkGo(d){
+  const nm = ($('#advName').value || '').trim().slice(0, 24);
+  if (!nm || !d.cls) return;
+  const o = d.other;
+  if (o && (o.who || 'hero') === 'hero' && adv && String(o.name || '').trim() && o.cls){
+    adv.name = String(o.name).trim().slice(0, 24); adv.cls = o.cls; adv.look = advCleanLook(o.look, o.cls);
+  }
+  bkSave({name: nm, cls: d.cls, look: d.look});
+  advDraft = null; advChip(); advClose();
+  const b = bkGet();
+  advToast('<span class="atm hero cl-' + b.cls + '"><span class="atr">' + avatarSvg(bkLook(), {id: 'bktw' + (++BK.n), crop: 'bust'}) + '</span></span>'
+    + '<span class="att"><i>Backup ready</i><span class="atn">' + esc(b.name) + '</span> the ' + bkClsName(b)
+    + '<small>Press Call for backup (' + KEY_MOD + '+B) in any lesson.</small></span>', 'born cl-' + b.cls);
+  if (BK_MK.from === 'call' && L[idx] && !hub && !drillOn && !sandbox){ BK_MK.from = ''; bkComeOut(); }
+  else if (BK.out) bkAsk(false);
+  BK_MK.from = '';
+}
+/* the other side of a Save on the Hero side */
+function bkGoOther(d){
+  const o = d && d.other;
+  if (o && o.who === 'backup' && String(o.name || '').trim() && o.cls) bkSave({name: o.name, cls: o.cls, look: o.look});
+}
 
 let firstVisit=false;
 try{ firstVisit = !localStorage.getItem('codeschool') && !localStorage.getItem('welcomed'); }catch(e){}

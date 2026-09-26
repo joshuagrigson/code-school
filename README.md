@@ -16,7 +16,7 @@ each grade. Portfolio pieces, Beyond and the Review Desk sit outside that count.
 | Track | Territory |
 |---|---|
 | K–1 | HTML: tags, attributes, lists, buttons, links, boxes |
-| 2–3 | CSS: colours, spacing, borders, classes and ids |
+| 2–3 | CSS: colors, spacing, borders, classes and ids |
 | 4–6 | JavaScript: `screen.textContent`, variables, strings vs numbers, lists, random |
 | 7 | Functions — teach, ingredients, `return`, functions calling functions |
 | 8 | Choices — if, else, else-if chains, `&&` / `\|\|` |
@@ -87,7 +87,7 @@ graduation — that is what "part of the main lessons" has to mean. Five ladders
 - **Python** 4 → 12 → College: `print` → `2 + 3` vs `"2" + "3"` → a list and
   `len` → `def` → `if`/`else` → `for` → a dict → a program that starts with a
   real `TypeError` → a docstring.
-- **Sound Room** K → 2 → 5 → 9: copy one line and hear it → colour in slices 1
+- **Sound Room** K → 2 → 5 → 9: copy one line and hear it → color in slices 1
   and 9 → the tempo is a number → a loop lays two bars.
 - **Puzzle Vault** 7 → 8 → 9 → 11 → 12 → College: `double` → `sign` with the
   case the examples never show → `sumAll` → `nameOf` → fix `lastOf`, which
@@ -163,7 +163,7 @@ stomp and shake the stage on the downbeat, the others step in time with their
 own footfall, the mage's runes pulse — and takes a bow when the beat passes. A screen shows a live spectrum and
 waveform while it plays (tapped after the mix, so the sound is unchanged), with
 tempo, bar and beat readouts. Every track has a channel strip with a drawn
-instrument icon, its own colour and a level meter; the grid is glowing pads,
+instrument icon, its own color and a level meter; the grid is glowing pads,
 held notes as solid bars, and a playhead that sweeps in time with the audio.
 Effects show as drawn knobs. Nothing plays until you press Play.
 
@@ -183,10 +183,10 @@ Three things fix that, and all three are on every lesson in the room:
   count (four groups of four). Lesson 2 works the method on a *different*
   target — a hit on beat 3 — so the snare string is derived by the learner, not
   handed to them.
-- **Every string you type is read back to you, live.** As you type, the board
+- **Every string you type is read back to you.** Press Run and the board
   echoes each `makeBeat` with the slice numbers under its characters and says
   in English where the hits landed: *2 hits, on slices 4 and 13 — the a after
-  beat 1 and beat 4.* A hit one slice early is named as what it is before Run.
+  beat 1 and beat 4.* A hit one slice early is named as what it is.
   Fifteen characters is counted and said; seventeen is told where it spills.
   `fitMedia` is read the same way — *measures 1, 2, 3 and 4, stops before 5* —
   which is the half-open range lesson 6 is about, shown rather than described.
@@ -224,7 +224,7 @@ Beyond and the Review Desk are reading-and-deciding work, and a coach that fades
 in the answer one word at a time does the deciding for you.
 
 All fifteen editor themes are available from the first minute of Kindergarten.
-Making a learner earn a colour scheme gates comfort, not difficulty, and the
+Making a learner earn a color scheme gates comfort, not difficulty, and the
 person most likely to need the light or high-contrast theme is the beginner who
 has not earned anything yet.
 
@@ -433,7 +433,7 @@ ran.
 | Mage | staff, later a codex of runes | wants the shape to be right | Python |
 | Skald | drum, later a war-horn | wants it to feel and sound right | Sound Room |
 | Barbarian | hatchets, later a great cleaver | tries it and sees | Quest |
-| Warden | spear and shell shield | guards the edge cases | Puzzle Vault |
+| Guard | spear and shell shield | guards the edge cases | Puzzle Vault |
 | Monk | fists or a staff | practises a little every day | Learn Python |
 | Artificer | wrench, later an arc-cannon and a drone | builds the tools | Terminal |
 
@@ -459,7 +459,7 @@ the tier announces the new form once, in the badge toast queue.
 **Code-themed gear.** The runes of this world are code. Every grade boss drops
 one piece of gear per class (fourteen, Kindergarten to College), and each carries
 the sign of what that grade taught: the `;` of a first line, a `</>` tag, a `#`
-colour, an `x=` name tag, the `=>` of an event, `[ ]` lists, `( )` functions,
+color, an `x=` name tag, the `=>` of an event, `[ ]` lists, `( )` functions,
 `?:` choices, the loop arrow, and at the top `{ }` runes that glow. The signs
 are drawn on the hero (never as text), and the character sheet lists the gear
 you have earned by beating each boss, with the rest as quiet silhouettes.
@@ -472,15 +472,15 @@ It is drawn now, in one art direction shared with everything it meets:
 - **A character creator.** Your hero stands on a lit stage while you pick a
   name, one of eight classes (each card shows your hero as that class's
   Recruit), a species and a look: skin (or scales, or fur), hair (or beard,
-  crest, ears), 10 hair colours, 6 eye styles, eye colour, 10 extras and an
+  crest, ears), 10 hair colors, 6 eye styles, eye color, 10 extras and an
   outfit tint per class. Randomise rolls the species too, and only ever picks a
   look that works. Under the stage a tier bar names the tier and form you have
   reached, and **See your final form** shows your class as a Legend.
 - **Every class moves its own way.** The knight chops and shakes the board, the
   barbarian cleaves and shakes it harder, the ranger looses an arrow, the mage
-  casts a bolt, the warden thrusts, the monk throws a flurry, the skald drums
+  casts a bolt, the guard thrusts, the monk throws a flurry, the skald drums
   (and from Champion blasts the war-horn) and the artificer swings a wrench (and
-  from Champion fires the arc-cannon). The mage, skald, warden and monk have an
+  from Champion fires the arc-cannon). The mage, skald, guard and monk have an
   idle effect too, and the barbarian and artificer gain one as Veterans. The creator's stage, the Quest
   board, the Sound Room and the vault doors play the same moves at your tier.
 - **Ten monsters, each with its own moves.** Grubb, Mott, the Ogre, the Imp,
@@ -521,7 +521,7 @@ question you cannot skip (the recall cards and the predict-the-output gates),
 and a visible replay of what your code did rather than a verdict about it —
 which is why Quest animates the run command by command, and why the Sound Room
 draws the score it is about to play. **CodingForKids**' block-to-text bridge is
-the strip of coloured command blocks under the Quest board: your program, as
+the strip of colored command blocks under the Quest board: your program, as
 blocks, highlighting the one currently running.
 
 ### One engine, two jobs
@@ -580,7 +580,7 @@ to be taken seriously by the adult typing alongside the nine-year-old.
 - **One accent, spent sparingly.** Deep green for what you act on, deep navy for
   what you are being told. Everything else is neutral.
 - **Hairlines and three depths.** Every card border is 1px; separation comes
-  from `--sh1` / `--sh2` / `--sh3` and nothing invents a fourth. The coloured
+  from `--sh1` / `--sh2` / `--sh3` and nothing invents a fourth. The colored
   bar on a teaching card is a 3px marker, not a stripe.
 - **A serif for the things that matter** — lesson titles, the hub's greeting,
   the certificate. It reads as a storybook to a child and as an editorial to
@@ -603,7 +603,7 @@ picture the interface relies on is drawn as SVG inside the file.
   toolbar, tab bar and footer. Labelled header buttons drop their icon on narrow
   phones so the words still fit.
 - **The sidebar marks each kind of lesson** (review, reps, challenge, terminal,
-  Python, sound, puzzle, boss) with its own coloured glyph. The original title
+  Python, sound, puzzle, boss) with its own colored glyph. The original title
   text stays in the markup, visually hidden, so search, screen readers and the
   tests read exactly what they read before.
 - **Arcade doors, the welcome card and the Learn Python path** have their own
@@ -620,13 +620,13 @@ picture the interface relies on is drawn as SVG inside the file.
   the lesson.
 
 Gradients never stand alone: every gradient button and banner sits on a solid
-`background-color`, so the contrast checks below measure a real colour.
+`background-color`, so the contrast checks below measure a real color.
 
 ### Fifteen looks for the editor, none of them earned
 
 Classic Dark, Midnight, Paper, Synthwave and Phosphor, plus Solarized Dark and
 Light, Dracula, Nord, Gruvbox, Monokai, One Dark, Cobalt, Amber CRT and
-Commodore. All available from the first minute — a colour scheme is comfort, not
+Commodore. All available from the first minute — a color scheme is comfort, not
 a reward, and the learner most likely to need the light or high-contrast one is
 the beginner who has not earned anything yet.
 
@@ -645,7 +645,7 @@ that fails AA fails the build. There are two levels: `suite.js` samples about
 nineteen representative points, and `contrast_sweep.js` walks **every element
 with a direct text child** across fourteen screens in both themes, composites
 every translucent layer down to the first opaque ancestor, folds each element's
-own opacity into its text colour, and additionally checks that both token blocks
+own opacity into its text color, and additionally checks that both token blocks
 declare the same names and that all fifteen editor themes read.
 
 The sampled version passed while ten real failures were live, including the
@@ -662,7 +662,7 @@ The phone is a first-class layout, not a narrowed desktop.
   actions sharing the width evenly — instead of a ragged wrap.
 - The tab bar pads past the home indicator (`env(safe-area-inset-bottom)`),
   frosts what scrolls under it, and marks the active tab with a rule rather than
-  a colour change alone. `viewport-fit=cover` and a `theme-color` that follows
+  a color change alone. `viewport-fit=cover` and a `theme-color` that follows
   the light/dark toggle, so the browser's own chrome matches the page.
 - The action row sticks to the bottom of the editor column: **Run** is always
   under a thumb, on every lesson, without scrolling.
@@ -672,7 +672,9 @@ The phone is a first-class layout, not a narrowed desktop.
 
 ## Features
 
-- Live preview on every keystroke; JS lessons enforce the house rule —
+- The preview changes only when you press Run, never while you type; the
+  Quest board grows to fill the preview, and the Quest board and the Puzzle
+  Vault play their sounds through the page, so the Run click unlocks them. JS lessons enforce the house rule —
   *working it out is not showing it* — via the universal `.textContent =` check
   plus a `new Function` syntax gate with friendly error rewrites.
 - **Kindergarten to Grade 3 are told to press Run.** Young learners type the
@@ -856,7 +858,7 @@ arcade it is ours — verdict banners, a HUD, a test table, a console — so
 `arc_contrast.js` sweeps inside the frame with the same maths, on fourteen screens
 in both themes. It found the celebration banner at 2.79:1 in dark mode, which
 had been there all along and which the arcade now fires forty-four more times.
-It also reports emoji, whose CSS colour is not what you see; the sweep skips
+It also reports emoji, whose CSS color is not what you see; the sweep skips
 text with no alphanumerics in it.
 
 **Publishing.** `.github/workflows/pages.yml` builds and deploys the site on
@@ -894,7 +896,7 @@ from text overlap and told eight lessons' worth of learners that a block
 **The rhythm string explains itself.** Every Sound Room lesson draws its own
 pattern as sixteen labelled slices with the beat count underneath (1 e & a 2 e
 & a…), the four beats marked, and `0` / `-` / `+` given meanings in words,
-plus the four arguments of `makeBeat` colour-matched to an explanation of each.
+plus the four arguments of `makeBeat` color-matched to an explanation of each.
 Reported as "the dashes arent clear what they mean", which the prose had in
 fact explained in a sentence — a sentence is not the same as being able to see
 which character is which slice.

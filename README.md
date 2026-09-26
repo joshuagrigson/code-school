@@ -158,9 +158,9 @@ re-deal, the crown, the unlock, the XP and the streak.
 
 **The studio.** The Sound Room's preview is a drawn studio console. Your hero
 performs on a little stage (string lights, spotlight, speakers) in its own
-class style — the Bard strums with notes flying, the Builder stomps and shakes
-the stage on the downbeat, the Sleuth taps along, the Architect's runes pulse —
-and takes a bow when the beat passes. A screen shows a live spectrum and
+class style — the skald strums with notes flying, the knight and the barbarian
+stomp and shake the stage on the downbeat, the others step in time with their
+own footfall, the mage's runes pulse — and takes a bow when the beat passes. A screen shows a live spectrum and
 waveform while it plays (tapped after the mix, so the sound is unchanged), with
 tempo, bar and beat readouts. Every track has a channel strip with a drawn
 instrument icon, its own colour and a level meter; the grid is glowing pads,
@@ -420,11 +420,49 @@ whatever is in the way, wait when the spikes are up. Beating par means you
 found something better than the machine did.
 
 **The Adventurer** (from Codédex) is the character all of it belongs to: a name,
-a drawn hero, and one of four classes — Builder, Sleuth, Architect, Bard — which
-are dispositions towards programming rather than costumes. The class picks your
-badge track and which arcade door opens first. The figure walking the Quest
-board is the hero you made. Fourteen badges, each one earned by something that
+a drawn hero, a species and one of eight warrior classes, each a disposition
+towards programming as well as a way to fight. The class picks which arcade door
+opens first. The figure walking the Quest board is the hero you made, and it
+grows as you finish grades. Fourteen badges, each one earned by something that
 ran.
+
+| Class | Fights with | The programmer underneath | First door |
+|-------|-------------|---------------------------|------------|
+| Knight | sword and shield | finishes; ships it end to end | Quest |
+| Ranger | longbow, later a hawk | reads the whole error message | Puzzle Vault |
+| Mage | staff, later a codex of runes | wants the shape to be right | Python |
+| Skald | drum, later a war-horn | wants it to feel and sound right | Sound Room |
+| Barbarian | hatchets, later a great cleaver | tries it and sees | Quest |
+| Warden | spear and shell shield | guards the edge cases | Puzzle Vault |
+| Monk | fists or a staff | practises a little every day | Learn Python |
+| Artificer | wrench, later an arc-cannon and a drone | builds the tools | Terminal |
+
+The first four are the old Builder, Sleuth, Architect and Bard grown up: a save
+with one of those classes loads (or imports) as the knight, ranger, mage or
+skald with the same look.
+
+**Species.** Human, elf, dwarf, orc, saurian or foxfolk, each with its own head
+and face and its own lists: skin tones (scales for a saurian, fur for a fox) and
+hair (beards for a dwarf, crests and frills for a saurian, ears for a fox). A
+save without a species is the human it always was.
+
+**Tiers.** The hero has five tiers, read off the grades you have finished (every
+core lesson of the grade done), never stored and never gating anything: Recruit
+(everyone starts here), Squire (Grades 1–3 finished), Veteran (4–6), Champion
+(7–9) and Legend (10–12; College is not needed). Each class has a form name per
+tier — the knight goes from Village Recruit to the Gilded Paladin, the artificer
+from Tinker Recruit to the Arcwright Colossus — and its gear, its effects and
+(for the ranger and artificer, from Champion) a companion grow with it. A learner
+already deep in the school arrives geared up; finishing the grade that raises
+the tier announces the new form once, in the badge toast queue.
+
+**Code-themed gear.** The runes of this world are code. Every grade boss drops
+one piece of gear per class (fourteen, Kindergarten to College), and each carries
+the sign of what that grade taught: the `;` of a first line, a `</>` tag, a `#`
+colour, an `x=` name tag, the `=>` of an event, `[ ]` lists, `( )` functions,
+`?:` choices, the loop arrow, and at the top `{ }` runes that glow. The signs
+are drawn on the hero (never as text), and the character sheet lists the gear
+you have earned by beating each boss, with the rest as quiet silhouettes.
 
 ### The hero, the monsters and the map
 
@@ -432,16 +470,19 @@ The hero used to be an emoji, so it looked like whatever font the machine had.
 It is drawn now, in one art direction shared with everything it meets:
 
 - **A character creator.** Your hero stands on a lit stage while you pick a
-  name, a class and a look: 8 skin tones, 12 hairstyles, 10 hair colours, 6
-  eye styles, eye colour, 10 extras and an outfit tint per class. Randomise
-  only ever picks a look that works. Each class dresses and carries its own
-  thing — the Builder's apron and hammer, the Sleuth's coat and magnifier, the
-  Architect's robe and glowing staff, the Bard's cape and lute.
-- **Every class moves its own way.** The Builder stomps and slams the hammer
-  hard enough to shake the board; the Sleuth takes quick light steps and lunges
-  with a spotlight; the Architect glides and fires a rune bolt; the Bard skips
-  and hits a power chord that sends out sound waves. The creator's stage plays
-  the same moves, so switching class visibly changes how the hero moves.
+  name, one of eight classes (each card shows your hero as that class's
+  Recruit), a species and a look: skin (or scales, or fur), hair (or beard,
+  crest, ears), 10 hair colours, 6 eye styles, eye colour, 10 extras and an
+  outfit tint per class. Randomise rolls the species too, and only ever picks a
+  look that works. Under the stage a tier bar names the tier and form you have
+  reached, and **See your final form** shows your class as a Legend.
+- **Every class moves its own way.** The knight chops and shakes the board, the
+  barbarian cleaves and shakes it harder, the ranger looses an arrow, the mage
+  casts a bolt, the warden thrusts, the monk throws a flurry, the skald drums
+  (and from Champion blasts the war-horn) and the artificer swings a wrench (and
+  from Champion fires the arc-cannon). The mage, skald, warden and monk have an
+  idle effect too, and the barbarian and artificer gain one as Veterans. The creator's stage, the Quest
+  board, the Sound Room and the vault doors play the same moves at your tier.
 - **Ten monsters, each with its own moves.** Grubb, Mott, the Ogre, the Imp,
   the Warg, the Demon, Vex, the Wisp, Mordra and the Drake. The imp hovers and
   swoops, the warg wags and lunges, the casters charge and fire beams down
@@ -463,12 +504,15 @@ It is drawn now, in one art direction shared with everything it meets:
   until the monster falls, so the hero never walks on before the hit. A loss
   ends on the hero knocked down with a DOWN label; on a wide, short preview the
   HUD moves beside the board so the board can be bigger.
-- **A character sheet** with your hero in a class frame, your stats, and the
-  badges as drawn medals.
+- **A character sheet** with your hero in a class frame, your tier and form
+  ("Veteran · Sparkwrench Veteran"), your stats, the road of five tiers with
+  your hero drawn at each and the grades that earn the next one, the gear you
+  have earned from the grade bosses, and the badges as drawn medals.
 
 Old saves keep working: a save from before the drawn hero carries only an emoji
 face, so a hero is grown from that face and the name — the same save always
-grows the same hero. Every sprite and animation is inline SVG and CSS inside
+grows the same hero — and a save from before the warrior classes keeps its look
+under the class it grew into. Every sprite and animation is inline SVG and CSS inside
 the one file, and `prefers-reduced-motion` stills all of it.
 
 The two ideas taken from **Brilliant** and **CodinGame** are already everywhere

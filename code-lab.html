@@ -1656,9 +1656,9 @@ body.dark #advOv button:focus-visible,body.dark #advOv input:focus-visible{outli
 #advDice .ic{width:17px;height:17px;transition:transform .35s var(--ease)}
 #advDice:hover .ic{transform:rotate(-24deg)}
 #advDice:active .ic{transform:rotate(200deg)}
-.advtabs{display:flex;gap:2px;padding:3px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;overflow-x:auto;scrollbar-width:none}
+.advtabs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:2px;padding:3px;background:var(--panel2);border:1px solid var(--line);border-radius:12px}
 .advtabs::-webkit-scrollbar{display:none}
-.advtabs button{flex:1 0 auto;border:0;background:none;padding:8px 10px;border-radius:9px;font:620 .8rem/1 var(--sans);color:var(--soft);cursor:pointer;white-space:nowrap;min-height:34px}
+.advtabs button{min-width:0;border:0;background:none;padding:8px 3px;border-radius:9px;font:620 .8rem/1 var(--sans);color:var(--soft);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:34px}
 .advtabs button:hover{color:var(--ink)}
 .advtabs button[aria-selected="true"]{background:var(--panel);color:var(--ink);box-shadow:var(--sh1),inset 0 -2px 0 var(--cc)}
 body.dark .advtabs button[aria-selected="true"]{background:#2b2f36}
@@ -1813,7 +1813,8 @@ body.dark .k-KT{--tic:#5fd3d8}body.dark .k-PY{--tic:#7cb4f0}body.dark .k-SH{--ti
   .advcl .clt span{grid-column:1/-1;font-size:.76rem;line-height:1.3}
   .advposes button{padding:6px 8px}
   .advposes button span{display:none}
-  .advtabs button{padding:8px 7px;font-size:.77rem}
+  .advtabs{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .advtabs button{padding:8px 2px;font-size:.77rem}
   .advopts{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
   .advopt .ov{width:48px;height:48px}
   .sw{width:36px;height:36px}
@@ -9618,7 +9619,23 @@ function avatarSvg(look, o){
 
      CONTRACT
      avatarSvg(look, o) returns one complete '<svg ...>...</svg>' string (no width/height; size the box).
-     look = {cls, species, tier, skin, hair, hairC, eyes, eyeC, acc, tint}
+     look = {cls, species, tier, sex, skin, hair, hairC, beard, beardC, eyes, eyeC, expr, acc, accC, tint}
+       Every field added after the first release is optional, and leaving it out draws the hero exactly as
+       before (old saves keep their look to the byte):
+       sex:     'm' (default: the original build) | 'f' (a slighter build: narrower shoulders and jaw, lashes,
+                softer brows, a smaller nose and tusks; the armor and the pose are the same practical kit).
+       expr:    the face (0..15, see the catalog's expr): 0 is the everyday face; 1..15 (grin, smirk, fierce,
+                battle roar, determined, laughing, wink, surprised, angry, sly, calm, sad but brave, confident,
+                war cry, focused) set the eyes, brows and mouth together, fitted to every species (snout,
+                muzzle, tusks, beard). The face shows at rest and walking; attack / hurt / win / down keep the
+                pose's own face.
+       beard:   index into the catalog's beard list (0 None, then 11 styles, named per species in
+                beardBySpecies: barbels and frills for a saurian, ruffs and tufts for a fox). Left out, a hero
+                has no beard, except a dwarf: a dwarf save from before the split keeps its old combined
+                hair + beard entry (catalog.dwarfLegacy maps it to [hair, beard]).
+       beardC:  the beard's color, an index into hairC (left out: the hair color).
+       accC:    the extra's color, an index into the catalog's accC (left out: the extra's own colors).
+                The extra's main material takes it, with its shades and highlights derived from it.
        cls:     'knight' | 'ranger' | 'mage' | 'skald' | 'barbarian' | 'warden' | 'monk' | 'artificer'.
                 Legacy ids still work: builder -> knight, sleuth -> ranger, architect -> mage,
                 bard -> skald. Anything else draws a knight.
@@ -9644,7 +9661,10 @@ function avatarSvg(look, o){
                 and anything that is not a number becomes 0. skin and hair index the SPECIES' own lists
                 (hair for a saurian = crest / frill style, for a fox = ear / fur style; hairC colors
                 that crest / tuft). The human lists (8 skins, 12 hairs) and the 10 hair colors are the
-                original ones, so every old save stays recognisable.
+                original ones, so every old save stays recognisable. Newer entries are appended at the end
+                of each list (12 skins and 18 hairs for the haired species, 12 crests / ear styles, 10 eyes,
+                14 outfit colors per class), so an old index never changes meaning. A dwarf's hair list is the
+                human one now (the beard has its own list).
        eyeC (optional): iris color index; leave it out and the iris follows the hair color (humans,
                 elves, dwarves) or the species (saurian gold, fox green, orc amber).
        acc:     the extra (0..135): 0 None, then eight warrior sets of 15 (Knight 1-15, Ranger 16-30, Mage
@@ -9658,8 +9678,9 @@ function avatarSvg(look, o){
                 Eyepatch -> Eyepatch, Cap -> Mail coif, Goggles -> Raised visor, Scarf -> Gorget).
                 Entries flagged todo in the catalog are placeholders that draw nothing yet. The framework
                 and the authoring guide are in acc_core.js; each set is its own source file.
-       tint:    the class cloth color (8 per class: tunic, tabard, cape, robe, hood...). Tints are
-                drawn with a lightness floor so the hero never sinks into the dark board.
+       tint:    the class cloth color (14 per class: tunic, tabard, cape, robe, hood...). Tints are
+                drawn with a lightness floor so the hero never sinks into the dark board, except Black,
+                which stays black cloth and reads by its sheen, its rim light and its trim.
        A missing look draws {cls:'knight', species:'human', tier:0, skin:2, hair:0, hairC:1, eyes:0, acc:0, tint:0}.
      o = {id, pose, dir, crop, shadow, small, px}
        id:     prefix for every id inside the SVG (gradients, clip paths, part shapes drawn through
@@ -9687,6 +9708,9 @@ function avatarSvg(look, o){
      avatarSvg(null, {catalog:true, cls, species}) returns the option lists instead of a picture:
        {cls:[{id,name,blurb,legacy?}], species:[{id,name}], tiers:[{id,name}],
         skinBySpecies:{human:[{name,swatch}],...}, hairBySpecies:{human:[{name}],...}, hairC, eyes, eyeC,
+        sex:[{id:'m',name},{id:'f',name}], expr:[{name}] (16), beard:[{name}] (12), beardBySpecies:{human:[{name}],...},
+        beardC (the hairC list: a beard takes a hair color), accC:[{name,swatch}] (14),
+        dwarfLegacy:[[hair, beard] x8] (an old dwarf's combined hair index -> the new hair and beard),
         acc:[{name, set, view?:'bust', todo?:true}] (view: preview it as a bust, it sits below the chin),
         accSets:[{id, name, range:[first, last]}] ('none', the eight classes, 'funny'),
         tintByCls:{knight:[{name,swatch}],...}, formsByCls:{knight:['Village Recruit',...]},
@@ -9753,32 +9777,63 @@ function avatarSvg(look, o){
     artificer: ['Tinker Recruit', 'Gauntlet Squire', 'Sparkwrench Veteran', 'Coil Champion', 'The Arcwright Colossus']
   };
   var SKINS = {
-    human:   [['Porcelain','#ffe7da'],['Fair','#f9d4ba'],['Peach','#efbd96'],['Honey','#dca574'],['Tan','#c68b5b'],['Bronze','#a56d45'],['Umber','#835033'],['Deep','#5d3a26']],
-    elf:     [['Moonlight','#f6dccd'],['Rose','#f2cbb8'],['Almond','#e2b48c'],['Sunkissed','#c99468'],['Bark','#a26e4a'],['Dusk','#9a86b0'],['Ash','#c2bccf'],['Night','#5e5078']],
-    dwarf:   [['Ruddy','#f2bf9e'],['Fair','#f9d4ba'],['Weathered','#dca574'],['Copper','#c68b5b'],['Umber','#8a5638'],['Deep','#5d3a26'],['Stone','#aaa3ad'],['Ashen','#dccbc0']],
-    orc:     [['Moss','#86b466'],['Olive','#a2ab5c'],['Jade','#62ab7c'],['Sage','#a9bd8c'],['Swamp','#6e8e4c'],['Stone','#8f9c8c'],['Ash','#9d8ea3'],['Umber','#7f7250']],
-    saurian: [['Emerald','#3fa37a'],['Jade','#5dba8a'],['Teal','#2e9c9e'],['Azure','#3f86c8'],['Sand','#c9a45a'],['Crimson','#c4524a'],['Violet','#7d5cc2'],['Slate','#607083']],
-    fox:     [['Red fox','#e0773a'],['Amber','#e9a23e'],['Arctic','#eceef3'],['Silver','#9ea6ba'],['Cinnamon','#b8683a'],['Sand','#d9b27a'],['Shadow','#4c4660'],['Rose','#d98a86']]
+    human:   [['Porcelain','#ffe7da'],['Fair','#f9d4ba'],['Peach','#efbd96'],['Honey','#dca574'],['Tan','#c68b5b'],['Bronze','#a56d45'],['Umber','#835033'],['Deep','#5d3a26'],
+             ['Rosy','#f6c9b8'],['Olive','#c4a27a'],['Sienna','#9c5b3b'],['Ebony','#472a1e']],
+    elf:     [['Moonlight','#f6dccd'],['Rose','#f2cbb8'],['Almond','#e2b48c'],['Sunkissed','#c99468'],['Bark','#a26e4a'],['Dusk','#9a86b0'],['Ash','#c2bccf'],['Night','#5e5078'],
+             ['Starlight','#e4e9f6'],['Sylvan','#b8cf9f'],['Copper','#b9764f'],['Twilight','#6f6497']],
+    dwarf:   [['Ruddy','#f2bf9e'],['Fair','#f9d4ba'],['Weathered','#dca574'],['Copper','#c68b5b'],['Umber','#8a5638'],['Deep','#5d3a26'],['Stone','#aaa3ad'],['Ashen','#dccbc0'],
+             ['Rosy','#f6c9b4'],['Olive','#c2a07c'],['Sienna','#9a5a3c'],['Granite','#7d7788']],
+    orc:     [['Moss','#86b466'],['Olive','#a2ab5c'],['Jade','#62ab7c'],['Sage','#a9bd8c'],['Swamp','#6e8e4c'],['Stone','#8f9c8c'],['Ash','#9d8ea3'],['Umber','#7f7250'],
+             ['Forest','#4f8a49'],['Pale','#c4d0a8'],['Crimson','#a85c4c'],['Slate','#5f7c79']],
+    saurian: [['Emerald','#3fa37a'],['Jade','#5dba8a'],['Teal','#2e9c9e'],['Azure','#3f86c8'],['Sand','#c9a45a'],['Crimson','#c4524a'],['Violet','#7d5cc2'],['Slate','#607083'],
+             ['Gold','#d8b03c'],['Coral','#e07a5c'],['Frost','#9cc6d8'],['Obsidian','#4b4f64']],
+    fox:     [['Red fox','#e0773a'],['Amber','#e9a23e'],['Arctic','#eceef3'],['Silver','#9ea6ba'],['Cinnamon','#b8683a'],['Sand','#d9b27a'],['Shadow','#4c4660'],['Rose','#d98a86'],
+             ['Fennec','#efd4a2'],['Cocoa','#7c4b33'],['Blue','#7087aa'],['Ember','#c24b2a']]
   };
-  var HAIR = ['Short','Long','Curly','Afro','Braids','Top bun','Ponytail','Spiky','Bob','Mohawk','Buzzed','Hooded'];
+  var HAIR = ['Short','Long','Curly','Afro','Braids','Top bun','Ponytail','Spiky','Bob','Mohawk','Buzzed','Hooded',
+    'Side braid','Twin buns','Waves','Pixie','High tail','Topknot'];
   /* dwarf: [name, human hair style, beard style] */
   var DWARF = [['Braided beard', 0, 'braid'], ['Long + full beard', 1, 'full'], ['Top bun + fork beard', 5, 'fork'], ['Buzzed + great beard', 10, 'great'],
     ['Mohawk + braids', 9, 'braid'], ['Curly + short beard', 2, 'short'], ['Ponytail + full beard', 6, 'full'], ['Clean-shaven', 0, 'none']];
-  var HAIRS = {human:HAIR, elf:HAIR, orc:HAIR, dwarf:DWARF.map(function(d){ return d[0]; }),
-    saurian:['Spined crest', 'Fan frill', 'Horn ridge', 'Twin horns', 'Feather crest', 'Smooth dome'],
-    fox:['Tall ears', 'Tufted ears', 'Fluffy mane', 'Swept fringe', 'Lop tip', 'Cheek ruff']};
+  /* the old dwarf entry -> its beard's index in BEARD (below) */
+  var DWARF_B = {none:0, braid:1, full:2, fork:3, great:4, 'short':5};
+  var HAIRS = {human:HAIR, elf:HAIR, orc:HAIR, dwarf:HAIR,
+    saurian:['Spined crest', 'Fan frill', 'Horn ridge', 'Twin horns', 'Feather crest', 'Smooth dome',
+      'Sail fin', 'Spine row', 'Ram horns', 'Crown frill', 'Quill mane', 'Antler crest'],
+    fox:['Tall ears', 'Tufted ears', 'Fluffy mane', 'Swept fringe', 'Lop tip', 'Cheek ruff',
+      'Shaggy mop', 'Long mane', 'Braided mane', 'Topknot', 'Notched ear', 'Wild crest']};
+  /* beards: [id, name]; every species can wear any of them, drawn its own way (beardBySpecies names it) */
+  var BEARD = [['none', 'None'], ['braid', 'Braided'], ['full', 'Full'], ['fork', 'Forked'], ['great', 'Great'], ['short', 'Short'],
+    ['stubble', 'Stubble'], ['goatee', 'Goatee'], ['chops', 'Mutton chops'], ['bgoatee', 'Braided goatee'], ['viking', 'Twin braids'], ['stache', 'Handlebar']];
+  var BEARDS = {
+    saurian:['None', 'Barbels', 'Jaw frill', 'Forked barbels', 'Great frill', 'Chin spikes', 'Speckled jaw', 'Chin spike', 'Cheek spines', 'Beaded barbel', 'Twin barbels', 'Snout whiskers'],
+    fox:['None', 'Braided ruff', 'Full ruff', 'Forked ruff', 'Great mane', 'Chin tuft', 'Scruffy', 'Goatee tuft', 'Cheek ruff', 'Braided tuft', 'Twin tufts', 'Whiskers']};
+  var SEX = [['m', 'Male'], ['f', 'Female']];
+  var EXPR = ['Everyday', 'Grin', 'Smirk', 'Fierce', 'Battle roar', 'Determined', 'Laughing', 'Wink', 'Surprised', 'Angry', 'Sly', 'Calm',
+    'Sad but brave', 'Confident', 'War cry', 'Focused'];
+  /* the extra's color: its main material takes it (black, grey and white, the metals, then the hues) */
+  var ACCC = [['Black','#2b2833'],['Grey','#8d919c'],['White','#f4f1ea'],['Gold','#f2c14e'],['Silver','#c9d2e4'],['Bronze','#c98a4a'],['Red','#d8324a'],
+    ['Orange','#ef7a2e'],['Pink','#f07aa8'],['Purple','#8a5ad8'],['Blue','#2f6fd0'],['Teal','#27a89a'],['Green','#3f9a4a'],['Brown','#8a5a33']];
   var HAIRC = [['Black','#4b3c5e'],['Brown','#6b4531'],['Chestnut','#95532e'],['Auburn','#b84a2f'],['Blonde','#edc76a'],
     ['Platinum','#f2e8d0'],['Silver','#c3c8d8'],['Teal','#2cb3a4'],['Violet','#8f64ef'],['Pink','#ff88ba']];
-  var EYES = ['Round','Determined','Happy','Sleepy','Sparkle','Fierce'];
+  var EYES = ['Round','Determined','Happy','Sleepy','Sparkle','Fierce','Almond','Big','Cat','Hooded'];
   var TINTS = {
-    knight:    [['Royal','#2f5fbf'],['Crimson','#c0392b'],['Forest','#3f8a4a'],['Violet','#6d56d6'],['Ivory','#e6ddc8'],['Amber','#e08a2e'],['Teal','#2a9d8f'],['Charcoal','#4f586e']],
-    ranger:    [['Moss','#5e8a4a'],['Fern','#2e6b52'],['Autumn','#b8672e'],['Slate','#56687e'],['Sand','#b89a62'],['Plum','#7a4a86'],['Teal','#2a9d8f'],['Umber','#6e4a34']],
-    mage:      [['Violet','#5b3fc4'],['Midnight','#33449a'],['Emerald','#1f8a6a'],['Crimson','#b3354a'],['Lagoon','#2a8fa3'],['Ivory','#e6ddc8'],['Obsidian','#3d3650'],['Orchid','#b25aa0']],
-    skald:     [['Rust','#b0553a'],['Moss','#5e8a4a'],['Sky','#3f86c8'],['Plum','#7a4a86'],['Ochre','#c9962e'],['Slate','#56687e'],['Crimson','#b8323f'],['Teal','#2a9d8f']],
-    barbarian: [['Hide','#9a7a5a'],['Blood','#b8323f'],['Woad','#3b78b5'],['Plum','#7a4a86'],['Ochre','#c9962e'],['Ash','#6f6a7e'],['Moss','#5e8a4a'],['Ember','#d8662e']],
-    warden:    [['Coral','#d9485a'],['Tide','#2f86c8'],['Sand','#c9a36b'],['Violet','#7d5cc2'],['Rose','#e0709a'],['Kelp','#4f8a3a'],['Pearl','#e6e0d2'],['Abyss','#2e4a7a']],
-    monk:      [['Saffron','#e89a2e'],['Crimson','#c0392b'],['Jade','#2f9e72'],['Sky','#3f95d6'],['Ivory','#e6ddc8'],['Plum','#8a4aa0'],['Ink','#3a3f5a'],['Rose','#e0709a']],
-    artificer: [['Mustard','#e0b23e'],['Rust','#c0663a'],['Steel','#6f7f99'],['Teal','#2a9d8f'],['Violet','#7d5cc2'],['Moss','#5e8a4a'],['Denim','#3b78b5'],['Coral','#ef7a58']]
+    knight:    [['Royal','#2f5fbf'],['Crimson','#c0392b'],['Forest','#3f8a4a'],['Violet','#6d56d6'],['Ivory','#e6ddc8'],['Amber','#e08a2e'],['Teal','#2a9d8f'],['Charcoal','#4f586e'],
+               ['Black','#29262f',1],['Grey','#8b8f99'],['Sky','#4f9ad8'],['Rose','#d65a86'],['Gold','#d9a52e'],['Burgundy','#86304a']],
+    ranger:    [['Moss','#5e8a4a'],['Fern','#2e6b52'],['Autumn','#b8672e'],['Slate','#56687e'],['Sand','#b89a62'],['Plum','#7a4a86'],['Teal','#2a9d8f'],['Umber','#6e4a34'],
+               ['Black','#29262f',1],['Grey','#8b8f99'],['Olive','#7d803a'],['Crimson','#a8323c'],['Sky','#4a86b8'],['Pine','#245f47']],
+    mage:      [['Violet','#5b3fc4'],['Midnight','#33449a'],['Emerald','#1f8a6a'],['Crimson','#b3354a'],['Lagoon','#2a8fa3'],['Ivory','#e6ddc8'],['Obsidian','#3d3650'],['Orchid','#b25aa0'],
+               ['Black','#29262f',1],['Grey','#8b8f99'],['Rose','#d85c8a'],['Sun','#e0a02e'],['Sky','#4f9ad8'],['Teal','#2a9d8f']],
+    skald:     [['Rust','#b0553a'],['Moss','#5e8a4a'],['Sky','#3f86c8'],['Plum','#7a4a86'],['Ochre','#c9962e'],['Slate','#56687e'],['Crimson','#b8323f'],['Teal','#2a9d8f'],
+               ['Black','#29262f',1],['Grey','#8b8f99'],['Forest','#2f6b3a'],['Royal','#2f5fbf'],['Rose','#d65a86'],['Ivory','#e6ddc8']],
+    barbarian: [['Hide','#9a7a5a'],['Blood','#b8323f'],['Woad','#3b78b5'],['Plum','#7a4a86'],['Ochre','#c9962e'],['Ash','#6f6a7e'],['Moss','#5e8a4a'],['Ember','#d8662e'],
+               ['Black','#29262f',1],['Grey','#8b8f99'],['Forest','#2f6b3a'],['Sky','#4f9ad8'],['Bone','#e6ddc8'],['Teal','#2a9d8f']],
+    warden:    [['Coral','#d9485a'],['Tide','#2f86c8'],['Sand','#c9a36b'],['Violet','#7d5cc2'],['Rose','#e0709a'],['Kelp','#4f8a3a'],['Pearl','#e6e0d2'],['Abyss','#2e4a7a'],
+               ['Black','#29262f',1],['Grey','#8b8f99'],['Teal','#2a9d8f'],['Gold','#d9a52e'],['Crimson','#b8323f'],['Seafoam','#6fc7a8']],
+    monk:      [['Saffron','#e89a2e'],['Crimson','#c0392b'],['Jade','#2f9e72'],['Sky','#3f95d6'],['Ivory','#e6ddc8'],['Plum','#8a4aa0'],['Ink','#3a3f5a'],['Rose','#e0709a'],
+               ['Black','#29262f',1],['Grey','#8b8f99'],['Forest','#2f6b3a'],['Teal','#2a9d8f'],['Gold','#d9a52e'],['Violet','#6d56d6']],
+    artificer: [['Mustard','#e0b23e'],['Rust','#c0663a'],['Steel','#6f7f99'],['Teal','#2a9d8f'],['Violet','#7d5cc2'],['Moss','#5e8a4a'],['Denim','#3b78b5'],['Coral','#ef7a58'],
+               ['Black','#29262f',1],['Grey','#8b8f99'],['Crimson','#b8323f'],['Forest','#2f6b3a'],['Rose','#d65a86'],['Ivory','#e6ddc8']]
   };
   var EYEC = [['Amber','#d08a24'],['Green','#3c9a5a'],['Brown','#9a6238'],['Blue','#2f8fd6'],['Violet','#6a58d0'],['Grey','#6f8098']];
   var EYE_BY_HAIR = [2, 0, 1, 1, 3, 5, 3, 1, 4, 4];
@@ -9810,7 +9865,7 @@ function avatarSvg(look, o){
     for (var t = l; t < 0.9; t += 0.01){ if (lum(hex(t)) >= 44) return hex(t); }
     return hex(t);
   }
-  function cat(a, lift){ return a.map(function(x){ return typeof x === 'string' ? {name:x} : {name:x[0], swatch:lift ? floorL(x[1]) : x[1]}; }); }
+  function cat(a, lift){ return a.map(function(x){ return typeof x === 'string' ? {name:x} : {name:x[0], swatch:lift && !x[2] ? floorL(x[1]) : x[1]}; }); }
   function has(list, v){ for (var k = 0; k < list.length; k++) if (list[k] === v) return true; return false; }
   var CIDS = CLS.map(function(c){ return c.id; }), SIDS = SPECIES.map(function(s){ return s[0]; });
   /* the extras: 0 None, 8 class sets of 15, the Funny set of 15 (acc_core.js builds the table) */
@@ -9820,13 +9875,16 @@ function avatarSvg(look, o){
     var gb = {};
     CLS.forEach(function(c){ tb[c.id] = cat(TINTS[c.id], 1); fb[c.id] = FORMS[c.id].slice();
       gb[c.id] = GEAR[c.id].split('~').map(function(r, i){ r = r.split('|'); return {grade:GEAR_G[i], boss:GEAR_B[i], tier:GEAR_T[i], slot:r[0], name:r[1], glyph:r[2], codeMotif:r[3]}; }); });
-    SIDS.forEach(function(s){ sb[s] = cat(SKINS[s]); hb0[s] = cat(HAIRS[s]); });
+    var bb = {};
+    SIDS.forEach(function(s){ sb[s] = cat(SKINS[s]); hb0[s] = cat(HAIRS[s]); bb[s] = cat(BEARDS[s] || BEARD.map(function(b){ return b[1]; })); });
     var oc = LEGACY[o.cls] || o.cls, os = has(SIDS, o.species) ? o.species : 'human';
     return {cls:CLS.map(function(c){ var r = {id:c.id, name:c.name, blurb:c.blurb}; for (var k in LEGACY) if (LEGACY[k] === c.id) r.legacy = k; return r; }),
       species:SPECIES.map(function(s){ return {id:s[0], name:s[1]}; }), tiers:TIERS.map(function(n, i){ return {id:i, name:n}; }),
       skinBySpecies:sb, hairBySpecies:hb0, hairC:cat(HAIRC), eyes:cat(EYES), eyeC:cat(EYEC), acc:ACCT.cat, accSets:ACCT.sets, tintByCls:tb, formsByCls:fb, gearByCls:gb,
+      sex:SEX.map(function(x){ return {id:x[0], name:x[1]}; }), expr:cat(EXPR), beard:BEARD.map(function(b){ return {id:b[0], name:b[1]}; }), beardBySpecies:bb,
+      beardC:cat(HAIRC), accC:cat(ACCC), dwarfLegacy:DWARF.map(function(d){ return [d[1], DWARF_B[d[2]]]; }),
       legacy:{builder:'knight', sleuth:'ranger', architect:'mage', bard:'skald'},
-      skin:sb[os], hair:hb0[os], tint:tb[has(CIDS, oc) ? oc : 'knight'],
+      skin:sb[os], hair:hb0[os], beardList:bb[os], tint:tb[has(CIDS, oc) ? oc : 'knight'],
       poses:['idle','walk','walk2','attack','hurt','win','down'], crops:['full','bust','head']};
   }
 
@@ -9970,11 +10028,16 @@ function avatarSvg(look, o){
   var green = spc === 'orc' || spc === 'saurian';
   var skD = green ? mix(sk, '#1f4a3a', 0.3) : mix(sk, '#9a4658', 0.24), skL = lt(sk, 0.28), deep = lum(sk) < 50;
   var feat = deep ? dk(sk, 0.55) : '';
-  var HL = HAIRS[spc], hIdx = ix(look.hair, HL.length), hs = spc === 'dwarf' ? DWARF[hIdx][1] : hIdx, beard = spc === 'dwarf' ? DWARF[hIdx][2] : 'none';
-  var hcI = ix(look.hairC, HAIRC.length);
+  /* a dwarf saved before the beard had its own list keeps its old combined entry (no beard field) */
+  var fem = look.sex === 'f', legacyDw = spc === 'dwarf' && look.beard == null;
+  var HL = HAIRS[spc], hIdx = legacyDw ? ix(look.hair, DWARF.length) : ix(look.hair, HL.length), hs = legacyDw ? DWARF[hIdx][1] : hIdx;
+  var bIdx = legacyDw ? DWARF_B[DWARF[hIdx][2]] : look.beard == null ? 0 : ix(look.beard, BEARD.length), beard = BEARD[bIdx][0];
+  var expr = look.expr == null ? 0 : ix(look.expr, EXPR.length), accC = look.accC == null || look.accC === '' ? -1 : ix(look.accC, ACCC.length);
+  var hcI = ix(look.hairC, HAIRC.length), bcI = look.beardC == null || look.beardC === '' ? hcI : ix(look.beardC, HAIRC.length);
+  var bc = HAIRC[bcI][1];
   var hc = HAIRC[hcI][1], hcD = dk(hc, 0.34), hcL = lt(hc, 0.4), sheen = hcI === 0 ? '#7d6c93' : hcL;
   var es = ix(look.eyes, EYES.length), acc = ix(look.acc, ACCT.list.length), AE = ACCT.list[acc];
-  var TL = TINTS[cls], tc = floorL(TL[ix(look.tint, TL.length)][1]), tcD = dk(tc, 0.3), tcL = lt(tc, 0.3);
+  var TL = TINTS[cls], tE = TL[ix(look.tint, TL.length)], blackC = !!tE[2], tc = blackC ? tE[1] : floorL(tE[1]), tcD = dk(tc, 0.3), tcL = lt(tc, 0.3);
   var furry = spc === 'fox', scaly = spc === 'saurian', tailed = furry || scaly;
 
   /* ---------- the part renderer (the foes' cel recipe) ---------- */
@@ -10120,8 +10183,9 @@ function avatarSvg(look, o){
   if (floaty){ Q.by -= 2.4; Q.lg = [[0.4, -0.6, 34], [-0.4, -1, 30]]; }
   var TRL = Q.tr || 0;
   var HT = Q.ht ? 'rotate(' + Q.ht + ' 32 35)' : '';
-  /* torso width: dwarves and orcs are built broader (x scaled 1.2 about 32 instead of 1.1) */
-  var WF = spc === 'dwarf' || spc === 'orc' ? 1.2 : 1.1, WT = 'matrix(' + WF + ' 0 0 1 ' + f(32 - 32 * WF) + ' 0)';
+  /* torso width: dwarves and orcs are built broader (x scaled 1.2 about 32 instead of 1.1); the female build
+     is slighter at the shoulders (every pauldron, arm and extra follows WF) */
+  var WF = spc === 'dwarf' || spc === 'orc' ? (fem ? 1.1 : 1.2) : fem ? 1 : 1.1, WT = 'matrix(' + WF + ' 0 0 1 ' + f(32 - 32 * WF) + ' 0)';
   var SH0 = [f(32 - 5.73 * WF), 37.6], SH1 = [f(32 + 5.73 * WF), 37.6];
   function hand(s, a, len){ var r = a * Math.PI / 180, l = len || 7.4; return [s[0] + l * Math.sin(r), s[1] + l * Math.cos(r)]; }
   var H1 = Q.fe ? [Q.fe[2], Q.fe[3]] : hand(SH1, Q.fa, Q.fl), H0 = Q.be ? [Q.be[2], Q.be[3]] : hand(SH0, Q.ba, Q.al);
@@ -10151,6 +10215,10 @@ function avatarSvg(look, o){
   var HEAD = 'M32 15.6C38.7 15.6 43.1 19.9 43.1 25.6C43.1 30.9 39.3 35.1 33 35.2C26.4 35.3 21.3 31.4 21.3 25.6C21.3 19.6 25.7 15.6 32 15.6Z';
   if (spc === 'orc') HEAD = 'M32 15.6C38.7 15.6 43.3 19.9 43.3 25.8C43.3 31.2 39.4 35.6 33 35.7C26.4 35.8 21.1 31.6 21.1 25.8C21.1 19.6 25.7 15.6 32 15.6Z';
   if (scaly) HEAD = 'M31.4 15.2C37.4 14.8 42.2 17.8 45.2 21.8C47.8 25.2 47.8 29.8 44.8 32.2C41.4 35 36 35.8 30.6 35.4C25 35 21 31.6 21 25.8C21 19.4 25.4 15.6 31.4 15.2Z';
+  /* the female build: a narrower, softer jaw and chin (a slimmer snout for a saurian) */
+  if (fem) HEAD = scaly ? 'M31.4 15.2C37.4 14.8 42 17.8 44.9 21.8C47.4 25.2 47.3 29.4 44.4 31.7C41.2 34.2 36 35.2 30.6 35C25 34.7 21 31.6 21 25.8C21 19.4 25.4 15.6 31.4 15.2Z'
+    : spc === 'orc' ? 'M32 15.6C38.7 15.6 43.3 19.9 43.3 25.8C43.3 30.7 40.1 34.8 33.8 35.3C27.1 35.8 21.1 31.9 21.1 25.8C21.1 19.6 25.7 15.6 32 15.6Z'
+    : 'M32 15.6C38.7 15.6 43.1 19.9 43.1 25.6C43.1 30.4 40 34.3 33.8 34.9C27.2 35.4 21.3 31.6 21.3 25.6C21.3 19.6 25.7 15.6 32 15.6Z';
   var DOME = 'M20.5 27.8C19.3 19.2 24.6 13.1 32.2 13.1C40.1 13.1 45.1 18.8 44 26.9';
   var EX = scaly ? [29.4, 37.6] : [28.8, 37.3], EY = scaly ? 25.6 : spc === 'dwarf' ? 26.9 : 27.5, EW = scaly ? 1.1 : 1, EH = scaly ? 1.05 : 1;
   /* hb: behind the head, hk: behind the body, hf: front hair, hx: drawn over the headgear (fox ears
@@ -10238,7 +10306,53 @@ function avatarSvg(look, o){
         mx(L('M25.4 17.6C27.4 16.2 29.8 15.6 32 15.7', lt(bz, 0.3), 0.9, op(0.8)), 32.2), {hl:false, k:0.5, rim:0.6, dome:1}));
       top = 15; bx0 = 19.8; bx1 = 43.6;
     }
-    else if (!cover){
+    else if (hs === 12){
+      /* a side braid over the near shoulder, a side-swept fringe */
+      hf.push(H(DOME + SWEPT, SHINE + L('M38.4 17.2C37 18.8 35.4 19.8 33.4 20.4', hcD, 0.7, op(0.7)), {dome:1}));
+      hf = hf.concat(plait(22.2, 29.6, 23.8, 43.4, 6, 1.75, hc, tc));
+      bx0 = 19.6;
+    }
+    else if (hs === 13){
+      /* twin buns on the crown, a centre parting */
+      if (!capped){ [[24.6, 13.8, 3.5], [40.2, 13.4, 3.3]].forEach(function(b2){ hb.push(H(el(b2[0], b2[1], b2[2], b2[2]), mx(L('M' + f(b2[0] - 1.8) + ' ' + f(b2[1] - 0.2) + 'a1.9 1.9 0 1 1 2.2 1.6', sheen, 0.8, op(0.8)), b2[0]), {rim:b2[0] > 32 ? 0.7 : 0})); hb.push(pt(el(b2[0] + (b2[0] > 32 ? -1.2 : 1.4), b2[1] + 2.6, 1.6, 0.9), tc, '', {hl:false, k:0.3})); }); top = 9.6; bx0 = 19.6; bx1 = 45.4; }
+      hf.push(H(DOME + 'L43.4 27C42.6 22.4 39.6 19.8 35.4 19.4C34.4 20.6 33.4 21.4 32.4 21.8C31.4 21.2 30.6 20.4 30 19.4C26.4 19.8 23.2 22.4 22.1 27.2Z', SHINE + L('M32.4 13.4V21.4', hcD, 0.7, op(0.8)), {dome:1}));
+    }
+    else if (hs === 14){
+      /* waves: long, full hair in loose S-curls */
+      hk.push(H('M20 21.8C16.4 26.4 18.4 30 16.4 34C14.8 37.4 16.6 40.6 15.4 44.2Q18.4 46.6 21 44.4Q23.6 47.4 26.4 45.2L38 45.2Q40.8 47.4 43.4 44.4Q46 46.6 49 44.2C47.8 40.6 49.6 37.4 48 34C46 30 48 26.4 44.4 21.8Z',
+        L('M19.6 28C18.2 31 19.8 33.6 18.6 36.6C17.6 39 18.8 41.2 18.2 43M44.8 28C46.2 31 44.6 33.6 45.8 36.6C46.8 39 45.6 41.2 46.2 43M22.2 33C21.2 36 22.6 39 21.8 42.6', dk(hc, 0.5), 0.8, op(0.55)), {g:0, sh:dk(hc, 0.45)}));
+      hk[0].c = hcD;
+      hf.push(H(DOME + 'L44.6 35.6Q45.6 38.4 43.4 40.4Q42.6 38.8 41.6 37.4C42.8 34.4 41 32.2 41.8 29C42.4 26 41.4 23.4 39.6 21.2C38.8 22.7 37 23.6 35 23.8C35.6 22.6 35.6 21.2 35.2 20.2C33 22.3 30 23.2 27 23.1C28.2 22.2 28.8 21.2 29 20.3C26.6 21.9 24.8 24.2 23.8 27C22.8 29.6 24 32 23 34.4C22.2 36.4 22.8 38.2 23.6 39.6Q21.6 40.2 20.4 38.6Q19.4 36.4 20.6 34.4Z',
+        SHINE + L('M42.2 25.6C43.2 28 42 30.4 42.6 33M22.6 28.6C21.6 31 22.8 33.2 21.8 35.8', hcD, 0.7, op(0.7)), {dome:1, side:1}));
+      bx0 = 14.6; bx1 = 49.4;
+    }
+    else if (hs === 15){
+      /* a pixie crop: close at the back, a long fringe swept across the brow */
+      hf.push(H(DOME + 'L43.6 24.8C43 22.2 41.6 20.4 39.6 19.4C36.6 21.8 31.8 23 26.6 22.8C25 23.6 23.6 25 22.6 26.6C22.4 28 22.6 29.6 23.2 31L21.4 31.2C20.6 30 20.3 29 20.5 27.8Z',
+        SHINE + L('M39.4 19.6C36.2 21.4 31.4 22.2 27.2 22.2M36.4 16.2C33.8 18.6 30 20 26 20.4', hcD, 0.7, op(0.65)), {dome:1}));
+      top = 12.6; bx1 = 44.2;
+    }
+    else if (hs === 16){
+      /* a high tail: gathered on the crown, arcing back and down behind */
+      var htl = H('M29.4 12.6C24.4 8.6 17 9.4 13.8 14.8C11.4 19 12.6 24 12.2 28.8C12 32 11 34.6 9.8 36.8C14.6 35.6 17 31.6 17.4 27.4C17.8 23 17.2 18.6 20 16.2C22.4 14.2 25.6 14.2 28.2 15.6Z',
+        mx(L('M15.6 16.4C14.2 20.4 15.2 24.6 14.6 29', sheen, 0.9, op(0.6)), 16) + L('M20.4 13.2C17 14.2 15.8 17.6 15.6 21.6M18.6 20C17.8 24.6 17.6 29.4 14.6 33.6', hcD, 0.7, op(0.7)), {rim:0});
+      if (TRL) htl.t = 'rotate(' + f(TRL * 3) + ' 28 14)';
+      hk.push(htl);
+      hf.push(H(DOME + SWEPT, SHINE + L('M30.2 16.6C29 18.4 27.4 19.8 25.4 21', hcD, 0.7, op(0.7)), {dome:1}));
+      hf.push(pt(el(29, 13.2, 2, 1.5), tc, '', {hl:false, k:0.4, dome:1}));
+      top = 8.6; bx0 = 8.8;
+    }
+    else if (hs === 17){
+      /* a warrior's topknot: the sides shaved close */
+      var bz2 = mix(sk, hc, 0.62);
+      hf.push(pt('M21.7 27C20.8 19.4 25.6 15 32.2 15C38.8 15 43.4 19 42.9 26.4C42 23.4 41 21.6 39.4 20.4C36.4 20.8 28.6 20.6 25 21C23.4 22.4 22.4 24.4 21.7 27Z', bz2,
+        mx(L('M25.4 17.6C27.4 16.2 29.8 15.6 32 15.7', lt(bz2, 0.3), 0.9, op(0.8)), 32.2), {hl:false, k:0.5, rim:0.6, dome:1}));
+      hf.push(H('M27.2 15.8C29.8 14.4 35 14.4 37.8 15.8L37 19C35 18.2 30 18.2 28 19Z', '', {rim:0, dome:1}));
+      if (!capped){ hb.push(H(el(32.8, 11.2, 3.3, 2.8), mx(L('M30.4 10.4C31.2 9.2 32.8 8.8 34.2 9.2', sheen, 0.9, op(0.8)), 32.8), {rim:0.6}));
+        hb.push(H('M35.4 10.4C38.6 9.4 41.4 10.6 42.2 13.2C40.2 12 38 12.2 35.8 12.8Z', '', {rim:0.6}));
+        hf.push(pt(rr(30.8, 13.2, 4, 1.5, 0.5), tc, '', {hl:false, k:0.3, dome:1})); top = 8.4; }
+    }
+    else if (hs === 11 && !cover){
       hk.push(pt('M18.3 30C16.7 18 23.2 10.8 32.2 10.8C41.2 10.8 47.7 18 46.1 30C45.8 34 44.8 37 43.4 39.6L21 39.6C19.6 37 18.6 34 18.3 30Z', tcD, '', {hl:false, k:0.5}));
       hf.push(pt('M19.4 29.4C18.6 19 24.4 12 32.2 12C40.1 12 45.9 19 45 29.4L43.4 34.8C43.8 27.4 42.6 20.8 39.8 18.8C36.1 16.2 28.4 16.2 24.7 18.8C21.9 20.8 20.7 27.4 21.4 34.8Z', tc,
         L('M24.6 19C28.4 16.8 36 16.6 39.9 18.9', tcD, 0.8, op(0.9)), {sh:tcD, g:1, rim:0.85}));
@@ -10249,7 +10363,7 @@ function avatarSvg(look, o){
       /* under a helm or hood: the crown goes, a fringe peeks under the brim, bobs and long hair keep side locks */
       var sides = hf.some(function(p){ return p.side; });
       hf = hf.filter(function(p){ return !p.dome; });
-      if (hs !== 10 && hs !== 11) hf.push(H('M23.6 22.6C26.4 22.2 28.2 23.4 29.2 25C30.1 23.4 31.7 22.6 33.4 22.8C34.4 24 35.8 24.6 37.4 24.4C38.3 23.2 39.8 22.6 41.6 23L41 20.4H24.2Z', '', {rim:0, k:0.3, ln:false}));
+      if (hs !== 10 && hs !== 11 && hs !== 17) hf.push(H('M23.6 22.6C26.4 22.2 28.2 23.4 29.2 25C30.1 23.4 31.7 22.6 33.4 22.8C34.4 24 35.8 24.6 37.4 24.4C38.3 23.2 39.8 22.6 41.6 23L41 20.4H24.2Z', '', {rim:0, k:0.3, ln:false}));
       if (sides) hf.push(H('M20.6 26.6L19.8 36L23.8 36C23 31.2 23 28.4 23.6 25.6Z', '', {rim:0, k:0.4}), H('M41 25.8C41.6 29 41.6 32.4 40.6 36L44.6 36L44.2 26.6Z', '', {rim:0.7, k:0.4}));
     }
   }
@@ -10258,7 +10372,7 @@ function avatarSvg(look, o){
     /* fox ears: the far one behind the head, the near one rakes back; the hair index is the ear / fur style */
     var lop = hs === 4, earT = lop ? 11.8 : 7.8;
     var ears = [
-      pt(lop ? 'M22.6 21.4L20.6 11.6Q17.8 12.6 16.8 15.4Q20.2 12.4 21.8 16.6L25.4 17.4Z' : 'M22.6 21.4L20.4 7.8Q27 10 30 16.4Z', furC,
+      pt(lop ? 'M22.6 21.4L20.6 11.6Q17.8 12.6 16.8 15.4Q20.2 12.4 21.8 16.6L25.4 17.4Z' : hs === 10 ? 'M22.6 21.4L20.4 7.8Q23.4 8.6 25.4 10L24.2 11.8L26.8 12Q28.8 13.8 30 16.4Z' : 'M22.6 21.4L20.4 7.8Q27 10 30 16.4Z', furC,
         lop ? '' : P('M23.4 19L22.2 11Q25.8 12.6 27.6 16.2Z', inEar) + P('M20.4 7.8L21.1 12L23.6 10.2Z', dk(furC, 0.5), op(0.8)), {sh:furD, k:0.6, ow:1.1, rim:0}),
       pt(lop ? 'M34.6 16.2Q37.4 11.8 42.6 11.2Q46.2 11.8 46.6 15.4Q44 13.4 42.6 15.6L42.6 21.6Z' : 'M34.6 16.2Q38 9.8 44.8 8.6L42.6 21.6Z', furC,
         lop ? P('M36.8 16Q39 13.2 42.4 12.8L41.8 18.6Z', inEar) : P('M36.8 16Q39.4 12 43 11.2L41.8 18.6Z', inEar) + P('M44.8 8.6L41.4 10.4L43.9 12.9Z', dk(furC, 0.5), op(0.8)), {sh:furD, k:0.6, ow:1.1, rim:0.7})
@@ -10268,6 +10382,19 @@ function avatarSvg(look, o){
     top = hs === 1 ? 4.2 : earT; bx0 = 18.6; bx1 = hs === 1 ? 48.8 : 46.6;
     if (hs === 2) hk.push(pt('M20.8 27C16.8 30.4 16.6 36 19.6 39.6C21.6 42 25 42.6 28 41.6L37 41.6C40 42.6 43.4 42 45.2 39.4C48 35.6 47.4 30.2 43.6 27Z', tuft,
       L('M20.4 33.4l-1.6 1.4M21.6 37.2l-1.6 1M44.2 33.4l1.6 1.4M43 37.2l1.6 1', dk(tuft, 0.35), 0.6), {sh:dk(tuft, 0.3), g:1, k:0.6, rim:0.6}));
+    /* the newer fur styles */
+    if (hs === 6 && !cover) hf.push(pt('M22.8 23.6C22.4 18.4 26 15 31.4 14.6C36.6 14.4 41.4 17.2 42.8 22.4L41 21L40.6 23.4L38.6 21.2L37.8 24L35.8 21.6L34.6 24.6L32.8 21.8L31.2 24.6L30 21.8L28.2 24.2L27.4 21.6L25.6 23.6L25 21.8Z', tuft,
+      L('M28.8 17.4L29.8 21.4M33.4 16.8L33.8 21M37.8 18L37.2 21.4', dk(tuft, 0.3), 0.5, op(0.7)), {sh:dk(tuft, 0.3), k:0.5, ow:0.9, hl:false, rim:0.5}));
+    if (hs === 7) hk.push(pt('M20.4 21.4C16.4 27.4 16.2 35.4 17.2 44.6Q19.4 46.4 21.8 45L22.8 45.4L41.6 45.4L42.6 45Q45 46.4 47.2 44.6C48.2 35.4 48 27.4 44 21.4Z', tuft,
+      L('M20.6 30C19.8 34.6 20 39.4 20.8 43.8M43.8 30C44.6 34.6 44.4 39.4 43.6 43.8M18.6 44.6L19.2 46.2M45.8 44.6L45.2 46.2', dk(tuft, 0.35), 0.6, op(0.7)), {sh:dk(tuft, 0.35), g:1, k:0.6, rim:0.6}));
+    if (hs === 8) hk = hk.concat(plait(21.8, 26.4, 18.6, 41.6, 6, 1.8, tuft, tc));
+    if (hs === 9 && !cover){ hb.push(pt(el(32.2, 12.8, 3, 2.6), tuft, mx(L('M30.2 12C30.8 11 32 10.6 33.2 10.8', lt(tuft, 0.4), 0.8, op(0.8)), 32.2), {sh:dk(tuft, 0.3), k:0.5, ow:1, rim:0.5}),
+      pt('M32.2 10.4C33.4 7.6 36 6.6 38.4 7.4C36.4 8.4 35 9.8 34.2 11.6Z', tuft, '', {sh:dk(tuft, 0.3), k:0.4, ow:0.9, hl:false}));
+      hf.push(pt(rr(30.2, 14.4, 4, 1.4, 0.5), tc, '', {hl:false, k:0.3, dome:1})); }
+    if (hs === 11 && !cover) hb.push(pt('M25.4 17.6L24.4 11L27.4 13.2L27.8 7.2L30.8 11.2L32.4 5.2L34.4 10.8L37.2 7.6L37.6 13L40.4 12L39.4 17.8Z', tuft,
+      L('M27.8 7.2L29 14.4M32.4 5.2L32.6 13.6M37.2 7.6L36 14.2', dk(tuft, 0.3), 0.5, op(0.7)), {sh:dk(tuft, 0.3), k:0.4, ow:1, rim:0.5}));
+    if (hs === 9 && !cover) top = Math.min(top, 6.8);
+    if (hs === 11 && !cover) top = Math.min(top, 4.8);
     if (hs === 3 && !cover) hf.push(pt('M22.6 22.4C22.8 17.6 26.6 14.4 31.6 14.2C30 15.6 29.6 17.2 30.2 18.6C32.2 16.8 34.8 16.2 37.2 16.6C36 17.4 35.4 18.4 35.6 19.4C38.4 18.6 41 19.4 42.8 21.6C38.8 20.8 34.6 21.4 31 22C27.8 22.4 25 23.4 22.6 22.4Z', tuft, '', {sh:dk(tuft, 0.3), k:0.5, ln:false, hl:false, rim:0.5}));
     if (hs === 5) hf.push(pt('M21.6 27.6C19.2 28.6 18.4 30.6 19.4 32.4L20.6 31.8L20.2 33.8L22.4 33.2L22.4 35.2C24 34 24.6 31.4 23.6 29Z', tuft, '', {sh:dk(tuft, 0.3), k:0.4, ow:0.8, hl:false}),
       pt('M42.6 27.2C45 28 46 30 45.2 31.8L44 31.4L44.4 33.2L42.4 32.8L42.2 34.6C40.8 33.4 40.4 30.8 41.2 28.6Z', tuft, '', {sh:dk(tuft, 0.3), k:0.4, ow:0.8, hl:false, rim:0.6}));
@@ -10282,14 +10409,50 @@ function avatarSvg(look, o){
     if (hs === 3) hb.push(pt('M25.6 17.2C22.4 14.6 18.4 13.6 14.6 14.6C17.6 15.4 20 17.4 21.4 20Z', hc, L('M16.6 14.8l1 1.4M19 15.4l.8 1.4', cD, 0.5), {sh:cD, k:0.4, ow:1.1}),
       pt('M30.6 15.4C29 11.8 25.8 9.4 22 8.8C24.6 10.6 26.2 13.4 26.4 16.4Z', hc, L('M24 9.6l.4 1.6M26.2 10.8l.2 1.6', cD, 0.5), {sh:cD, k:0.4, ow:1.1, rim:0.4}));
     if (hs === 4) [[24.6, 17.2, -58, hc], [26.6, 16, -44, lt(hc, 0.25)], [28.8, 15.2, -30, hc]].forEach(function(h){ hb.push(pt('M0 0C-1.8 -2.4 -1.8 -6.4 0 -9.4C1.8 -6.4 1.8 -2.4 0 0Z', h[3], L('M0 -0.6V-8.4', cD, 0.4), {sh:cD, k:0.35, ow:0.9, t:'translate(' + h[0] + ' ' + h[1] + ') rotate(' + h[2] + ')', ra:h[2]})); });
+    /* the newer crests */
+    if (hs === 6) hb.push(pt('M24.2 18.2C22.6 12.8 25 7.4 30 5.8C33.4 4.8 36 6.8 36.6 10C37 12.6 36.4 14.6 35.4 16.2Z', hc,
+      L('M26.4 16.8L27.4 8.6M29.4 15.8L30.6 6.6M32.4 15.6L33.4 7.2M35 15.8L35.6 10.2', cD, 0.55, op(0.8)) + L('M25.8 10.6C27 8.2 29 6.8 31.4 6.4', lt(hc, 0.35), 0.7, op(0.8)), {sh:cD, g:1, k:0.5, ow:1.1, rim:0.4}));
+    if (hs === 7) [[37.6, 15.4, 22, 3], [33.8, 14.2, 4, 3.8], [29.8, 14.6, -14, 4.2], [26.2, 16.2, -34, 4], [23.4, 18.8, -54, 3.6], [21.6, 22, -72, 3.2], [21, 25.6, -88, 2.6]]
+      .forEach(function(h){ hb.push(pt('M-1.4 0.6Q-0.9 -' + f(h[3] * 0.5) + ' 0 -' + h[3] + 'Q0.9 -' + f(h[3] * 0.5) + ' 1.4 0.6Z', hc, '', {sh:cD, hl:false, k:0.3, ow:0.9, t:'translate(' + h[0] + ' ' + h[1] + ') rotate(' + h[2] + ')', ra:h[2]})); });
+    if (hs === 8){
+      var hn = lt(hc, 0.12);
+      hb.push(pt(strand([37.6, 15.8], [40.4, 10.8], [46.4, 11.6], [45.6, 16.4], 2.4, 1.2), hn, L('M40 12.6l.8 1.2M42.4 11.6l.4 1.4M44.6 12.6l-.4 1.2', cD, 0.45), {sh:cD, k:0.4, ow:1, hl:false, rim:0.5}));
+      hb.push(pt(strand([25.2, 17.4], [21.6, 11.4], [14.2, 13.4], [15.4, 19.4], 3, 1.7), hn, L('M21.4 12.8l.2 1.6M18.4 12.8l.6 1.4M16 14.4l1 1', cD, 0.5), {sh:cD, k:0.45, ow:1.1, rim:0.3}));
+      hb.push(pt(strand([15.4, 19.4], [16, 22.8], [20.2, 23], [20.2, 20.2], 1.7, 0.6), hn, '', {sh:cD, k:0.4, ow:1, hl:false}));
+    }
+    if (hs === 9) hb.push(pt('M23.4 24.2C17.6 22.8 14.8 16.6 17.2 11.4C19.4 6.8 25.2 4.6 30.4 5.4C34.8 6 38.4 8.8 39.4 12.6L35.6 15.4L28 19.4Z', hc,
+      L('M18.4 12.4C20.6 8.4 25 6.4 29.6 6.8M20.2 17.4L25 14.6M22.4 11.4L26.8 12.6M27.8 8L28.6 12.8M33.6 8.6L31.6 13', cD, 0.55, op(0.8)) + C(21.4, 12.2, 0.9, lt(hc, 0.4)) + C(26, 8.6, 0.9, lt(hc, 0.4)) + C(31.8, 8.4, 0.8, lt(hc, 0.4)), {sh:cD, g:1, k:0.5, ow:1.1, rim:0.3}),
+      pt('M18.2 11.2L15.4 6.6L20 9.2ZM26.4 6.2L26.2 2.6L28.6 5.8ZM34.6 7.4L37.2 4.2L37 8.6Z', lt(hc, 0.2), '', {sh:cD, hl:false, k:0.3, ow:0.9}));
+    if (hs === 10) [[35.6, 15.2, 30, 9], [33, 14.6, 16, 10.4], [30.2, 14.8, 2, 11.2], [27.4, 15.8, -14, 10.4], [25, 17.4, -30, 9.6], [23.2, 19.6, -46, 8.6], [22, 22.4, -62, 7.4]]
+      .forEach(function(h, i){ hb.push(pt('M-0.9 0.4Q-0.5 -' + f(h[3] * 0.6) + ' 0 -' + h[3] + 'Q0.5 -' + f(h[3] * 0.6) + ' 0.9 0.4Z', i % 2 ? lt(hc, 0.25) : hc, L('M0 -1V-' + f(h[3] * 0.8), cD, 0.35, op(0.7)), {sh:cD, hl:false, k:0.3, ow:0.8, t:'translate(' + h[0] + ' ' + h[1] + ') rotate(' + f(h[2] - 42) + ')', ra:h[2] - 42})); });
+    if (hs === 11){
+      var ant = lt(hc, 0.15);
+      [[27.4, 15.4, -1], [35.4, 14.8, 1]].forEach(function(a3){
+        var x3 = a3[0], y3 = a3[1], sgn = a3[2], far3 = sgn > 0;
+        hb.push(pt(strand([x3, y3], [x3 + sgn * 0.6, y3 - 4], [x3 + sgn * 3.4, y3 - 7.2], [x3 + sgn * 5.2, y3 - 10.6], 2.2, 0.8), ant, '', {sh:cD, k:0.4, ow:1, hl:false, rim:far3 ? 0.5 : 0}));
+        hb.push(pt(strand([x3 + sgn * 1.2, y3 - 4.6], [x3 + sgn * 0.2, y3 - 6.6], [x3 - sgn * 0.4, y3 - 8], [x3 - sgn * 0.4, y3 - 9.6], 1.2, 0.5), ant, '', {sh:cD, k:0.3, ow:0.9, hl:false}));
+        hb.push(pt(strand([x3 + sgn * 3.6, y3 - 7.4], [x3 + sgn * 4.6, y3 - 7.8], [x3 + sgn * 6.2, y3 - 7.8], [x3 + sgn * 7.6, y3 - 8.6], 1.1, 0.45), ant, '', {sh:cD, k:0.3, ow:0.9, hl:false}));
+      });
+    }
     top = hs === 5 ? 15 : hs === 4 || hs === 3 ? 8.8 : hs === 1 ? 8.4 : 10.2; bx0 = hs === 1 ? 13.2 : hs === 3 ? 13.8 : 18.6;
+    if (hs >= 6){ top = [5.4, 10.2, 10.4, 4, 5, 3.6][hs - 6]; bx0 = [18.6, 18.6, 13.4, 14.6, 12.6, 18.6][hs - 6]; if (hs === 8) bx1 = Math.max(bx1, 48.8); }
   }
 
-  /* ---------- face ---------- */
-  var ey = Q.ey || ['round', 'det', 'happy', 'sleepy', 'sparkle', 'fierce'][es];
-  if (pose === 'attack' && (es === 2 || es === 3)) ey = 'det';
-  if (ember && (ey === 'round' || ey === 'det' || ey === 'fierce' || ey === 'sparkle' || ey === 'sleepy')) ey = 'glow';
-  function eye(x, s){
+  /* ---------- face ----------
+     The eye type (look.eyes) draws the eyes. An expression (look.expr > 0) sets the eyes, brows and mouth
+     together, at rest and walking; attack / hurt / win / down keep the pose's own face. XPR: e / f the near /
+     far eye (f 0: the look's own type; left out: as e), b the brows, m the mouth (xMouth), bl the blush. */
+  var EYT = ['round', 'det', 'happy', 'sleepy', 'sparkle', 'fierce', 'almond', 'big', 'cat', 'hooded'];
+  var XPR = [null, {b:'up', m:'grin', bl:1.3}, {b:'quirk', m:'smirk'}, {e:'fierce', b:'hard', m:'gritted'}, {e:'fierce', b:'angry', m:'roar'},
+    {e:'det', b:'hard', m:'flat'}, {e:'happy', b:'up', m:'laugh', bl:1.7}, {e:'happy', f:0, b:'quirk', m:'wink', bl:1.2}, {e:'wide', b:'raised', m:'o'},
+    {e:'fierce', b:'angry', m:'frown'}, {e:'half', b:'quirk', m:'sly'}, {e:'calm', b:'soft', m:'small', bl:1.2}, {e:'sad', b:'worry', m:'brave', tear:1},
+    {e:'det', b:'quirk', m:'smug'}, {e:'squint', b:'angry', m:'shout', bl:1.3}, {e:'focus', b:'focus', m:'tongue'}];
+  var exOn = expr > 0 && (pose === 'idle' || pose === 'walk' || pose === 'walk2'), XP = exOn ? XPR[expr] : null;
+  var eyT = EYT[es], eyN = Q.ey || (XP && XP.e) || eyT, eyF = Q.ey || (XP ? (XP.f === 0 ? eyT : XP.f || XP.e || eyT) : eyT);
+  if (pose === 'attack' && (es === 2 || es === 3)) eyN = eyF = 'det';
+  function glowy(e){ return ember && /^(round|det|fierce|sparkle|sleepy|almond|big|cat|hooded|wide|half|focus|sad)$/.test(e) ? 'glow' : e; }
+  eyN = glowy(eyN); eyF = glowy(eyF);
+  function eyeD(x, s, ey){
     var g = 'url(#' + id + '-ir)', w = (s ? 1.9 : 2.1) * EW, ou = s ? 1 : -1;
     var xi = x - ou * (w + 0.2), xo = x + ou * (w + 0.3);
     var dots = C(x - LX * 0.75, EY - 1.1, 0.9, '#fff') + C(x + LX * 0.8, EY + 1.2, 0.4, '#fff', op(0.9));
@@ -10315,22 +10478,70 @@ function avatarSvg(look, o){
         + P('M' + f(xi) + ' ' + f(yi + 0.3) + 'L' + f(xi) + ' ' + f(yi - 0.5) + 'L' + f(xo + ou * 0.6) + ' ' + f(yo - th) + 'L' + f(xo) + ' ' + f(yo + 0.4) + 'Z', INK, ' stroke="' + INK + '" stroke-width=".3" stroke-linejoin="round"')
         + C(x - LX * 0.7, EY - 0.1, 0.8, '#fff') + C(x + LX * 0.7, EY + 1.5, 0.35, '#fff', op(0.85));
     }
+    /* the newer eye types */
+    if (ey === 'almond') return E(x, EY + 0.2, w, f(2.45 * EH), g) + E(x + ou * 0.1, EY + 0.45, f(w * 0.44), 1.35, '#1f1430', op(0.9))
+      + P('M' + f(xi) + ' ' + f(EY - 0.2) + 'Q' + f(x) + ' ' + f(EY - 3.7) + ' ' + f(xo) + ' ' + f(EY - 1.1) + 'L' + f(xo + ou * 1.3) + ' ' + f(EY - 2.2)
+        + 'Q' + f(x - ou * 0.2) + ' ' + f(EY - 4.7) + ' ' + f(xi - ou * 0.1) + ' ' + f(EY - 0.6) + 'Z', INK)
+      + L('M' + f(xi + ou * 0.2) + ' ' + f(EY + 1.9) + 'Q' + f(x) + ' ' + f(EY + 2.9) + ' ' + f(xo - ou * 0.1) + ' ' + f(EY + 1.1), INK, 0.4, op(0.5)) + dots;
+    if (ey === 'big') return E(x, EY - 0.1, f(w + 0.35), f(3.2 * EH), g) + E(x + ou * 0.1, EY + 0.3, f(w * 0.52), 1.8, '#1f1430', op(0.9))
+      + lid(EY - 1, EY - 1.2, 1.5, 1.25)
+      + C(x - LX * 0.8, EY - 1.3, 1.15, '#fff') + C(x + LX * 0.85, EY + 1.3, 0.55, '#fff', op(0.9)) + C(x + LX * 0.3, EY - 2.1, 0.32, '#fff', op(0.85));
+    if (ey === 'cat') return E(x, EY, w, f(2.8 * EH), g) + E(x + ou * 0.1, EY + 0.2, 0.42, 2.1, '#1f1430')
+      + lid(EY - 0.3, EY - 1.6, 1.15, 1.35) + dots;
+    /* half-closed eyes, drawn as the visible band of iris under a heavy lid: hooded (a type), half (sly,
+       glancing back over the shoulder), focus (narrowed, the lower lid up) */
+    if (ey === 'hooded' || ey === 'half' || ey === 'focus'){
+      var tA = ey === 'half' ? [-0.2, -0.9, -0.5] : ey === 'focus' ? [-0.7, -1.2, -0.9] : [-0.9, -1.6, -1], bB = ey === 'focus' ? [1.1, 1.7, 1.2] : [1.3, 3.2, 1.3];
+      var px2 = x + (ey === 'half' ? -0.7 : ou * 0.1);
+      return P('M' + f(xi) + ' ' + f(EY + tA[0]) + 'Q' + f(x) + ' ' + f(EY + tA[1]) + ' ' + f(xo) + ' ' + f(EY + tA[2]) + 'L' + f(xo) + ' ' + f(EY + bB[2])
+          + 'Q' + f(x) + ' ' + f(EY + bB[1]) + ' ' + f(xi) + ' ' + f(EY + bB[0]) + 'Z', g)
+        + E(px2, EY + (ey === 'focus' ? 0.25 : 0.7), ey === 'focus' ? 0.6 : f(w * 0.46), ey === 'focus' ? 0.9 : 1.3, '#1f1430', op(0.9))
+        + L('M' + f(xi - ou * 0.25) + ' ' + f(EY + tA[0]) + 'Q' + f(x) + ' ' + f(EY + tA[1] - 0.25) + ' ' + f(xo + ou * 0.55) + ' ' + f(EY + tA[2] - 0.3), INK, 1.25)
+        + (ey === 'focus' ? L('M' + f(xi) + ' ' + f(EY + bB[0]) + 'Q' + f(x) + ' ' + f(EY + bB[1]) + ' ' + f(xo) + ' ' + f(EY + bB[2]), INK, 0.5, op(0.8))
+          : L('M' + f(xi) + ' ' + f(EY + tA[0] - 1.3) + 'Q' + f(x) + ' ' + f(EY + tA[1] - 1.7) + ' ' + f(xo) + ' ' + f(EY + tA[2] - 1.3), INK, 0.4, op(0.5)))
+        + C(px2 - LX * 0.6, EY + (ey === 'focus' ? -0.1 : 0.3), ey === 'focus' ? 0.45 : 0.65, '#fff') + (ey === 'focus' ? '' : C(x + LX * 0.7, EY + 1.7, 0.33, '#fff', op(0.85)));
+    }
+    /* expression eyes */
+    if (ey === 'calm') return L('M' + f(x - 2.1) + ' ' + f(EY + 0.1) + 'Q' + f(x) + ' ' + f(EY + 2.1) + ' ' + f(x + 2.1) + ' ' + f(EY + 0.1), INK, 0.95)
+      + L('M' + f(x + ou * 2.05) + ' ' + f(EY + 0.1) + 'L' + f(x + ou * 2.75) + ' ' + f(EY - 0.35), INK, 0.6);
+    if (ey === 'wide') return E(x, EY - 0.1, f(w + 0.55), 3.15, '#fffaf0', sk2(INK, 0.45))
+      + E(x + ou * 0.05, EY + 0.15, f(w * 0.62), 2, g) + C(x + ou * 0.05, EY + 0.3, 0.62, '#1f1430') + C(x - LX * 0.5, EY - 0.6, 0.48, '#fff')
+      + L('M' + f(x - w - 0.5) + ' ' + f(EY - 0.9) + 'Q' + f(x) + ' ' + f(EY - 5.6) + ' ' + f(x + w + 0.5) + ' ' + f(EY - 0.9), INK, 0.85);
+    if (ey === 'sad') return E(x, EY, w, f(2.8 * EH), g) + pup + lid(EY - 1.3, EY - 0.1, 1.05, 1.1)
+      + C(x - LX * 0.7, EY - 0.9, 1.05, '#fff') + C(x + LX * 0.75, EY + 1.2, 0.5, '#fff', op(0.95))
+      + L('M' + f(xi + ou * 0.3) + ' ' + f(EY + 2.5) + 'Q' + f(x) + ' ' + f(EY + 3.2) + ' ' + f(xo - ou * 0.2) + ' ' + f(EY + 2.3), '#bfeaff', 0.55, op(0.9));
     var big = ey === 'sparkle' ? 0.2 : 0;
     return E(x, EY, f(w + big), f(2.8 * EH + big), g) + pup + lid(EY - 0.7, EY - 0.9, 1.35, 1.2)
       + (ey === 'sparkle' ? P(star(x - LX * 0.7, EY - 1.1, 1.5, 0.35, 4), '#fff') + C(x + LX * 0.8, EY + 1.2, 0.45, '#fff', op(0.9)) : dots);
   }
-  var bl = deep ? '#ff8296' : green ? '#ff8a6e' : '#ff6f8e', blo = deep ? 0.5 : green ? 0.3 : 0.34;
-  var face = (scaly ? E(27, 29.4, 1.8, 1, bl, op(0.28)) : E(26.2, 31, 2.1, 1.1, bl, op(blo)) + E(40, 30.8, 1.8, 1.1, bl, op(f(blo - 0.04))))
-    + eye(EX[0], 0) + eye(EX[1], 1);
+  /* the female build's lashes: two flicks at the outer corner of every open or closed eye */
+  function lash(x, s, ey){
+    var w = (s ? 1.9 : 2.1) * EW, ou = s ? 1 : -1, xo = x + ou * (w + 0.3);
+    if (ey === 'squint' || ey === 'swirl') return '';
+    if (ey === 'happy') return L('M' + f(x + ou * 2.1) + ' ' + f(EY + 0.8) + 'L' + f(x + ou * 3.1) + ' ' + f(EY + 1.1) + 'M' + f(x + ou * 1.75) + ' ' + f(EY + 0.05) + 'L' + f(x + ou * 2.7) + ' ' + f(EY - 0.35), INK, 0.5);
+    if (ey === 'calm') return L('M' + f(x + ou * 1.8) + ' ' + f(EY + 0.75) + 'L' + f(x + ou * 2.35) + ' ' + f(EY + 1.6) + 'M' + f(x + ou * 1.1) + ' ' + f(EY + 1.3) + 'L' + f(x + ou * 1.4) + ' ' + f(EY + 2.25), INK, 0.5);
+    var yb = {det:EY - 3.2, fierce:EY - 3.4, glow:EY - 3.4, sleepy:EY - 0.8, almond:EY - 2, hooded:EY - 1.2, half:EY - 0.7, focus:EY - 1.1, wide:EY - 2.2, sad:EY - 1.3, cat:EY - 2.6}[ey];
+    if (yb == null) yb = EY - 1.9;
+    var bx = xo + ou * (ey === 'almond' ? 1.05 : ey === 'wide' ? 0.3 : 0.4);
+    return L('M' + f(bx) + ' ' + f(yb) + 'L' + f(bx + ou * 1.25) + ' ' + f(yb - 0.45) + 'M' + f(bx - ou * 0.5) + ' ' + f(yb - 0.6) + 'L' + f(bx + ou * 0.4) + ' ' + f(yb - 1.55), INK, 0.5);
+  }
+  function eye(x, s, ey){ var r = eyeD(x, s, ey); return fem ? r + lash(x, s, ey) : r; }
+  var bl = deep ? '#ff8296' : green ? '#ff8a6e' : '#ff6f8e', blo = deep ? 0.5 : green ? 0.3 : 0.34, bk = XP && XP.bl ? XP.bl : 1;
+  function r2(v){ return Math.round(v * 100) / 100; }
+  var face = (scaly ? E(27, 29.4, 1.8, 1, bl, op(bk === 1 ? 0.28 : r2(0.28 * bk))) : E(26.2, 31, 2.1, 1.1, bl, op(bk === 1 ? blo : r2(blo * bk))) + E(40, 30.8, 1.8, 1.1, bl, op(f(blo * bk - 0.04))))
+    + eye(EX[0], 0, eyN) + eye(EX[1], 1, eyF);
+  if (XP && XP.tear) face += P('M' + f(EX[0] - 2.2) + ' ' + f(EY + 2.2) + 'Q' + f(EX[0] - 3.3) + ' ' + f(EY + 3.9) + ' ' + f(EX[0] - 2.4) + ' ' + f(EY + 4.4) + 'Q' + f(EX[0] - 1.5) + ' ' + f(EY + 4.1) + ' ' + f(EX[0] - 2.2) + ' ' + f(EY + 2.2) + 'Z', '#bfeaff', sk2('#5a8fb0', 0.3))
+    + C(EX[0] - 2.55, EY + 3.7, 0.28, '#fff');
   /* noses */
-  if (spc === 'human' || spc === 'elf') face += C(33.9, 30, 0.5, deep ? feat : skD, op(0.85));
-  if (spc === 'orc') face += C(34.2, 30.2, 0.55, skD, op(0.8)) + C(35.4, 30.2, 0.45, skD, op(0.7));
+  if (spc === 'human' || spc === 'elf') face += C(33.9, 30, fem ? 0.42 : 0.5, deep ? feat : skD, op(0.85));
+  if (spc === 'orc') face += fem ? C(34.3, 30.2, 0.45, skD, op(0.8)) + C(35.3, 30.2, 0.38, skD, op(0.7)) : C(34.2, 30.2, 0.55, skD, op(0.8)) + C(35.4, 30.2, 0.45, skD, op(0.7));
   if (furry) face += P('M22 27.6C24.2 33.6 29 35.6 33 35.4C38.2 35.2 42.4 32.4 43.2 26.8C41.4 29.4 38.6 30.4 36 30.2C35.2 31.8 33.8 32.6 32.4 32.4C30.6 32.2 29.6 30.8 29.4 29.6C26.6 30.6 23.6 29.8 22 27.6Z', lum(sk) > 80 ? '#ffffff' : CREAM)
     + E(35.6, 29.8, 1.1, 0.8, '#3a2230') + C(35.3, 29.6, 0.3, '#fff', op(0.8));
   if (scaly) face = P('M22.6 30C25.2 33.6 29 35.2 33.4 35.4C38.4 35.6 42.8 34.4 45.4 31.8C41.6 32.8 36.8 33 32.2 32.4C28.4 32 25 31.2 22.6 30Z', mix(sk, '#fff3b0', 0.62))
     + C(26.4, 19.4, 1.2, skD, op(0.5)) + C(29.4, 17.4, 0.9, skD, op(0.5)) + C(24, 22.4, 0.9, skD, op(0.5)) + C(38.4, 18.6, 0.8, skD, op(0.4)) + face
     + C(44.6, 25.4, 0.5, skD) + C(45.4, 26.8, 0.4, skD);
   var mc = deep ? mix(feat, '#8a2f45', 0.3) : green ? '#3f2a3a' : '#6d2f45';
+  if (fem) mc = mix(mc, '#c24a6e', 0.3);
   var MOUTH = {
     smile: furry ? L('M32.2 31.8Q33.8 33 35.4 31.6', mc, 0.9) + P('M34.2 32.3l0.5 1.2l0.5 -1.3z', '#fff', ' stroke="' + mc + '" stroke-width=".3"') : L('M32.3 31.9Q33.8 33.1 35.3 31.7', mc, 0.9),
     shout: P('M32 31.3Q33.8 30.8 35.6 31.3Q35.3 34.1 33.8 34.1Q32.3 34.1 32 31.3Z', '#5a2036') + P('M32.8 33.3Q33.8 32.6 34.8 33.3Q34.4 34.1 33.8 34.1Q33.2 34.1 32.8 33.3Z', '#ff8aa0'),
@@ -10348,12 +10559,53 @@ function avatarSvg(look, o){
       wobble: L('M34 31.6q1.2 -1 2.4 0t2.4 0t2.4 0t2.2 -.4', sm, 0.8)
     };
   }
+  /* the expression mouths, written in a mouth frame (u toward the snout, v down, in head units about the
+     mouth's middle) and laid onto each species' mouth: a saurian's runs the length of its snout */
+  function MPt(u, v){ return scaly ? f(39.2 + u * 2.5) + ' ' + f(30.7 - u * 0.37 + v) : f(33.8 + u) + ' ' + f((spc === 'orc' || furry ? 32.3 : 32) + v); }
+  function MD(a){
+    var d = '', i = 0;
+    while (i < a.length){ var c = a[i++], n = c === 'Q' ? 2 : c === 'C' ? 3 : c === 'Z' ? 0 : 1; d += c; for (var k = 0; k < n; k++){ d += (k ? ' ' : '') + MPt(a[i], a[i + 1]); i += 2; } }
+    return d;
+  }
+  function xMouth(k){
+    var lw = 0.9, o = ' stroke="' + mc + '" stroke-width=".35" stroke-linejoin="round"', MIN = '#5a2036', TNG = '#ff8aa0', TTH = '#fffaf0';
+    var tng = function(a, b, c){ return P(MD(['M', -a, b, 'Q', 0, b - c, a, b, 'Q', a * 0.5, b + c * 0.75, 0, b + c * 0.75, 'Q', -a * 0.5, b + c * 0.75, -a, b, 'Z']), TNG); };
+    var ticks = function(side){ return L(MD(side > 0 ? ['M', 1.75, -1.05, 'Q', 2.2, -0.7, 2.05, -0.15] : ['M', -1.8, -1, 'Q', -2.25, -0.65, -2.05, -0.1]), mc, 0.5, op(0.8)); };
+    if (k === 'grin') return P(MD(['M', -2.1, -0.6, 'Q', 0, 0.1, 2.1, -0.7, 'Q', 1.9, 2.4, 0, 2.6, 'Q', -1.9, 2.4, -2.1, -0.6, 'Z']), MIN, o) + tng(1.2, 1.95, 0.8)
+      + P(MD(['M', -1.8, -0.45, 'Q', 0, 0.25, 1.8, -0.55, 'L', 1.6, 0.3, 'Q', 0, 0.95, -1.6, 0.35, 'Z']), TTH) + ticks(1) + ticks(-1);
+    if (k === 'smirk') return L(MD(['M', -1.5, 0.45, 'Q', 0.3, 1, 1.75, -0.6]), mc, lw) + ticks(1);
+    if (k === 'gritted') return P(MD(['M', -1.9, -0.2, 'Q', 0, -0.7, 1.9, -0.3, 'L', 1.8, 1.2, 'Q', 0, 1.6, -1.8, 1.2, 'Z']), TTH, sk2(INK, 0.45))
+      + L(MD(['M', -1.8, 0.5, 'Q', 0, 0.8, 1.8, 0.45]) + MD(['M', -0.9, -0.42, 'L', -0.9, 1.33]) + MD(['M', 0, -0.47, 'L', 0, 1.42]) + MD(['M', 0.9, -0.45, 'L', 0.9, 1.33]), '#b3a2b0', 0.3);
+    if (k === 'roar') return P(MD(['M', -2.3, -1, 'Q', 0, -1.6, 2.3, -1.1, 'Q', 2.2, 3.1, 0, 3.6, 'Q', -2.2, 3.1, -2.3, -1, 'Z']), MIN, o) + tng(1.2, 2.6, 1)
+      + P(MD(['M', -1.95, -1.05, 'L', -1.35, 0.95, 'L', -0.8, -1.3, 'Z']) + MD(['M', 1.95, -1.15, 'L', 1.35, 0.9, 'L', 0.8, -1.33, 'Z'])
+        + MD(['M', -1.3, 3.05, 'L', -0.95, 2.1, 'L', -0.6, 3.3, 'Z']) + MD(['M', 1.3, 3, 'L', 0.95, 2.05, 'L', 0.6, 3.25, 'Z']), TTH);
+    if (k === 'flat') return L(MD(['M', -1.6, 0.45, 'Q', 0, 0.2, 1.6, 0.35]), mc, 1) + L(MD(['M', -0.7, 1.9, 'Q', 0, 2.25, 0.7, 1.9]), mc, 0.4, op(0.45));
+    if (k === 'laugh') return P(MD(['M', -2.2, -0.5, 'Q', 0, 0.25, 2.2, -0.6, 'Q', 2, 3.3, 0, 3.5, 'Q', -2, 3.3, -2.2, -0.5, 'Z']), MIN, o) + tng(1.45, 2.55, 1.2)
+      + P(MD(['M', -1.9, -0.35, 'Q', 0, 0.4, 1.9, -0.45, 'L', 1.75, 0.3, 'Q', 0, 1, -1.75, 0.35, 'Z']), TTH);
+    if (k === 'wink') return L(MD(['M', -1.7, 0, 'Q', 0, 1.5, 1.9, -0.5]), mc, lw) + P(MD(['M', 0.45, 0.75, 'Q', 1.35, 0.55, 1.45, 1.35, 'Q', 1.35, 2.05, 0.8, 1.85, 'Q', 0.35, 1.45, 0.45, 0.75, 'Z']), TNG, o);
+    if (k === 'o') return P(MD(['M', 0, -0.3, 'Q', 1, -0.3, 1, 0.9, 'Q', 1, 2.1, 0, 2.1, 'Q', -1, 2.1, -1, 0.9, 'Q', -1, -0.3, 0, -0.3, 'Z']), MIN, o)
+      + P(MD(['M', -0.55, 1.6, 'Q', 0, 1.15, 0.55, 1.6, 'Q', 0, 2.05, -0.55, 1.6, 'Z']), TNG);
+    if (k === 'frown') return L(MD(['M', -1.7, 1.05, 'Q', 0, -0.45, 1.7, 0.95]), mc, 1);
+    if (k === 'sly') return L(MD(['M', -1.8, -0.55, 'Q', -0.4, 0.95, 1.45, 0.4]), mc, lw) + ticks(-1);
+    if (k === 'small') return L(MD(['M', -0.95, 0.3, 'Q', 0, 0.95, 0.95, 0.25]), mc, 0.8);
+    if (k === 'brave') return L(MD(['M', -1.5, 0.65, 'Q', -0.75, -0.05, 0, 0.45, 'Q', 0.75, 0.95, 1.5, 0.2]), mc, 0.85);
+    if (k === 'smug') return L(MD(['M', -1.9, -0.3, 'Q', -0.2, 1.45, 2, -0.65]), mc, lw) + ticks(1);
+    if (k === 'shout') return P(MD(['M', -2.1, -1.1, 'Q', 0, -1.7, 2.1, -1.1, 'Q', 2.3, 1.9, 1.2, 3.5, 'Q', 0, 4, -1.2, 3.5, 'Q', -2.3, 1.9, -2.1, -1.1, 'Z']), MIN, o) + tng(1.3, 2.7, 1.1)
+      + P(MD(['M', -1.9, -1.05, 'Q', 0, -1.55, 1.9, -1.05, 'L', 1.8, -0.3, 'Q', 0, -0.8, -1.8, -0.3, 'Z']), TTH);
+    if (k === 'tongue') return L(MD(['M', -1.4, 0.4, 'L', 1.3, 0.2]), mc, lw) + P(MD(['M', 0.5, 0.3, 'Q', 1.6, 0.1, 1.8, 1.1, 'Q', 1.7, 1.9, 1, 1.6, 'Q', 0.6, 1.1, 0.5, 0.3, 'Z']), TNG, o)
+      + L(MD(['M', 1.05, 0.55, 'L', 1.25, 1.2]), '#d0607a', 0.3);
+    return '';
+  }
   if (spc === 'orc') for (var mk in MOUTH) MOUTH[mk] = G('translate(0 .3)', MOUTH[mk]);
-  var mouth = MOUTH[Q.mo];
-  if (spc === 'orc') mouth += P('M32.2 33.4L32.6 30.8L33.6 33Z', '#fffaf0', sk2('#d9cfb8', 0.3)) + P('M35.4 33L36.2 30.6L36.8 32.8Z', '#fffaf0', sk2('#d9cfb8', 0.3));
-  var mouthLate = '';
-  if (spc === 'dwarf' && beard !== 'none'){ mouthLate = /shout|grin|ouch/.test(Q.mo) ? G('translate(-.2 1.6)', mouth) : ''; mouth = ''; }
-  face += mouth;
+  var mouth = XP ? xMouth(XP.m) : MOUTH[Q.mo];
+  var tusk = spc !== 'orc' ? '' : fem ? P('M32.4 33.4L32.7 31.4L33.5 33.1Z', '#fffaf0', sk2('#d9cfb8', 0.3)) + P('M35.5 33.1L36.1 31.3L36.6 32.9Z', '#fffaf0', sk2('#d9cfb8', 0.3))
+    : P('M32.2 33.4L32.6 30.8L33.6 33Z', '#fffaf0', sk2('#d9cfb8', 0.3)) + P('M35.4 33L36.2 30.6L36.8 32.8Z', '#fffaf0', sk2('#d9cfb8', 0.3));
+  /* a mustache hides the mouth: an open mouth (or any expression) moves down over the beard, and an orc's
+     tusks poke out over it */
+  var mouthLate = '', mBeard = hairy && beard !== 'none' && beard !== 'stubble';
+  if (mBeard){ mouthLate = XP || /shout|grin|ouch/.test(Q.mo) ? G('translate(-.2 1.6)', mouth) : ''; mouth = ''; mouthLate += tusk; tusk = ''; }
+  if (beard === 'stubble') face += stubbleD();
+  face += mouth + tusk;
   /* scruffy recruits: a plaster on the cheek, or soot for the tinker */
   if (!AE.bare && tier === 0 && (cls === 'knight' || cls === 'barbarian' || cls === 'warden')) face += G('rotate(-24 40.4 29.6)', P(rr(38.6, 28.8, 3.8, 1.8, 0.7), '#f6dcb8', ' stroke="#b88d6a" stroke-width=".35"') + L('M40 29.3v.8M40.8 29.3v.8', '#b88d6a', 0.3));
   if (!AE.bare && tier === 0 && cls === 'artificer') face += E(40.6, 29, 1.6, 0.7, '#3a2a3a', op(0.35)) + E(39.4, 29.8, 0.8, 0.4, '#3a2a3a', op(0.3));
@@ -10361,10 +10613,14 @@ function avatarSvg(look, o){
   if (!AE.bare && cls === 'barbarian' && tier >= 2) face += L('M25.4 28.4l3.4 1.2M25.6 30.6l3 .8M39.8 28.2l2.2 -.6M40 30.2l2 -.4', tier >= 4 ? EMB : '#d23b3b', 0.8) + (tier >= 4 ? L('M25.4 28.4l3.4 1.2M25.6 30.6l3 .8M39.8 28.2l2.2 -.6M40 30.2l2 -.4', '#ffd27a', 0.3) : '');
   if (!AE.bare && cls === 'ranger' && tier >= 3) face += L('M24.2 29.2l2.6 .4M24.6 30.8l2.4 .2M40.8 28.6l1.6 -.4M40.8 30.2l1.6 -.2', '#2fb3a4', 0.7);
   if (cls === 'mage' && tier >= 3) face += P(star(40.8, 31, 0.9, 0.3, 4), GEM, op(0.9));
-  var BR = Q.br || (es === 1 || es === 5 ? 'hard' : es === 3 ? 'soft' : '');
+  var BR = Q.br || (XP && XP.b) || (es === 1 || es === 5 || es === 9 ? 'hard' : es === 3 || es === 7 ? 'soft' : '');
   var browC = scaly ? skD : furry ? dk(sk, 0.55) : deep ? feat : spc === 'orc' ? '#2f2438' : hcD;
-  var brows = G(scaly ? 'translate(.6 -1.8)' : spc === 'dwarf' ? 'translate(0 -.4)' : '', L(BR === 'hard' ? 'M26.9 22.6L30.6 23.9M35.6 23.9L39.2 22.4' : BR === 'worry' ? 'M26.9 23.6L30.4 22.4M35.8 22.4L39.1 23.5' : BR === 'soft' ? 'M27 22.4Q28.8 21.8 30.5 22.4M35.7 22.2Q37.4 21.6 39 22.2' : 'M26.9 23.2Q28.7 22.3 30.5 23M35.6 22.9Q37.4 22.2 39.1 23',
-    browC, spc === 'dwarf' ? 1.5 : spc === 'orc' ? 1.4 : 1.2, op(0.95)));
+  var BRP = {hard:'M26.9 22.6L30.6 23.9M35.6 23.9L39.2 22.4', worry:'M26.9 23.6L30.4 22.4M35.8 22.4L39.1 23.5', soft:'M27 22.4Q28.8 21.8 30.5 22.4M35.7 22.2Q37.4 21.6 39 22.2',
+    up:'M26.9 22.3Q28.7 21.1 30.5 21.9M35.6 21.8Q37.4 21 39.1 22', raised:'M26.8 21.4Q28.7 19.8 30.6 21M35.5 20.8Q37.4 19.6 39.2 20.8',
+    angry:'M26.8 21.9L30.9 24.4M35.3 24.4L39.3 21.7', quirk:'M26.9 23.3Q28.7 23 30.5 23.4M35.6 22.2Q37.4 20.5 39.1 21.5', focus:'M26.9 23.3L30.6 24.1M35.6 24.1L39.2 23.3'};
+  var brW = spc === 'dwarf' ? 1.5 : spc === 'orc' ? 1.4 : 1.2;
+  var brows = G(scaly ? 'translate(.6 -1.8)' : spc === 'dwarf' ? 'translate(0 -.4)' : '', L(BRP[BR] || (fem ? 'M26.9 23.1Q28.6 21.9 30.5 22.8M35.6 22.8Q37.4 21.8 39.1 22.9' : 'M26.9 23.2Q28.7 22.3 30.5 23M35.6 22.9Q37.4 22.2 39.1 23'),
+    browC, fem ? f(brW * 0.8) : brW, op(0.95)));
 
   var bangs = '<g opacity=".25" transform="translate(' + f(0.5 * LX) + ' 1.3)">' + hf.filter(function(p){ return p.d && p.c !== tc && !p.side; }).map(function(p){ return P(p.d, '#3a1f33'); }).join('') + '</g>';
   var headList = [];
@@ -10377,10 +10633,64 @@ function avatarSvg(look, o){
   var headPre = (scaly ? '' : mx(P(HEAD, skL, op(0.3) + ' transform="translate(-6 -6) scale(1.1)"'), 32.2)) + (hairy ? bangs : '');
   var headPart = pt(HEAD, sk, '', {sh:skD, hl:false, ln:false, ow:1.1, rim:scaly ? 0.6 : 0.45, k:1.1});
   headList.push(headPart);
-  /* the dwarf's beard: cheeks to chest, in the hair color, and a mustache over it */
-  var beardR = NONE;
-  if (spc === 'dwarf' && beard !== 'none'){
-    var bc = hc, bD = dk(bc, 0.3), bL = [];
+  /* ---------- beards (look.beard): any species can wear one, and a dwarf has one by default ----------
+     Haired heads: cheeks to chest in the beard color, with a mustache over it (a dwarf's big nose sits on
+     top). A saurian grows barbels, frills and spikes in it; a fox ruffs and tufts of fur. The beard group
+     (av-beard) sits over the face and under the front hair; the mouth a mustache hides moves over it. */
+  var beardR = NONE, bD = dk(bc, 0.3), bL = [];
+  var dwNose = fem ? pt(el(34.5, 29.3, 1.55, 1.3), mix(sk, '#ff8a7a', 0.2), '', {sh:skD, hl:lt(sk, 0.5), k:0.3, ow:0.8, ln:false})
+    : pt(el(34.6, 29.2, 1.9, 1.6), mix(sk, '#ff8a7a', 0.25), '', {sh:skD, hl:lt(sk, 0.5), k:0.3, ow:0.8, ln:false});
+  /* a braid hanging from (x0, y0) to (x1, y1): n plaits, the upper one over the lower, a ring and a tuft */
+  function qc(q){ var z = {}; for (var k in q) z[k] = q[k]; return z; }
+  function plait(x0, y0, x1, y1, n, r, c, tie){
+    var out = [], cd = dk(c, 0.3), k, t, x, y, q, ringC = tie || (tier >= 3 ? GOLD : tier === 2 ? '#d8dde8' : '#c98a4a');
+    for (k = n - 1; k >= 0; k--){
+      t = n > 1 ? k / (n - 1) : 0; x = x0 + (x1 - x0) * t; y = y0 + (y1 - y0) * t; q = r * (1 - t * 0.28);
+      out.push(pt(el(x + (k % 2 ? -0.15 : 0.15), y, q, q * 0.86), c, mx(L('M' + f(x - q * 0.6) + ' ' + f(y - 0.15) + 'Q' + f(x) + ' ' + f(y - q * 0.85) + ' ' + f(x + q * 0.6) + ' ' + f(y - 0.3), lt(c, 0.38), 0.45, op(0.8)), x),
+        {sh:cd, hl:false, ln:dk(c, 0.5), lw:0.45, k:0.4, ow:0.9, rim:0.5}));
+    }
+    var ey2 = y1 + r * 0.9;
+    out.unshift(pt('M' + f(x1 - r * 0.55) + ' ' + f(ey2 - 0.4) + 'L' + f(x1 - r * 0.8) + ' ' + f(ey2 + 1.8) + 'L' + f(x1) + ' ' + f(ey2 + 1.1) + 'L' + f(x1 + r * 0.8) + ' ' + f(ey2 + 1.8) + 'L' + f(x1 + r * 0.55) + ' ' + f(ey2 - 0.4) + 'Z', c, '', {sh:cd, hl:false, k:0.3, ow:0.8, ln:false}));
+    out.push(pt(rr(x1 - r * 0.85, y1 - r * 1.35, r * 1.7, r * 0.8, 0.35), ringC, '', {sh:dk(ringC, 0.35), hl:lt(ringC, 0.5), k:0.25, ow:0.7, ln:false}));
+    return out;
+  }
+  /* a tapering strand along a cubic (barbels, whiskers, a single spike) */
+  function strand(p0, p1, p2, p3, w0, w1){
+    var Lp = [], Rp = [], n = 8;
+    for (var i = 0; i <= n; i++){
+      var u = i / n, v = 1 - u;
+      var x = v * v * v * p0[0] + 3 * v * v * u * p1[0] + 3 * v * u * u * p2[0] + u * u * u * p3[0], y = v * v * v * p0[1] + 3 * v * v * u * p1[1] + 3 * v * u * u * p2[1] + u * u * u * p3[1];
+      var dx = 3 * v * v * (p1[0] - p0[0]) + 6 * v * u * (p2[0] - p1[0]) + 3 * u * u * (p3[0] - p2[0]), dy = 3 * v * v * (p1[1] - p0[1]) + 6 * v * u * (p2[1] - p1[1]) + 3 * u * u * (p3[1] - p2[1]);
+      var q = Math.sqrt(dx * dx + dy * dy) || 1, w = (w0 + (w1 - w0) * u) / 2;
+      Lp.push([x - dy / q * w, y + dx / q * w]); Rp.push([x + dy / q * w, y - dx / q * w]);
+    }
+    return poly(Lp.concat(Rp.reverse()));
+  }
+  /* a fringe of points hung from an edge (pts), each point dv * depth out, the edge itself inset back */
+  function fringe(pts, dv, depth, inset){
+    var d = 'M' + f(pts[0][0]) + ' ' + f(pts[0][1]), k;
+    for (k = 0; k < pts.length - 1; k++){
+      var a = pts[k], b = pts[k + 1], dp = depth[k % depth.length];
+      d += 'L' + f((a[0] + b[0]) / 2 + dv[0] * dp) + ' ' + f((a[1] + b[1]) / 2 + dv[1] * dp) + 'L' + f(b[0]) + ' ' + f(b[1]);
+    }
+    for (k = pts.length - 1; k >= 0; k--) d += 'L' + f(pts[k][0] - dv[0] * inset) + ' ' + f(pts[k][1] - dv[1] * inset);
+    return d + 'Z';
+  }
+  /* stubble and speckle go on the skin (inside the face), not over it */
+  function stubbleD(){
+    var s = '', k;
+    if (scaly){ [[24.4, 31.6], [26.4, 32.9], [28.6, 33.9], [31, 34.5], [33.4, 34.8], [35.8, 34.8], [38.2, 34.4], [40.6, 33.6], [42.8, 32.4], [27.6, 32.1], [32.2, 33.5], [37, 33.6], [41.4, 32.4]]
+      .forEach(function(p, i){ s += C(p[0], p[1], i > 8 ? 0.38 : 0.5, dk(bc, 0.15), op(0.85)); }); return s; }
+    var jaw = furry ? dk(mix(sk, bc, 0.62), 0.25) : bc;
+    if (furry){ for (k = 0; k < 11; k++){ var x = 23 + k * 1.9, y = 25.4 + 9.6 * Math.sqrt(Math.max(0, 1 - Math.pow((x - 32.2) / 11, 2))) - 0.8;
+      s += L('M' + f(x) + ' ' + f(y - 1.1) + 'L' + f(x + (x < 32 ? -0.5 : 0.5)) + ' ' + f(y + 0.4), jaw, 0.45, op(0.8)); } return s; }
+    s += P('M21.8 27.2C22 31 25.2 34.8 29.8 35.4C31.4 35.6 33.2 35.6 34.8 35.4C39.2 34.8 42.6 31.2 42.9 27C41.4 29.4 39.2 30.8 37 31.2C35.8 32.3 34.2 32.6 32.8 32.4C31.4 32.6 29.6 32.2 28.4 31.1C25.8 30.7 23.2 29.4 21.8 27.2Z', jaw, op(0.3));
+    for (k = 0; k < 26; k++){ var a2 = k * 2.39996, rx = 23.6 + (k * 7.31 % 1) * 18, ry = 31.6 + ((k * 3.7) % 3.4);
+      if (Math.abs(rx - 33.4) < 2.6 && ry < 33) continue;
+      s += C(rx, ry, 0.22, dk(jaw, 0.2), op(0.55)); }
+    return s;
+  }
+  if (hairy && beard !== 'none' && beard !== 'stubble'){
     var BD = {
       braid: 'M21.6 26.4C21.8 31.6 23.6 35.2 26.4 37.6C26.8 40.8 28.6 43.2 30.4 44.4L31.4 48.8L34 48.8L34.6 44.4C37.2 42.8 38.6 40 38.8 37.2C41.6 35 43.2 31 43 26.4C41.4 28.8 39.4 30.6 37 31.2C35.4 32.2 33.8 32.4 32.4 32.2C30.6 32.2 29 31.6 27.8 30.6C25.2 30 23 28.4 21.6 26.4Z',
       full: 'M21.6 26.4C21.6 32.4 23.2 37.4 26.4 40.6C28.2 42.6 30.4 43.8 32.4 43.8C34.6 43.8 36.8 42.6 38.6 40.4C41.6 37.2 43.2 32.4 43 26.4C41.4 28.8 39.4 30.6 37 31.2C35.4 32.2 33.8 32.4 32.4 32.2C30.6 32.2 29 31.6 27.8 30.6C25.2 30 23 28.4 21.6 26.4Z',
@@ -10388,15 +10698,75 @@ function avatarSvg(look, o){
       great: 'M20.8 25.6C20.4 33 22 39.2 25.6 43.2C27.6 45.6 30 47 32.4 47C34.8 47 37.2 45.6 39.2 43.2C42.6 39.2 44.2 33 43.8 25.6C41.8 28.6 39.4 30.6 37 31.2C35.4 32.2 33.8 32.4 32.4 32.2C30.6 32.2 29 31.6 27.8 30.6C25 30 22.6 28.2 20.8 25.6Z',
       'short': 'M21.6 26.4C21.8 31.6 23.6 35 26.6 37C27.4 39.6 29.6 41.4 32.2 41.6C35 41.4 37 39.4 37.8 37C41 35 43 31 43 26.4C41.4 28.8 39.4 30.6 37 31.2C35.4 32.2 33.8 32.4 32.4 32.2C30.6 32.2 29 31.6 27.8 30.6C25.2 30 23 28.4 21.6 26.4Z'
     };
-    bL.push(pt(BD[beard], bc, L('M26.2 32.4C27 35 28.4 37 30.4 38.2M38.6 32.4C38 35 36.6 37.4 34.4 38.6M32.4 34V40', bD, 0.6, op(0.7)) + mx(L('M24.2 30.4C24.8 32.6 25.8 34.4 27.4 35.8', lt(bc, 0.35), 0.8, op(0.7)), 32.2)
+    if (BD[beard]) bL.push(pt(BD[beard], bc, L('M26.2 32.4C27 35 28.4 37 30.4 38.2M38.6 32.4C38 35 36.6 37.4 34.4 38.6M32.4 34V40', bD, 0.6, op(0.7)) + mx(L('M24.2 30.4C24.8 32.6 25.8 34.4 27.4 35.8', lt(bc, 0.35), 0.8, op(0.7)), 32.2)
       + (beard === 'braid' ? P(rr(30, 42.6, 5, 1.6, 0.5), tier >= 3 ? GOLD : '#c98a4a') + P(rr(30.4, 45.4, 4.2, 1.4, 0.5), tier >= 3 ? GOLD : '#c98a4a') : ''),
       {sh:bD, g:1, k:0.6, ow:1, rim:0.6}));
-    bL.push(pt(el(34.6, 29.2, 1.9, 1.6), mix(sk, '#ff8a7a', 0.25), '', {sh:skD, hl:lt(sk, 0.5), k:0.3, ow:0.8, ln:false}));
-    bL.push(pt('M32.6 30.6C30.6 30.6 28.2 31.4 26.4 33.6C28.8 33.6 30.8 33 32.6 32.2C34.6 33 36.6 33.4 38.8 33.2C37.4 31.2 34.8 30.6 32.6 30.6Z', lt(bc, 0.1), '', {sh:bD, k:0.3, ow:0.8, ln:false}));
+    var bq = {sh:bD, g:1, k:0.6, ow:1, rim:0.6};
+    if (beard === 'goatee') bL.push(pt('M29.2 33.2C29.2 35.8 30.4 38.6 32.6 40.2C34.8 38.6 36 35.8 36 33.2C34.9 34 33.8 34.3 32.6 34.3C31.4 34.3 30.3 34 29.2 33.2Z', bc,
+      L('M32.6 34.8V39M30.8 35C31.2 36.6 31.8 37.8 32.4 38.6', bD, 0.5, op(0.7)), qc(bq)));
+    if (beard === 'chops'){
+      bL.push(pt('M21.6 25C21.2 29.4 22.2 33.2 24.6 35.2C26.2 36 27.9 35.4 28.5 33.6C26.9 32.4 25.7 30.4 24.9 27.2L24.5 24.6Z', bc, L('M22.6 27.6C22.6 30.4 23.4 32.8 25 34.4', lt(bc, 0.35), 0.6, op(0.7)), qc(bq)));
+      bL.push(pt('M43 24.8C43.2 29 42.4 32.6 40.4 34.6C39 35.4 37.5 34.8 37.1 33.2C38.5 32 39.6 30 40.2 27L40.6 24.4Z', bc, '', qc(bq)));
+    }
+    if (beard === 'bgoatee'){
+      bL.push(pt('M30 33.4C30.2 35.2 31.2 36.7 32.6 37.4C34 36.7 35 35.2 35.2 33.4C34.3 34 33.5 34.2 32.6 34.2C31.7 34.2 30.9 34 30 33.4Z', bc, '', qc(bq)));
+      bL = bL.concat(plait(32.6, 38, 32.4, 43.8, 4, 1.3, bc));
+    }
+    if (beard === 'viking'){
+      bL.push(pt(BD['short'], bc, L('M26.2 32.4C27 35 28.4 37 30.4 38.2M38.6 32.4C38 35 36.6 37.4 34.4 38.6', bD, 0.6, op(0.7)) + mx(L('M24.2 30.4C24.8 32.6 25.8 34.4 27.4 35.8', lt(bc, 0.35), 0.8, op(0.7)), 32.2), qc(bq)));
+      bL = bL.concat(plait(29.8, 40.2, 29, 46.6, 4, 1.25, bc), plait(35.2, 40.2, 35.8, 46.6, 4, 1.25, bc));
+    }
+    if (spc === 'dwarf') bL.push(dwNose);
+    if (beard === 'stache') bL.push(pt('M32.6 30.7C30.8 30.5 28.8 31 27.4 32C26.4 32.7 25.1 32.6 24.6 31.6C24.2 30.8 24.7 29.9 25.6 29.9C24.2 29.4 23 30.6 23.2 32C23.5 33.8 25.8 34.6 27.9 34C29.7 33.5 31.2 32.7 32.6 32.2C34 32.7 35.5 33.5 37.3 34C39.4 34.6 41.6 33.8 41.9 32C42.1 30.6 41 29.4 39.6 29.9C40.5 29.9 41 30.8 40.6 31.6C40.1 32.6 38.8 32.7 37.8 32C36.4 31 34.4 30.5 32.6 30.7Z', lt(bc, 0.1), '', {sh:bD, k:0.3, ow:0.9, ln:false}));
+    else bL.push(pt('M32.6 30.6C30.6 30.6 28.2 31.4 26.4 33.6C28.8 33.6 30.8 33 32.6 32.2C34.6 33 36.6 33.4 38.8 33.2C37.4 31.2 34.8 30.6 32.6 30.6Z', lt(bc, 0.1), '', {sh:bD, k:0.3, ow:0.8, ln:false}));
     beardR = K('av-beard', render(bL));
     beardR.col = beardR.col.replace(/<\/g>$/, mouthLate + '</g>');
   } else if (spc === 'dwarf'){
-    headList.push(pt(el(34.6, 29.2, 1.9, 1.6), mix(sk, '#ff8a7a', 0.25), '', {sh:skD, hl:lt(sk, 0.5), k:0.3, ow:0.8, ln:false}));
+    headList.push(dwNose);
+  }
+  /* a saurian's beard: fleshy barbels, jaw frills and spikes, in the beard color */
+  if (scaly && beard !== 'none' && beard !== 'stubble'){
+    var ringC = tier >= 3 ? GOLD : tier === 2 ? '#d8dde8' : '#c98a4a', SJ = [[22.8, 30.4], [26, 32.6], [29.6, 34.2], [33.4, 35], [37.2, 35.1], [40.8, 34.3], [43.8, 32.8]];
+    var sq = {sh:bD, k:0.4, ow:0.9, hl:lt(bc, 0.35), ln:dk(bc, 0.5), lw:0.4}, sst = function(a, b, c2, d2, w0){ bL.push(pt(strand(a, b, c2, d2, w0 * 1.45, 0.35), bc, L('M' + f(a[0]) + ' ' + f(a[1] + 1) + 'C' + f(b[0]) + ' ' + f(b[1]) + ' ' + f(c2[0]) + ' ' + f(c2[1]) + ' ' + f(d2[0]) + ' ' + f(d2[1] - 0.8), lt(bc, 0.35), 0.4, op(0.7)), qc(sq))); };
+    if (beard === 'full' || beard === 'great') bL.push(pt(fringe(SJ, [-0.28, 1], beard === 'great' ? [4.4, 3.4, 5.2, 3.8] : [2.6, 2, 3, 2.2], 1.3), bc,
+      L('M24.4 32.2L23.6 34.6M28 34L27.4 36.6M31.6 35.2L31.2 38M35.4 35.6L35 38.4M39 35.4L38.6 37.8', bD, 0.45, op(0.8)), {sh:bD, k:0.45, ow:1, hl:lt(bc, 0.3), rim:0.5}));
+    if (beard === 'short') bL.push(pt(fringe([[32.2, 34.6], [34.6, 35.1], [37, 35.1], [39.4, 34.6], [41.4, 33.8]], [-0.35, 1], [2.2, 2.8, 2.4, 1.8], 1), bc, '', {sh:bD, k:0.4, ow:1, hl:lt(bc, 0.3)}));
+    if (beard === 'chops' || beard === 'great') bL.push(pt(fringe([[21.6, 26.6], [22.4, 29.4], [24, 32], [26.4, 33.8]], [-1, 0.5], [3, 3.4, 2.6], 1), bc, '', {sh:bD, k:0.4, ow:1, hl:lt(bc, 0.3)}));
+    if (beard === 'braid' || beard === 'fork'){ sst([33.4, 34.9], [33.2, 37.6], [31, 38.6], [31.2, 41.6], 1.6); sst([36.4, 35], [36.8, 37.4], [35, 38.8], [35.6, 41.2], 1.4); }
+    if (beard === 'fork'){ sst([30.6, 34.4], [30, 36.4], [28.2, 37.2], [28.2, 39.6], 1.2); sst([38.6, 34.8], [39.2, 36.8], [38, 38], [38.8, 40], 1.1); }
+    if (beard === 'goatee') sst([36.6, 34.9], [37, 37.8], [35.4, 40], [34.2, 42.4], 2.4);
+    if (beard === 'bgoatee'){ sst([36.4, 35], [36.8, 38], [35.2, 40.4], [35.8, 43.8], 1.7);
+      bL.push(pt(el(35.9, 40.4, 1.2, 1.2), ringC, C(35.6, 40.1, 0.35, '#fff', op(0.8)), {sh:dk(ringC, 0.35), hl:false, k:0.25, ow:0.8, ln:false})); }
+    if (beard === 'viking'){ sst([32.6, 34.8], [32.8, 38.4], [31.2, 41.2], [31.8, 45.2], 1.6); sst([35.8, 35], [36.2, 38.2], [35, 41], [35.8, 44.8], 1.4);
+      bL.push(pt(rr(30.8, 40.6, 2.3, 1.2, 0.4) + rr(34.4, 40.4, 2.1, 1.1, 0.4), ringC, '', {sh:dk(ringC, 0.35), hl:false, k:0.2, ow:0.7, ln:false})); }
+    if (beard === 'stache'){ bL.push(pt(strand([45.4, 29.4], [48.2, 29.8], [50.2, 32], [51, 35.6], 1.4, 0.3), bc, '', qc(sq)), pt(strand([43.6, 30.4], [45.2, 32.2], [45, 34.6], [46.8, 37.4], 1.3, 0.3), bc, '', qc(sq))); bx1 = Math.max(bx1, 51.4); bx1 = Math.max(bx1, 50.6); }
+    beardR = K('av-beard', render(bL));
+  }
+  /* a fox's beard: ruffs, tufts and whiskers, in fur blended toward the beard color */
+  if (furry && beard !== 'none' && beard !== 'stubble'){
+    var tB = mix(sk, bc, 0.62), tBd = dk(tB, 0.3), fq = {sh:tBd, k:0.5, ow:1, hl:lt(tB, 0.3), rim:0.5, g:1};
+    var FJ = [[21.8, 28.4], [23.4, 31.6], [26.2, 33.9], [29.6, 35.1], [33, 35.3], [36.6, 34.8], [39.8, 33.2], [42.2, 30.6], [43, 27.8]];
+    var fl = function(sx, sy){ return L('M' + f(sx) + ' ' + f(sy) + 'l-.4 1.6', tBd, 0.45, op(0.8)); };
+    if (beard === 'full') bL.push(pt(fringe(FJ, [0, 1], [3, 2.2, 3.4, 2.4], 1.6), tB, fl(26.4, 34.6) + fl(30.2, 35.8) + fl(34, 35.8) + fl(37.8, 35), qc(fq)));
+    if (beard === 'fork') bL.push(pt(fringe(FJ, [0, 1], [2.2, 2, 2.6, 6.4, 2.2, 6, 2.4, 2], 1.6), tB, fl(28, 36) + fl(35.6, 36), qc(fq)));
+    if (beard === 'great') bL.push(pt(fringe([[19.8, 23.8], [20.4, 28]].concat(FJ.slice(1, 8), [[43.6, 27.6], [44.2, 23.6]]), [0, 1], [4.4, 5.6, 6.8, 5.2, 7.4, 5.4, 6.8, 5.6, 4.4, 3.6], 3), tB,
+      fl(24, 37) + fl(28.4, 39.6) + fl(33, 40.4) + fl(37.4, 39.4) + L('M22.4 30C23.6 33 25.6 35.2 28.4 36.6', lt(tB, 0.35), 0.6, op(0.7)), qc(fq)));
+    if (beard === 'short') bL.push(pt(fringe([[28.6, 34.8], [30.8, 35.3], [33, 35.4], [35.2, 35.1], [37.2, 34.4]], [0, 1], [2.2, 3, 2.6, 2], 1.2), tB, '', qc(fq)));
+    if (beard === 'goatee') bL.push(pt('M29.8 34.2C30.4 37 31.8 39.6 33.6 41.4C34.2 39.8 34.6 38.4 35.6 37.8C35.8 36.4 36 35.2 36.4 34.2C34.4 35.2 31.8 35.2 29.8 34.2Z', tB, fl(33, 37), qc(fq)));
+    if (beard === 'chops'){ bL.push(pt(fringe([[21.4, 25.8], [21.8, 29.2], [23.2, 32.4], [25.4, 34.4]], [-0.9, 0.45], [2.8, 3.2, 2.4], 1.4), tB, '', qc(fq)));
+      bL.push(pt(fringe([[43.1, 25.6], [42.8, 28.8], [41.6, 31.8], [39.8, 33.8]], [0.9, 0.45], [2.4, 2.8, 2], 1.4), tB, '', qc(fq))); }
+    if (beard === 'braid' || beard === 'bgoatee'){
+      if (beard === 'braid') bL.push(pt(fringe(FJ.slice(2, 7), [0, 1], [2, 2.6, 2.2, 1.8], 1.3), tB, '', qc(fq)));
+      bL = bL.concat(plait(33, 36.6, 32.8, 43.2, 4, beard === 'braid' ? 1.4 : 1.15, tB));
+    }
+    if (beard === 'viking') bL = bL.concat(plait(30.2, 35.8, 29.6, 42.4, 4, 1.15, tB), plait(36, 35.4, 36.6, 42, 4, 1.15, tB));
+    if (beard === 'stache'){
+      var wc = lum(sk) > 70 ? '#5a4a58' : '#f3ece4';
+      bL.push(raw(L('M30 30.9Q26.2 29.4 22.4 30.2M30.2 31.8Q26.4 31.8 23 33.4M30.6 32.5Q27.6 33.8 25.4 36', wc, 0.42, op(0.85))
+        + L('M38.4 30.2Q41.8 28.8 45.4 29.4M38.6 31Q42 31.2 45 32.6M38.4 31.8Q40.8 33.2 42.6 35.2', wc, 0.4, op(0.85))));
+      bx0 = Math.min(bx0, 21.6); bx1 = Math.max(bx1, 46);
+    }
+    beardR = K('av-beard', render(bL));
   }
 
   /* ---------- tier headgear ---------- */
@@ -10588,6 +10958,9 @@ function avatarSvg(look, o){
        bare:1 the class's own face marks (the Recruit's plaster, the barbarian's and ranger's paint) are left
               off, for extras that paint or cover the face themselves.
        todo:1 a named placeholder that draws nothing yet (the catalog flags it; the creator hides it).
+       mat    optional: the extra's main material color (a hex it draws with). look.accC recolors that material and
+              its shades; left out, the framework picks the color that covers the most of the extra. Nothing
+              else is needed for an extra to be colorable; a set drawn later is colorable as soon as it draws.
 
      RULES FOR A GOOD EXTRA (the bar every set is held to)
        1. Fit the SPECIES. Read the anchors (A.eye, A.nose, A.mouth, A.ear, A.head, ...) instead of fixed
@@ -10612,7 +10985,9 @@ function avatarSvg(look, o){
           and tiers wearing those extras; LOOK at it zoomed in, then run verify.js, smoke.js, browsercheck.js.
 
      THE API (A). Head coordinates are the head's own frame (it tilts with av-head); body ones the body's.
-       A.T tier, A.cls, A.sp species, A.small, A.furry, A.scaly, A.hairy, A.beard ('none' or a style), A.hs hair
+       A.T tier, A.cls, A.sp species, A.fem (the female build), A.small, A.furry, A.scaly, A.hairy, A.beard ('none', or a beard that covers the
+       cheeks or chin: braid, full, fork, great, short, goatee, chops, bgoatee, viking; stubble and a handlebar count
+       as 'none' here, A.beardId is the real one), A.hs hair
        style index, A.pose; colors A.tc/A.tcD/A.tcL (class cloth), A.sk/A.skD/A.skL (skin), A.hc/A.hcD (hair).
        A.eye   [[x, y] near eye, [x, y] far eye]; A.eyeW / A.eyeH the eye's half width / height.
        A.brow  the brow line y.  A.nose [x, y] tip of the nose (saurian: the nostril near the snout tip).
@@ -10740,7 +11115,7 @@ function avatarSvg(look, o){
   }
   var AS = {back:[], nape:[], headBack:[], skin:'', face:'', wrap:[], beard:[], top:[], under:[], over:[], neck:[], shoulder:[]};
   var A = {
-    T:tier, cls:cls, sp:spc, pose:pose, small:small, furry:furry, scaly:scaly, hairy:hairy, beard:beard, hs:hs, trl:TRL,
+    T:tier, cls:cls, sp:spc, pose:pose, small:small, furry:furry, scaly:scaly, hairy:hairy, beard:beard === 'stubble' || beard === 'stache' ? 'none' : beard, beardId:beard, fem:fem, hs:hs, trl:TRL,
     tc:tc, tcD:tcD, tcL:tcL, sk:sk, skD:skD, skL:skL, hc:hc, hcD:hcD, deep:deep,
     eye:[[EX[0], EY], [EX[1], EY]], eyeW:2.1 * EW, eyeH:2.8 * EH, brow:EY - 4.6,
     nose:spc === 'orc' ? [34.8, 30.2] : spc === 'dwarf' ? [34.6, 29.2] : furry ? [35.6, 29.8] : scaly ? [45, 26.1] : [33.9, 30],
@@ -10808,6 +11183,79 @@ function avatarSvg(look, o){
     mail:function(y0, y1, c, x0, x1){ var s = ''; for (var y = y0; y <= y1; y += 1.25) s += 'M' + f(x0 == null ? 10 : x0) + ' ' + f(y) + 'H' + f(x1 == null ? 54 : x1); return '<path d="' + s + '" stroke="' + c + '" stroke-width=".55" stroke-dasharray=".8 .45" fill="none"/>'; }
   };
   if (AE.draw) AE.draw(A);
+
+  /* ---------- the extra's color (look.accC) ----------
+     Every set gets it for free: after the extra has drawn, its main material (the color that covers the
+     most of it, skin, hair, ink and white glints aside, or the entry's own mat) is found, and every color of
+     that material's family (the same hue, its shades and highlights) moves to the chosen color, keeping how
+     much lighter or darker each one was. Other materials (a gem, a leather strap) keep their colors. */
+  if (accC >= 0 && AE.draw) (function(){
+    var TGT = ACCC[accC][1];
+    function hsl(h){
+      var n = parseInt(h.length === 4 ? h.replace(/#(.)(.)(.)/, '#$1$1$2$2$3$3').slice(1) : h.slice(1), 16), r = (n >> 16 & 255) / 255, g = (n >> 8 & 255) / 255, b = (n & 255) / 255;
+      var M = Math.max(r, g, b), m = Math.min(r, g, b), l = (M + m) / 2, d = M - m, s = d ? d / (1 - Math.abs(2 * l - 1)) : 0, hu = 0;
+      if (d) hu = 60 * (M === r ? ((g - b) / d + 6) % 6 : M === g ? (b - r) / d + 2 : (r - g) / d + 4);
+      return [hu, Math.min(1, s), l, d];
+    }
+    function hex(q){
+      var c = (1 - Math.abs(2 * q[2] - 1)) * q[1], x = c * (1 - Math.abs((q[0] / 60) % 2 - 1)), m = q[2] - c / 2, k = Math.floor(((q[0] % 360) + 360) % 360 / 60);
+      var rgb = [[c, x, 0], [x, c, 0], [0, c, x], [0, x, c], [x, 0, c], [c, 0, x]][k];
+      return '#' + rgb.map(function(v){ v = Math.max(0, Math.min(255, Math.round((v + m) * 255))); return (v < 16 ? '0' : '') + v.toString(16); }).join('');
+    }
+    var SKIP = {}; [INK, '#fff', '#ffffff', '#fffaf0', sk, skD, skL, hc, hcD].forEach(function(c){ SKIP[String(c).toLowerCase()] = 1; });
+    var parts = [], strs = [];
+    ['back', 'nape', 'headBack', 'wrap', 'beard', 'top', 'under', 'over', 'neck', 'shoulder'].forEach(function(k){ AS[k].forEach(function(p){ if (!p) return; if (p.raw != null) strs.push(p); else parts.push(p); }); });
+    /* the main material: the most covered color, measured by each part's box */
+    function area(d){
+      /* the summed boxes of the subpaths (end and control points, arcs by their radii) */
+      var tk = d.match(/[a-zA-Z]|-?\d*\.?\d+(?:e-?\d+)?/g) || [], i = 0, cmd = '', x = 0, y = 0, sx = 0, sy = 0, tot = 0, bx = null;
+      function pt2(px, py){ if (!bx) bx = [px, px, py, py]; bx[0] = Math.min(bx[0], px); bx[1] = Math.max(bx[1], px); bx[2] = Math.min(bx[2], py); bx[3] = Math.max(bx[3], py); }
+      function flush(){ if (bx) tot += (bx[1] - bx[0]) * (bx[3] - bx[2]); bx = null; }
+      function n(){ return +tk[i++]; }
+      var NA = {M:2, L:2, T:2, H:1, V:1, C:6, S:4, Q:4, A:7, Z:0};
+      while (i < tk.length){
+        if (/[a-zA-Z]/.test(tk[i])) cmd = tk[i++];
+        var U = cmd.toUpperCase(), rel = cmd !== U, k = NA[U];
+        if (k == null) break;
+        if (U === 'Z'){ x = sx; y = sy; if (i < tk.length && !/[a-zA-Z]/.test(tk[i])) i++; continue; }
+        if (i + k > tk.length) break;
+        var ox = rel ? x : 0, oy = rel ? y : 0;
+        if (U === 'M'){ flush(); x = ox + n(); y = oy + n(); sx = x; sy = y; pt2(x, y); cmd = rel ? 'l' : 'L'; }
+        else if (U === 'H'){ x = ox + n(); pt2(x, y); }
+        else if (U === 'V'){ y = oy + n(); pt2(x, y); }
+        else if (U === 'A'){ var rx = n(), ry = n(); i += 3; var ex = ox + n(), ey = oy + n(); pt2(Math.min(x, ex) - rx * 0.3, Math.min(y, ey) - ry * 0.3); pt2(Math.max(x, ex) + rx * 0.3, Math.max(y, ey) + ry * 0.3); x = ex; y = ey; }
+        else { for (var j = 0; j < k; j += 2){ var px = ox + n(), py = oy + n(); pt2(px, py); if (j === k - 2){ x = px; y = py; } } }
+      }
+      flush();
+      return Math.max(0.5, Math.min(400, tot));
+    }
+    var tally = {}, main = typeof AE.mat === 'function' ? AE.mat(A) : AE.mat || '', best = 0;
+    if (!main) parts.forEach(function(p){ var c = String(p.c).toLowerCase(); if (!/^#[0-9a-f]{3,6}$/.test(c) || SKIP[c]) return; tally[c] = (tally[c] || 0) + area(p.d); if (tally[c] > best){ best = tally[c]; main = c; } });
+    /* an extra drawn only as marks (paint, runes as strings): its most used color */
+    if (!main) [AS.skin, AS.face].concat(strs.map(function(p){ return p.raw; })).join(' ').replace(/#([0-9a-fA-F]{6})(?![\w-])/g, function(m){ var c = m.toLowerCase(); if (!SKIP[c]){ tally[c] = (tally[c] || 0) + 1; if (tally[c] > best){ best = tally[c]; main = c; } } return m; });
+    if (!main) return;
+    main = String(main).toLowerCase(); SKIP[main] = 0;
+    var MH = hsl(main), TH = hsl(TGT), mChrom = MH[3] > 0.1, cache = {};
+    function mapC(c){
+      var lc = String(c).toLowerCase();
+      if (cache[lc] != null) return cache[lc];
+      var out = c;
+      if (!SKIP[lc] && /^#([0-9a-f]{6}|[0-9a-f]{3})$/.test(lc)){
+        var X = hsl(lc), dh = Math.abs(((X[0] - MH[0]) % 360 + 540) % 360 - 180), fam = lc === main
+          || (mChrom ? X[3] > 0.06 && dh < 22 && Math.abs(X[2] - MH[2]) < 0.34 : X[3] < 0.14 && Math.abs(X[2] - MH[2]) < 0.3);
+        if (fam){
+          var l = X[2] <= MH[2] ? TH[2] * (MH[2] ? X[2] / MH[2] : 1) : TH[2] + (1 - TH[2]) * (X[2] - MH[2]) / Math.max(0.01, 1 - MH[2]);
+          var s = TH[3] < 0.1 ? TH[1] : mChrom ? Math.min(1, TH[1] * X[1] / Math.max(0.05, MH[1])) : TH[1];
+          out = hex([TH[0] + (mChrom && TH[3] >= 0.1 ? ((X[0] - MH[0]) % 360 + 540) % 360 - 180 : 0), s, Math.max(0.03, Math.min(0.98, l))]);
+        }
+      }
+      return (cache[lc] = out);
+    }
+    function mapS(str){ return typeof str === 'string' ? str.replace(/#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})(?![\w-])/g, function(m){ return mapC(m); }) : str; }
+    parts.forEach(function(p){ p.c = mapC(p.c); ['sh', 'hl', 'ln'].forEach(function(k){ if (typeof p[k] === 'string' && p[k]) p[k] = mapC(p[k]); }); p.x = mapS(p.x); p.top = mapS(p.top); });
+    strs.forEach(function(p){ p.raw = mapS(p.raw); });
+    AS.skin = mapS(AS.skin); AS.face = mapS(AS.face);
+  })();
 
   /* ---------- assemble the head with the extras in their slots ---------- */
   headPart.x = headPre + AS.skin + face + AS.face;
@@ -10911,7 +11359,7 @@ function avatarSvg(look, o){
         A.grow(R[0] - 4.2);
       }},
       /* 5 (was Flower) a tourney rose tucked at the temple, or pinned to the helm */
-      {name:'Tourney rose', draw:function(A){
+      {name:'Tourney rose', mat:function(A){ return A.T === 0 ? '#f07a9a' : '#d8324a'; }, draw:function(A){
         var hm = A.helm, onH = hm.cover || hm.kind === 'hood', p = onH ? [hm.sides[0][0] + 1.2, hm.sides[0][1] + 0.4] : [A.temple[0][0] - (A.furry ? -0.6 : 0.2), A.temple[0][1] + 0.4];
         var x = p[0], y = p[1], rc = A.T === 0 ? '#f07a9a' : '#d8324a', rd = dk(rc, 0.35), lf = '#3f8a4a';
         var s = [];
@@ -11034,7 +11482,7 @@ function avatarSvg(look, o){
         A.add('neck', A.p(A.scallop(x + 0.4, y + 3.2, 1.9, 7, 0.08), wc, gly('{ }', x + 0.4, y + 3.2, 1.5, wd, {m:'cut', w:0.3, lc:lt(wc, 0.5)}), {sh:wd, hl:lt(wc, 0.4), k:0.3, ow:0.8, m:A.T >= 3 ? 1 : 0, top:A.glow(x + 0.4, y + 3.2, 3, GOLD)}));
       }},
       /* 14 a back pennant: the house colors on a pole behind the shoulders */
-      {name:'Back pennant', view:'bust', draw:function(A){
+      {name:'Back pennant', view:'bust', mat:function(A){ return A.tc; }, draw:function(A){
         var c = A.tc, cd = A.tcD, fc = fav(A), pole = A.T >= 2 ? A.metal() : '#8a5a33';
         var rot = A.trl ? 'rotate(' + f(A.trl * 5) + ' 20.8 11)' : '';
         A.add('back', A.p(cap(23.4, 46, 0.55, 20.6, 9.4, 0.5), pole, '', {sh:dk(pole, 0.3), k:0.2, ow:0.7, hl:false, m:A.T >= 2 ? 1 : 0}));
@@ -11058,51 +11506,832 @@ function avatarSvg(look, o){
     ]};
   }
 
-  /* ---------- extras: the Ranger set (indexes in acc_core.js) ----------
-     PLACEHOLDERS: the names are proposals; each entry draws nothing until it has a draw(A) (see the authoring
-     guide at the top of acc_core.js, and acc_knight.js for finished examples). Keep exactly 15 entries in this
-     order once they ship: a saved index must never move. Remove todo:1 when an entry draws. */
+  /* ---------- extras: the Ranger set (woodland scouts: feathers, leaves, antler, bone and fang) ----------
+     Indexes 16..30 (see acc_core.js). Keep exactly 15 entries in this order: a saved index must never move. */
   function accSetRanger(){
+    /* a point on a cubic */
+    function bz(p0, p1, p2, p3, u){
+      var v = 1 - u;
+      return [v * v * v * p0[0] + 3 * v * v * u * p1[0] + 3 * v * u * u * p2[0] + u * u * u * p3[0], v * v * v * p0[1] + 3 * v * v * u * p1[1] + 3 * v * u * u * p2[1] + u * u * u * p3[1]];
+    }
+    /* the head gear an extra must sit ON (a covering helm or the ranger's hood) */
+    function onH(A){ return A.helm.cover || A.helm.kind === 'hood'; }
+    /* the slot for a head extra: over the tier gear when that gear sits on the hair, under it otherwise */
+    function hSlot(A){ var k = A.helm.kind; return onH(A) || k === 'band' || k === 'circlet' || k === 'crown' || k === 'goggles' ? 'over' : 'under'; }
+    /* small fittings by tier: carved bone, bronze, steel, steel (with gold trim), gold -> [color, shade, metal] */
+    function fit(A){ var T = A.T; return T >= 4 ? [GOLD, DGOLD, 1] : T >= 2 ? [STL, STLD, 1] : T === 1 ? [BRZ, dk(BRZ, 0.3), 1] : [BONE, BONED, 0]; }
+    /* an almond leaf from its stem (x0, y0) to its tip (x1, y1), w wide; bend pushes the belly to one side */
+    function leafTo(x0, y0, x1, y1, w, bend){
+      var dx = x1 - x0, dy = y1 - y0, q = Math.sqrt(dx * dx + dy * dy) || 1, nx = -dy / q, ny = dx / q, b = bend || 0;
+      function P2(u, s){ return f(x0 + dx * u + nx * (w * s + b)) + ' ' + f(y0 + dy * u + ny * (w * s + b)); }
+      return 'M' + f(x0) + ' ' + f(y0) + 'C' + P2(0.18, 0.78) + ' ' + P2(0.7, 0.62) + ' ' + f(x1) + ' ' + f(y1) + 'C' + P2(0.7, -0.62) + ' ' + P2(0.18, -0.78) + ' ' + f(x0) + ' ' + f(y0) + 'Z';
+    }
+    function leafP(A, x0, y0, x1, y1, w, c, q){
+      var z = {sh:dk(c, 0.3), hl:lt(c, 0.35), k:0.3, ow:0.75, ln:false};
+      for (var k in q) z[k] = q[k];
+      var vein = L('M' + f(x0) + ' ' + f(y0) + 'L' + f(x0 + (x1 - x0) * 0.82) + ' ' + f(y0 + (y1 - y0) * 0.82), z.vein || dk(c, 0.38), z.vw || 0.35, op(0.9));
+      return A.p(leafTo(x0, y0, x1, y1, w, z.bend), c, vein, z);
+    }
+    /* a feather hanging from its quill at (x, y): rot turns it (0 hangs straight down, + swings it to the left) */
+    function feather(A, x, y, h, w, rot, c, cd, bar, tip, q){
+      w = w / 2;
+      var d = 'M0 0C' + f(w * 1.2) + ' ' + f(h * 0.12) + ' ' + f(w * 1.3) + ' ' + f(h * 0.62) + ' ' + f(w * 0.2) + ' ' + f(h) + 'C' + f(-w * 0.9) + ' ' + f(h * 0.82) + ' ' + f(-w * 1.2) + ' ' + f(h * 0.3) + ' 0 0Z';
+      var det = (tip ? C(w * 0.2, h, w * 1.05, tip) : '') + L('M0 .4Q' + f(w * 0.12) + ' ' + f(h * 0.5) + ' ' + f(w * 0.16) + ' ' + f(h * 0.93), lt(c, 0.55), 0.3, op(0.85));
+      if (bar) for (var k = 1; k <= 3; k++){ var yy = h * (0.2 + k * 0.17); det += L('M' + f(-w * 1.3) + ' ' + f(yy + 0.5) + 'Q0 ' + f(yy - 0.1) + ' ' + f(w * 1.3) + ' ' + f(yy - 0.5), bar, 0.55, op(0.85)); }
+      if (!A.small) det += L('M' + f(-w * 1.1) + ' ' + f(h * 0.42) + 'l' + f(w * 0.7) + ' .5M' + f(w * 1.2) + ' ' + f(h * 0.3) + 'l' + f(-w * 0.6) + ' .5', dk(c, 0.45), 0.3, op(0.8));
+      var z = {sh:cd, hl:lt(c, 0.3), k:0.35, ow:0.75, rim:0.4, ln:false, t:'translate(' + f(x) + ' ' + f(y) + ') rotate(' + f(rot) + ')', ra:rot};
+      for (var j in q) z[j] = q[j];
+      return A.p(d, c, det, z);
+    }
+    /* the torso width follows the body (as the knight's gorget does) */
+    function wt(A){ var WS = A.WF / 1.1; return 'matrix(' + f(WS) + ' 0 0 1 ' + f(32 - 32 * WS) + ' 0)'; }
     return {id:'ranger', name:'Ranger', items:[
-      {name:'Feather braid', todo:1},
-      {name:'Hood clasp', todo:1},
-      {name:'Leaf war paint', todo:1},
-      {name:'Hawk-bone charm', todo:1},
-      {name:'Antler circlet', todo:1},
-      {name:'Wolf-fang earring', todo:1},
-      {name:'Twig camouflage', todo:1},
-      {name:'Scout spyglass', todo:1},
-      {name:'Arrow behind ear', todo:1},
-      {name:'Moss collar', todo:1},
-      {name:'Pathfinder compass', todo:1},
-      {name:'Owl-feather crest', todo:1},
-      {name:'Tracker mask', todo:1},
-      {name:'Fox-tail trophy', todo:1},
-      {name:'Stag pauldron', todo:1}
+      /* 16 a braided side lock at the near temple, a bead and two feathers tied at its end; under a helm or a
+         hood it trails out from under the near edge */
+      {name:'Feather braid', draw:function(A){
+        var bc = A.scaly ? '#8a5a33' : A.hc, bd = A.scaly ? '#5c392a' : A.hcD, cov = A.helm.cover;
+        var x0 = A.scaly ? 23.6 : 23.8, y0 = A.scaly ? 21.8 : 21.8, drop = cov && A.helm.kind === 'helm' ? 1.6 : 0;
+        var p0 = [x0, y0], p1 = [22.4, 25], p2 = [21.4, 29], p3 = [21.8, 33 + drop];
+        var body = A.ribbon(p0, p1, p2, p3, 2.9, 2.2, 0.3);
+        var tex = '';
+        for (var k = 1; k < 9; k++){
+          var u = k / 9, c0 = bz(p0, p1, p2, p3, u), c1 = bz(p0, p1, p2, p3, u + 0.02), tx = c1[0] - c0[0], ty = c1[1] - c0[1], tq = Math.sqrt(tx * tx + ty * ty) || 1, nx = -ty / tq, ny = tx / tq, hw = (2.9 - 0.7 * u) / 2;
+          tex += 'M' + f(c0[0] + nx * hw) + ' ' + f(c0[1] + ny * hw) + 'L' + f(c0[0] + tx / tq * 0.7) + ' ' + f(c0[1] + ty / tq * 0.7) + 'L' + f(c0[0] - nx * hw) + ' ' + f(c0[1] - ny * hw);
+        }
+        A.add('under', A.p(body, bc, L(tex, bd, 0.5, op(0.9)), {sh:bd, hl:lt(bc, 0.3), k:0.45, ow:0.9, rim:0.5, ln:false}));
+        var m = fit(A), bx = p3[0], by = p3[1] + 0.4;
+        /* the feathers: a barred hawk feather and a dyed one (teal from Squire, gold at Legend) */
+        var fc1 = A.T >= 4 ? GOLD : '#a8703e', fd1 = A.T >= 4 ? DGOLD : '#6e4424', fc2 = A.T >= 4 ? '#fff1c8' : A.T >= 1 ? '#2fb3a4' : '#efe3c6', fd2 = A.T >= 4 ? DGOLD : A.T >= 1 ? '#1d7a70' : '#b8a47e';
+        var tipC = A.T >= 3 ? GOLD : '#3a2a33';
+        A.add('under', feather(A, bx + 0.4, by + 1.4, 7.6, 3.2, 30, fc2, fd2, '', A.T >= 3 ? GOLD : '#5c392a'));
+        A.add('under', feather(A, bx - 0.2, by + 1.2, 8.8, 3.4, -8, fc1, fd1, A.T >= 4 ? DGOLD : '#5c392a', tipC === '#3a2a33' ? '#f3ead2' : tipC, {rim:0.6}));
+        /* the tie and the bead */
+        A.add('under', A.p(rr(bx - 1.3, by - 0.9, 2.6, 1.2, 0.5), A.T >= 1 ? '#6e4424' : '#b08a52', '', {sh:'#4a2e1e', k:0.2, ow:0.7, hl:false}));
+        A.add('under', A.p(el(bx, by + 1.2, 1.35, 1.25), m[0], A.T >= 3 ? L('M' + f(bx - 1.2) + ' ' + f(by + 1.3) + 'H' + f(bx + 1.2), A.T >= 4 ? '#fff4c8' : GOLD, 0.45) : A.T === 0 ? L('M' + f(bx - 0.7) + ' ' + f(by + 0.6) + 'l1.3 1.2', BONED, 0.35) : '',
+          {sh:m[1], hl:lt(m[0], 0.5), k:0.25, ow:0.8, m:m[2], top:A.T >= 4 ? C(bx, by + 1.2, 0.5, EMR) + A.glow(bx, by + 1.2, 2.8, EMR) : ''}));
+        A.grow(null, bx - 6);
+      }},
+      /* 17 a mantle of shingled leaves over the shoulders, pinned by a leaf brooch (to one side of a beard) */
+      {name:'Leaf mantle', view:'bust', draw:function(A){
+        var c = A.far(['#4f8f45', '#c8702e', '#8a9a34']), cd = dk(c, 0.34), c2 = dk(c, 0.14), T = A.T, tr = wt(A);
+        var vein = T >= 3 ? (T >= 4 ? '#fff4c8' : GOLD) : dk(c, 0.42);
+        A.add('neck', A.p('M23.2 35.2C27.2 33.4 37.4 33.4 41.2 35C42.8 36.4 43.6 38 43.8 39.8L20.8 40C21 38 22 36.4 23.2 35.2Z', c2, '', {sh:cd, k:0.4, ow:1, rim:0.6, t:tr}));
+        /* the upper row (behind), then the lower row (in front), leaf tips pointing down and out */
+        var row = function(y, n, len, w, col, sp){
+          for (var i = 0; i < n; i++){
+            var u = i / (n - 1), x = 21.8 + u * 21, a = (u - 0.5) * sp, yy = y - Math.sin(u * Math.PI) * 1.4;
+            var tx = x + Math.sin(a) * len, ty = yy + Math.cos(a) * len;
+            A.add('neck', leafP(A, x, yy, tx, ty, w, col, {sh:cd, vein:vein, vw:T >= 3 ? 0.4 : 0.35, rim:u > 0.6 ? 0.5 : 0, t:tr, bend:(u - 0.5) * 0.4}));
+          }
+        };
+        row(36.4, 6, 5.2, 2.6, c2, 1.5);
+        row(37.4, 7, 5.4, 2.8, c, 1.3);
+        if (T >= 4) A.add('neck', leafP(A, 32.2, 37.4, 32.6, 42.8, 2.8, GOLD, {sh:DGOLD, vein:DGOLD, t:tr}));
+        /* more leaves over the front shoulder (they ride on it, over any pauldron) */
+        var st = 'translate(' + f(A.sh[0] - 39.5) + ' 0)';
+        [[36.2, 33.6, 34.8, 38.8, c2], [40.6, 33, 41.4, 38.2, c2], [38.4, 33.6, 38, 39.4, c], [42.6, 33.8, 45, 38.4, c]].forEach(function(l){
+          A.add('shoulder', leafP(A, l[0], l[1], l[2], l[3], 2.9, l[4], {sh:cd, vein:vein, vw:T >= 3 ? 0.4 : 0.35, rim:0.5, t:st}));
+        });
+        /* the brooch: a wooden toggle (Recruit), then a metal leaf by tier */
+        var bd = A.beard !== 'none', bx = bd ? 25 : 32.4, by = bd ? 37.4 : 36.6, m = fit(A);
+        if (T === 0){
+          A.add('neck', A.p(cap(bx - 2.2, by, 0.7, bx + 2.2, by, 0.7), '#8a5a33', L('M' + f(bx - 1.4) + ' ' + f(by - 0.2) + 'H' + f(bx + 1.2), '#b07a45', 0.35), {sh:'#5c392a', k:0.25, ow:0.8, t:tr}));
+          A.add('neck', L('M' + f(bx - 0.6) + ' ' + f(by + 0.5) + 'q.6 1 1.4 0', '#c9a36b', 0.45, ' transform="' + tr + '"'));
+        } else {
+          A.add('neck', A.p(leafTo(bx - 2.4, by + 1, bx + 2.6, by - 1, 1.9), m[0], L('M' + f(bx - 2) + ' ' + f(by + 0.8) + 'L' + f(bx + 1.8) + ' ' + f(by - 0.6), T === 3 ? GOLD : dk(m[0], 0.35), 0.4) + (T >= 2 ? C(bx, by, 0.6, T >= 4 ? EMR : '#2fb3a4') : ''),
+            {sh:m[1], hl:lt(m[0], 0.5), k:0.3, ow:0.85, m:1, t:tr, top:A.glow(bx, by, 3, EMR)}));
+        }
+      }},
+      /* 18 leaf war paint: a leaf on each cheekbone, dots by tier, a stripe up a saurian's snout */
+      {name:'Leaf war paint', bare:1, draw:function(A){
+        var T = A.T, sv = parseInt(A.sk.slice(1), 16), pc = ((sv >> 8) & 255) > ((sv >> 16) & 255) + 8 ? '#f3ead2' : A.far(['#2e7d4f', '#f3ead2'], A.sk), pd = dk(pc, 0.3), s = '';
+        var e0 = A.eye[0], e1 = A.eye[1], y = e0[1], h = A.eyeH, dw = A.beard !== 'none';
+        var ol = T >= 3 ? (T >= 4 ? '#fff4c8' : GOLD) : '';
+        var lf = function(x0, y0, x1, y1, w){
+          var d = leafTo(x0, y0, x1, y1, w);
+          s += (ol ? P(d, 'none', ' stroke="' + ol + '" stroke-width=".9" stroke-linejoin="round"') : '') + P(d, pc, op(0.92));
+          if (T >= 1) s += L('M' + f(x0) + ' ' + f(y0) + 'L' + f(x0 + (x1 - x0) * 0.8) + ' ' + f(y0 + (y1 - y0) * 0.8), pd, 0.35, op(0.8));
+        };
+        var dot = function(x, yy, r){ s += C(x, yy, r, T >= 3 ? GOLD : pc, op(0.92)); };
+        if (dw){
+          /* the beard hides the cheeks: the leaves rise from the outer corners of the eyes */
+          lf(e0[0] - 2, y + 1.6, e0[0] - 5.8, y - 4, 2.6); lf(e1[0] + 1.8, y + 1.4, e1[0] + 4.4, y - 3, 2);
+          if (T >= 1){ dot(e0[0] - 1.2, A.brow - 1.6, 0.55); dot(e0[0] + 0.6, A.brow - 2, 0.5); }
+          if (T >= 2) lf(33, A.brow - 0.2, 33.2, A.brow - 4.4, 1.7);
+        } else if (A.scaly){
+          lf(e0[0] + 1.2, y + h + 1, e0[0] - 5, y + h - 0.8, 2.9); lf(e1[0] - 0.8, y + h + 0.9, e1[0] + 4, y + h - 1, 2.3);
+          if (T >= 1){ dot(e0[0] - 1.6, y + h + 2.6, 0.55); dot(e0[0] + 0.6, y + h + 2.8, 0.5); }
+          if (T >= 2) s += L('M40.6 20.2Q43 21 45 23.2', T >= 3 ? GOLD : pc, 1.1, op(0.92)) + C(46, 24.4, 0.55, T >= 3 ? GOLD : pc);
+        } else {
+          var up = A.furry ? -0.4 : 0;
+          lf(e0[0] + 1.2, y + h + 1.3 + up, e0[0] - 5, y + h - 0.4 + up, 2.9); lf(e1[0] - 1, y + h + 1.2 + up, e1[0] + 3.8, y + h - 0.4 + up, 2.3);
+          if (T >= 1){ dot(e0[0] - 2, y + h + 2.8 + up, 0.55); dot(e0[0] + 0.2, y + h + 3.1 + up, 0.5); }
+          if (T >= 2){ var nb = (e0[0] + e1[0]) / 2 + 0.2; dot(nb - 1, y - 0.4, 0.45); dot(nb + 0.2, y - 0.8, 0.5); dot(nb + 1.4, y - 0.4, 0.45); }
+        }
+        if (T >= 4) s += A.glow(e0[0] - 2, y + h + 0.6, 3.4, EMR);
+        A.add('skin', s);
+      }},
+      /* 19 a talon necklace: hawk claws and beads on a cord (worn over a dwarf's beard) */
+      {name:'Talon necklace', view:'bust', draw:function(A){
+        var T = A.T, bd = A.beard !== 'none', sl = bd ? 'beard' : 'neck', tr = bd ? '' : wt(A), dy = bd ? 3.2 : 0, m = fit(A);
+        var cc = T >= 3 ? '#3a2a33' : '#6e4424';
+        var cord = 'M' + (bd ? '26.4 ' + f(37.4) : '25.6 35.2') + 'Q' + f(32.2) + ' ' + f(41.4 + dy) + ' ' + (bd ? '38.6 37' : '38.8 35');
+        A.add(sl, raw(G(tr, L(cord, INK, 1.3) + L(cord, cc, 0.6))));
+        var claw = T >= 4 ? GOLD : BONE, clawD = T >= 4 ? DGOLD : BONED;
+        var tal = function(x, y, s, r){
+          var t2 = 'translate(' + f(x) + ' ' + f(y) + ') rotate(' + r + ') scale(' + s + ')' + (tr ? '' : '');
+          A.add(sl, A.p('M-1 0C-1.2 2 -0.4 3.8 1.2 4.8C0.6 3.4 0.6 1.8 1 0Z', claw, L('M-.4 .6C-.5 2 0 3.2 .8 4.1', lt(claw, 0.5), 0.35), {sh:clawD, hl:false, k:0.25, ow:0.75, ln:false, t:(tr ? tr + ' ' : '') + t2, ra:r, m:T >= 4 ? 1 : 0}));
+          A.add(sl, A.p(rr(-1.2, -0.9, 2.4, 1.2, 0.4), T >= 1 ? m[0] : '#6e4424', T >= 3 ? L('M-1.1 -.3H1.1', GOLD, 0.4) : '', {sh:T >= 1 ? m[1] : '#4a2e1e', k:0.2, ow:0.7, hl:false, m:m[2], t:(tr ? tr + ' ' : '') + t2, ra:r}));
+        };
+        var cy = 40.4 + dy;
+        tal(28.4, 38.4 + dy * 0.8, 0.95, 24); tal(36.2, 38.2 + dy * 0.8, 0.95, -20);
+        [[26.8, 36.9 + dy * 0.5], [30.4, 39.9 + dy * 0.9], [34.2, 39.8 + dy * 0.9], [37.6, 36.7 + dy * 0.5]].forEach(function(b, i){
+          var bc = T >= 3 ? (i % 2 ? GOLD : '#2fb3a4') : T >= 1 ? (i % 2 ? m[0] : '#2fb3a4') : (i % 2 ? '#b07a45' : '#c0532e');
+          A.add(sl, A.p(el(b[0], b[1], 0.95, 0.95), bc, '', {sh:dk(bc, 0.3), k:0.2, ow:0.6, hl:lt(bc, 0.5), t:tr}));
+        });
+        tal(32.2, cy, 1.4, 4);
+        if (T >= 2) A.add(sl, A.p(el(32.2, cy - 0.1, 0.8, 0.8), T >= 4 ? EMR : '#2fb3a4', '', {k:0.15, ow:0.55, hl:'#fff', t:tr, top:A.glow(32.2, cy + 2, 3.2, EMR)}));
+      }},
+      /* 20 an antler circlet: a band of twined wood (metal by tier) with a pair of antlers; on a helm or hood
+         the band goes round it and the antlers rise from its sides */
+      {name:'Antler circlet', draw:function(A){
+        var hm = A.helm, T = A.T, R, h = onH(A);
+        if (h) R = hm.ring.slice(); else if (hm.kind === 'goggles') R = [15.4, 10.4, 10.2, 3.6, 1.8]; else if (hm.ring) R = hm.ring.slice(); else R = A.headRing.slice();
+        R[4] = 2;
+        var bc = T >= 4 ? GOLD : T >= 2 ? STL : T === 1 ? BRZ : '#8a5a33', bcd = T >= 4 ? DGOLD : T >= 2 ? STLD : T === 1 ? dk(BRZ, 0.3) : '#5c392a';
+        var grain = T === 0 ? L(A.ring(R[0] + 0.7, R[1] - 0.3, R[2] - 0.3, R[3], 0.01).replace(/L.*$/, ''), '#b07a45', 0.35, ' stroke-dasharray="1.4 .8"') : '';
+        var band = A.p(A.ring(R[0], R[1], R[2], R[3], R[4]), bc, grain + (T >= 3 ? L(A.ring(R[0] + R[4] * 0.5, R[1] - 0.3, R[2] - 0.3, R[3], 0.01).replace(/L.*$/, ''), T >= 4 ? '#fff4c8' : GOLD, 0.4, op(0.9)) : ''),
+          {sh:bcd, hl:lt(bc, 0.45), k:0.35, ow:0.9, m:T >= 1 ? 1 : 0, rim:0.6});
+        var sl = hSlot(A);
+        /* the antlers: a curved beam with two tines, in local frame (base at 0 0, growing up and out to -x) */
+        var ac = T >= 4 ? GOLD : '#ecdcb8', ad = T >= 4 ? DGOLD : '#b39468';
+        var ant = A.ribbon([0, 0], [-1.4, -3.2], [-5.4, -5.2], [-6.6, -10.6], 1.9, 0.6, 0.2) + A.ribbon([-2.4, -3.4], [-2.8, -5], [-2.2, -6.6], [-1.4, -8], 1.2, 0.45)
+          + A.ribbon([-5, -6], [-5.2, -7.8], [-4.6, -9.4], [-3.8, -10.8], 1.1, 0.45) + A.ribbon([-3.8, -4.6], [-5.2, -4.6], [-6.8, -4.2], [-8, -3.2], 1, 0.4);
+        var adet = L('M-.4 -.8C-1.8 -3.6 -4.8 -5.6 -6 -9.8', lt(ac, 0.5), 0.4, op(0.8)) + (T === 3 ? C(-6.6, -10.6, 0.9, GOLD) + C(-1.4, -8, 0.7, GOLD) + C(-3.8, -10.8, 0.7, GOLD) + C(-8, -3.2, 0.7, GOLD) : '')
+          + (T === 0 ? L('M-.8 -1.8l.8 -.3M-1.8 -3.2l.8 -.2', ad, 0.35) : '');
+        var tf = A.furry || hm.horns, t0 = tf ? 0.3 : h ? 0.12 : 0.15, t1 = 1 - t0, pN = A.ringAt(R, t0), pF = A.ringAt(R, t1), sc = tf ? 0.78 : 0.95;
+        var aq = function(p, far){ var r = far ? 16 : -14, s = far ? sc * 0.86 : sc; return {sh:ad, hl:lt(ac, 0.4), k:0.45, ow:0.9, rim:far ? 0 : 0.5, ln:false, m:T >= 4 ? 1 : 0, t:'translate(' + f(p[0]) + ' ' + f(p[1] + 0.6) + ') rotate(' + r + ') scale(' + f(far ? -s : s) + ' ' + f(s) + ')', ra:r}; };
+        A.add('headBack', A.p(ant, dk(ac, 0.06), adet, aq(pF, 1)));
+        A.add(sl, A.p(ant, ac, adet, aq(pN, 0)));
+        if (h) A.add('over', A.clipHelm([band])); else A.add(sl, band);
+        /* the front: two leaves (Recruit) or a boss by tier */
+        var mid = A.ringAt(R, 0.52), mx2 = mid[0], my = mid[1] + R[4] * 0.5;
+        if (T === 0){ A.add(sl, leafP(A, mx2, my, mx2 - 2.8, my - 2.6, 1.6, '#4f8f45', {})); A.add(sl, leafP(A, mx2, my, mx2 + 2.6, my - 2.8, 1.6, '#6fa84a', {})); A.add(sl, A.p(el(mx2, my, 0.8, 0.8), '#c0532e', '', {k:0.2, ow:0.6})); }
+        else A.add(sl, A.p(el(mx2, my, 1.3, 1.2), T >= 3 ? GOLD : bc, T >= 2 ? C(mx2, my, 0.6, T >= 3 ? EMR : '#2fb3a4') : '', {sh:T >= 3 ? DGOLD : bcd, k:0.25, ow:0.8, m:1, hl:false, top:A.glow(mx2, my, 3, EMR)}));
+        A.grow(Math.min(pN[1], pF[1]) - 11 * sc, pN[0] - 9.4 * sc, pF[0] + 8.4 * sc);
+      }},
+      /* 21 a wolf fang with a fletching on a ring through the near ear (a fox's ear edge, a saurian's ear ridge) */
+      {name:'Fang earring', draw:function(A){
+        var e = A.ear, k = e.kind, T = A.T, x, y;
+        if (k === 'round'){ x = 22; y = 30.8; }
+        else if (k === 'long'){ x = 21.4; y = 30.8; }
+        else if (k === 'point'){ x = 20.2; y = 29.4; }
+        else if (k === 'fox'){ x = e.mid[0] - 0.2; y = e.mid[1] + 0.8; }
+        else { x = 23.2; y = 29.8; }
+        if (A.helm.cover && A.helm.kind === 'helm' && k !== 'fox') y = Math.max(y, 31.4);
+        var sl = k === 'fox' ? 'over' : 'under', m = fit(A), rc = T === 0 ? '#6e4424' : m[0], rd = T === 0 ? '#4a2e1e' : m[1];
+        /* extra rings up an orc's or elf's ear from Veteran */
+        if (T >= 2 && (k === 'point' || k === 'long')){
+          var rp = k === 'point' ? [[18.4, 26.4], [16.6, 24.4]] : [[19.6, 26.4], [17.4, 23.6]];
+          rp.forEach(function(p){ A.add(sl, A.p(el(p[0], p[1], 0.85, 0.85) + A.elR(p[0], p[1], 0.4, 0.4), rc, '', {sh:rd, k:0.2, ow:0.6, hl:lt(rc, 0.5), m:1})); });
+        }
+        var fc = T >= 4 ? GOLD : T >= 1 ? '#c0532e' : '#efe3c6', fd = T >= 4 ? DGOLD : T >= 1 ? '#8a3a22' : '#b8a47e';
+        A.add(sl, feather(A, x - 0.6, y + 0.9, 5.8, 2.6, 26, fc, fd, '', T >= 3 ? GOLD : '#3a2a33'));
+        var fang = T >= 4 ? '#fff4c8' : '#fbf4e2';
+        A.add(sl, A.p('M-1 0C-1 2.2 -.4 4 .7 5.2C1 3.6 1.1 1.8 1 0Z', fang, L('M-.4 .8C-.4 2.4 0 3.6 .5 4.4', '#fff', 0.35, op(0.9)), {sh:'#cdbf9e', hl:false, k:0.25, ow:0.8, rim:0.5, ln:false, t:'translate(' + f(x + 0.4) + ' ' + f(y + 1.4) + ') rotate(-8) scale(1.25)', ra:-8}));
+        A.add(sl, A.p(rr(x - 0.8, y + 0.9, 2.4, 1.1, 0.4), T >= 3 ? GOLD : m[0], '', {sh:T >= 3 ? DGOLD : m[1], k:0.2, ow:0.65, hl:false, m:m[2]}));
+        A.add(sl, A.p(el(x, y, 1.15, 1.15) + A.elR(x, y, 0.55, 0.55), rc, '', {sh:rd, k:0.2, ow:0.7, hl:lt(rc, 0.5), m:T >= 1 ? 1 : 0, top:A.glow(x + 0.4, y + 3, 2.6, GOLD)}));
+        if (k === 'fox') A.grow(null, x - 3);
+      }},
+      /* 22 leaf camouflage: sprigs of leaves in a cord round the head, or round the helm / hood */
+      {name:'Leaf camo', draw:function(A){
+        var hm = A.helm, T = A.T, h = onH(A), R;
+        if (h) R = hm.ring.slice(); else if (hm.kind === 'goggles') R = [15.4, 10.4, 10.2, 3.6, 1.8]; else if (hm.ring) R = hm.ring.slice(); else R = A.headRing.slice();
+        R[4] = 1.3; R[0] += 0.6;
+        var sl = hSlot(A), cc = T >= 4 ? GOLD : T >= 2 ? STL : T === 1 ? BRZ : '#b08a52', ccd = T >= 4 ? DGOLD : T >= 2 ? STLD : T === 1 ? dk(BRZ, 0.3) : '#6e4424';
+        var band = A.p(A.ring(R[0], R[1], R[2], R[3], R[4]), cc, T === 0 ? L(A.ring(R[0] + 0.6, R[1], R[2], R[3], 0.01).replace(/L.*$/, ''), '#6e4424', 0.35, ' stroke-dasharray=".6 .6"') : '', {sh:ccd, k:0.25, ow:0.75, m:T >= 1 ? 1 : 0, hl:lt(cc, 0.4)});
+        var G1 = '#5aa04a', G2 = '#3f7a3a', OL = '#9aa83a', RU = '#c8702e';
+        var cols = T >= 4 ? [G1, GOLD, G2, GOLD, OL, G1] : T === 3 ? [G1, G2, GOLD, OL, G2, G1] : [G1, G2, RU, OL, G2, G1];
+        var cx = 32.4, cy = R[0] + 9, spr = [0.06, 0.22, 0.4, 0.58, 0.76, 0.93], parts = [], twigs = '';
+        spr.forEach(function(t, i){
+          var p = A.ringAt(R, t), x = p[0], y = p[1] + 0.5, dx = x - cx, dy = y - cy, q = Math.sqrt(dx * dx + dy * dy) || 1, ux = dx / q, uy = dy / q;
+          var near = 1 - t * 0.35, len = (i === 2 ? 4.8 : 4.1) * near, w = 1.9 * near;
+          twigs += 'M' + f(x) + ' ' + f(y) + 'l' + f(ux * len * 1.05 - uy * 0.8) + ' ' + f(uy * len * 1.05 + ux * 0.8);
+          [-0.62, 0.62, 0].forEach(function(a, j){
+            var ca = Math.cos(a), sa = Math.sin(a), vx = ux * ca - uy * sa, vy = ux * sa + uy * ca, L2 = j === 2 ? len : len * 0.8;
+            var c = j === 2 ? cols[i] : (j ? cols[(i + 1) % 6] : cols[(i + 3) % 6]);
+            if (c === GOLD && j !== 2) c = G1;
+            parts.push(leafP(A, x, y, x + vx * L2, y + vy * L2, w, c, c === GOLD ? {sh:DGOLD, vein:DGOLD, m:1} : {}));
+          });
+        });
+        A.add(sl, raw(L(twigs, INK, 1.1) + L(twigs, '#7a5236', 0.5)));
+        parts.forEach(function(p){ A.add(sl, p); });
+        if (h) A.add('over', A.clipHelm([band])); else A.add(sl, band);
+        if (T >= 1){ var k0 = A.ringAt(R, 0.14); A.add(sl, A.p(el(k0[0], k0[1] + 0.7, 0.8, 0.8), cc, '', {sh:ccd, k:0.2, ow:0.6, m:1, hl:false})); }
+        if (T >= 2) [[0.32, '#c0392b'], [0.36, '#d8324a'], [0.68, '#c0392b']].forEach(function(b){ var p = A.ringAt(R, b[0]); A.add(sl, raw(C(p[0], p[1] + 0.3, 0.75, INK) + C(p[0], p[1] + 0.3, 0.5, b[1]) + C(p[0] - 0.15, p[1] + 0.15, 0.18, '#fff'))); });
+        var m = A.ringAt(R, 0.5);
+        A.add(sl, A.glow(m[0], m[1] - 2, 3.4, GOLD));
+        A.grow(R[0] - 5.4, 32.4 - R[1] - 4, 32.4 + R[2] + 3.4);
+      }},
+      /* 23 a scout's spyglass tucked through the belt, a leather loop round it */
+      {name:'Spyglass', view:'bust', draw:function(A){
+        var T = A.T, x0 = 26, y0 = A.belt - 4.2, x1 = 31.4, y1 = A.belt + 2.6, cx = 28.7, cy = A.belt - 0.8, tr = wt(A) + ' translate(' + f(cx) + ' ' + f(cy) + ') scale(1.25) translate(' + f(-cx) + ' ' + f(-cy) + ')';
+        var tc = T >= 4 ? GOLD : T >= 2 ? STL : T === 1 ? BRZ : '#8a5a33', td = T >= 4 ? DGOLD : T >= 2 ? STLD : T === 1 ? dk(BRZ, 0.3) : '#5c392a';
+        var rc = T >= 3 ? GOLD : T === 0 ? BONE : lt(tc, 0.25), rd = T >= 3 ? DGOLD : T === 0 ? BONED : td;
+        var at = function(u){ return [x0 + (x1 - x0) * u, y0 + (y1 - y0) * u]; };
+        var q = {sh:td, hl:lt(tc, 0.45), k:0.35, ow:0.85, rim:0.4, m:T >= 1 ? 1 : 0, t:tr};
+        var a = at(0), b = at(0.3), c2 = at(0.62), d = at(1);
+        A.add('neck', A.p(cap(a[0], a[1], 0.75, b[0], b[1], 0.8), tc, '', q));
+        A.add('neck', A.p(cap(b[0], b[1], 0.95, c2[0], c2[1], 1), T === 0 ? '#6e4424' : tc, T === 0 ? L('M' + f(b[0] - 0.8) + ' ' + f(b[1] + 1) + 'l1.6 -1.2M' + f(b[0] + 0.4) + ' ' + f(b[1] + 2.2) + 'l1.6 -1.2M' + f(b[0] + 1.6) + ' ' + f(b[1] + 3.4) + 'l1.6 -1.2', '#b07a45', 0.35) : '', T === 0 ? {sh:'#4a2e1e', k:0.35, ow:0.85, t:tr} : q));
+        A.add('neck', A.p(cap(c2[0], c2[1], 1.15, d[0], d[1], 1.3), tc, '', q));
+        [0.3, 0.62, 0.97].forEach(function(u){ var p = at(u); A.add('neck', A.p(cap(p[0] - 0.4, p[1] - 0.5, 1.25 + u * 0.35, p[0] + 0.4, p[1] + 0.5, 1.25 + u * 0.35), rc, '', {sh:rd, k:0.2, ow:0.6, hl:false, m:T >= 1 ? 1 : 0, t:tr})); });
+        A.add('neck', A.p(el(d[0] + 0.5, d[1] + 0.6, 1.1, 0.8), '#bfeaff', C(d[0] + 0.2, d[1] + 0.4, 0.3, '#fff'), {sh:'#5a8fb0', k:0.15, ow:0.55, hl:false, t:tr + ' rotate(-50 ' + f(d[0] + 0.5) + ' ' + f(d[1] + 0.6) + ')', top:A.glow(d[0] + 0.5, d[1] + 0.6, 2.6, GEM)}));
+        A.add('neck', A.p(rr(27.6, A.belt - 0.6, 3.4, 2.6, 0.5), T >= 3 ? '#5c392a' : '#6e4424', C(29.3, A.belt + 0.7, 0.4, T >= 1 ? tc : '#c9a36b'), {sh:'#4a2e1e', k:0.25, ow:0.8, hl:false, t:tr}));
+      }},
+      /* 24 a scout cowl: a hood with a trailing peak and a leaf-cut shoulder cape (the hair goes under it);
+         under a helm it shows as the hood's frame and the cape */
+      {name:'Scout cowl', cap:1, draw:function(A){
+        var T = A.T, c = A.far(['#3f6e3a', '#6b4a2e', '#4a5a78']), cd = dk(c, 0.34), tr = T >= 3 ? GOLD : T >= 1 ? '#8a5a33' : lt(c, 0.25);
+        var q = {sh:cd, k:0.7, ow:1, rim:0.6, g:1};
+        var folds = L('M24 30C23.2 25 24.6 19.6 28 16.4M40.8 30.4C41.6 25.4 40.4 20 37.4 16.8', cd, 0.6, op(0.6));
+        A.add('nape', A.p('M19.2 31.4C17.4 24.6 18.4 18.8 21.6 15.4C19 14 16.2 13.8 13.6 14.6C15.8 11.4 20.4 10.4 24.8 11.6C27.2 10.9 29.6 10.8 32.2 10.9C42.2 11.2 47.2 20 45.6 30.4C44.8 33.6 43 35.8 40.6 37.4L24 37.4C21.6 35.8 19.8 33.8 19.2 31.4Z', c,
+          L('M14.6 14.4C17.6 12.6 21 12.4 23.8 13.2', lt(c, 0.3), 0.6, op(0.7)), q));
+        var inner = A.scaly ? 'L45.2 20.2C41.4 18.8 37 18.9 33 19.2C28.2 19.4 24 22 23.6 26.8L24.2 33.4Z' : 'L42.8 27.2C42.8 21.6 38 18.8 32.6 18.8C27.2 18.8 23.2 21.6 23 26.8L23.8 34.2Z';
+        var outer = A.scaly ? 'M20.2 33.4C18.6 22.2 23.6 12.4 32.4 12C40 12.2 45.2 15.6 46.8 19.8' : 'M20 34.2C18.4 22.2 23.4 12.2 32.4 12C41.4 12.2 46.4 21 44.8 31';
+        var edge = A.scaly ? 'M45.2 20.2C41.4 18.8 37 18.9 33 19.2C28.2 19.4 24 22 23.6 26.8L24.2 33.4' : 'M42.8 27.2C42.8 21.6 38 18.8 32.6 18.8C27.2 18.8 23.2 21.6 23 26.8L23.8 34.2';
+        A.add('wrap', A.p(outer + inner, c, folds + L(edge, INK, 1.9, op(0.35)) + L(edge, tr, T >= 3 ? 1.1 : 0.9) + (T === 0 ? L(edge, dk(c, 0.3), 0.3, ' stroke-dasharray=".6 .5" transform="translate(-.5 .6)"') : ''), q));
+        /* the cape: a leaf-cut hem, pinned at the throat (to the side of a beard) */
+        var hem = 'M21.4 35.2C26 37.8 38.4 37.8 42.8 35L45 40.4Q43.6 42.2 42 41.2Q40.8 43.6 38.8 42.4Q37.2 44.6 35.2 43Q33.6 45.2 31.8 43.4Q29.8 45 28.4 42.8Q26.2 44.2 25 41.8Q23 43 21.8 40.8Q20.2 41.6 19.2 40.2Z';
+        A.add('neck', A.p(hem, c, L('M25.4 38.4L25 41.6M29.4 39.2L28.8 42.6M34.6 39.2L35 42.8M38.8 38.4L39.2 42', cd, 0.55, op(0.7)) + (T >= 3 ? L('M19.8 40.2Q21 41.4 21.8 40.8Q23 43 25 41.8Q26.2 44.2 28.4 42.8Q29.8 45 31.8 43.4Q33.6 45.2 35.2 43Q37.2 44.6 38.8 42.4Q40.8 43.6 42 41.2Q43.6 42.2 44.6 40.6', GOLD, 0.6) : ''),
+          {sh:cd, k:0.6, ow:1, rim:0.7, g:1, t:wt(A)}));
+        var bd = A.beard !== 'none', bx = bd ? 24.6 : 32.4, by = bd ? 38.2 : 36.6, m = fit(A);
+        if (T === 0) A.add('neck', A.p(cap(bx - 1.8, by, 0.6, bx + 1.8, by, 0.6), '#8a5a33', '', {sh:'#5c392a', k:0.2, ow:0.75, t:wt(A)}));
+        else A.add('neck', A.p(el(bx, by, 1.5, 1.5), m[0], A.T >= 3 ? P(leafTo(bx - 0.9, by + 0.7, bx + 0.9, by - 0.8, 0.9), T >= 4 ? EMR : '#2fb3a4') : C(bx, by, 0.5, lt(m[0], 0.5)), {sh:m[1], k:0.25, ow:0.8, m:1, hl:lt(m[0], 0.5), t:wt(A), top:A.glow(bx, by, 3, EMR)}));
+        A.grow(10.4, 12.8);
+      }},
+      /* 25 a hawk plume: three barred tail feathers tucked through a clasp at the back of the head / helm */
+      {name:'Hawk plume', draw:function(A){
+        var hm = A.helm, T = A.T, b;
+        if (onH(A)) b = [hm.sides[0][0] + 2.4, hm.sides[0][1] - 3.6];
+        else if (A.furry) b = [26.2, 16.8];
+        else if (A.scaly) b = [24.6, 17.8];
+        else b = [24.4, 17.6];
+        var c1 = T >= 4 ? GOLD : T >= 3 ? '#f3ead2' : '#b07a45', d1 = T >= 4 ? DGOLD : T >= 3 ? '#b8a47e' : '#6e4424';
+        var c2 = T >= 4 ? '#fff1c8' : T >= 2 ? '#2fb3a4' : '#9a6232', d2 = T >= 4 ? DGOLD : T >= 2 ? '#1d7a70' : '#5c392a';
+        var bar = T >= 4 ? DGOLD : T >= 3 ? '#8a5a33' : '#4a2e1e', tip = T >= 3 ? '#3a2a33' : '#f3ead2';
+        var s = A.small ? 1.08 : 1;
+        A.add('headBack', feather(A, b[0], b[1], 10.4 * s, 3, 126, c2, d2, T >= 2 ? '' : bar, T >= 3 ? GOLD : tip));
+        A.add('headBack', feather(A, b[0], b[1], 12.4 * s, 3.4, 150, c1, d1, bar, tip));
+        A.add('headBack', feather(A, b[0] + 0.6, b[1], 11 * s, 3, 172, c1 === GOLD ? '#ffd970' : lt(c1, 0.12), d1, bar, tip, {rim:0.6}));
+        /* the clasp where the quills go in */
+        var m = fit(A), cc = T === 0 ? '#6e4424' : m[0];
+        A.add(hSlot(A), A.p(el(b[0] + 0.6, b[1] + 0.2, 1.5, 1.2), cc, T === 0 ? L('M' + f(b[0] - 0.6) + ' ' + f(b[1]) + 'l2.4 .4', '#b07a45', 0.35) : T >= 3 ? C(b[0] + 0.6, b[1] + 0.2, 0.5, T >= 4 ? EMR : GOLD) : '',
+          {sh:T === 0 ? '#4a2e1e' : m[1], k:0.25, ow:0.8, hl:lt(cc, 0.45), m:T >= 1 ? 1 : 0, top:A.glow(b[0] + 0.6, b[1] + 0.2, 3, EMR)}));
+        A.grow(b[1] - 12.6 * s, b[0] - 11.6 * s);
+      }},
+      /* 26 a tracker's mask across the eyes, knotted at the near side, its tails behind */
+      {name:'Tracker mask', bare:1, draw:function(A){
+        var T = A.T, e0 = A.eye[0], e1 = A.eye[1], y = e0[1], w = A.eyeW, h = A.eyeH;
+        var mc = T >= 4 ? GOLD : T >= 3 ? '#2f4a36' : T >= 1 ? '#6e4424' : A.far(['#3f5a36', '#4a3a5a'], A.sk), md = T >= 4 ? DGOLD : dk(mc, 0.35);
+        var xL = A.hxAt(y - 0.6, 'l') + 0.4, xR = e1[0] + w * 0.86 + (A.scaly ? 2.6 : 2.2), xm = (e0[0] + w + e1[0] - w * 0.86) / 2;
+        var d = 'M' + f(xL) + ' ' + f(y + h * 0.4) + 'Q' + f(xL + 1.6) + ' ' + f(y + h + 1.6) + ' ' + f(e0[0]) + ' ' + f(y + h + 1.3) + 'Q' + f(xm - 1.2) + ' ' + f(y + h + 1) + ' ' + f(xm) + ' ' + f(y + 0.8)
+          + 'Q' + f(xm + 1.2) + ' ' + f(y + h + 0.9) + ' ' + f(e1[0]) + ' ' + f(y + h + 1.1) + 'Q' + f(xR - 0.4) + ' ' + f(y + h + 0.6) + ' ' + f(xR) + ' ' + f(y - 0.6)
+          + 'Q' + f(xR + 0.6) + ' ' + f(y - h - 1.4) + ' ' + f(xR + 1.4) + ' ' + f(y - h - 2.8) + 'Q' + f(xR - 1.6) + ' ' + f(y - h - 1.8) + ' ' + f(e1[0]) + ' ' + f(y - h - 1.4)
+          + 'Q' + f(xm) + ' ' + f(y - h - 1.2) + ' ' + f(e0[0]) + ' ' + f(y - h - 1.5) + 'Q' + f(xL + 0.6) + ' ' + f(y - h - 1.6) + ' ' + f(xL - 1.2) + ' ' + f(y - h - 2.8)
+          + 'Q' + f(xL - 0.4) + ' ' + f(y - h * 0.6) + ' ' + f(xL) + ' ' + f(y + h * 0.4) + 'Z';
+        /* almond eye holes, drawn clockwise so they cut through; the outer corners lift a little */
+        var alm = function(x, rw, rh, near){ var yo = y + 0.2, lx = x - rw, rx = x + rw, ly = yo - (near ? rh * 0.28 : 0), ry = yo - (near ? 0 : rh * 0.28);
+          return 'M' + f(lx) + ' ' + f(ly) + 'C' + f(x - rw * 0.5) + ' ' + f(yo - rh * 1.4) + ' ' + f(x + rw * 0.5) + ' ' + f(yo - rh * 1.4) + ' ' + f(rx) + ' ' + f(ry)
+            + 'C' + f(x + rw * 0.5) + ' ' + f(yo + rh * 1.25) + ' ' + f(x - rw * 0.5) + ' ' + f(yo + rh * 1.25) + ' ' + f(lx) + ' ' + f(ly) + 'Z'; };
+        var holes = alm(e0[0], w + 1.3, h + 0.2, 1) + alm(e1[0], (w + 1.3) * 0.86, h + 0.2, 0);
+        var det = '';
+        if (T === 0) det = L('M' + f(xL + 0.6) + ' ' + f(y + h * 0.2) + 'Q' + f(xm) + ' ' + f(y - h * 0.2 - 0.2) + ' ' + f(xR - 0.4) + ' ' + f(y - 0.8), lt(mc, 0.25), 0.4, ' stroke-dasharray=".7 .5"');
+        if (T >= 1 && T <= 2) det = C(xL + 0.9, y - h * 0.6, 0.45, T >= 2 ? '#e8eef8' : BRZ) + C(xR - 0.2, y - h * 0.8, 0.42, T >= 2 ? '#e8eef8' : BRZ) + (T >= 2 ? L('M' + f(e0[0] - w) + ' ' + f(y - h - 1.2) + 'Q' + f(xm) + ' ' + f(y - h - 0.8) + ' ' + f(e1[0] + w * 0.6) + ' ' + f(y - h - 1.1), '#c9d2e4', 0.4) : '');
+        if (T === 3) det = L('M' + f(xL + 0.2) + ' ' + f(y - h - 1.8) + 'Q' + f(e0[0] - 2) + ' ' + f(y - h - 0.6) + ' ' + f(e0[0]) + ' ' + f(y - h - 1) + 'M' + f(e1[0]) + ' ' + f(y - h - 0.9) + 'Q' + f(xR - 1.4) + ' ' + f(y - h - 0.8) + ' ' + f(xR + 1) + ' ' + f(y - h - 2.4), GOLD, 0.45) + C(xm, y - 0.4, 0.5, GOLD);
+        if (T >= 4) det = C(xm, y - 1.6, 0.7, EMR) + C(xm - 0.2, y - 1.8, 0.25, '#fff') + L('M' + f(xL) + ' ' + f(y - h - 1.8) + 'Q' + f(e0[0] - 1.6) + ' ' + f(y - h - 0.4) + ' ' + f(e0[0] + 0.4) + ' ' + f(y - h - 0.8), '#fff4c8', 0.45);
+        A.add('top', A.p(d + holes, mc, det, {sh:md, hl:lt(mc, 0.35), k:0.35, ow:0.95, rim:0.5, m:T >= 4 ? 1 : 0, top:A.glow(xm, y - 1.6, 3, EMR)}));
+        /* the knot and its tails */
+        var kx = xL - 0.2, ky = y - 0.6, kc = T >= 4 ? '#2f7a4a' : mc, kd = dk(kc, 0.35);
+        A.add('headBack', A.p(A.ribbon([kx + 0.4, ky], [kx - 1.6, ky + 1.6], [kx - 2, ky + 4], [kx - 4, ky + 6.4], 1.5, 1.7, 0.2, 0.8), dk(kc, 0.12), '', {sh:kd, k:0.35, ow:0.8, hl:false}));
+        A.add('headBack', A.p(A.ribbon([kx + 0.4, ky], [kx - 2.2, ky + 0.4], [kx - 3.6, ky + 2.2], [kx - 6.2, ky + 3.4], 1.5, 1.6, 0.2, 0.8), kc, '', {sh:kd, k:0.35, ow:0.8, hl:false}));
+        A.add('top', A.p(el(kx, ky, 1.2, 1.1), kc, '', {sh:kd, k:0.25, ow:0.8, hl:lt(kc, 0.35)}));
+        A.grow(null, kx - 6.8);
+      }},
+      /* 27 a tracker's scarf pulled up over the nose (over a snout, round a muzzle, above a beard; orc tusks poke through) */
+      {name:'Tracker scarf', bare:1, draw:function(A){
+        var T = A.T, c = A.far(['#6b7a3a', '#8a4a2a', '#3f5a6e', '#d8c9a0']), cd = dk(c, 0.32), sp = A.sp, d, fl;
+        if (A.scaly){
+          d = 'M21.4 29.4Q28 30.8 33.6 29.6Q38.6 28.6 43.6 27.2C44.4 28.8 44.8 30.4 44.4 31.8Q42.4 35.6 37 36.4Q27.2 37.2 21.8 32.8Z';
+          fl = 'M26 33.2Q31 34.8 36.4 34.2M38.2 30.4Q40.6 31.6 43.4 30.8';
+        } else if (A.beard !== 'none'){
+          d = 'M21.6 29.4Q27 31 32 30.2C32.8 28.2 36.4 28.2 37 30Q40.2 30.2 43.2 28.8C43.6 30.4 43.4 31.8 42.6 32.8Q39.6 35 33 35Q26.2 35 22.2 32.8Z';
+          fl = 'M25.4 32.6Q30 34 35.2 33.6';
+        } else {
+          var bump = A.furry ? 'C33.2 29.4 36.8 28.8 38.2 30.4' : sp === 'orc' ? 'C33 29.4 35.8 29.2 36.8 30.4' : 'C32.4 29.6 35.2 29.2 36.2 30.4';
+          d = 'M21.6 30.2Q27 31.8 31.2 30.8' + bump + 'Q40 30.8 43 29.8C43.8 31.2 43.8 32.6 43.2 33.6Q41.6 37.4 34.6 37.8Q27.4 38 23.2 35.4Q21.4 33.6 21.6 30.2Z';
+          fl = 'M25.4 33.6Q29.6 35.4 34.4 35.2M36.4 31.8Q38.8 33 41.8 32.4';
+        }
+        var det = L(fl, cd, 0.6, op(0.75));
+        if (T >= 1 && T <= 2) det += L('M20 32.6Q30 35.4 45 31.6M20 34.4Q30 37.2 45 33.4', T >= 2 ? '#e8e0c8' : lt(c, 0.35), 0.55, op(0.8));
+        if (T >= 3) det += L(d.replace(/Z$/, ''), T >= 4 ? '#fff4c8' : GOLD, 0.6, ' transform="translate(0 .4)"');
+        if (T >= 4) det += P(leafTo(27.4, 34.2, 30.6, 32.4, 1.2), GOLD) + P(leafTo(30.6, 34.6, 33.8, 33.8, 1.2), GOLD);
+        A.add('top', A.p(d, c, det, {sh:cd, hl:lt(c, 0.3), k:0.4, ow:0.95, rim:0.6, g:1}));
+        if (sp === 'orc'){
+          A.add('top', P('M32.2 31L32.6 28.6L33.6 30.8Z', '#fffaf0', ' stroke="' + INK + '" stroke-width=".7" stroke-linejoin="round"') + P('M35.4 30.8L36.2 28.4L36.8 30.6Z', '#fffaf0', ' stroke="' + INK + '" stroke-width=".7" stroke-linejoin="round"')
+            + P('M32.2 31L32.6 28.6L33.6 30.8Z', '#fffaf0') + P('M35.4 30.8L36.2 28.4L36.8 30.6Z', '#fffaf0'));
+        }
+        /* the knot at the near side, the tails behind the neck */
+        var kx = A.scaly ? 21.8 : 22.2, ky = A.scaly ? 31 : 31.6, m = fit(A);
+        A.add('headBack', A.p(A.ribbon([kx, ky], [kx - 1.6, ky + 2], [kx - 1.2, ky + 4.6], [kx - 3.4, ky + 7.4], 1.9, 2, 0.3, 0.9), dk(c, 0.12), L('M' + f(kx - 1.2) + ' ' + f(ky + 2.4) + 'l-.2 2.6', cd, 0.4), {sh:cd, k:0.4, ow:0.85, hl:false}));
+        A.add('headBack', A.p(A.ribbon([kx, ky], [kx - 2.4, ky + 0.8], [kx - 3.8, ky + 3], [kx - 6, ky + 4.4], 1.9, 1.9, 0.3, 0.9), c, '', {sh:cd, k:0.4, ow:0.85, hl:false}));
+        A.add('top', A.p(el(kx, ky, 1.4, 1.3), c, '', {sh:cd, k:0.25, ow:0.85, hl:lt(c, 0.35)}));
+        if (T >= 3) A.add('top', A.p(el(kx + 0.2, ky + 0.2, 0.7, 0.7), m[0], '', {sh:m[1], k:0.15, ow:0.55, hl:false, m:1, top:A.glow(kx, ky, 2.6, GOLD)}));
+        A.grow(null, kx - 6.6);
+      }},
+      /* 28 an owlet perched on a shoulder pad (a snowy owl for a Champion, a golden one for a Legend) */
+      {name:'Shoulder owl', view:'bust', draw:function(A){
+        /* on the near shoulder, clear of every weapon (the front hand holds it), peeking past the head and ears */
+        var T = A.T, lng = A.ear.kind === 'long' || A.ear.kind === 'point', sx = 32 - 5.73 * A.WF, dx = sx - 25.7, tr = 'translate(' + f(dx) + ' 0)';
+        var pc = T >= 4 ? GOLD : T >= 2 ? STL : T === 1 ? BRZ : LEA, pd = T >= 4 ? DGOLD : T >= 2 ? STLD : T === 1 ? dk(BRZ, 0.3) : LEAD;
+        A.add('neck', A.p('M15.8 36.8C15.6 34.2 18 33 20.8 33.1C23.6 33.2 25.4 34.6 25.2 37C22.2 38.6 18.6 38.6 15.8 36.8Z', pc, L('M16.4 37.5C19.2 39.1 22.6 39.1 24.8 38', T >= 3 ? GOLD : lt(pc, 0.3), 0.6) + (T <= 1 ? L('M17.8 35.2l.7 .5M22.8 34.6l.5 .7', T === 1 ? dk(BRZ, 0.4) : '#c49a62', 0.4) : ''),
+          {sh:pd, k:0.5, ow:1, rim:0.6, m:T >= 1 ? 1 : 0, t:tr}));
+        var snow = T >= 3, oc = T >= 4 ? '#fff1c8' : snow ? '#f3eee6' : '#b07a45', od = T >= 4 ? DGOLD : snow ? '#b8b2c4' : '#6e4424', disc = T >= 4 ? '#fffaf0' : snow ? '#ffffff' : '#ecd6a8';
+        var ox = lng ? 17.6 : 18.4, oy = lng ? 31.4 : 30.6, ks = lng ? 1.04 : 1.12, g = tr + ' translate(' + f(ox) + ' ' + f(oy + 4.4) + ') scale(' + ks + ') translate(' + f(-ox) + ' ' + f(-oy - 4.4) + ')';
+        var fw = 'M' + f(ox - 3.4) + ' ' + f(oy + 1) + 'C' + f(ox - 3.6) + ' ' + f(oy - 2.6) + ' ' + f(ox - 2.8) + ' ' + f(oy - 4.4) + ' ' + f(ox - 2.6) + ' ' + f(oy - 5.6) + 'L' + f(ox - 1.2) + ' ' + f(oy - 4.2) + 'Q' + f(ox) + ' ' + f(oy - 4.8) + ' ' + f(ox + 1.2) + ' ' + f(oy - 4.2)
+          + 'L' + f(ox + 2.6) + ' ' + f(oy - 5.6) + 'C' + f(ox + 2.8) + ' ' + f(oy - 4.4) + ' ' + f(ox + 3.6) + ' ' + f(oy - 2.6) + ' ' + f(ox + 3.4) + ' ' + f(oy + 1) + 'C' + f(ox + 3.2) + ' ' + f(oy + 3.4) + ' ' + f(ox + 1.8) + ' ' + f(oy + 4.4) + ' ' + f(ox) + ' ' + f(oy + 4.4)
+          + 'C' + f(ox - 1.8) + ' ' + f(oy + 4.4) + ' ' + f(ox - 3.2) + ' ' + f(oy + 3.4) + ' ' + f(ox - 3.4) + ' ' + f(oy + 1) + 'Z';
+        A.add('neck', A.p(fw, oc,
+          /* the breast flecks and a folded wing on the near side */
+          L('M' + f(ox - 0.6) + ' ' + f(oy + 1.6) + 'l.3 .4M' + f(ox + 0.8) + ' ' + f(oy + 1.8) + 'l.3 .4M' + f(ox + 0.1) + ' ' + f(oy + 3) + 'l.3 .4M' + f(ox - 1.4) + ' ' + f(oy + 2.8) + 'l.3 .4M' + f(ox + 1.6) + ' ' + f(oy + 3) + 'l.3 .4', snow && T < 4 ? '#6b6478' : od, 0.45)
+          + P('M' + f(ox - 3.4) + ' ' + f(oy + 0.4) + 'C' + f(ox - 2.2) + ' ' + f(oy + 0.2) + ' ' + f(ox - 1.4) + ' ' + f(oy + 2) + ' ' + f(ox - 1.6) + ' ' + f(oy + 4.4) + 'L' + f(ox - 3.4) + ' ' + f(oy + 3) + 'Z', od, op(0.55)),
+          {sh:od, hl:lt(oc, 0.35), k:0.5, ow:1, rim:0.4, t:g}));
+        /* the face: a heart-shaped disc, two big eyes, a hooked beak */
+        A.add('neck', A.p('M' + f(ox) + ' ' + f(oy - 1.4) + 'C' + f(ox - 0.8) + ' ' + f(oy - 3.2) + ' ' + f(ox - 3.2) + ' ' + f(oy - 3.2) + ' ' + f(ox - 3) + ' ' + f(oy - 1) + 'C' + f(ox - 2.8) + ' ' + f(oy + 0.8) + ' ' + f(ox - 1) + ' ' + f(oy + 1.6) + ' ' + f(ox) + ' ' + f(oy + 1.8)
+          + 'C' + f(ox + 1) + ' ' + f(oy + 1.6) + ' ' + f(ox + 2.8) + ' ' + f(oy + 0.8) + ' ' + f(ox + 3) + ' ' + f(oy - 1) + 'C' + f(ox + 3.2) + ' ' + f(oy - 3.2) + ' ' + f(ox + 0.8) + ' ' + f(oy - 3.2) + ' ' + f(ox) + ' ' + f(oy - 1.4) + 'Z', disc, '', {sh:lt(od, 0.4), hl:false, k:0.2, ow:0, ln:dk(disc, 0.25), lw:0.4, t:g}));
+        var ir = T >= 4 ? GEM : '#ffb547', face = '';
+        [[-1.35, 1], [1.35, 0.92]].forEach(function(q){ var ex = ox + q[0], ey = oy - 1.1, r = 1.05 * q[1];
+          face += C(ex, ey, r + 0.3, INK) + C(ex, ey, r, ir) + C(ex + 0.1, ey + 0.1, r * 0.55, '#1f1430') + C(ex - r * 0.3, ey - r * 0.35, r * 0.25, '#fff'); });
+        face += P('M' + f(ox - 0.5) + ' ' + f(oy - 0.2) + 'L' + f(ox + 0.5) + ' ' + f(oy - 0.2) + 'L' + f(ox) + ' ' + f(oy + 1.1) + 'Z', '#e0a83e', ' stroke="' + INK + '" stroke-width=".35" stroke-linejoin="round"');
+        /* the talons on the pad */
+        face += L('M' + f(ox - 1.6) + ' ' + f(oy + 4.2) + 'v.8M' + f(ox - 0.9) + ' ' + f(oy + 4.4) + 'v.8M' + f(ox + 0.9) + ' ' + f(oy + 4.4) + 'v.8M' + f(ox + 1.6) + ' ' + f(oy + 4.2) + 'v.8', '#3a2a33', 0.55);
+        A.add('neck', raw(G(g, face)));
+        /* a jess from Squire (gold for a Legend) */
+        if (T >= 1) A.add('neck', A.p(A.ribbon([ox - 1.2, oy + 4.6], [ox - 2.4, oy + 5.4], [ox - 2.6, oy + 6.6], [ox - 3.6, oy + 7.6], 0.8, 0.7), T >= 4 ? GOLD : '#c0392b', '', {k:0.15, ow:0.55, hl:false, t:g, top:A.glow(ox, oy, 4, GOLD)}));
+        A.grow(null, ox - 4.6 + dx);
+      }},
+      /* 29 an arrow baldric: a strap from the far shoulder to the near hip, spare arrows slotted along it */
+      {name:'Arrow baldric', view:'bust', draw:function(A){
+        var T = A.T, tr = wt(A), p0 = [40.4, 34.6], p1 = [36.6, 37.6], p2 = [30.4, 41.6], p3 = [25.4, 45.2];
+        var sc = T >= 3 ? '#5c392a' : '#7a4a2a';
+        var hd = T >= 4 ? GOLD : T >= 2 ? STL : T === 1 ? BRZ : '#8e8a9a', hdd = T >= 4 ? DGOLD : T >= 2 ? STLD : T === 1 ? dk(BRZ, 0.3) : '#5b5868';
+        var FL = ['#d8324a', '#f3ead2', '#2fb3a4'];
+        [0.34, 0.5, 0.66, 0.82].forEach(function(u, i){
+          var p = bz(p0, p1, p2, p3, u), x = p[0], y = p[1], fc = T >= 4 ? (i % 2 ? '#fff4c8' : GOLD) : FL[i % 3];
+          A.add('neck', A.p(rr(x - 0.3, y - 4.4, 0.6, 7.2, 0.3), '#c9955a', '', {sh:'#8a5a33', k:0.15, ow:0.55, hl:false, t:tr}));
+          A.add('neck', A.p('M' + f(x) + ' ' + f(y - 6.2) + 'L' + f(x + 1.3) + ' ' + f(y - 4.8) + 'L' + f(x + 1.3) + ' ' + f(y - 2.6) + 'L' + f(x) + ' ' + f(y - 3.3) + 'L' + f(x - 1.3) + ' ' + f(y - 2.6) + 'L' + f(x - 1.3) + ' ' + f(y - 4.8) + 'Z', fc,
+            L('M' + f(x) + ' ' + f(y - 5.6) + 'V' + f(y - 3.4), dk(fc, 0.3), 0.3), {sh:dk(fc, 0.3), k:0.2, ow:0.6, hl:false, t:tr}));
+          A.add('neck', A.p('M' + f(x - 0.8) + ' ' + f(y + 2.6) + 'L' + f(x + 0.8) + ' ' + f(y + 2.6) + 'L' + f(x) + ' ' + f(y + 4.4) + 'Z', hd, '', {sh:hdd, k:0.2, ow:0.6, hl:false, m:T >= 1 ? 1 : 0, t:tr, top:A.glow(x, y + 3.4, 1.8, GOLD)}));
+          if (T === 3) A.add('neck', raw(G(tr, L('M' + f(x - 0.3) + ' ' + f(y - 2.2) + 'h.6', GOLD, 0.6))));
+        });
+        A.add('neck', A.p(A.ribbon(p0, p1, p2, p3, 2.8, 2.8), sc, L('M' + f(p0[0] - 0.4) + ' ' + f(p0[1] + 0.4) + 'C' + f(p1[0] - 0.2) + ' ' + f(p1[1] + 0.4) + ' ' + f(p2[0] - 0.2) + ' ' + f(p2[1] + 0.4) + ' ' + f(p3[0]) + ' ' + f(p3[1] + 0.2), '#c49a62', 0.35, ' stroke-dasharray=".7 .5"'), {sh:dk(sc, 0.3), k:0.4, ow:0.9, rim:0.6, t:tr}));
+        /* the loops that hold the arrows, then the buckle */
+        [0.34, 0.5, 0.66, 0.82].forEach(function(u){ var p = bz(p0, p1, p2, p3, u); A.add('neck', A.p(rr(p[0] - 0.9, p[1] - 0.7, 1.8, 1.4, 0.3), T >= 3 ? '#3a2a33' : '#5c392a', '', {k:0.15, ow:0.5, hl:false, t:tr})); });
+        var bk = bz(p0, p1, p2, p3, 0.18), m = fit(A), bcl = T === 0 ? '#c9a36b' : T >= 3 ? GOLD : m[0];
+        A.add('neck', A.p(rr(bk[0] - 1.3, bk[1] - 1.1, 2.6, 2.2, 0.5), bcl, L('M' + f(bk[0] - 0.9) + ' ' + f(bk[1]) + 'H' + f(bk[0] + 0.9), dk(bcl, 0.4), 0.4), {sh:dk(bcl, 0.3), k:0.2, ow:0.7, hl:lt(bcl, 0.4), m:T >= 1 ? 1 : 0, t:tr}));
+      }},
+      /* 30 a stag pauldron: a moulded shoulder guard over a fur ruff, an antler rising from its outer edge */
+      {name:'Stag pauldron', view:'bust', draw:function(A){
+        var T = A.T, dx = A.sh[0] - 39.5 - 0.3, tr = 'translate(' + f(dx) + ' 0.2)';
+        var c = T >= 4 ? GOLD : T >= 2 ? STL : T === 1 ? BRZ : LEA, cd = T >= 4 ? DGOLD : T >= 2 ? STLD : T === 1 ? dk(BRZ, 0.3) : LEAD;
+        var fur = T >= 3 ? '#eeeaf2' : '#9a8f86', furD = T >= 3 ? '#b8b2c4' : '#6b625c';
+        A.add('shoulder', A.p('M33.4 37.4Q33 39.4 34.6 39.8Q35.4 41.2 37 40.6Q38.2 41.8 39.8 40.8Q41.2 41.8 42.6 40.6Q44.2 41.2 45 39.6Q46.6 39.2 46.2 37.2Q40 38.8 33.4 37.4Z', fur, L('M35.4 39.2l.2 1M38.4 39.8v1M41.4 39.8v1M44.2 39.2l-.2 1', furD, 0.45), {sh:furD, k:0.4, ow:0.9, rim:0.7, t:tr}));
+        var ac = T >= 3 ? GOLD : '#ecdcb8', ad = T >= 3 ? DGOLD : '#b39468';
+        var ant = A.ribbon([0, 0], [1.2, -2.6], [3.6, -4], [4.6, -7.8], 1.9, 0.6, 0.2) + A.ribbon([1.4, -2.6], [2.8, -2.8], [4, -2.6], [5.2, -1.8], 1, 0.4) + A.ribbon([3.4, -4.4], [3, -5.8], [2.2, -6.8], [1.6, -7.6], 0.9, 0.4);
+        A.add('shoulder', A.p(ant, ac, L('M.4 -.6C1.4 -2.8 3.4 -4.2 4.2 -7', lt(ac, 0.5), 0.35, op(0.8)), {sh:ad, hl:lt(ac, 0.4), k:0.4, ow:0.85, ln:false, m:T >= 4 ? 1 : 0, rim:0.6, t:tr + ' translate(43.4 33) rotate(10) scale(1.4)', ra:10}));
+        A.add('shoulder', A.p('M33.8 36.8C33.4 32.4 36.8 30.4 40.8 30.8C44.8 31.2 46.4 33.8 45.6 37.8C42 39.4 37.2 39.2 33.8 36.8Z', c,
+          L('M34.6 37.6C38 39.4 42 39.6 45.2 38.2', T >= 3 ? GOLD : lt(c, 0.3), 0.7) + L('M35.6 34.6C37.4 33.2 39.6 32.8 41.8 33', lt(c, 0.4), 0.5, op(0.7)), {sh:cd, k:0.6, ow:1.1, rim:1, m:T >= 1 ? 1 : 0, t:tr}));
+        /* the stag's head on the plate */
+        var sx = 39.8, sy = 35.2, ec = T >= 4 ? EMR : '#2a1d33', hc = T >= 3 ? (T >= 4 ? '#fff1c8' : GOLD) : T >= 1 ? lt(c, 0.35) : '#c9955a';
+        A.add('shoulder', A.p('M' + f(sx - 1.6) + ' ' + f(sy - 1.2) + 'Q' + f(sx) + ' ' + f(sy - 2) + ' ' + f(sx + 1.6) + ' ' + f(sy - 1.2) + 'L' + f(sx + 0.7) + ' ' + f(sy + 1.8) + 'Q' + f(sx) + ' ' + f(sy + 2.4) + ' ' + f(sx - 0.7) + ' ' + f(sy + 1.8) + 'Z', hc,
+          C(sx - 0.7, sy - 0.6, 0.3, ec) + C(sx + 0.7, sy - 0.6, 0.3, ec) + C(sx, sy + 1.4, 0.35, dk(hc, 0.5)),
+          {sh:dk(hc, 0.3), k:0.25, ow:0.7, hl:false, m:T >= 1 ? 1 : 0, t:tr, top:A.glow(sx, sy, 3, EMR)}));
+        A.add('shoulder', raw(G(tr, L('M' + f(sx - 1.1) + ' ' + f(sy - 1.5) + 'q-.9 -1 -.5 -2.2M' + f(sx - 1.3) + ' ' + f(sy - 2.4) + 'l-1 -.2M' + f(sx + 1.1) + ' ' + f(sy - 1.5) + 'q.9 -1 .5 -2.2M' + f(sx + 1.3) + ' ' + f(sy - 2.4) + 'l1 -.2', INK, 1.1) + L('M' + f(sx - 1.1) + ' ' + f(sy - 1.5) + 'q-.9 -1 -.5 -2.2M' + f(sx - 1.3) + ' ' + f(sy - 2.4) + 'l-1 -.2M' + f(sx + 1.1) + ' ' + f(sy - 1.5) + 'q.9 -1 .5 -2.2M' + f(sx + 1.3) + ' ' + f(sy - 2.4) + 'l1 -.2', hc, 0.5))));
+        A.grow(null, null, 50.4 + dx);
+      }}
     ]};
   }
 
-  /* ---------- extras: the Mage set (indexes in acc_core.js) ----------
-     PLACEHOLDERS: the names are proposals; each entry draws nothing until it has a draw(A) (see the authoring
-     guide at the top of acc_core.js, and acc_knight.js for finished examples). Keep exactly 15 entries in this
-     order once they ship: a saved index must never move. Remove todo:1 when an entry draws. */
+  /* ---------- extras: the Mage set (the arcane scholar: runes, crystals, stars and moons, ink and quill) ----------
+     Indexes 31..45 (see acc_core.js). Materials by tier: 0 bone, horn, felt, slate; 1 bronze; 2 silver; 3 gold
+     on silver; 4 gold with a faint glow. The set's crystal climbs with the tier too: milky quartz, amethyst,
+     sapphire, star-violet, and the Legend's cyan. Keep exactly 15 entries in this order (saved indexes). */
   function accSetMage(){
+    var XT = ['#d6ccee', '#a57ff0', '#5f9dff', '#b886ff', '#3fd4ff'];
+    /* the tier's crystal and its shade */
+    function xc(A){ return XT[A.T]; }
+    function xd(A){ return A.T >= 4 ? '#1aa6d6' : dk(XT[A.T], 0.36); }
+    /* the tier's fine metal (jewellery): bone, bronze, silver, gold, gold */
+    function fm(A){ return A.T >= 3 ? GOLD : A.T === 2 ? '#dfe4ee' : A.T === 1 ? BRZ : BONE; }
+    function fmD(A){ return A.T >= 3 ? DGOLD : A.T === 2 ? '#8e97ad' : A.T === 1 ? dk(BRZ, 0.3) : BONED; }
+    function fq(A, q){ var z = {sh:fmD(A), hl:lt(fm(A), 0.5), k:0.3, ow:0.8, m:A.T >= 1 ? 1 : 0}; for (var k in q) z[k] = q[k]; return z; }
+    /* the tier headgear covers the crown (a helm) or wraps it (a hood): head extras go onto it */
+    function onH(A){ return A.helm.cover || A.helm.kind === 'hood'; }
+    /* a crystal point standing on (0, 0), pointing up (-y): w half wide, h tall; place it with a part's t */
+    function shardD(w, h){ return 'M' + f(-w * 0.62) + ' 0L' + f(-w) + ' ' + f(-h * 0.52) + 'L0 ' + f(-h) + 'L' + f(w) + ' ' + f(-h * 0.52) + 'L' + f(w * 0.62) + ' 0Z'; }
+    function shardX(w, h, c){
+      return mx(P('M0 ' + f(-h) + 'L' + f(w) + ' ' + f(-h * 0.52) + 'L' + f(w * 0.62) + ' 0H0Z', dk(c, 0.3), op(0.55))
+        + P('M' + f(-w * 0.62) + ' ' + f(-h * 0.48) + 'L' + f(-w * 0.12) + ' ' + f(-h * 0.9) + 'L' + f(-w * 0.22) + ' ' + f(-h * 0.42) + 'Z', '#fff', op(0.75)), 0);
+    }
+    /* a crescent: the disc (x, y, R) less a disc r shifted d along angle a (degrees); the horns point along a */
+    function crescent(x, y, R, r, d, a){
+      var xi = (R * R - r * r + d * d) / (2 * d), yi = Math.sqrt(Math.max(0, R * R - xi * xi)), ra = a * Math.PI / 180, co = Math.cos(ra), si = Math.sin(ra);
+      var P1 = [x + xi * co + yi * si, y + xi * si - yi * co], P2 = [x + xi * co - yi * si, y + xi * si + yi * co];
+      return 'M' + f(P1[0]) + ' ' + f(P1[1]) + 'A' + f(R) + ' ' + f(R) + ' 0 1 0 ' + f(P2[0]) + ' ' + f(P2[1]) + 'A' + f(r) + ' ' + f(r) + ' 0 ' + (xi > d ? 1 : 0) + ' 1 ' + f(P1[0]) + ' ' + f(P1[1]) + 'Z';
+    }
+    /* a point on a cubic */
+    function bz(p0, p1, p2, p3, u){ var v = 1 - u; return [v * v * v * p0[0] + 3 * v * v * u * p1[0] + 3 * v * u * u * p2[0] + u * u * u * p3[0], v * v * v * p0[1] + 3 * v * v * u * p1[1] + 3 * v * u * u * p2[1] + u * u * u * p3[1]]; }
     return {id:'mage', name:'Mage', items:[
-      {name:'Glow runes', todo:1},
-      {name:'Arcane monocle', todo:1},
-      {name:'Star circlet', todo:1},
-      {name:'Orbiting crystal', todo:1},
-      {name:'Rune earrings', todo:1},
-      {name:'Spell scroll', todo:1},
-      {name:'Third-eye gem', todo:1},
-      {name:'Moon hairpin', todo:1},
-      {name:'Tome chain', todo:1},
-      {name:'Owl familiar', todo:1},
-      {name:'Rune mask', todo:1},
-      {name:'Quill behind ear', todo:1},
-      {name:'Astral collar', todo:1},
-      {name:'Hourglass charm', todo:1},
-      {name:'Crystal horns', todo:1}
+      /* 31 floating runes: rune stones orbiting the crown, carved with code signs (chalk, then bronze-cut, then
+         luminous); from Veteran up their orbit shows as a ring through the front of the head and behind it */
+      {name:'Floating runes', draw:function(A){
+        var hm = A.helm, T = A.T, cx = 31.8;
+        var oy = (hm.cover ? hm.top : hm.kind === 'hood' ? 13.2 : A.crown) - 0.4;
+        if (A.furry) oy = Math.min(oy, 13.8);
+        var ring = function(ph){ var a = ph * Math.PI / 180, x = 15.4 * Math.cos(a), y = 4.2 * Math.sin(a); return [cx + x * 0.985 + y * 0.174, oy - x * 0.174 + y * 0.985]; };
+        var sc = T === 0 ? '#8a84a6' : T >= 3 ? GOLD : T === 2 ? '#dfe4ee' : BRZ, scd = T === 0 ? '#5e587a' : T >= 3 ? DGOLD : T === 2 ? '#8e97ad' : dk(BRZ, 0.3);
+        var sig = ['#f8f3e6', '#ffd48a', AQUA, '#e2d0ff', '#e6fbff'][T], mode = T === 0 ? 'chalk' : T === 1 ? 'cut' : T >= 4 ? 'lit' : 'ink';
+        if (T >= 2){
+          var fr = '', bk = '';
+          for (var k = 0; k <= 24; k++){ var p = ring(k * 7.5), q = ring(180 + k * 7.5); fr += (k ? 'L' : 'M') + f(p[0]) + ' ' + f(p[1]); bk += (k ? 'L' : 'M') + f(q[0]) + ' ' + f(q[1]); }
+          var rc = T >= 4 ? '#bff4ff' : T >= 3 ? GOLD : '#c9d2e4', da = T >= 4 ? '' : ' stroke-dasharray="1.3 .9"';
+          A.add('headBack', L(bk, rc, 0.5, op(0.55) + da));
+          A.add('over', (T >= 4 ? L(fr, GEM, 1.5, op(0.22)) : '') + L(fr, rc, 0.5, op(0.85) + da));
+        }
+        [[164, 3.5, '{}', 'over'], [26, 2.9, '< >', 'over'], [-118, 2.4, ';', 'headBack']].forEach(function(s, i){
+          var p = ring(s[0]), x = p[0], y = p[1], w = s[1], h = s[1] * 1.24;
+          var d = 'M' + f(x) + ' ' + f(y - h) + 'L' + f(x + w) + ' ' + f(y) + 'L' + f(x) + ' ' + f(y + h) + 'L' + f(x - w) + ' ' + f(y) + 'Z';
+          var ins = T === 0 ? '' : P('M' + f(x) + ' ' + f(y - h + 1) + 'L' + f(x + w - 0.8) + ' ' + f(y) + 'L' + f(x) + ' ' + f(y + h - 1) + 'L' + f(x - w + 0.8) + ' ' + f(y) + 'Z', T >= 4 ? '#1c2a66' : '#2e2a5e');
+          var g = gly(s[2], x, y + 0.1, w * (s[2].length > 2 ? 0.5 : 0.62), sig, {m:mode, w:T >= 4 ? 0.32 : 0.4, lc:'#fff4c8'});
+          A.add(s[3], A.p(d, sc, ins + g, {sh:scd, hl:lt(sc, 0.45), k:0.35, ow:0.85, m:T >= 1 ? 1 : 0, rim:i === 1 ? 0.6 : 0, top:A.glow(x, y, w * 2, GEM)}));
+          if (T >= 3 && i < 2) A.add(s[3], spark(x + w * 0.9, y - h * 0.8, T >= 4 ? 1.3 : 1, '#fff4c8'));
+        });
+        A.grow(ring(-118)[1] - 4, 13.2, 49.4);
+      }},
+      /* 32 seer's specs: round wire spectacles on the nose, an arm to the ear; a chain from Squire up, a hinged
+         seeing-loupe flipped up over the near lens from Champion up (glowing for a Legend) */
+      {name:"Seer's specs", draw:function(A){
+        var T = A.T, e0 = A.eye[0], e1 = A.eye[1], y = e0[1] + 0.1, rx = A.eyeW + 1.05, ry = A.eyeH + 0.45, rx1 = rx * 0.87, t = T === 0 ? 0.8 : 0.62;
+        var c = T === 0 ? '#7a4a2a' : fm(A), cd = T === 0 ? '#4a2c1a' : fmD(A);
+        var tint = ['#e8f6ff', '#efe2ff', '#cfe6ff', '#e6d8ff', '#bff4ff'][T];
+        var arm = A.scaly ? [23.4, y - 0.8] : A.furry ? [A.back[0] + 0.6, y - 2.2] : A.ear.kind === 'round' ? [22.4, A.ear.mid[1] - 1] : [A.ear.base[0] + 0.3, A.ear.base[1] - 0.9];
+        var x0 = e0[0] - rx + 0.2, sd = function(d, w){ return L(d, INK, f(w + 0.9)) + L(d, c, w); };
+        A.add('top', sd('M' + f(x0) + ' ' + f(y - 1) + 'L' + f(arm[0]) + ' ' + f(arm[1]), t));
+        var fe = A.scaly ? [41.8, y - 3.2] : [A.hxAt(y - 1.2, 'r') - 0.3, y - 1.6];
+        A.add('top', sd('M' + f(e1[0] + rx1 - 0.2) + ' ' + f(y - 1) + 'L' + f(fe[0]) + ' ' + f(fe[1]), t * 0.9));
+        if (T >= 1){
+          var end = A.scaly ? [24.6, 31.6] : A.furry ? [23.4, 31.4] : [A.ear.lobe[0] + 0.6, A.ear.lobe[1] + 2.2];
+          var ch = 'M' + f(x0 + 0.2) + ' ' + f(y + 0.8) + 'C' + f(x0 - 0.4) + ' ' + f(y + 5.8) + ' ' + f(end[0] + 1.2) + ' ' + f(end[1] + 3.4) + ' ' + f(end[0]) + ' ' + f(end[1]);
+          A.add('top', L(ch, INK, 1, op(0.75)) + L(ch, c, 0.55, ' stroke-dasharray=".5 .32"'));
+        }
+        var gl = function(x, r){ return E(x, y, r - t * 0.5, ry - t * 0.5, tint, op(T >= 4 ? 0.42 : 0.3)) + mx(L('M' + f(x - r * 0.55) + ' ' + f(y + ry * 0.1) + 'L' + f(x - r * 0.05) + ' ' + f(y - ry * 0.55) + 'M' + f(x - r * 0.2) + ' ' + f(y + ry * 0.35) + 'L' + f(x + r * 0.25) + ' ' + f(y - ry * 0.25), '#fff', 0.5, op(0.8)), x); };
+        A.add('top', gl(e0[0], rx) + gl(e1[0], rx1));
+        var ringD = function(x, r){ return el(x, y, r, ry) + A.elR(x, y, r - t, ry - t); };
+        var q = {sh:cd, hl:lt(c, 0.5), k:0.25, ow:0.55, ln:false, m:T >= 1 ? 1 : 0};
+        A.add('top', A.p(ringD(e0[0], rx) + ringD(e1[0], rx1), c, '', q));
+        var bx0 = e0[0] + rx - 0.3, bx1 = e1[0] - rx1 + 0.3;
+        A.add('top', sd('M' + f(bx0) + ' ' + f(y - 1.2) + 'Q' + f((bx0 + bx1) / 2) + ' ' + f(y - 3) + ' ' + f(bx1) + ' ' + f(y - 1.2), t));
+        if (T >= 3){
+          var lx = e0[0] - rx * 0.62, ly = y - ry - 2.3, lr = 1.55;
+          A.add('top', sd('M' + f(e0[0] - rx * 0.5) + ' ' + f(y - ry + 0.2) + 'L' + f(lx + 0.5) + ' ' + f(ly + lr - 0.2), 0.5));
+          A.add('top', E(lx, ly, lr - 0.3, lr - 0.3, T >= 4 ? GEM : '#e6d8ff', op(T >= 4 ? 0.7 : 0.45)));
+          A.add('top', A.p(el(lx, ly, lr, lr) + A.elR(lx, ly, lr - 0.55, lr - 0.55), c, '', {sh:cd, hl:lt(c, 0.5), k:0.2, ow:0.55, ln:false, m:1, top:A.glow(lx, ly, 2.6, GEM) + (T >= 4 ? C(lx - 0.4, ly - 0.4, 0.35, '#fff') : '')}));
+        }
+        if (T >= 4) A.add('top', spark(e1[0] + rx1 * 0.55, y - ry * 0.7, 1.2, '#fff4c8'));
+      }},
+      /* 33 star circlet: a fine band on the brow with a five-point star at the front (a bone star on a cord for a
+         Recruit); on a helm or hood it circles the helm, on a circlet or crown it rides over it */
+      {name:'Star circlet', draw:function(A){
+        var hm = A.helm, oh = onH(A), T = A.T, R;
+        if (oh) R = hm.ring.slice(); else if (hm.kind === 'goggles') R = [15.4, 10.4, 10.2, 3.6, 1.8]; else if (hm.ring) R = hm.ring.slice(); else R = A.headRing.slice();
+        R[4] = 1.5;
+        var c = T === 0 ? '#5a58b0' : T >= 4 ? GOLD : T === 1 ? BRZ : '#dfe4ee', cd = T === 0 ? '#363878' : T >= 4 ? DGOLD : T === 1 ? dk(BRZ, 0.3) : '#8e97ad';
+        var s = T === 0 ? BONE : T >= 3 ? GOLD : c, sd = T === 0 ? BONED : T >= 3 ? DGOLD : cd;
+        var edge = A.ring(R[0] + R[4] * 0.5, R[1] - 0.2, R[2] - 0.2, R[3], 0.01).replace(/L.*$/, '');
+        var bx = T === 0 ? L(edge, lt(c, 0.35), 0.9, ' stroke-dasharray=".5 .55" opacity=".8"') : T === 3 ? L(edge, GOLD, 0.45, op(0.9)) : '';
+        var band = A.p(A.ring(R[0], R[1], R[2], R[3], R[4]), c, bx, {sh:cd, hl:lt(c, 0.5), k:0.3, ow:0.85, m:T >= 1 ? 1 : 0, rim:0.6});
+        var m = A.ringAt(R, 0.52), sx = m[0], sy = m[1] + R[4] * 0.45 - 0.5, SR = 3.2, gem = [BONED, '#a57ff0', '#5f9dff', '#b886ff', GEM][T];
+        var fac = '';
+        for (var k = 0; k < 5; k++){ var a = k * Math.PI * 2 / 5; fac += 'M' + f(sx) + ' ' + f(sy) + 'L' + f(sx + SR * 0.92 * Math.sin(a)) + ' ' + f(sy - SR * 0.92 * Math.cos(a)); }
+        var st = A.p(star(sx, sy, SR, SR * 0.44, 5), s, L(fac, sd, 0.3, op(0.8)) + C(sx, sy, T === 0 ? 0.5 : 0.75, gem) + (T >= 1 ? C(sx - 0.25, sy - 0.25, 0.25, '#fff') : ''),
+          {sh:sd, hl:lt(s, 0.5), k:0.3, ow:0.85, m:T >= 1 ? 1 : 0, rim:0.5, top:A.glow(sx, sy, 4.4, GEM) + (T >= 4 ? spark(sx + 2.6, sy - 2.4, 1.3, '#fff4c8') : '')});
+        var mini = '';
+        [0.24, 0.8].forEach(function(u, i){ var p = A.ringAt(R, u), r = i ? 1.1 : 1.3; mini += star(p[0], p[1] + R[4] * 0.5, r, r * 0.36, 4); });
+        var mn = T >= 2 ? A.p(mini, s, '', {sh:sd, hl:false, k:0.15, ow:0.6, m:1}) : null;
+        if (oh){ A.add('over', A.clipHelm([band])); if (mn) A.add('over', mn); A.add('over', st); }
+        else { var sl = hm.kind === 'none' || hm.kind === 'feather' || hm.kind === 'goggles' ? 'under' : 'over'; A.add(sl, band); if (mn) A.add(sl, mn); A.add(sl, st); }
+        A.grow(sy - SR - 1);
+      }},
+      /* 34 crystal drops: a hoop and a hanging crystal from the ear (the lobe; the fox's ear edge or lop tip; the
+         saurian's ear-hole stud); a cuff on long and pointed ears from Squire up; they sway as the hero moves */
+      {name:'Crystal drops', draw:function(A){
+        var hm = A.helm, T = A.T, ek = A.ear.kind, c = xc(A), cd = xd(A), mc = fm(A), mcd = fmD(A);
+        var sl = A.furry && hm.cover ? 'over' : 'under', rot = A.trl ? A.trl * 7 : 0;
+        var drop = function(x, y, s, sl2){
+          if (A.small) s *= 1.2;
+          var w = (T >= 2 ? 1.05 : 0.95) * s, h = (3.1 + T * 0.2) * s, y0 = T >= 2 ? 2.1 * s : 1.3 * s, t = 'translate(' + f(x) + ' ' + f(y) + ')' + (rot ? ' rotate(' + f(rot) + ')' : '');
+          var ho = el(0, 0.2 * s, 0.7 * s, 0.8 * s);
+          A.add(sl2, G(t, L(ho, INK, f(1.05 * s)) + L(ho, mc, f(0.5 * s))));
+          if (T >= 2) A.add(sl2, A.p(el(0, 1.45 * s, 0.55 * s, 0.55 * s), mc, '', fq(A, {k:0.15, ow:0.6, hl:false, t:t, ra:rot})));
+          var d = 'M' + f(-w * 0.55) + ' ' + f(y0) + 'L' + f(-w) + ' ' + f(y0 + h * 0.38) + 'L0 ' + f(y0 + h) + 'L' + f(w) + ' ' + f(y0 + h * 0.38) + 'L' + f(w * 0.55) + ' ' + f(y0) + 'Z';
+          var fx = mx(P('M0 ' + f(y0) + 'H' + f(w * 0.55) + 'L' + f(w) + ' ' + f(y0 + h * 0.38) + 'L0 ' + f(y0 + h) + 'Z', dk(c, 0.3), op(0.55)) + P('M' + f(-w * 0.6) + ' ' + f(y0 + h * 0.3) + 'L' + f(-w * 0.2) + ' ' + f(y0 + 0.3) + 'L' + f(-w * 0.1) + ' ' + f(y0 + h * 0.62) + 'Z', '#fff', op(0.8)), 0);
+          A.add(sl2, A.p(d, c, fx, {sh:cd, hl:false, k:0.2, ow:0.75, ln:dk(c, 0.5), lw:0.3, t:t, ra:rot, top:A.glow(0, y0 + h * 0.5, 2.8 * s, GEM)}));
+          if (T >= 1) A.add(sl2, A.p(rr(-0.75 * s, y0 - 0.55 * s, 1.5 * s, 0.7 * s, 0.25), mc, '', fq(A, {k:0.1, ow:0.55, hl:false, t:t, ra:rot})));
+        };
+        if (ek === 'fox'){
+          var far = hm.cover ? 'over' : 'headBack';
+          if (A.hs === 4){ drop(A.ear.tip[0] + 0.3, A.ear.tip[1] + 0.2, 1.25, sl); drop(A.ear.far[0] - 0.4, A.ear.far[1] + 0.2, 0.9, far); }
+          else {
+            var hoop2 = el(20.9, 11.4, 0.6, 0.75);
+            A.add(sl, L(hoop2, INK, 1) + L(hoop2, mc, 0.5));
+            drop(21.5, 14.4, 1.2, sl);
+            var fh = el(44.1, 12.6, 0.6, 0.75); A.add(far, L(fh, INK, 1) + L(fh, mc, 0.5) + C(44.1, 13.6, 0.55, c, ' stroke="' + INK + '" stroke-width=".45"'));
+          }
+          return;
+        }
+        if (ek === 'none'){
+          var hx = A.ear.mid[0] + 0.2, hy = A.ear.mid[1] + 0.4;
+          A.add(sl, A.p(el(hx, hy, 0.95, 0.95), mc, C(hx, hy, 0.4, c), fq(A, {k:0.2, ow:0.7})));
+          drop(hx, hy + 0.5, 1.3, sl);
+          return;
+        }
+        var lb = A.ear.lobe, dx = A.beard !== 'none' ? -0.5 : 0;
+        if ((ek === 'long' || ek === 'point') && T >= 1){
+          var b = A.ear.base, tp = A.ear.tip, u = ek === 'long' ? 0.5 : 0.45, cx0 = b[0] + (tp[0] - b[0]) * u - 0.4, cy0 = b[1] + (tp[1] - b[1]) * u + (ek === 'long' ? 0.8 : 0.9);
+          var ang = Math.atan2(tp[0] - b[0], -(tp[1] - b[1])) * 180 / Math.PI + 90;
+          var cf = A.p(rr(-2.3, -0.7, 4.6, 1.4, 0.5), mc, T >= 2 ? C(0, 0, 0.4, c) : '', fq(A, {k:0.2, ow:0.7, t:'translate(' + f(cx0) + ' ' + f(cy0) + ') rotate(' + f(ang) + ')', ra:ang}));
+          A.add(sl, cf);
+        }
+        drop(lb[0] + dx, lb[1] - 0.2, 1.4, sl);
+      }},
+      /* 35 arcane tattoo: a sigil arc round the near eye with a star beneath it and a mark on the far cheek (ink,
+         then violet, teal, gold leaf and the Legend's glow); on a saurian a row of runes runs up the snout */
+      {name:'Arcane tattoo', bare:1, draw:function(A){
+        var T = A.T, e0 = A.eye[0], e1 = A.eye[1], x = e0[0], y = e0[1], w = A.eyeW, bw = A.small ? 1.4 : 1;
+        var ink = T >= 3 ? [GOLD, GEM][T - 3] : A.far([['#4a6fd0', '#7a52e6', '#22a8a2'][T], ['#8a3ab8', '#3a5ad8', '#6a3ad8'][T]], A.sk);
+        var d = 'M' + f(x - w - 1) + ' ' + f(A.brow + 0.1) + 'C' + f(x - w - 3.4) + ' ' + f(y - 1.8) + ' ' + f(x - w - 3.2) + ' ' + f(y + 2.8) + ' ' + f(x - 0.2) + ' ' + f(y + 3.9);
+        var d2 = 'M' + f(e1[0] - 1) + ' ' + f(y + 3.7) + 'Q' + f(e1[0] + 0.8) + ' ' + f(y + 4.7) + ' ' + f(e1[0] + 2.4) + ' ' + f(y + 3.3);
+        var dots = [[x - w - 3.3, y - 2.2], [x - w - 3.8, y + 0.6], [x - w - 2.8, y + 3.2], [e1[0] + 3.2, y + 2.3]];
+        if (A.scaly) dots = dots.concat([[40.2, 20.8], [42.4, 21.8], [44.2, 23.2]]);
+        var sx = x + 1.3, sy = y + 4.3, st = star(sx, sy, 1.75, 0.5, 4);
+        var dd = dots.map(function(p){ return el(p[0], p[1], 0.62, 0.62); }).join('');
+        var s = '';
+        if (T >= 4) s += L(d + d2, GEM, 2.6, op(0.28)) + C(sx, sy, 3, glow(GEM, 0.5));
+        if (T === 3) s += L(d + d2, DGOLD, f(1.55 * bw)) + P(st + dd, DGOLD, ' stroke="' + DGOLD + '" stroke-width=".7" stroke-linejoin="round"');
+        s += L(d + d2, ink, f((T >= 3 ? 0.95 : 1.05) * bw), T >= 3 ? '' : op(0.92)) + P(st + dd, ink, T >= 3 ? '' : op(0.92));
+        if (T >= 4) s += L(d + d2, '#e6fbff', 0.35) + C(sx, sy, 0.35, '#fff');
+        A.add('skin', s);
+      }},
+      /* 36 wizard hat: the tall floppy hat with a brim (patched felt for a Recruit, then indigo with a buckle,
+         silver stars, gold stars and moon, and a Legend's glowing starfield); over a helm or hood it perches on
+         top, smaller; a circlet, band or crown is worn round it */
+      {name:'Wizard hat', cap:1, draw:function(A){
+        var hm = A.helm, T = A.T, oh = onH(A);
+        var hc = ['#8a6440', '#5a50c0', '#4150b8', '#3c43a8', '#30358e'][T], hcd = dk(hc, 0.38);
+        var bc = ['#c9a36b', '#6e4424', '#dfe4ee', GOLD, GOLD][T], bcd = ['#8a6a3a', '#4a2c1a', '#8e97ad', DGOLD, DGOLD][T];
+        var X = 32.4, Y = 17.6, s = 1;
+        if (oh){ s = 0.72; Y = hm.kind === 'hood' ? 14.6 : hm.top + 2.4; }
+        if (A.scaly && !oh) X += 0.8;
+        var tr = 'translate(' + f(X) + ' ' + f(Y) + ') scale(' + s + ') translate(-32.4 -17.6)', sl = oh ? 'over' : 'under';
+        var brim = el(32.4, 17.7, 15.4, 3.5);
+        A.add(sl, A.p(brim, hc, L('M17.4 18.2C20 20.6 26 21.4 32.4 21.4C38.8 21.4 44.8 20.6 47.4 18.2', T >= 3 ? GOLD : lt(hc, 0.3), T >= 3 ? 0.7 : 0.5, op(0.9)), {sh:hcd, k:0.5, ow:1, rim:0.6, g:1, t:tr}));
+        var cone = 'M24.3 16.6C25.3 13.4 26.6 10.6 28.4 8.4C26.2 8.2 23.4 9.2 21.2 11.4L19.9 12.8C20.4 8.8 24 5.2 29 4.6C33.4 4 36.6 6.2 37.8 9.8C38.8 12.2 39.8 14.4 40.7 16.5C36.2 18.4 28.8 18.4 24.3 16.6Z';
+        var det = L('M28.4 8.4C30.2 9 31.4 10.4 31.8 12.4M34.4 6C35.6 7.4 36.2 9.2 36.2 11', hcd, 0.55, op(0.75));
+        if (T === 0) det += P(rr(34, 9.8, 2.8, 2.6, 0.4), '#b08a5a') + L('M34.4 10.2h2M34.4 12h2M34.6 10v2.2M36.4 10v2.2', '#5c392a', 0.3, ' stroke-dasharray=".4 .35"');
+        var stc = T >= 4 ? '#e6fbff' : T === 3 ? GOLD : '#eef2fa';
+        if (T >= 2) [[35, 10.2, 1.3], [29.4, 13, 0.95], [37.8, 14, 0.85], [24.6, 8.6, 0.9], [31.8, 6.6, 0.8]].forEach(function(p){ det += P(star(p[0], p[1], p[2], p[2] * 0.34, 4), stc) + (T >= 4 ? C(p[0], p[1], p[2] * 1.8, glow(GEM, 0.5)) : ''); });
+        if (T >= 3) det += P(crescent(28.6, 10.6, 1.5, 1.25, 0.75, -40), stc);
+        A.add(sl, A.p(cone, hc, det, {sh:hcd, k:0.8, ow:1.05, rim:0.7, g:1, t:tr}));
+        var band = 'M24.7 15.1C29.2 16.7 35.8 16.7 40.1 14.9L40.9 16.8C36.2 18.7 28.8 18.7 24.1 16.9Z';
+        A.add(sl, A.p(band, bc, T === 0 ? L('M25.6 16.4L26.6 15.6M27.8 17L28.8 16.2M30 17.4L31 16.6M32.2 17.5L33.2 16.7M34.4 17.3L35.4 16.5M36.6 17L37.6 16.2M38.8 16.5L39.8 15.7', '#8a6a3a', 0.35) : '', {sh:bcd, hl:lt(bc, 0.45), k:0.3, ow:0.8, m:T >= 2 ? 1 : 0, t:tr}));
+        if (T >= 1){
+          var gx0 = 33, gy0 = 16.9;
+          var bd = T === 1 ? rr(gx0 - 1.3, gy0 - 1.2, 2.6, 2.3, 0.4) + A.elR(gx0, gy0 - 0.05, 0.6, 0.55) : el(gx0, gy0, 1.3, 1.25);
+          A.add(sl, A.p(bd, T === 1 ? BRZ : T === 2 ? '#dfe4ee' : GOLD, T >= 2 ? C(gx0, gy0, 0.75, T >= 4 ? GEM : T === 3 ? '#b886ff' : '#5f9dff') + C(gx0 - 0.25, gy0 - 0.3, 0.25, '#fff') : '',
+            {sh:T === 1 ? dk(BRZ, 0.3) : T === 2 ? '#8e97ad' : DGOLD, k:0.2, ow:0.7, hl:false, m:1, t:tr, top:A.glow(gx0, gy0, 2.8, GEM)}));
+        }
+        if (T >= 1){
+          var tx = 20.1, ty = 12.9, tip = T >= 3 ? star(tx, ty, 2, 0.8, 5) : el(tx, ty + 0.3, 0.95, 0.95);
+          A.add(sl, A.p(tip, T >= 3 ? GOLD : T === 2 ? '#dfe4ee' : BRZ, T >= 4 ? C(tx, ty, 0.6, GEM) : '', {sh:T >= 3 ? DGOLD : T === 2 ? '#8e97ad' : dk(BRZ, 0.3), k:0.2, ow:0.75, m:1, hl:false, t:tr, top:A.glow(tx, ty, 3.4, GEM)}));
+        }
+        A.grow(Y - 13.8 * s, X - 15.8 * s, X + 15.8 * s);
+      }},
+      /* 37 third eye: a gem eye set on a lozenge between the brows (bone and quartz for a Recruit, up to gold and
+         the Legend's cyan); a helm that comes down over the brow takes it on its brow instead */
+      {name:'Third eye', draw:function(A){
+        var hm = A.helm, T = A.T, x = (A.eye[0][0] + A.eye[1][0]) / 2 + 0.3, y = A.scaly ? A.brow - 0.5 : A.brow - 1.1, sl = 'top', s = A.small ? 1.2 : 1;
+        if (A.cls === 'mage' && T === 2 && !A.helm.cover){ y += 0.8; s *= 0.88; }
+        if (hm.cover && hm.rim > y - 3.2){ y = hm.rim - 1.9; sl = 'over'; }
+        var c = fm(A), cd = fmD(A), g = xc(A), gd = xd(A);
+        var plate = 'M' + f(x) + ' ' + f(y - 2.9 * s) + 'L' + f(x + 1.75 * s) + ' ' + f(y) + 'L' + f(x) + ' ' + f(y + 2.4 * s) + 'L' + f(x - 1.75 * s) + ' ' + f(y) + 'Z';
+        if (T >= 3) plate += 'M' + f(x - 1.6 * s) + ' ' + f(y - 0.5 * s) + 'L' + f(x - 2.9 * s) + ' ' + f(y) + 'L' + f(x - 1.6 * s) + ' ' + f(y + 0.5 * s) + 'Z' + 'M' + f(x + 1.6 * s) + ' ' + f(y - 0.5 * s) + 'L' + f(x + 2.9 * s) + ' ' + f(y) + 'L' + f(x + 1.6 * s) + ' ' + f(y + 0.5 * s) + 'Z';
+        var eyeD = 'M' + f(x - 1.25 * s) + ' ' + f(y) + 'Q' + f(x) + ' ' + f(y - 1.45 * s) + ' ' + f(x + 1.25 * s) + ' ' + f(y) + 'Q' + f(x) + ' ' + f(y + 1.45 * s) + ' ' + f(x - 1.25 * s) + ' ' + f(y) + 'Z';
+        var inner = P(eyeD, '#2a1d4a') + C(x, y, 0.8 * s, g) + P('M' + f(x) + ' ' + f(y - 0.8 * s) + 'A' + f(0.8 * s) + ' ' + f(0.8 * s) + ' 0 0 1 ' + f(x) + ' ' + f(y + 0.8 * s) + 'Z', gd, op(0.5)) + C(x - 0.28 * s, y - 0.3 * s, 0.28 * s, '#fff');
+        A.add(sl, A.p(plate, c, inner, {sh:cd, hl:lt(c, 0.5), k:0.3, ow:0.8, m:T >= 1 ? 1 : 0, rim:0.4, top:A.glow(x, y, 3.6, GEM)}));
+      }},
+      /* 38 moon hairpin: a crescent moon pinned at the near temple on a hair-stick, two little chains swinging
+         under it (beads, then stars); on a helm or hood it is pinned to its side */
+      {name:'Moon hairpin', draw:function(A){
+        var hm = A.helm, oh = onH(A), T = A.T;
+        var p = oh ? [hm.sides[0][0] + 1.2, hm.sides[0][1] - 0.6] : [A.temple[0][0] - (A.furry ? -0.8 : 0.3), A.temple[0][1] - 0.8];
+        var x = p[0], y = p[1], sl = oh || A.helm.kind !== 'none' && A.helm.kind !== 'feather' ? 'over' : 'under';
+        var c = T === 0 ? BONE : T === 1 ? BRZ : T >= 4 ? GOLD : '#e8ecf6', cd = T === 0 ? BONED : T === 1 ? dk(BRZ, 0.3) : T >= 4 ? DGOLD : '#8e97ad';
+        var pc = T === 0 ? '#8a5a33' : fm(A), pcd = T === 0 ? '#5c392a' : fmD(A);
+        A.add(sl, A.p(cap(x + 1.4, y + 1.6, 0.4, x - 4.2, y - 4.6, 0.32), pc, '', {sh:pcd, k:0.15, ow:0.7, hl:false, m:T >= 1 ? 1 : 0}));
+        A.add(sl, A.p(el(x - 4.4, y - 4.8, 0.85, 0.85), T === 0 ? xc(A) : fm(A), '', fq(A, {k:0.2, ow:0.7, hl:false})));
+        var rot = A.trl ? A.trl * 7 : 0, bead = T >= 2 ? (T >= 4 ? GEM : T === 3 ? GOLD : '#eef2fa') : T === 1 ? '#a57ff0' : xc(A);
+        [[-1.9, 2, 2.4], [0.4, 2.8, 3.4]].forEach(function(q){
+          var ax = x + q[0], ay = y + q[1], by = ay + q[2], t = rot ? 'rotate(' + f(rot) + ' ' + f(ax) + ' ' + f(ay) + ')' : '';
+          var ch = 'M' + f(ax) + ' ' + f(ay) + 'V' + f(by);
+          A.add(sl, G(t, L(ch, INK, 0.9, op(0.7)) + L(ch, T === 0 ? '#c9a36b' : fm(A), 0.45, ' stroke-dasharray=".45 .3"')));
+          A.add(sl, A.p(T >= 2 ? star(ax, by + 0.8, 1.2, 0.45, T >= 3 ? 5 : 4) : el(ax, by + 0.6, 0.65, 0.65), bead, '', {sh:dk(bead, 0.3), k:0.15, ow:0.65, hl:false, t:t, top:A.glow(ax, by + 0.8, 2, GEM)}));
+        });
+        var moon = crescent(x, y, 3.3, 2.75, 1.55, -38);
+        A.add(sl, A.p(moon, c, (T >= 2 ? C(x - 1.9, y + 0.6, 0.35, cd, op(0.7)) + C(x - 1.3, y - 1.6, 0.25, cd, op(0.6)) : '') + (T >= 4 ? L(crescent(x, y, 2.6, 2.75, 1.55, -38).replace(/Z$/, ''), '#fff4c8', 0.4, op(0.7)) : ''),
+          {sh:cd, hl:lt(c, 0.5), k:0.4, ow:0.9, m:T >= 1 ? 1 : 0, rim:0.5, top:A.glow(x - 1, y, 4, GOLD)}));
+        if (T >= 3) A.add(sl, spark(x + 2.2, y - 2.8, 1.1, '#fff4c8'));
+        A.grow(y - 6.4, x - 6);
+      }},
+      /* 39 chained tome: a small grimoire hanging at the hip on a chain (a cord for a Recruit); corners, clasp and
+         cover sign climb with the tier, a Legend's cover glows with the { } rune */
+      {name:'Chained tome', view:'bust', draw:function(A){
+        var T = A.T, x = A.beard === 'great' || A.beard === 'braid' ? 24.4 : A.beard !== 'none' ? 25.8 : 27.6, y = A.belt + 1.3;
+        var lc = ['#8a5a33', '#6a3f8a', '#2f4f8a', '#8a2f4a', '#2c2f7a'][T], ld = dk(lc, 0.38), mc = fm(A), mcd = fmD(A);
+        var rot = -8 + (A.trl ? A.trl * 5 : 0), tr = 'rotate(' + f(rot) + ' ' + f(x) + ' ' + f(A.belt) + ')';
+        var ch = 'M' + f(x + 0.2) + ' ' + f(A.belt - 0.2) + 'V' + f(y + 0.2);
+        A.add('neck', G(tr, T === 0 ? L(ch, INK, 1.2) + L(ch, '#c9a36b', 0.6) : L(ch, INK, 1.3) + L(ch, mc, 0.8, ' stroke-dasharray=".7 .35"') + C(x + 0.2, A.belt - 0.2, 0.55, mc, ' stroke="' + INK + '" stroke-width=".4"')));
+        var bw = 5.6, bh = 6.6, x0 = x - bw / 2;
+        var pages = P('M' + f(x0 + bw - 0.2) + ' ' + f(y + 0.5) + 'H' + f(x0 + bw + 0.8) + 'V' + f(y + bh - 0.3) + 'H' + f(x0 + bw - 0.2) + 'Z', '#f3e8d0') + L('M' + f(x0 + bw) + ' ' + f(y + 1.6) + 'h.7M' + f(x0 + bw) + ' ' + f(y + 2.8) + 'h.7M' + f(x0 + bw) + ' ' + f(y + 4) + 'h.7', '#c9b894', 0.25);
+        var cov = rr(x0, y, bw, bh, 0.6);
+        var det = P(rr(x0, y, 1.1, bh, 0.5), ld, op(0.7));
+        if (T === 0) det += P(rr(x0 + 2.6, y + 3.9, 1.8, 1.6, 0.3), '#b08a5a') + L('M' + f(x0 + 2.8) + ' ' + f(y + 4.1) + 'h1.4M' + f(x0 + 2.8) + ' ' + f(y + 5.3) + 'h1.4', '#5c392a', 0.3, ' stroke-dasharray=".4 .3"') + gly(';', x0 + 3.2, y + 2.1, 2, '', {m:'chalk', w:0.42});
+        if (T >= 1){
+          var cn = '', k = 1.3;
+          [[x0, y, 1, 1], [x0 + bw, y, -1, 1], [x0, y + bh, 1, -1], [x0 + bw, y + bh, -1, -1]].forEach(function(q){ cn += 'M' + f(q[0]) + ' ' + f(q[1]) + 'h' + f(q[2] * k) + 'L' + f(q[0]) + ' ' + f(q[1] + q[3] * k) + 'Z'; });
+          det += P(cn, mc) + L(cn, mcd, 0.25);
+        }
+        var cxm = x0 + bw / 2 + 0.3, cym = y + bh / 2;
+        if (T === 1) det += C(cxm, cym, 1.2, BRZ) + C(cxm, cym, 0.55, '#a57ff0');
+        if (T === 2) det += P('M' + f(cxm - 1.3) + ' ' + f(cym) + 'Q' + f(cxm) + ' ' + f(cym - 1.3) + ' ' + f(cxm + 1.3) + ' ' + f(cym) + 'Q' + f(cxm) + ' ' + f(cym + 1.3) + ' ' + f(cxm - 1.3) + ' ' + f(cym) + 'Z', '#dfe4ee') + C(cxm, cym, 0.55, '#5f9dff');
+        if (T === 3) det += P(star(cxm, cym, 1.8, 0.7, 5), GOLD) + C(cxm, cym, 0.5, '#b886ff');
+        if (T >= 4) det += C(cxm, cym, 2.6, glow(GEM, 0.6)) + gly('{}', cxm, cym, 2, GEM, {m:'lit', w:0.34});
+        A.add('neck', A.p(cov, lc, pages + det, {sh:ld, hl:lt(lc, 0.35), k:0.4, ow:0.85, rim:0.6, t:tr}));
+        if (T >= 2) A.add('neck', A.p(rr(x0 + bw - 1, cym - 0.7, 2.1, 1.4, 0.4), mc, C(x0 + bw + 0.4, cym, 0.35, mcd), fq(A, {k:0.15, ow:0.6, hl:false, t:tr, top:A.glow(cxm, cym, 3.6, GEM)})));
+      }},
+      /* 40 owl familiar: a little owl perched on the back shoulder, clear of the weapon hand (tawny, then grey, a snowy owl for a Champion
+         and a starry astral owl for a Legend), with a leg ring in the tier metal */
+      {name:'Owl familiar', view:'bust', draw:function(A){
+        var T = A.T, fx = 32 - 5.73 * A.WF - 7.4, fy = 37, k = 0.92;
+        var bc = ['#a8784a', '#9a6a3e', '#8e97b8', '#eef0f6', '#4550b4'][T], bd = ['#74502e', '#6a4428', '#5f6788', '#b8bfd2', '#2c3280'][T];
+        var be = ['#ecd6ae', '#e8cc9c', '#e8ecf4', '#ffffff', '#7a86e0'][T], dc = ['#f6e6c6', '#f3dcb4', '#f6f8fc', '#ffffff', '#c8d4ff'][T];
+        var ey = ['#ffb547', '#ffb547', '#ffd24a', GOLD, GEM][T];
+        var tr = 'translate(' + f(fx) + ' ' + f(fy) + ') scale(' + k + ')';
+        var q = function(z){ z.t = tr; return z; };
+        A.add('neck', A.p('M-3 -8L-3.9 -11.2L-1.3 -9.2ZM3 -8L3.9 -11.2L1.3 -9.2Z', bd, '', q({sh:dk(bd, 0.3), k:0.2, ow:0.85, hl:false})));
+        var body = 'M0 -9.6C-3.6 -9.6 -4.5 -6.6 -4.3 -4C-4.1 -1.4 -2.4 0.4 0 0.4C2.4 0.4 4.1 -1.4 4.3 -4C4.5 -6.6 3.6 -9.6 0 -9.6Z';
+        var spk = T === 3 ? L('M-2.4 -2.6l.6 .4M-1 -1.4l.6 .4M1.4 -2.2l.6 .4M2.6 -3.6l.5 .4M-3 -5l.5 .4', '#5b6480', 0.5) : T === 4 ? P(star(-2.2, -2.4, 0.7, 0.22, 4) + star(2, -1.6, 0.6, 0.2, 4) + star(2.8, -4.4, 0.5, 0.18, 4), '#e6fbff') + C(-0.6, -1, 0.25, '#e6fbff') + C(1, -3.4, 0.22, '#e6fbff')
+          : L('M-1.8 -3.2l.6 .5l.6 -.5M.8 -2.4l.6 .5l.6 -.5M-.6 -1.2l.6 .5l.6 -.5', bd, 0.4);
+        var belly = P(el(0.3, -3, 2.6, 3), be) + spk;
+        var disc = P(el(-1.4, -6.5, 2, 2) + el(1.4, -6.5, 2, 2), dc) + L('M-3.2 -7.4Q-1.4 -9 0 -7.2Q1.4 -9 3.2 -7.4', bd, 0.4, op(0.7));
+        var eyes = C(-1.35, -6.4, 1.15, ey) + C(1.35, -6.4, 1.15, ey) + C(-1.25, -6.3, 0.62, '#1f1430') + C(1.45, -6.3, 0.62, '#1f1430') + C(-1.55, -6.7, 0.3, '#fff') + C(1.15, -6.7, 0.3, '#fff');
+        var beak = P('M-0.55 -5.5L0.55 -5.5L0 -4.2Z', T >= 3 ? '#8a7a6a' : '#e0a83e');
+        A.add('neck', A.p(body, bc, belly + disc + eyes + beak, q({sh:bd, hl:lt(bc, 0.35), k:0.6, ow:1, rim:0.8, top:T >= 4 ? C(-1.35, -6.4, 2, glow(GEM, 0.6)) + C(1.35, -6.4, 2, glow(GEM, 0.6)) : ''})));
+        A.add('neck', A.p('M-4.2 -6C-5.4 -3.6 -5 -1 -3 0.4C-2.6 -2 -2.8 -4.2 -4.2 -6Z', bd, L('M-4.2 -3.6L-3.2 -2.6M-4.2 -1.8L-3.2 -1', dk(bd, 0.3), 0.35), q({sh:dk(bd, 0.3), k:0.3, ow:0.8, hl:lt(bd, 0.3)})));
+        A.add('neck', A.p('M-1.8 -0.2l-.5 1.2h.6l.3 -.7l.3 .8h.6l-.3 -1.3ZM1 -0.2l-.3 1.3h.6l.3 -.8l.3 .7h.6l-.5 -1.2Z', '#e0a83e', '', q({sh:'#b07a2a', k:0.1, ow:0.6, hl:false})));
+        if (T >= 1) A.add('neck', A.p(rr(-2.2, -0.9, 1.5, 0.8, 0.3), fm(A), '', fq(A, {k:0.1, ow:0.55, hl:false, t:tr, top:A.glow(-1.4, -0.5, 2, GOLD)})));
+        if (T >= 4) A.add('neck', G(tr, spark(-4, -9.8, 1.1, '#fff4c8')));
+        A.grow(null, fx - 5.2);
+      }},
+      /* 41 tucked quill: a writing quill tucked behind the near ear, the nib down by the jaw (the ear drawn back
+         over it); with side locks it is tucked into the hair; a fox or saurian wears it behind the head.
+         Goose, hawk, heron, peacock and a Legend's phoenix feather */
+      {name:'Tucked quill', draw:function(A){
+        var hm = A.helm, T = A.T, ek = A.ear.kind;
+        var vc = ['#f3ece0', '#d9b27a', '#e4ecf8', '#2fb3a4', GOLD][T], vd = ['#b8b0a4', '#8a5a33', '#8e97b8', '#1d6a7a', '#e07a2e'][T];
+        var nc = T === 0 ? '#3a2d4a' : fm(A);
+        var behind = A.furry || A.scaly, sides = A.hairy && (A.hs === 1 || A.hs === 8 || A.hs === 11 || A.hs === 14);
+        var n0, tip;
+        if (behind){ n0 = [27, 21.6]; tip = A.furry ? [13.6, 9.2] : [13.6, 10.4]; }
+        else if (ek === 'long'){ n0 = [22.2, 33.4]; tip = [17.2, 10.6]; }
+        else if (ek === 'point'){ n0 = [22.6, 33.2]; tip = [15.2, 12.4]; }
+        else { n0 = [22.4, 32.8]; tip = [14.8, 13.4]; }
+        var dx = tip[0] - n0[0], dy = tip[1] - n0[1], ln = Math.sqrt(dx * dx + dy * dy), ux = dx / ln, uy = dy / ln;
+        var P0 = n0, P1 = [n0[0] + dx * 0.35 - uy * 0.5, n0[1] + dy * 0.35 + ux * 0.5], P2 = [n0[0] + dx * 0.7 - uy * 0.9, n0[1] + dy * 0.7 + ux * 0.9], P3 = tip;
+        var u0 = sides ? 0.3 : 0;
+        var sl = A.furry ? 'back' : A.scaly ? 'headBack' : 'under';
+        var sp = bz(P0, P1, P2, P3, u0), v0 = bz(P0, P1, P2, P3, 0.34), v1 = bz(P0, P1, P2, P3, 0.56), v2 = bz(P0, P1, P2, P3, 0.8);
+        if (!sides){
+          var nb = [n0[0] - ux * 2, n0[1] - uy * 2];
+          A.add(sl, A.p(cap(n0[0] + ux * 0.4, n0[1] + uy * 0.4, 0.5, nb[0], nb[1], 0.12), nc, '', {sh:dk(nc, 0.3), k:0.1, ow:0.6, hl:false, m:T >= 1 ? 1 : 0}));
+          if (T === 0) A.add(sl, C(nb[0] + ux * 0.4, nb[1] + uy * 0.4, 0.4, '#2a2350'));
+        }
+        A.add(sl, A.strap('M' + f(sp[0]) + ' ' + f(sp[1]) + 'L' + f(v0[0]) + ' ' + f(v0[1]), T >= 4 ? '#ffe7a0' : '#efe6d2', 0.6));
+        var vane = A.ribbon(v0, [v0[0] + (v1[0] - v0[0]) * 0.8, v0[1] + (v1[1] - v0[1]) * 0.8], v2, P3, 0.6, 0.15, 2.8);
+        var bars = '';
+        for (var k = 1; k < 6; k++){ var b = bz(v0, v1, v2, P3, k / 6.5); bars += 'M' + f(b[0] - uy * 1.3) + ' ' + f(b[1] + ux * 1.3) + 'L' + f(b[0] + ux * 0.5) + ' ' + f(b[1] + uy * 0.5) + 'L' + f(b[0] + uy * 1.3) + ' ' + f(b[1] - ux * 1.3); }
+        var rach = 'M' + f(v0[0]) + ' ' + f(v0[1]) + 'C' + f(v1[0]) + ' ' + f(v1[1]) + ' ' + f(v2[0]) + ' ' + f(v2[1]) + ' ' + f(P3[0]) + ' ' + f(P3[1]);
+        var ex = '';
+        if (T === 3){ var pe = bz(v0, v1, v2, P3, 0.78); ex = E(pe[0], pe[1], 1.3, 1.3, GOLD) + E(pe[0], pe[1], 0.85, 0.85, '#2a3a9a') + C(pe[0], pe[1], 0.4, '#5fd8ff'); }
+        A.add(sl, A.p(vane, vc, L(bars, vd, T === 3 ? 0.35 : 0.45, op(0.8)) + ex + L(rach, lt(vc, 0.5), 0.4, op(0.9)), {sh:vd, hl:lt(vc, 0.4), k:0.35, ow:0.8, rim:0.5, g:1, top:A.glow(P3[0] + 1, P3[1] + 1, 3.4, EMB)}));
+        if (T >= 4) A.add(sl, spark(P3[0] - 0.6, P3[1] - 0.6, 1.2, '#fff4c8'));
+        /* the ear, back over the quill (only its visible part, clear of the head) */
+        if (!behind && !sides && A.hairy){
+          var ed = ek === 'long' ? 'M21.5 25.4C19.4 23.2 16.4 19.4 13.4 15.6C13.6 20.6 15.8 26.6 21.4 30.2Z' : ek === 'point' ? 'M21.5 24.6L14.6 21.6Q16 27.4 21.6 29.9Z' : 'M21.5 24.9A2.1 2.7 0 0 0 21.5 30.3Z';
+          var ex2 = ek === 'long' ? L('M21 26.4C19 24.8 17 22.6 15.6 19.8', A.skD, 0.6, op(0.8)) : ek === 'point' ? L('M21 25.6L17.2 24.2', A.skD, 0.6) : E(22.2, 27.8, 1, 1.5, A.skD, op(0.8));
+          A.add(sl, A.p(ed, A.sk, ex2, {sh:A.skD, hl:false, ln:false, ow:1.1, k:0.5}));
+        }
+        A.grow(tip[1] - 3.2, tip[0] - 3);
+      }},
+      /* 42 astral collar: a high sorcerer's collar standing up behind the head, lined with a starfield, its yoke
+         fastened at the throat by a clasp (wood, bronze, a silver star, a gold star, a glowing Legend star) */
+      {name:'Astral collar', view:'bust', draw:function(A){
+        var T = A.T, oc = dk(A.tc, 0.12), ocd = dk(A.tc, 0.42), lin = T >= 4 ? '#2e3494' : '#4a40a8', tc2 = T === 0 ? lt(oc, 0.3) : fm(A);
+        var stc = T >= 4 ? '#e6fbff' : T === 3 ? GOLD : T === 2 ? '#eef2fa' : '#b8b0e8';
+        var stars = function(pts){ return pts.map(function(p){ return p[2] ? P(star(p[0], p[1], p[2], p[2] * 0.34, 4), stc) : C(p[0], p[1], 0.3, stc, op(0.9)); }).join(''); };
+        var nearO = 'M26.8 38.2C22.4 37 18.4 33.8 16.8 29.2C16 26.8 15.9 23.8 16.6 20.8C19.6 24 22.6 26 25.8 27.2Z';
+        var nearL = 'M26.2 37C22.8 36 19.8 33.2 18.4 29.6C17.8 27.8 17.6 25.6 17.9 23.4C20.4 25.8 22.9 27.3 25.4 28.2Z';
+        var farO = 'M37.6 38.2C42 37 46 33.8 47.6 29.2C48.4 26.8 48.5 23.8 47.8 20.8C44.8 24 41.8 26 38.6 27.2Z';
+        var farL = 'M38.2 37C41.6 36 44.6 33.2 46 29.6C46.6 27.8 46.8 25.6 46.5 23.4C44 25.8 41.5 27.3 39 28.2Z';
+        var edN = L('M16.6 20.8C15.9 23.8 16 26.8 16.8 29.2C18.4 33.8 22.4 37 26.8 38.2', tc2, T === 0 ? 0.5 : 0.7, T === 0 ? ' stroke-dasharray=".5 .4"' : '');
+        var edF = L('M47.8 20.8C48.5 23.8 48.4 26.8 47.6 29.2C46 33.8 42 37 37.6 38.2', tc2, T === 0 ? 0.5 : 0.7, T === 0 ? ' stroke-dasharray=".5 .4"' : '');
+        var qn = {sh:ocd, k:0.5, ow:1, g:1, rim:0};
+        A.add('nape', A.p(nearO, oc, P(nearL, lin) + stars([[19.8, 28.2, 1.1], [22.8, 32.6, 0], [18.8, 25, 0], [21.4, 30.6, 0.75], [24.2, 35, 0], [19.4, 31.8, 0]]) + edN, qn));
+        A.add('nape', A.p(farO, oc, P(farL, lin) + stars([[44.4, 28.2, 1], [42, 32.8, 0], [45.2, 25.6, 0], [43.4, 30.6, 0.7]]) + edF, {sh:ocd, k:0.5, ow:1, g:1, rim:0.7}));
+        var WS = A.WF / 1.1, wt = 'matrix(' + f(WS) + ' 0 0 1 ' + f(32 - 32 * WS) + ' 0)';
+        var yoke = 'M23.4 36C26.8 38.6 29.6 39.4 32.4 39.4C35.2 39.4 38 38.6 41.2 36L42 38.4C38.6 41 35.6 41.8 32.4 41.8C29.2 41.8 26.2 41 22.6 38.4Z';
+        A.add('neck', A.p(yoke, oc, L('M22.9 38.2C26.4 40.7 29.3 41.4 32.4 41.4C35.5 41.4 38.4 40.7 41.7 38.2', tc2, T === 0 ? 0.45 : 0.6, T === 0 ? ' stroke-dasharray=".5 .4"' : ''), {sh:ocd, k:0.4, ow:0.9, g:1, rim:0.7, t:wt}));
+        var cx = 32.4, cy = 40.4;
+        var cl = T === 0 ? rr(cx - 1.8, cy - 0.7, 3.6, 1.4, 0.7) : T === 1 ? el(cx, cy, 1.7, 1.7) : star(cx, cy, 2.6, 1.05, T >= 3 ? 8 : 5);
+        A.add('neck', A.p(cl, T === 0 ? '#a8703a' : fm(A), T >= 1 ? C(cx, cy, 0.8, xc(A)) + C(cx - 0.25, cy - 0.3, 0.25, '#fff') : L('M' + f(cx - 1) + ' ' + f(cy) + 'H' + f(cx + 1), '#5c392a', 0.35), fq(A, {k:0.3, ow:0.8, t:wt, sh:T === 0 ? '#6e4424' : fmD(A), hl:lt(T === 0 ? '#a8703a' : fm(A), 0.45), top:A.glow(cx, cy, 3.6, GEM)})));
+        A.grow(null, 15.6, 48.8);
+      }},
+      /* 43 hourglass: a little hourglass hung on a chain at the chest (worn over a dwarf's beard); wood,
+         bronze, silver, gold; a Legend's runs with glowing star-sand */
+      {name:'Hourglass', view:'bust', draw:function(A){
+        var T = A.T, bd = A.beard !== 'none', cx = bd ? 32.6 : 32.6, cy = bd ? 40.6 : 41.6, sl = bd ? 'beard' : 'neck';
+        var mc = T === 0 ? '#8a5a33' : fm(A), mcd = T === 0 ? '#5c392a' : fmD(A), sand = ['#e8c47a', '#e8c47a', '#f0dca8', GOLD, '#9ff0ff'][T];
+        var WS = A.WF / 1.1, wt = bd ? '' : 'matrix(' + f(WS) + ' 0 0 1 ' + f(32 - 32 * WS) + ' 0)';
+        var ch = bd ? 'M29.4 34.6Q' + f(cx - 2) + ' ' + f(cy - 3) + ' ' + f(cx) + ' ' + f(cy - 4.2) + 'Q' + f(cx + 2) + ' ' + f(cy - 3) + ' 35.6 34.4' : 'M27.4 35.6Q' + f((27.4 + cx) / 2 - 0.4) + ' ' + f(cy - 2) + ' ' + f(cx) + ' ' + f(cy - 4.2) + 'Q' + f((37.4 + cx) / 2 + 0.4) + ' ' + f(cy - 2) + ' 37.4 35.4';
+        A.add(sl, G(wt, T === 0 ? L(ch, INK, 1) + L(ch, '#c9a36b', 0.5) : L(ch, INK, 1.05) + L(ch, mc, 0.55, ' stroke-dasharray=".5 .3"')));
+        var gls = 'M' + f(cx - 1.35) + ' ' + f(cy - 2.5) + 'Q' + f(cx - 1.35) + ' ' + f(cy - 0.6) + ' ' + f(cx - 0.3) + ' ' + f(cy) + 'Q' + f(cx - 1.35) + ' ' + f(cy + 0.6) + ' ' + f(cx - 1.35) + ' ' + f(cy + 2.5)
+          + 'H' + f(cx + 1.35) + 'Q' + f(cx + 1.35) + ' ' + f(cy + 0.6) + ' ' + f(cx + 0.3) + ' ' + f(cy) + 'Q' + f(cx + 1.35) + ' ' + f(cy - 0.6) + ' ' + f(cx + 1.35) + ' ' + f(cy - 2.5) + 'Z';
+        var sd = P('M' + f(cx - 0.9) + ' ' + f(cy - 1.2) + 'H' + f(cx + 0.9) + 'Q' + f(cx + 0.7) + ' ' + f(cy - 0.4) + ' ' + f(cx) + ' ' + f(cy) + 'Q' + f(cx - 0.7) + ' ' + f(cy - 0.4) + ' ' + f(cx - 0.9) + ' ' + f(cy - 1.2) + 'Z', sand)
+          + P('M' + f(cx - 1.3) + ' ' + f(cy + 2.5) + 'Q' + f(cx) + ' ' + f(cy + 0.6) + ' ' + f(cx + 1.3) + ' ' + f(cy + 2.5) + 'Z', sand) + L('M' + f(cx) + ' ' + f(cy) + 'V' + f(cy + 1.6), sand, 0.3);
+        A.add(sl, A.p(gls, '#e6f6ff', sd + mx(L('M' + f(cx - 0.9) + ' ' + f(cy - 2) + 'Q' + f(cx - 0.9) + ' ' + f(cy - 0.9) + ' ' + f(cx - 0.4) + ' ' + f(cy - 0.4), '#fff', 0.35, op(0.9)), cx), {sh:'#b8d4e4', hl:false, k:0.2, ow:0.7, ln:'#8aa8c0', lw:0.3, t:wt, top:T >= 4 ? C(cx, cy + 1.6, 2.4, glow(GEM, 0.6)) : ''}));
+        var fr = rr(cx - 2, cy - 3.4, 4, 0.95, 0.35) + rr(cx - 2, cy + 2.45, 4, 0.95, 0.35) + rr(cx - 1.85, cy - 2.6, 0.5, 5.2, 0.2) + rr(cx + 1.35, cy - 2.6, 0.5, 5.2, 0.2);
+        A.add(sl, A.p(fr, mc, '', {sh:mcd, hl:lt(mc, 0.45), k:0.2, ow:0.75, m:T >= 1 ? 1 : 0, t:wt, top:A.glow(cx, cy, 4, GOLD)}));
+        A.add(sl, A.p(el(cx, cy - 3.9, 0.55, 0.5) + A.elR(cx, cy - 3.9, 0.25, 0.22), mc, '', {sh:mcd, k:0.1, ow:0.55, hl:false, m:T >= 1 ? 1 : 0, t:wt}));
+        if (T >= 3) A.add(sl, G(wt, C(cx, cy - 2.9, 0.4, T >= 4 ? GEM : '#b886ff') + C(cx, cy + 2.9, 0.4, T >= 4 ? GEM : '#b886ff')));
+      }},
+      /* 44 crystal horns: clusters of crystal growing from the temples like horns (quartz on stone sockets, then
+         amethyst, sapphire, star-violet, the Legend's cyan); on a helm they grow from its sides */
+      {name:'Crystal horns', draw:function(A){
+        var hm = A.helm, oh = onH(A), T = A.T;
+        var s0 = oh ? [hm.sides[0][0] + 0.6, hm.sides[0][1] + 0.2] : [A.temple[0][0] + 0.6, A.temple[0][1] - 0.4], s1 = oh ? hm.sides[1] : [A.temple[1][0] - 0.4, A.temple[1][1] - 0.4];
+        if (hm.horns){ s0 = [s0[0] + 0.4, s0[1] + 1.6]; s1 = [s1[0], s1[1] + 1.6]; }
+        var c = xc(A), cd = xd(A), sc = T === 0 ? '#8a84a6' : fm(A), scd = T === 0 ? '#5e587a' : fmD(A);
+        var tilt = A.furry ? 46 : A.ear.kind === 'long' ? 22 : 30, sz = A.small ? 1.05 : 1;
+        var cluster = function(p, far, sl){
+          var sgn = far ? 1 : -1, cc = far ? dk(c, 0.1) : c;
+          [[-1.1, 0.5, 1.05, 4.4, 34], [1, 0.3, 0.85, 3.2, -26], [0, 0, 1.55, 7.4, 0]].forEach(function(s){
+            var a = sgn * (tilt + s[4]) * (far ? 0.85 : 1), t = 'translate(' + f(p[0] + sgn * -s[0] * 0.6) + ' ' + f(p[1] + s[1]) + ') rotate(' + f(a) + ') scale(' + sz + ')';
+            A.add(sl, A.p(shardD(s[2], s[3]), cc, shardX(s[2], s[3], cc), {sh:cd, hl:false, k:0.25, ow:0.8, ln:dk(c, 0.5), lw:0.3, rim:far ? 0 : 0.5, t:t, ra:a, top:A.glow(0, -s[3] * 0.5, 2.4, GEM)}));
+          });
+          A.add(sl, A.p(el(p[0], p[1] + 0.6, 1.9, 1.2), sc, T >= 2 ? C(p[0], p[1] + 0.7, 0.4, c) : '', {sh:scd, hl:lt(sc, 0.45), k:0.2, ow:0.8, m:T >= 1 ? 1 : 0}));
+        };
+        cluster(s1, 1, 'headBack');
+        cluster(s0, 0, oh || hm.kind !== 'none' && hm.kind !== 'feather' ? 'over' : 'under');
+        A.grow(Math.min(s0[1], s1[1]) - 8.4, s0[0] - 7.4, s1[0] + 7);
+      }},
+      /* 45 scroll case: a capped scroll tube slung on the back, over the near shoulder, a rolled scroll poking
+         out of it, its strap across the chest (leather and cord, then bronze, silver, gold caps; a Legend's seal
+         glows) */
+      {name:'Scroll case', view:'bust', draw:function(A){
+        var T = A.T, lc = ['#8a5a33', '#7a4a2a', '#4a4a7a', '#6a2f4a', '#2c2f7a'][T], ld = dk(lc, 0.38), mc = T === 0 ? '#c9a36b' : fm(A), mcd = T === 0 ? '#8a6a3a' : fmD(A);
+        var b0 = [27.2, 44], b1 = [16.8, 26.2], ux = (b1[0] - b0[0]), uy = (b1[1] - b0[1]), ln = Math.sqrt(ux * ux + uy * uy); ux /= ln; uy /= ln;
+        var r = 1.95, px = -uy, py = ux;
+        var at = function(t, o){ return [b1[0] + ux * t + px * o, b1[1] + uy * t + py * o]; };
+        var re = at(1.6, 0);
+        A.add('back', A.p(cap(b1[0] + ux * 0.4, b1[1] + uy * 0.4, 1.3, re[0], re[1], 1.3), '#f3e8d0', L('M' + f(at(0.9, -1.3)[0]) + ' ' + f(at(0.9, -1.3)[1]) + 'L' + f(at(0.9, 1.3)[0]) + ' ' + f(at(0.9, 1.3)[1]), T >= 3 ? GOLD : '#d8324a', 0.7), {sh:'#cdbb94', hl:'#fffaf0', k:0.3, ow:0.8}));
+        A.add('back', A.p(cap(b0[0], b0[1], r, b1[0], b1[1], r), lc, L('M' + f(at(-3.2, -r)[0]) + ' ' + f(at(-3.2, -r)[1]) + 'L' + f(at(-3.2, r)[0]) + ' ' + f(at(-3.2, r)[1]) + 'M' + f(at(-7.2, -r)[0]) + ' ' + f(at(-7.2, -r)[1]) + 'L' + f(at(-7.2, r)[0]) + ' ' + f(at(-7.2, r)[1]), ld, 0.5, T === 0 ? ' stroke-dasharray=".5 .4"' : ''),
+          {sh:ld, hl:lt(lc, 0.35), k:0.6, ow:1, rim:0, g:1}));
+        var c0 = at(-0.2, -r - 0.25), c1 = at(-0.2, r + 0.25), c2 = at(-1.6, r + 0.25), c3 = at(-1.6, -r - 0.25);
+        A.add('back', A.p('M' + f(c0[0]) + ' ' + f(c0[1]) + 'L' + f(c1[0]) + ' ' + f(c1[1]) + 'L' + f(c2[0]) + ' ' + f(c2[1]) + 'L' + f(c3[0]) + ' ' + f(c3[1]) + 'Z', mc, '', {sh:mcd, hl:lt(mc, 0.45), k:0.25, ow:0.8, m:T >= 1 ? 1 : 0}));
+        if (T >= 2){ var sp = at(1.2, 0.2); A.add('back', A.p(el(sp[0], sp[1], 0.95, 0.95), T >= 4 ? GEM : T === 3 ? '#b886ff' : '#d8324a', '', {k:0.15, ow:0.6, hl:false, top:A.glow(sp[0], sp[1], 2.6, GEM)})); }
+        var WS = A.WF / 1.1, wt = 'matrix(' + f(WS) + ' 0 0 1 ' + f(32 - 32 * WS) + ' 0)';
+        A.add('neck', G(wt, A.strap('M24.4 36.2C29.6 39.2 35.4 43 40.4 45.6', T === 0 ? '#a8845a' : '#6e4424', 1.3)));
+        A.add('neck', A.p(rr(30.6, 39.4, 2.2, 1.9, 0.4) + A.elR(31.7, 40.35, 0.5, 0.4), mc, '', {sh:mcd, k:0.15, ow:0.7, hl:false, m:T >= 1 ? 1 : 0, t:wt + ' rotate(32 31.7 40.35)', ra:32}));
+        A.grow(null, 15);
+      }}
     ]};
   }
 
@@ -11274,7 +12503,7 @@ function avatarSvg(look, o){
         A.grow(y - 11);
       }},
       /* 124 a big curly moustache under the nose (on the snout, under the fox's nose, over a dwarf's own) */
-      {name:'Big moustache', draw:function(A){
+      {name:'Big moustache', mat:function(A){ return A.hairy ? A.hc : ''; }, draw:function(A){
         var n = A.nose, x = A.scaly ? n[0] - 1.2 : n[0] + (A.furry ? -0.2 : 0.1), y = A.scaly ? n[1] + 1.8 : n[1] + (A.furry ? 1.3 : 1.1), s = A.scaly ? 0.88 : A.beard !== 'none' ? 1.15 : 1;
         var c = A.hairy ? A.hc : A.furry ? dk(A.sk, 0.45) : '#3a2a3a', cd = dk(c, 0.35);
         var d = 'M0 0C-1.4 -1.2 -3.4 -1.2 -4.6 0C-5.6 1 -6.2 1.2 -6.8 0.2C-7.2 -0.6 -6.8 -1.6 -6 -1.8C-6.6 -0.8 -6.2 0 -5.6 -0.4C-4.4 -2.6 -1.6 -2.8 0 -1C1.4 -2.6 3.8 -2.4 4.8 -0.6C5.2 0 5.6 -0.4 5.4 -1.2C6 -1 6.2 -0.2 5.8 0.4C5.2 1.2 4.4 0.8 3.8 0.2C2.8 -0.8 1.2 -1 0 0Z';
@@ -15543,6 +16772,16 @@ function advTier(){
    A save from before the drawn hero carries only an emoji face. Rather than
    hand everyone the same default, grow a look from that face and the name:
    the same save always grows the same hero, and nobody's is lost. */
+/* The look fields added with the Sprite v2 look system (sex, expr, beard, beardC,
+   accC) are optional: a save without them draws exactly as before. Each one a save
+   does carry is cut back into its list here. */
+function advLookExtra(k, out){
+  const num = (v, n) => { v = Math.floor(Number(v)); return isFinite(v) ? ((v % n) + n) % n : 0; };
+  if (k.sex === 'f' || k.sex === 'm') out.sex = k.sex;
+  [['expr', AV_CAT.expr.length], ['beard', AV_CAT.beard.length], ['beardC', AV_CAT.beardC.length], ['accC', AV_CAT.accC.length]]
+    .forEach(([key, n]) => { if (k[key] != null && k[key] !== '') out[key] = num(k[key], n); });
+  return out;
+}
 function advLookOf(a){
   if (!a) return null;
   const cls = advClsId(a.cls), tier = advTier();
@@ -15550,8 +16789,8 @@ function advLookOf(a){
   const num = (v, n) => { v = Math.floor(Number(v)); return isFinite(v) ? ((v % n) + n) % n : 0; };
   if (k){
     const species = advSpeciesId(k.species);
-    return {cls, species, tier, skin:num(k.skin, AV_CAT.skinBySpecies[species].length), hair:num(k.hair, AV_CAT.hairBySpecies[species].length), hairC:num(k.hairC, AV_CAT.hairC.length),
-            eyes:num(k.eyes, AV_CAT.eyes.length), eyeC:k.eyeC == null || k.eyeC === '' ? undefined : num(k.eyeC, AV_CAT.eyeC.length), acc:num(k.acc, AV_CAT.acc.length), tint:num(k.tint, AV_CAT.tintByCls[cls].length)};
+    return advLookExtra(k, {cls, species, tier, skin:num(k.skin, AV_CAT.skinBySpecies[species].length), hair:num(k.hair, AV_CAT.hairBySpecies[species].length), hairC:num(k.hairC, AV_CAT.hairC.length),
+            eyes:num(k.eyes, AV_CAT.eyes.length), eyeC:k.eyeC == null || k.eyeC === '' ? undefined : num(k.eyeC, AV_CAT.eyeC.length), acc:num(k.acc, AV_CAT.acc.length), tint:num(k.tint, AV_CAT.tintByCls[cls].length)});
   }
   let h = 2166136261 >>> 0;
   const seed = String(a.face || '') + '|' + String(a.name || '');
@@ -23272,6 +24511,13 @@ function advCleanLook(k, cls){
   const out = {species};
   ADV_LOOK_KEYS.forEach(key => { out[key] = num(k[key], len[key]); });
   if (k.eyeC != null && k.eyeC !== '') out.eyeC = num(k.eyeC, AV_CAT.eyeC.length);
+  advLookExtra(k, out);
+  /* a dwarf saved before beards had their own list: its one combined hair entry becomes
+     the same hair and the same beard (drawn identically), so the creator can show both */
+  if (species === 'dwarf' && out.beard == null){
+    const m = AV_CAT.dwarfLegacy[num(k.hair, AV_CAT.dwarfLegacy.length)];
+    out.hair = m[0]; out.beard = m[1];
+  }
   return out;
 }
 /* "Random" that never hands anyone a clown: natural hair most of the time,
@@ -23289,13 +24535,18 @@ function advRandomLook(cls, not){
   for (let tries = 0; tries < 12; tries++){
     /* humans a little more often than the rest; every species in reach */
     const species = Math.random() < 0.3 ? 'human' : one(AV_CAT.species).id;
-    const hairs = AV_CAT.hairBySpecies[species];
-    const hair = r(hairs.length);
+    const hairs = AV_CAT.hairBySpecies[species], sex = Math.random() < 0.5 ? 'f' : 'm';
+    const haired = !/^(saurian|fox)$/.test(species);
+    /* a few styles lean one way (free to pick by hand either way) */
+    const hair = haired ? one(sex === 'f' ? [1, 2, 4, 5, 6, 8, 12, 13, 14, 15, 16, 3] : [0, 2, 3, 4, 6, 7, 9, 10, 17, 1, 8]) : r(hairs.length);
+    const beard = sex === 'f' ? 0 : species === 'dwarf' ? (Math.random() < 0.85 ? 1 + r(AV_CAT.beard.length - 1) : 0)
+      : Math.random() < 0.2 ? 1 + r(AV_CAT.beard.length - 1) : 0;
     /* every extra fits every head (it goes under or onto any helm), so no hair rules out an extra */
     const roll = Math.random();
     const acc = roll < 0.38 ? 0 : roll < 0.9 || !FUNNY.length ? one(EXTRAS) : one(FUNNY);
-    const lk = {species, skin:r(AV_CAT.skinBySpecies[species].length), hair, hairC:Math.random() < 0.8 ? r(7) : 7 + r(3),
-                eyes:one([0, 0, 1, 2, 2, 4]), acc, tint:Math.random() < 0.6 ? r(4) : r(AV_CAT.tintByCls[c].length)};
+    const lk = {species, sex, skin:r(AV_CAT.skinBySpecies[species].length), hair, hairC:Math.random() < 0.8 ? r(7) : 7 + r(3), beard,
+                eyes:one([0, 0, 1, 2, 2, 4, 6, 7]), acc, tint:Math.random() < 0.6 ? r(4) : r(AV_CAT.tintByCls[c].length)};
+    if (Math.random() < 0.3) lk.expr = one([1, 2, 5, 6, 7, 11, 13]);
     if (!not || ['species'].concat(ADV_LOOK_KEYS).some(k => lk[k] !== not[k])) return lk;
   }
   return {species:'human', skin:2, hair:0, hairC:1, eyes:0, acc:0, tint:0};
@@ -23576,7 +24827,23 @@ function advClose(){
    here re-draws the whole card: a choice repaints the stage and the one panel
    that shows it, so the name you are typing, where you have scrolled to and
    the button you are on all stay where they were. */
-const ADV_TABS = [['skin', 'Skin'], ['hair', 'Hair'], ['hairC', 'Color'], ['eyes', 'Eyes'], ['acc', 'Extras'], ['tint', 'Outfit']];
+const ADV_TABS = [['sex', 'Body'], ['skin', 'Skin'], ['hair', 'Hair'], ['hairC', 'Hair color'], ['beard', 'Beard'], ['beardC', 'Beard color'], ['expr', 'Face'],
+  ['eyes', 'Eyes'], ['eyeC', 'Eye color'], ['acc', 'Extras'], ['accC', 'Extra color'], ['tint', 'Outfit']];
+const ADV_TAB_ARIA = {sex:'Body', hairC:'Hair color', beard:'Beard', beardC:'Beard color', expr:'Face', eyes:'Eyes', eyeC:'Eye color', acc:'Extra', accC:'Extra color', tint:'Outfit'};
+/* Male / Female: a Female hero with a short crop starts with longer hair (and no
+   beard), a Male one gets his short hair back; every style stays pickable either way */
+function advSetSex(lk, sx){
+  const sp = advSpeciesId(lk.species), haired = !/^(saurian|fox)$/.test(sp);
+  const FEM = {human:14, elf:12, dwarf:12, orc:16}, SHORT = [0, 7, 9, 10, 17];
+  if (sx === 'f'){
+    if (haired && SHORT.includes(lk.hair)) lk.hair = FEM[sp];
+    lk.beard = 0;
+  } else {
+    if (haired && lk.hair === FEM[sp] && lk.sex === 'f') lk.hair = 0;
+    if (sp === 'dwarf' && !lk.beard) lk.beard = 1;
+  }
+  lk.sex = sx;
+}
 const ADV_POSES = [['idle', 'Stand'], ['walk', 'Walk'], ['attack', 'Attack'], ['win', 'Cheer']];
 const ADV_POSE_ICO = {
   idle:   '<path d="M12 4.2a2.3 2.3 0 1 1 0 .01"/><path d="M12 8.6v6.6M8.4 11h7.2M12 15.2l-2.6 5M12 15.2l2.6 5"/>',
@@ -23594,7 +24861,8 @@ function advDraftLook(){ return Object.assign({cls:advDraft.cls || 'knight', tie
 /* a saurian has scales and a crest, a fox fur and ears, a dwarf a beard */
 function advTabName(k, sp){
   if (k === 'skin') return sp === 'saurian' ? 'Scales' : sp === 'fox' ? 'Fur' : 'Skin';
-  if (k === 'hair') return sp === 'saurian' ? 'Crest' : sp === 'fox' ? 'Ears' : sp === 'dwarf' ? 'Beard' : 'Hair';
+  if (k === 'hair') return sp === 'saurian' ? 'Crest' : sp === 'fox' ? 'Ears' : 'Hair';
+  if (k === 'hairC') return sp === 'saurian' ? 'Crest color' : 'Hair color';
   const t = ADV_TABS.find(x => x[0] === k); return t ? t[1] : k;
 }
 /* the class cards wear your look at the Recruit tier, each in its own kit */
@@ -23728,9 +24996,11 @@ function advPanelHtml(){
                  'Mohawk + braids':'Mohawk', 'Curly + short beard':'Short beard', 'Ponytail + full beard':'Full beard'};
   const opt = (k, v, label, face, extra) => {
     label = SHORT[label] || label;
-    const on = k === 'eyeC' ? (v === '' ? d.look.eyeC == null : d.look.eyeC === v) : d.look[k] === v;
+    const auto = k === 'eyeC' || k === 'beardC' || k === 'accC';
+    const on = auto ? (v === '' ? d.look[k] == null : d.look[k] === v) : k === 'sex' ? (d.look.sex || 'm') === v
+      : k === 'beard' || k === 'expr' ? (d.look[k] || 0) === v : d.look[k] === v;
     return '<button class="advopt' + (extra || '') + (on ? ' on' : '') + '" data-k="' + k + '" data-v="' + v + '" aria-pressed="' + on + '"'
-      + ' aria-label="' + ({skin:advTabName('skin', sp), hair:advTabName('hair', sp), hairC:'Hair color', eyes:'Eyes', eyeC:'Eye color', acc:'Extra', tint:'Outfit'}[k]) + ': ' + label + '">'
+      + ' aria-label="' + (k === 'skin' || k === 'hair' || k === 'hairC' ? advTabName(k, sp) : ADV_TAB_ARIA[k]) + ': ' + label + '">'
       + '<span class="ov">' + face + '</span><span class="on2">' + label + '</span></button>';
   };
   /* the little heads are Recruits: no helm hides the hair you are choosing */
@@ -23740,10 +25010,18 @@ function advPanelHtml(){
   if (tab === 'skin') h = AV_CAT.skinBySpecies[sp].map((s, i) => opt('skin', i, s.name, sw(s.swatch, 'skin'), ' sq')).join('');
   if (tab === 'hair') h = AV_CAT.hairBySpecies[sp].map((s, i) => opt('hair', i, s.name, mini('hair', i, 'head'))).join('');
   if (tab === 'hairC') h = AV_CAT.hairC.map((s, i) => opt('hairC', i, s.name, sw(s.swatch, 'hair'), ' sq')).join('');
-  if (tab === 'eyes') h = AV_CAT.eyes.map((s, i) => opt('eyes', i, s.name, mini('eyes', i, 'head'))).join('')
-      + '<div class="advsub">Eye color</div><div class="advopts sm">'
-      + opt('eyeC', '', 'Auto', sw('conic-gradient(' + AV_CAT.eyeC.map(e => e.swatch).join(',') + ',' + AV_CAT.eyeC[0].swatch + ')', 'eye auto'), ' sq')
-      + AV_CAT.eyeC.map((s, i) => opt('eyeC', i, s.name, sw(s.swatch, 'eye'), ' sq')).join('') + '</div>';
+  if (tab === 'eyes') h = AV_CAT.eyes.map((s, i) => opt('eyes', i, s.name, mini('eyes', i, 'head'))).join('');
+  /* a color list with an Auto choice first (eyes follow the hair, a beard the hair, an extra keeps its own) */
+  const autoSw = (list) => sw('conic-gradient(' + list.map(e => e.swatch).join(',') + ',' + list[0].swatch + ')', 'eye auto');
+  if (tab === 'eyeC') h = opt('eyeC', '', 'Auto', autoSw(AV_CAT.eyeC), ' sq') + AV_CAT.eyeC.map((s, i) => opt('eyeC', i, s.name, sw(s.swatch, 'eye'), ' sq')).join('');
+  /* each build is previewed as picking it would draw it (with the hair or beard it brings) */
+  if (tab === 'sex') h = AV_CAT.sex.map(s => { const l2 = Object.assign({}, lk); advSetSex(l2, s.id);
+    return opt('sex', s.id, s.name, avatarSvg(Object.assign(l2, {tier:0}), {id:'advo-sex' + s.id, crop:'bust'})); }).join('');
+  if (tab === 'expr') h = AV_CAT.expr.map((s, i) => opt('expr', i, s.name, mini('expr', i, 'head'))).join('');
+  if (tab === 'beard') h = AV_CAT.beardBySpecies[sp].map((s, i) => opt('beard', i, s.name, mini('beard', i, 'head'))).join('');
+  if (tab === 'beardC') h = opt('beardC', '', 'Auto', autoSw(AV_CAT.hairC), ' sq') + AV_CAT.beardC.map((s, i) => opt('beardC', i, s.name, sw(s.swatch, 'hair'), ' sq')).join('');
+  if (tab === 'accC') h = (d.look.acc ? '' : '<div class="advsub">Pick an extra first, then its color</div>')
+      + opt('accC', '', 'Auto', autoSw(AV_CAT.accC), ' sq') + AV_CAT.accC.map((s, i) => opt('accC', i, s.name, sw(s.swatch, 'cloth'), ' sq')).join('');
   if (tab === 'tint') h = AV_CAT.tintByCls[d.cls || 'knight'].map((s, i) => opt('tint', i, s.name, sw(s.swatch, 'cloth'), ' sq')).join('');
   /* the extras come in sets (one per class, and a Funny one); any hero can wear any of them. A set's
      entries that are not drawn yet (todo) stay out of the list; your own class's set comes first. */
@@ -23956,16 +25234,21 @@ $('#advOv').addEventListener('click', (e) => {
   if (d && t && $('#advMk') && $('#advMk').contains(t)){
     if (t.dataset.cls){ d.cls = t.dataset.cls; d.name = $('#advName').value; advPaint({cls:true, stage:true, panel:true, look:true}); return; }
     if (t.dataset.sp){
-      /* a new species keeps the choices it can: skin and hair wrap into its own lists */
-      d.look = advCleanLook(Object.assign({}, d.look, {species:t.dataset.sp}), d.cls);
+      /* a new species keeps the choices it can: skin and hair wrap into its own lists (a
+         dwarf arrives with his beard unless the look already says which) */
+      const nl = Object.assign({}, d.look, {species:t.dataset.sp});
+      if (t.dataset.sp === 'dwarf' && nl.beard == null) nl.beard = nl.sex === 'f' ? 0 : 1;
+      d.look = advCleanLook(nl, d.cls);
       advPaint({stage:true, panel:true, look:true}); return;
     }
     if (t.id === 'advFinal'){ d.final = !d.final; advPaint({stage:true}); return; }
     if (t.dataset.tab){ d.tab = t.dataset.tab; advPaint({panel:true}); return; }
     if (t.dataset.k){
       const v = t.dataset.v;
-      if (t.dataset.k === 'eyeC'){ if (v === '') delete d.look.eyeC; else d.look.eyeC = +v; }
-      else d.look[t.dataset.k] = +v;
+      const k = t.dataset.k;
+      if (k === 'eyeC' || k === 'beardC' || k === 'accC'){ if (v === '') delete d.look[k]; else d.look[k] = +v; }
+      else if (k === 'sex') advSetSex(d.look, v === 'f' ? 'f' : 'm');
+      else d.look[k] = +v;
       advPaint({stage:true, panel:true, look:true}); return;
     }
     if (t.dataset.pose){ d.pose = t.dataset.pose; advPaint({stage:true}); return; }

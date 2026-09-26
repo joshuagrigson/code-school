@@ -471,10 +471,13 @@ It is drawn now, in one art direction shared with everything it meets:
 
 - **A character creator.** Your hero stands on a lit stage while you pick a
   name, one of eight classes (each card shows your hero as that class's
-  Recruit), a species and a look: skin (or scales, or fur), hair (or beard,
-  crest, ears), 10 hair colors, 6 eye styles, eye color, 10 extras and an
-  outfit tint per class. Randomise rolls the species too, and only ever picks a
-  look that works. Under the stage a tier bar names the tier and form you have
+  Recruit), a species and a look, in twelve tabs: body (male or female), 12
+  skins (or scales, or fur) per species, hair (or crest, ears), hair color, a
+  beard of its own with its own color (barbels and frills for a saurian, ruffs
+  for a fox), 16 faces from grin to war cry, 10 eye styles, eye color, the
+  extras and a color for them, and 14 outfit colors per class, each with a black
+  and a grey. Randomise rolls the species, body, beard and face too, and only
+  ever picks a look that works. Old saves draw exactly as they did. Under the stage a tier bar names the tier and form you have
   reached, and **See your final form** shows your class as a Legend.
 - **Every class moves its own way.** The knight chops and shakes the board, the
   barbarian cleaves and shakes it harder, the ranger looses an arrow, the mage

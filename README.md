@@ -684,6 +684,16 @@ The phone is a first-class layout, not a narrowed desktop.
 
 ## Features
 
+- **The Lesson Stage.** Every lesson opens under an illustrated chapter banner
+  (its own scene per grade and track) with a Learn → Try → Run → Win trail. The
+  goal is a quest card whose objectives are the coach's own checklist, ticking
+  only when a Run is graded; your hero stands beside the editor, watching,
+  stumbling with a plain-words hint on a failed Run, and cheering on a pass.
+- **The Run theater.** Pressing Run dims the room and the page you made (or the
+  Quest board, Sound Room or Vault door) takes over most of the screen, with the
+  verdict, objectives and Next beside it; Back to my code, Esc or typing returns.
+- **Detours come back.** A Puzzle Vault key link or "Learn it first" lands on
+  the lesson with a button back to the vault you came from.
 - The preview changes only when you press Run, never while you type; the
   Quest board grows to fill the preview, and the Quest board and the Puzzle
   Vault play their sounds through the page, so the Run click unlocks them. JS lessons enforce the house rule —

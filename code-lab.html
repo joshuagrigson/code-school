@@ -2773,6 +2773,22 @@ body.dark .tfoffer.won .tfoi{color:#10231b}
 .teach .tfbl code,.teach .tfch code,.teach .tfeachi code{border:0;padding:0;background:none;border-radius:0;font-size:.9rem;color:inherit}
 .teach .tfeachi code{padding:5px 8px;background:#2a1d33;color:#f3eaf7;font-size:.78rem}
 .teach .tfch code{color:var(--ink)}
+/* ==== Caught as you type ======================================================
+   A small amber dot in the editor's left margin beside a line holding something
+   opened and not closed, and a soft dotted line under the exact character. The
+   dot's dark ring carries the contrast on the light editor themes, its fill on
+   the dark ones. Nothing here is red: red is for what Run found. */
+#tfgut{position:absolute;left:0;top:0;bottom:0;width:13px;pointer-events:none;z-index:3;overflow:hidden}
+#tfgut .tfgin2{position:absolute;left:0;right:0;top:0}
+#tfgut .tfgm{position:absolute;left:2px;width:9px;height:9px;border-radius:50%;background:#f2b33d;box-shadow:0 0 0 1.5px #6b4200;animation:tfgmIn .25s ease-out}
+@keyframes tfgmIn{from{transform:scale(.3);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion: reduce){#tfgut .tfgm{animation:none}}
+body.atprompt #tfgut{display:none}
+#errlay .tfsoft{border-radius:3px;background:rgba(242,179,61,.2);text-decoration:underline dotted #f2b33d 2px;text-underline-offset:4px}
+.edwrap.th-paper #errlay .tfsoft,.edwrap.th-sollight #errlay .tfsoft{background:rgba(160,100,0,.14);text-decoration-color:#8a5a00}
+.tfsr{position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
+/* a keyword inside a dark code line keeps that line's own ink */
+.tfbl code .cw,.tffix code .cw,.tfch code .cw,.tfeachi code .cw{color:inherit}
 </style>
 </head>
 <body>
@@ -6845,6 +6861,111 @@ for (const [t, r] of [["Not a wall", "look(\"right\") answers a word: \"clear\" 
     KA(r.title, 10, r.spec, r.teach, r.goal, r.start, r.sol, r.hint, r.pass, r.fail, r.rn, r.rw);
     const les = L[L.length - 1];
     les.rung = n + 1; les.seq = vi - 0.5 + n * 0.1; les.ladderSay = r.say; les.rungKeys = r.keys;
+  });
+})();
+
+/* ---- Two more ladders: Picking at random, and Two things at once -------------
+   The vowels ladder showed the shape: a lesson that asks for four new things at
+   once gets a few short lessons in front of it, each one new idea, each passing
+   on its own. In Grades 4 to 8 two lessons ask that much:
+   - "Picking at random" (Grade 6) wants .length, Math.random(), the * that
+     stretches it, Math.floor and a box used as a position, all in one line;
+   - "Two things at once" (Grade 8) wants true and false as values, === between
+     words, && and || together.
+   So each gets a ladder. The rungs are appended at the end of the list (every
+   lesson that exists keeps its number, so every saved tick stays where it was)
+   and "seq" walks them just before their door. They are practice steps, not
+   grade lessons: they live in the grade's own sidebar, tucked in front of the
+   door, but they are kept out of the grade's count and the 155 of graduation,
+   and passing one is its own small win. */
+(function(){
+  /* the vowels rungs learn which door they lead to, and how many of them there are */
+  const vi = L.findIndex(l => l.g === 'KT' && l.title === 'Count the vowels');
+  L.forEach(l => { if (l.rung && l.g === 'KT' && l.door == null){ l.door = vi; l.rungOf = 4; } });
+  const XS = "const excuses = ['My dog ate it', 'Aliens took it', 'I overslept'];";
+  const LADDERS = [
+    {g: 'G6', door: 'Picking at random', html: null, rungs: [
+      {title: 'Random 1: count the list', say: 'A list knows how long it is.',
+       teach: '<p>The first of three short steps before <b>Picking at random</b>. One idea: a list knows how many things are in it.</p>'
+         + '<p><code>excuses.length</code> is that number. There are no round brackets after it: it is not a trick to perform, it is a fact the list carries, like the count printed on a box of crayons.</p>'
+         + '<p>Glue it into a sentence the Grade 5 way:</p><pre>screen.textContent = \'There are \' + excuses.length + \' excuses\';</pre>',
+       goal: 'Show how many excuses there are, using <code>excuses.length</code> glued into a sentence.',
+       start: XS + '\n',
+       sol: XS + "\nscreen.textContent = 'There are ' + excuses.length + ' excuses';",
+       hint: 'One line under the list: <code>screen.textContent = \'There are \' + excuses.length + \' excuses\';</code>',
+       check: (c) => all(c, [[/\b[A-Za-z_$][\w$]*\.length\b/, 'the list’s <code>.length</code>: how many things are in it'],
+                             [/screen\.textContent\s*=[^\n]*\.length/, 'a screen line that shows it, glued into words']])
+         ? {ok: true, msg: 'Three, counted by the list itself. Add a fourth excuse and Run again: the sentence changes and you did not touch it. That is why the next step uses <code>.length</code> and not the number 3.'}
+         : {ok: false, msg: 'Show <code>excuses.length</code> on the screen, glued between two quoted pieces.'},
+       rn: 'A value a thing carries around with it, like <code>.length</code>, is a <b>property</b>.',
+       shows: 'There are 3 excuses'},
+      {title: 'Random 2: chop off the decimals', say: 'Math.floor rounds down, always.',
+       teach: '<p>Step two of three. One idea: <code>Math.floor</code> chops the decimals off a number and keeps the whole part.</p>'
+         + '<p><code>Math.floor(2.9)</code> is <code>2</code>, not 3. It never rounds up, however close the number gets. That is exactly what a list position needs: a whole number, and never one too big.</p>',
+       goal: 'Show <code>Math.floor(2.9)</code> glued after a label like <code>\'Chopped: \'</code>. It should show 2.',
+       start: '',
+       sol: "screen.textContent = 'Chopped: ' + Math.floor(2.9);",
+       hint: '<code>screen.textContent = \'Chopped: \' + Math.floor(2.9);</code>',
+       check: (c) => all(c, [[/Math\.floor\s*\(\s*\d*\.\d+\s*\)/, '<code>Math.floor( )</code> around a number with a decimal point'],
+                             [/screen\.textContent\s*=[^\n]*Math\.floor/, 'a screen line showing what it gives']])
+         ? {ok: true, msg: 'Chopped, not rounded: 2.9 became 2. Math.floor always goes down to the whole number below.'}
+         : {ok: false, msg: 'Put a decimal number inside <code>Math.floor( )</code> and show it on the screen.'},
+       rn: 'Rounding down to the whole number below is taking the <b>floor</b>; rounding up is the <b>ceiling</b> (<code>Math.ceil</code>).',
+       shows: 'Chopped: 2'},
+      {title: 'Random 3: a random position', say: 'Stretch a random number to the list, then chop it.',
+       teach: '<p>The last step. <code>Math.random()</code> hands back a new decimal every time, from 0 up to (never quite) 1, like 0.63.</p>'
+         + '<p>Times the list’s length, it stretches: from 0 up to (never quite) 3. Chopped with <code>Math.floor</code>, it becomes 0, 1 or 2: exactly the three positions of the list.</p>'
+         + '<pre>const pick = Math.floor(Math.random() * excuses.length);</pre>',
+       goal: 'Make <code>pick</code> a random position for the list and show it after <code>\'Position: \'</code>. Run it a few times: 0, 1 or 2, never 3.',
+       start: XS + '\n',
+       sol: XS + "\nconst pick = Math.floor(Math.random() * excuses.length);\nscreen.textContent = 'Position: ' + pick;",
+       hint: '<code>const pick = Math.floor(Math.random() * excuses.length);</code> then <code>screen.textContent = \'Position: \' + pick;</code>',
+       check: (c) => all(c, [[/Math\.floor\s*\(\s*Math\.random\s*\(\s*\)\s*\*\s*[A-Za-z_$][\w$]*\.length\s*\)/, 'the fair position: <code>Math.floor(Math.random() * excuses.length)</code>'],
+                             [/screen\.textContent\s*=[^\n]*\+\s*[A-Za-z_$][\w$]*\s*;?\s*$/m, 'a screen line showing the position, glued after a label']])
+         ? {ok: true, msg: 'A fair random position, 0, 1 or 2. One step left, and it is the lesson itself: use that position to reach into the list.'}
+         : {ok: false, msg: 'Keep the random number in a box with <code>Math.floor(Math.random() * excuses.length)</code>, then show the box.'},
+       rn: 'A whole number standing for a place in a list is an <b>index</b>; picking one at random is <b>random sampling</b>.',
+       shows: 'Position: 1', rnd: true}
+    ]},
+    {g: 'G8', door: 'Two things at once', rungs: [
+      {title: 'Two tests 1: a yes-or-no box', say: 'true and false are values too.',
+       teach: '<p>The first of two short steps before <b>Two things at once</b>. One idea: <code>true</code> and <code>false</code> are values, like words and numbers, and a box can hold one.</p>'
+         + '<pre>const sunny = true;</pre><p>No quotes: <code>\'true\'</code> in quotes would be the word, not the yes. An <code>if</code> can test the box itself: <code>if (sunny) { ... }</code> runs the braces when the box holds true.</p>',
+       goal: 'Make a box holding <code>true</code> (no quotes), and an <code>if</code> that tests the box and writes to the screen.',
+       start: '',
+       sol: "const sunny = true;\n\nif (sunny) {\n  screen.textContent = 'Sunglasses on!';\n}",
+       hint: '<code>const sunny = true;</code> then <code>if (sunny) { screen.textContent = \'Sunglasses on!\'; }</code>',
+       check: (c) => all(c, [[/(?:const|let)\s+[A-Za-z_$][\w$]*\s*=\s*(?:true|false)\b/, 'a box holding <code>true</code> or <code>false</code>, with no quotes'],
+                             [/if\s*\(\s*!?\s*[A-Za-z_$][\w$]*\s*\)\s*\{[\s\S]*screen\.textContent[\s\S]*\}/, 'an <code>if</code> that tests the box itself, with a screen line inside its braces']])
+         ? {ok: true, msg: 'A yes-or-no box, and an if that reads it. Change true to false and Run: the screen stays quiet.'}
+         : {ok: false, msg: 'A box holding true (no quotes), and <code>if (box) { ... }</code> with a screen line inside.'},
+       rn: 'A true-or-false value is a <b>boolean</b>, named after George Boole, who wrote the algebra of yes and no in 1854.',
+       shows: 'Sunglasses on!'},
+      {title: 'Two tests 2: is it exactly?', say: '=== compares words, letter for letter.',
+       teach: '<p>Step two. One idea: <code>===</code> asks whether two things are exactly the same, and it works on words too.</p>'
+         + '<pre>if (day === \'Saturday\') { ... }</pre><p>Exactly means exactly: <code>\'saturday\'</code> with a small s is a different word. And it is three equals signs: one <code>=</code> puts something into a box, three ask a question.</p>',
+       goal: 'Make a <code>day</code> box, and an <code>if</code> asking whether it is exactly <code>\'Saturday\'</code> that writes to the screen.',
+       start: '',
+       sol: "const day = 'Saturday';\n\nif (day === 'Saturday') {\n  screen.textContent = 'No school today!';\n}",
+       hint: '<code>const day = \'Saturday\';</code> then <code>if (day === \'Saturday\') { screen.textContent = \'No school today!\'; }</code>',
+       check: (c) => all(c, [[/if\s*\(\s*[A-Za-z_$][\w$]*\s*===\s*['"][^'"\n]+['"]\s*\)/, 'an <code>if</code> asking <code>box === \'words\'</code>, with three equals signs'],
+                             [/\)\s*\{[\s\S]*screen\.textContent[\s\S]*\}/, 'a screen line inside its braces']])
+         ? {ok: true, msg: 'Letter for letter, the same: the braces ran. One step left, and it is the lesson: ask both questions at once.'}
+         : {ok: false, msg: 'Ask <code>if (day === \'Saturday\')</code>, three equals signs, with a screen line in the braces.'},
+       rn: '<code>===</code> is <b>strict equality</b>: same value and same kind of value. <code>==</code> exists too and quietly converts; nobody recommends it.',
+       shows: 'No school today!'}
+    ]}
+  ];
+  LADDERS.forEach(lad => {
+    const di = L.findIndex(l => l.g === lad.g && l.title === lad.door);
+    if (di < 0) return;
+    lad.rungs.forEach((r, n) => {
+      const les = JL(r.title, r.teach, r.goal, r.start, r.sol, r.hint, r.check);
+      les.g = lad.g; les.beyond = true; les.aside = true;
+      les.rung = n + 1; les.rungOf = lad.rungs.length; les.door = di; les.seq = di - 0.5 + n * 0.1;
+      les.ladderSay = r.say; les.rn = r.rn; les.tfShows = r.shows; les.tfRnd = !!r.rnd;
+      L.push(les);
+    });
   });
 })();
 
@@ -20897,6 +21018,10 @@ function whatComesNext(t, ch){
 function friendlySyntax(msg, code){
   lintRange = null;
   const t = code.trimEnd();
+  /* the exact spot, found by counting what was opened and closed; a quote first,
+     because an open quote swallows everything after it */
+  const spot = tfSpot(code, 'js');
+  if (spot && spot.x.kind === 'quote'){ lintRange = {a: spot.a, b: spot.b}; return spot.msg; }
   /* A string that was opened and never closed swallows everything after the
      quote, so the "ends mid-thought" test below blames whatever character
      happens to sit inside it - on a rhythm string like "0---0 that is a dash,
@@ -20918,6 +21043,7 @@ function friendlySyntax(msg, code){
     return 'It looks like a line isn’t finished: the code ends mid-thought, after a <code>'
       + (ch === '&&' ? '&amp;&amp;' : ch) + '</code> &mdash; ' + whatComesNext(t, ch);
   }
+  if (spot){ lintRange = {a: spot.a, b: spot.b}; return spot.msg; }
   const opens = (code.match(/\{/g)||[]).length, closes = (code.match(/\}/g)||[]).length;
   if (opens > closes) return 'A curly brace { was opened but never closed. Count your { and } &mdash; you need one more }.';
   if (closes > opens) return 'There is a closing brace } too many (or a { is missing). Count your { and }.';
@@ -20947,6 +21073,8 @@ const BLOCK_TAGS=new Set(['h1','h2','h3','h4','h5','h6','p','div','ul','ol','sec
 const INLINE_HINT={h1:'strong',h2:'strong',h3:'strong',h4:'strong',h5:'strong',h6:'strong'};
 function htmlLint(code){
   lintRange = null;
+  /* a tag with no > to end it, or an attribute's quote left open, before anything else */
+  { const sp = tfScanHtml(code).find(x => x.kind === 'tag' || x.kind === 'quote'); if (sp){ lintRange = {a: sp.a, b: sp.b}; return tfIssueSay(sp, code); } }
   const re=/<(\/?)([a-zA-Z][\w-]*)([^>]*)>/g;
   const stack=[]; let m;
   while((m=re.exec(code))){
@@ -21007,6 +21135,9 @@ function htmlLint(code){
 }
 function cssLint(code){
   lintRange = null;
+  { const br = tfScan(code, 'css').filter(x => x.ch === '{' || x.ch === '}'), so = br.filter(x => x.kind === 'open').pop(), ss = br.find(x => x.kind !== 'open');
+    if (ss){ lintRange = {a: ss.a, b: ss.b}; return 'Line ' + ss.line + ': there is a } too many here (or a { is missing before it). Count your braces.'; }
+    if (so){ lintRange = {a: so.a, b: so.b}; return 'Line ' + so.line + ': this { was opened but never closed: every rule ends with }. Count your braces.'; } }
   const opens=(code.match(/\{/g)||[]).length, closes=(code.match(/\}/g)||[]).length;
   if(opens>closes) return 'A { was opened but never closed — every rule ends with }. Count your braces.';
   if(closes>opens) return 'There is a } too many (or a { is missing). Count your braces.';
@@ -21223,7 +21354,7 @@ function lsRunCheck0(){
     const over = pw.getBoundingClientRect().bottom - col.getBoundingClientRect().bottom;
     if (over > 0) col.scrollTo({top: col.scrollTop + over + 10, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'});
   });
-  if (res.cls==='coach' && lintRange) res.msg += ' <b>Marked in red in your code.</b>';
+  if (res.cls==='coach' && lintRange){ res.msg = tfAtLine(res.msg, lintRange.a); res.msg += ' <b>Marked in red in your code.</b>'; }
   statusEl.className = (res.ok ? 'ok' : (res.cls || '')) + (!res.ok && /class="story /.test(res.msg) ? ' projlist' : '');
   let styleHtml='';
   if (res.ok && !sandbox){
@@ -21262,7 +21393,7 @@ function lsRunCheck0(){
   if (res.ok && L[idx].beyond && !beyondDone.has(idx)){
     beyondDone.add(idx); bumpStreak(); saveP(); renderNav(); confetti(110);
     const el=document.createElement('div'); el.className='gbanner';
-    const bb = BEYOND_BANNER[L[idx].g] || ['\uD83E\uDDED Beyond the school!', 'that is real-world work, not an exercise'];
+    const bb = L[idx].aside ? ['\u2B06\uFE0F Step ' + L[idx].rung + ' of ' + L[idx].rungOf + ' climbed', 'one small step, passed on its own'] : BEYOND_BANNER[L[idx].g] || ['\uD83E\uDDED Beyond the school!', 'that is real-world work, not an exercise'];
     el.innerHTML = bb[0] + '<small>+15 XP \u2014 ' + bb[1] + '.</small>';
     document.body.appendChild(el); setTimeout(()=>el.remove(),2700);
     checkMilestones();
@@ -21751,12 +21882,13 @@ function renderNav(){
     head.insertAdjacentHTML('afterbegin','<span class="garrow">▼</span>');
     head.onclick = (ev)=>{ if (ev.target.classList.contains('ghreset')) return;
       if (openGrades.has(g.id)) openGrades.delete(g.id); else openGrades.add(g.id); renderNav(); };
-    for (const x of lessons){
+    /* a ladder's rungs are listed in front of their door; only the doors are counted */
+    for (const x of ORDER.filter(i => L[i].g === g.id).map(i => ({l:L[i], i}))){
       if (q && !x.l.title.toLowerCase().includes(q)) continue;
       const b = document.createElement('button');
-      b.className = 'navitem' + (x.l.pract ? ' pract' : '') + (x.l.prep ? ' prep' : '') + (x.l.chal ? ' chal' : '') + (x.l.boss ? ' boss' : '')
+      b.className = 'navitem' + (x.l.pract ? ' pract' : '') + (x.l.prep ? ' prep' : '') + (x.l.chal ? ' chal' : '') + (x.l.boss ? ' boss' : '') + (x.l.rung ? ' rung' : '')
         + (x.i===idx && !sandbox ? ' cur':'') + (isOpen ? '' : ' ghidden');
-      b.innerHTML = '<span class="tick">' + (done.has(x.i)?'✓':'') + '</span><span>' + navTitle(x.l) + '</span>';
+      b.innerHTML = '<span class="tick">' + (lessonDone(x.i)?'✓':'') + '</span><span>' + navTitle(x.l) + '</span>';
       b.onclick = ()=>loadLesson(x.i);
       listEl.appendChild(b);
     }
@@ -21795,14 +21927,14 @@ function loadLesson(i){
                   include it, and two disagreeing counts on one screen is one
                   of them lying */
                : les.boss ? 'end of grade'
-               : les.rung ? 'lesson ' + les.rung + ' of 4 on the ladder'
+               : les.rung ? 'lesson ' + les.rung + ' of ' + (les.rungOf || 4) + ' on the ladder'
                : 'lesson ' + (pos+1) + ' of ' + gl.length), op);
   teachEl.innerHTML = crumb + readyNote(les) + vaultKeysStrip(les) + lessonTeach(les, i) + rhythmBox(les) + shapeHtml(i) + widgetsFor(i) + decoderFor(les) + ((RN[i]||les.rn) ? '<div class="realname"><b>Real name</b>' + (RN[i]||les.rn) + '</div>' : '') + (MORE[i] ? '<div class="morebox"><b>More to chew on</b>' + MORE[i] + '</div>' : '') + (OLDS[i] ? '<div class="elders"><b class="el">📜 Lineage</b>' + OLDS[i] + '</div>' : '');
   mountMakes();
   recallShow(i);
   goalEl.innerHTML = lsGoalHtml(les, i);
   markCode(teachEl, les); markCode(goalEl, les); captionExamples(teachEl, les);
-  tfMount(les, i);
+  tfMount(les, i); tfMarkClear();
   const remind = remindFor(les);
   remindTxt.innerHTML = remind;
   remindBox.style.display = (!remind || localStorage.getItem('remindHidden')==='1') ? 'none' : 'flex';
@@ -23845,7 +23977,7 @@ function nextThing() {
   const nx = ORDER.filter(i => !L[i].beyond).find(i => !done.has(i));
   if (nx != null) return { act: 'lesson', i: nx, label: (done.size ? 'Carry on: ' : 'Start: ') + txtTitle(nx),
     why: done.size ? 'Where you left off.' : 'The first lesson. You will be typing within a minute.' };
-  const nb = ORDER.filter(i => L[i].beyond).find(i => !beyondDone.has(i));
+  const nb = ORDER.filter(i => L[i].beyond && !L[i].aside).find(i => !beyondDone.has(i));
   if (nb != null) return { act: 'lesson', i: nb, label: gradeName(L[nb].g) + ': ' + txtTitle(nb),
     why: 'You finished the school. This is the part about real work.' };
   const np = L.map((l, i) => ({ l, i })).find(x => x.l.proj && !projDone.has(x.i) && gradeDone(x.l.gate));
@@ -28776,7 +28908,7 @@ var TF_KIND = {see: 'See it', predict: 'Predict', fill: 'Fill the gap', arrange:
 var TF_ICON = {see: 'book', predict: 'star', fill: 'pencil', arrange: 'code', bug: 'check', tr: 'play', tweak: 'pencil', ladder: 'right'};
 /* a lesson's hand-made flow, or none: the lesson then keeps its page */
 function tfFlowFor(les, i){
-  if (!les || les.proj || les.chal || typeof TF_FLOWS === 'undefined') return null;
+  if (!les || les.proj || typeof TF_FLOWS === 'undefined') return null;
   const f = TF_FLOWS[tfKey(les)];
   if (!f) return null;
   return typeof f === 'function' ? f(les, i) : f;
@@ -28803,7 +28935,7 @@ function tfMount(les, i){
   /* the banner, a due recall question and a "this leans on the school" warning stay on top */
   /* and a Sound Room lesson keeps its "reading the line" panel under the cards: it is the key to every card */
   const refs = [];
-  [...teachEl.children].forEach(c => { if (c.classList.contains('rhythm')) refs.push(c); else if (!c.classList.contains('lsban') && !c.classList.contains('rcbox') && !c.classList.contains('saybox') && !c.classList.contains('readynote')) all.appendChild(c); });
+  [...teachEl.children].forEach(c => { if (c.classList.contains('rhythm') || (c.classList.contains('shapebox') && les.kind === 'kata')) refs.push(c); else if (!c.classList.contains('lsban') && !c.classList.contains('rcbox') && !c.classList.contains('saybox') && !c.classList.contains('readynote')) all.appendChild(c); });
   const fl = document.createElement('section'); fl.className = 'tfflow'; fl.id = 'tfFlow'; fl.setAttribute('aria-label', 'This lesson, one step at a time');
   fl.innerHTML = '<div class="tfhd"><span class="tfkick">' + lsIc('book') + 'Step by step</span><span class="tfcount" aria-live="polite"></span>'
     + (tryAt > 0 ? '<button type="button" class="tfskip">Skip to the task</button>' : '')
@@ -28831,6 +28963,7 @@ function tfRender(scroll){
   if (TF.at >= n) h += '<div class="tfend">' + lsIc('star') + '<span><b>Every step done.</b> ' + (lessonDone(TF.i) ? 'This lesson is yours. Go through the steps again whenever you like.' : 'Now make it pass in the editor.') + '</span>'
     + '<button type="button" class="tfagain">Walk through it again</button></div>';
   box.innerHTML = h;
+  markCode(box, tfLes());
   const c = teachEl.querySelector('.tfcount'); if (c) c.textContent = TF.at >= n ? 'All ' + n + ' steps done' : 'Step ' + (TF.at + 1) + ' of ' + n;
   teachEl.querySelectorAll('.tfpips i').forEach((e, k) => { e.className = k < TF.at ? 'on' : k === TF.at ? 'now' : ''; });
   const sk = teachEl.querySelector('.tfskip'); if (sk) sk.hidden = TF.at >= TF.cards.findIndex(x => x.t === 'tr');
@@ -28954,7 +29087,8 @@ function tfSeeHtml(c, k, done){
     if (!done) h += '<div class="tfdo"><button type="button" class="tfgo tfsee" data-s="0">' + lsIc(steps ? 'right' : 'play') + (steps ? (c.stepBtn || 'Next line') : (c.btn || tfPvLabel(les))) + '</button>'
       + (steps ? '<span class="tfstepn">' + '1 of ' + (steps) + '</span>' : '') + '</div>';
   }
-  if (c.pv !== false && (les.lang === 'html' || les.lang === 'css')){
+  if (c.shows != null) h += tfShowsBox(les, c, done);
+  else if (c.pv !== false && (les.lang === 'html' || les.lang === 'css')){
     const code = c.pvCode || c.code || (c.parts ? c.parts.map(p => p[0]).join('') : '');
     h += '<div class="tfpvbox' + (done || (c.steps && c.pvEach) ? '' : ' tfwait') + '"><span class="tfpvl">' + lsIc('play') + 'What it makes</span>' + tfPvHost(les, done || !c.steps || !c.pvEach ? code : tfUpTo(c, 0)) + '</div>';
   }
@@ -29018,7 +29152,7 @@ function tfTryHtml(c, k, done){
   let h = '';
   if (c.sub && c.sub.length) h += '<ol class="tfsubs">' + c.sub.map(s => '<li>' + s + '</li>').join('') + '</ol>';
   if (!done) h += '<div class="tfdo"><button type="button" class="tfgo tfed">' + lsIc('pencil') + (innerWidth <= 700 ? 'Open the editor' : 'Start typing') + '</button>'
-    + '<span class="tfnote">Stuck after two tries? You will be offered a smaller version: no need to fail your way through.</span></div>';
+    + '<span class="tfnote">' + tfTryNote() + '</span></div>';
   return h;
 }
 function tfTweakHtml(c, k, done){
@@ -29027,12 +29161,12 @@ function tfTweakHtml(c, k, done){
 /* the vowels ladder: four short lessons that each pass on their own */
 function tfLadderHtml(c, k, done){
   const rungs = tfRungs(), nd = rungs.filter(r => beyondDone.has(r.i)).length;
-  let h = '<ol class="tfrungs">' + rungs.map((r, n) => '<li class="' + (beyondDone.has(r.i) ? 'got' : '') + '"><span class="tfrn">' + (beyondDone.has(r.i) ? lsIc('check') : (n + 1)) + '</span><span class="tfrt"><b>' + r.l.title.replace(/^Vowels \d: /, '') + '</b><span>' + r.l.ladderSay + '</span></span>'
+  let h = '<ol class="tfrungs">' + rungs.map((r, n) => '<li class="' + (beyondDone.has(r.i) ? 'got' : '') + '"><span class="tfrn">' + (beyondDone.has(r.i) ? lsIc('check') : (n + 1)) + '</span><span class="tfrt"><b>' + r.l.title.replace(/^[^:]+ \d: /, '') + '</b><span>' + r.l.ladderSay + '</span></span>'
     + '<button type="button" class="tfgo tfrung" data-i="' + r.i + '">' + (beyondDone.has(r.i) ? 'Again' : 'Go') + '</button></li>').join('') + '</ol>';
-  if (!done) h += '<div class="tfdo"><button type="button" class="tflink tfladskip">' + (nd === rungs.length ? 'Ladder climbed: on to the vault' : 'I know this: straight to the vault') + '</button></div>';
+  if (!done) h += '<div class="tfdo"><button type="button" class="tflink tfladskip">' + (nd === rungs.length ? 'Ladder climbed: on to ' + tfDoorWord() : 'I know this: straight to ' + tfDoorWord()) + '</button></div>';
   return h;
 }
-function tfRungs(){ return L.map((l, i) => ({l, i})).filter(x => x.l.rung).sort((a, b) => a.l.rung - b.l.rung); }
+function tfRungs(){ return tfRungsOf(TF.i); }
 
 /* ---- a card becomes current: anything it needs set up ---- */
 function tfCardInit(card){
@@ -29126,7 +29260,7 @@ function tfClick(e){
   if (t.closest('.tftwskip')){ tfDone(card, 'Skipped. It will still be here next time.'); return; }
   const rg = t.closest('.tfrung');
   if (rg){ const i = +rg.dataset.i; lsS().back = null; loadLesson(i); return; }
-  if (t.closest('.tfladskip')){ tfDone(card, 'On to the vault itself.'); return; }
+  if (t.closest('.tfladskip')){ tfDone(card, 'On to ' + tfDoorWord() + ' itself.'); return; }
 }
 function tfToEditor(){
   const b = document.querySelector('#tabbar button[data-tab="tab-code"]');
@@ -30146,11 +30280,763 @@ var TF_RUNG_GUIDE = {
     cz: {code: '  let count = ___;', opts: ['0', '1', '""'], ans: '0', why: 'A count starts at nothing: 0. Starting at 1 counts a vowel that is not there, and quotes would make it text.'},
     remind: 'let count = 0 above the loop · count = count + 1 for a vowel · return count after the loop'}
 };
-L.forEach((l, i) => { const g = l.rung && TF_RUNG_GUIDE[l.rung]; if (!g) return; LGUIDE[i] = g; CLOZE[i] = g.cz; l.remind = g.remind; });
+L.forEach((l, i) => { const g = l.rung && l.g === 'KT' && TF_RUNG_GUIDE[l.rung]; if (!g) return; LGUIDE[i] = g; CLOZE[i] = g.cz; l.remind = g.remind; });
+
+/* ==== Caught as you type ======================================================
+   "Syntax errors never land as a wall." A bracket, a brace, a quote or a tag
+   left open used to surface only on Run, as one sentence about the whole file.
+   Now the editor keeps count while you type: pause for a moment and a small
+   amber dot appears in the gutter beside any line holding something opened and
+   not closed (or closed and never opened), with the exact character underlined
+   softly. It is a marker, not a verdict: nothing is graded, the preview does
+   not move, and the next key you press clears it until you pause again. Run
+   still decides, and when the code cannot be read, Run's sentence now names
+   the line and the character, in one plain line. */
+var TF_PAIR = {'(': ')', '[': ']', '{': '}'}, TF_CLOSE = {')': '(', ']': '[', '}': '{'};
+var TF_BRK = {'(': 'round bracket', ')': 'round bracket', '[': 'square bracket', ']': 'square bracket', '{': 'curly brace', '}': 'curly brace'};
+function tfLineOf(code, a){ return String(code).slice(0, a).split('\n').length; }
+/* every problem with what is opened and closed, in the order it appears */
+function tfScan(code, lang){
+  code = String(code || '');
+  if (lang === 'html') return tfScanHtml(code);
+  const out = [], st = [], n = code.length, py = lang === 'py', css = lang === 'css';
+  let i = 0;
+  const prevSig = (k) => { let j = k - 1; while (j >= 0 && /\s/.test(code[j])) j--; return j < 0 ? '' : code[j]; };
+  while (i < n){
+    const c = code[i], d = code[i + 1];
+    /* comments: // and block comments in JavaScript and CSS, # in Python */
+    if (py && c === '#'){ while (i < n && code[i] !== '\n') i++; continue; }
+    if (!py && !css && c === '/' && d === '/'){ while (i < n && code[i] !== '\n') i++; continue; }
+    if (!py && c === '/' && d === '*'){ const e = code.indexOf('*/', i + 2); i = e < 0 ? n : e + 2; continue; }
+    /* a regular expression in JavaScript: brackets and quotes inside it are not code */
+    if (!py && !css && c === '/' && d !== '/' && d !== '*' && /^$|[(,=:[!&|?{};]/.test(prevSig(i))){
+      let j = i + 1, cls = false;
+      while (j < n && code[j] !== '\n'){ const x = code[j]; if (x === '\\'){ j += 2; continue; } if (x === '[') cls = true; else if (x === ']') cls = false; else if (x === '/' && !cls) break; j++; }
+      if (j < n && code[j] === '/'){ i = j + 1; continue; }
+    }
+    if (c === '"' || c === "'" || (c === '`' && !py && !css)){
+      let j = i + 1, closed = false;
+      while (j < n){
+        const x = code[j];
+        if (x === '\\'){ j += 2; continue; }
+        if (x === c){ closed = true; break; }
+        if (x === '\n' && c !== '`') break;
+        j++;
+      }
+      if (!closed){ out.push({a: i, b: i + 1, kind: 'quote', ch: c, line: tfLineOf(code, i)}); i = j; continue; }
+      i = j + 1; continue;
+    }
+    if (TF_PAIR[c]){ st.push({a: i, ch: c}); i++; continue; }
+    if (TF_CLOSE[c]){
+      const top = st[st.length - 1];
+      if (!top) out.push({a: i, b: i + 1, kind: 'stray', ch: c, line: tfLineOf(code, i)});
+      else if (top.ch === TF_CLOSE[c]) st.pop();
+      else {
+        /* the closer belongs further down: whatever sits above it was left open */
+        const k = st.map(x => x.ch).lastIndexOf(TF_CLOSE[c]);
+        if (k > -1){ st.splice(k).forEach((o, m) => { if (m > 0) out.push({a: o.a, b: o.a + 1, kind: 'open', ch: o.ch, line: tfLineOf(code, o.a)}); }); }
+        else out.push({a: i, b: i + 1, kind: 'wrong', ch: c, want: TF_PAIR[top.ch], at: top.a, openLine: tfLineOf(code, top.a), line: tfLineOf(code, i)});
+      }
+      i++; continue;
+    }
+    i++;
+  }
+  st.forEach(o => out.push({a: o.a, b: o.a + 1, kind: 'open', ch: o.ch, line: tfLineOf(code, o.a)}));
+  return out.sort((x, y) => x.a - y.a);
+}
+var TF_VOID = {img: 1, br: 1, hr: 1, input: 1, meta: 1, link: 1, source: 1, wbr: 1, area: 1, base: 1, col: 1, embed: 1, track: 1};
+function tfScanHtml(code){
+  const out = [], st = [], n = code.length;
+  let i = 0;
+  while (i < n){
+    const c = code[i];
+    if (c !== '<'){ i++; continue; }
+    /* a comment, a doctype: not tags to count */
+    if (code[i + 1] === '!'){ const e = code.indexOf('>', i); i = e < 0 ? n : e + 1; continue; }
+    const m = /^<(\/?)([a-zA-Z][\w-]*)/.exec(code.slice(i, i + 40));
+    if (!m){ i++; continue; }
+    /* find the > that ends this tag, stepping over quoted attribute values */
+    let j = i + m[0].length, q = null, qa = -1;
+    while (j < n){
+      const x = code[j];
+      if (q){ if (x === q) q = null; else if (x === '\n') break; j++; continue; }
+      if (x === '"' || x === "'"){ q = x; qa = j; j++; continue; }
+      if (x === '>' || x === '<') break;
+      j++;
+    }
+    /* an attribute's value that never gets its closing quote */
+    if (q){ out.push({a: qa, b: qa + 1, kind: 'quote', ch: q, line: tfLineOf(code, qa)}); const e = code.indexOf('>', j); i = e < 0 ? n : e + 1; continue; }
+    if (j >= n || code[j] === '<'){ out.push({a: i, b: i + m[0].length, kind: 'tag', name: m[2].toLowerCase(), close: !!m[1], line: tfLineOf(code, i)}); i = j; continue; }
+    const name = m[2].toLowerCase(), end = j + 1;
+    if (m[1]){
+      const k = st.map(x => x.name).lastIndexOf(name);
+      if (k < 0) out.push({a: i, b: end, kind: 'stray', name, line: tfLineOf(code, i)});
+      else st.splice(k).forEach((o, z) => { if (z > 0) out.push({a: o.a, b: o.b, kind: 'elem', name: o.name, line: tfLineOf(code, o.a)}); });
+    } else if (!TF_VOID[name] && code[j - 1] !== '/'){
+      st.push({a: i, b: end, name});
+      /* what is inside style and script is not HTML */
+      if (name === 'style' || name === 'script'){ const e = code.toLowerCase().indexOf('</' + name, end); if (e > -1){ i = e; continue; } }
+    }
+    i = end;
+  }
+  st.forEach(o => out.push({a: o.a, b: o.b, kind: 'elem', name: o.name, line: tfLineOf(code, o.a)}));
+  return out.sort((x, y) => x.a - y.a);
+}
+/* one issue, said in one plain line, naming its line */
+function tfIssueSay(x, code){
+  const L0 = 'Line ' + x.line + ': ';
+  const q = x.ch === '`' ? 'backtick `' : x.ch === '"' ? 'double quote "' : "single quote '";
+  if (x.kind === 'quote') return L0 + 'a ' + q + ' was opened but never closed. Every opening quote needs its closing partner on the same line.';
+  if (x.kind === 'tag') return L0 + 'the <code>&lt;' + (x.close ? '/' : '') + esc(x.name) + '</code> tag is never finished with a <code>&gt;</code>.';
+  if (x.kind === 'elem') return L0 + 'the <code>&lt;' + esc(x.name) + '&gt;</code> opened here is never closed: it needs a <code>&lt;/' + esc(x.name) + '&gt;</code> where it ends.';
+  if (x.kind === 'stray' && x.name) return L0 + 'this <code>&lt;/' + esc(x.name) + '&gt;</code> closes something that was never opened.';
+  const nm = TF_BRK[x.ch] + ' <code>' + x.ch + '</code>';
+  if (x.kind === 'open') return L0 + 'the ' + nm + ' opened here is never closed. Count your <code>' + x.ch + '</code> and <code>' + TF_PAIR[x.ch] + '</code>: add a <code>' + TF_PAIR[x.ch] + '</code> where it should end.';
+  if (x.kind === 'stray') return L0 + 'this ' + nm + ' has nothing to close: it is one too many, or a <code>' + TF_CLOSE[x.ch] + '</code> is missing before it.';
+  if (x.kind === 'wrong') return L0 + 'this <code>' + x.ch + '</code> does not match the <code>' + TF_CLOSE[x.want] + '</code> opened on line ' + x.openLine + '. Close that one with <code>' + x.want + '</code> first.';
+  return '';
+}
+/* what Run says about the first thing it cannot read: a quote first (it swallows
+   everything after it), then a closer in the wrong place, then what is left open */
+function tfSpot(code, lang){
+  const all = tfScan(code, lang);
+  if (!all.length) return null;
+  const pick = all.find(x => x.kind === 'quote') || all.find(x => x.kind === 'tag') || all.find(x => x.kind === 'wrong' || x.kind === 'stray')
+    || all.filter(x => x.kind === 'open' || x.kind === 'elem').pop();
+  return pick ? {msg: tfIssueSay(pick, code), a: pick.a, b: pick.b, x: pick} : null;
+}
+
+/* ---- the gutter ---- */
+var TFM = {t: 0, on: [], gut: null, say: null};
+function tfMarkLang(){
+  if (hub || drillOn) return null;
+  if (sandbox) return 'html';
+  const les = L[idx]; if (!les || les.kind === 'shell') return null;
+  return les.lang === 'arc' ? 'js' : les.lang;
+}
+function tfMarkInit(){
+  const wrap = edEl.parentElement; if (!wrap || document.getElementById('tfgut')) return;
+  const g = document.createElement('div'); g.id = 'tfgut'; g.setAttribute('aria-hidden', 'true'); g.innerHTML = '<div class="tfgin2"></div>';
+  wrap.appendChild(g); TFM.gut = g;
+  const s = document.createElement('span'); s.id = 'tfgutsay'; s.className = 'sr-only tfsr'; wrap.appendChild(s); TFM.say = s;
+  const was = edEl.getAttribute('aria-describedby');
+  edEl.setAttribute('aria-describedby', (was ? was + ' ' : '') + 'tfgutsay');
+  edEl.addEventListener('input', () => { tfMarkClear(); clearTimeout(TFM.t); TFM.t = setTimeout(tfMarkNow, 650); });
+  edEl.addEventListener('scroll', tfMarkScroll);
+}
+function tfMarkScroll(){ const g = TFM.gut && TFM.gut.firstChild; if (g) g.style.transform = 'translateY(' + (-edEl.scrollTop) + 'px)'; }
+function tfMarkClear(){
+  clearTimeout(TFM.t); TFM.on = [];
+  if (TFM.gut) TFM.gut.firstChild.innerHTML = '';
+  if (TFM.say) TFM.say.textContent = '';
+  if (errEl.querySelector('.tfsoft')) errEl.innerHTML = '';
+}
+/* the pause after typing: look, and mark what is open */
+function tfMarkNow(){
+  const lang = tfMarkLang(); if (!lang || !TFM.gut) return;
+  const code = edEl.value;
+  const all = tfScan(code, lang);
+  TFM.on = all;
+  if (!all.length) return;
+  const cs = getComputedStyle(edEl), lh = parseFloat(cs.lineHeight) || 22, top = parseFloat(cs.paddingTop) || 12;
+  const lines = {};
+  all.forEach(x => { (lines[x.line] = lines[x.line] || []).push(x); });
+  /* the gutter sits exactly over the editor's own box, below the file's tab */
+  const g = TFM.gut.style; g.top = edEl.offsetTop + 'px'; g.height = edEl.offsetHeight + 'px'; g.left = edEl.offsetLeft + 'px'; g.bottom = 'auto';
+  TFM.gut.firstChild.innerHTML = Object.keys(lines).map(ln => '<i class="tfgm" style="top:' + (top + (ln - 1) * lh + lh / 2 - 5).toFixed(1) + 'px"></i>').join('');
+  tfMarkScroll();
+  TFM.say.textContent = all.slice(0, 3).map(x => plain(tfIssueSay(x, code))).join(' ');
+  /* the exact character, softly, unless something else is using that layer */
+  if (!errEl.textContent){
+    let h = '', at = 0;
+    all.forEach(x => { if (x.a < at) return; h += hlEsc(code.slice(at, x.a)) + '<span class="tfsoft">' + hlEsc(code.slice(x.a, x.b)) + '</span>'; at = x.b; });
+    errEl.innerHTML = h + hlEsc(code.slice(at)) + '\n';
+    errEl.scrollTop = edEl.scrollTop; errEl.scrollLeft = edEl.scrollLeft;
+  }
+}
+
+/* ==== The Step Flow, stage two ===============================================
+   Grades 4 to 8 are JavaScript, so the cards learn two things they did not
+   need for HTML and CSS: a worked example can show what it puts in the green
+   box (still a picture of the idea, drawn in its own sealed frame: the preview
+   below waits for Run as always), and a challenge can have cards too. A
+   challenge's cards never hand over its answer: they warm up the idea on a
+   neighbouring problem, then leave the real one to you, with no smaller
+   version offered, because that is what a challenge is.
+   And there is more than one ladder now: each door knows its own rungs. */
+
+/* the rungs in front of a door, or beside a rung, in order */
+function tfRungsOf(i){
+  const les = L[i]; if (!les) return [];
+  const door = les.rung ? les.door : i;
+  return L.map((l, k) => ({l, i: k})).filter(x => x.l.rung && x.l.door === door).sort((a, b) => a.l.rung - b.l.rung);
+}
+function tfDoorWord(){ const les = L[TF.i]; return les && les.g === 'KT' ? 'the vault' : 'the lesson'; }
+/* the Try card's promise: a smaller version, or (in a challenge) none */
+function tfTryNote(){
+  const les = tfLes();
+  return les && les.chal ? 'A challenge: no hints and no smaller version. The cards above were the warm-up; this part is all you.'
+    : 'Stuck after two tries? You will be offered a smaller version: no need to fail your way through.';
+}
+/* a JavaScript card's "what it shows": the green box, as it will look */
+function tfShowsBox(les, c, done){
+  /* hidden until the example has been read: its last step, its last part, or its button */
+  const wait = !done;
+  return '<div class="tfpvbox' + (wait ? ' tfwait' : '') + '"><span class="tfpvl">' + lsIc('play') + (c.showsLabel || 'What it shows') + '</span>' + tfPvHost(les, c.shows) + '</div>';
+}
+/* coach lines that point at a spot say which line it is on */
+function tfAtLine(msg, a){
+  if (a == null || /\bLine \d+:/.test(msg)) return msg;
+  const n = tfLineOf(edEl.value, a);
+  return String(msg).replace(/^((?:🧑‍🏫|🚫)\s*)?/, (m) => m + 'Line ' + n + ': ');
+}
+
+/* ---- The flows, by hand: Grades 4 to 8 -----------------------------------------
+   JavaScript: making things happen, words and numbers, lists, functions and
+   choices. The same loop as Kindergarten to Grade 3, faded for older hands:
+   fewer worked examples to watch and guesses to make, more lines to put in
+   order, bugs to spot and gaps to fill, and a Try card sooner. One card in
+   every flow (marked "full") holds a whole program that passes the lesson's own
+   check, so the cards and the coach can never drift apart. A challenge's cards
+   are a warm-up on a neighbouring problem and never hold its answer. */
+(function(){
+  const S = t => '<p id="screen">' + t + '</p>';
+  const XS = "const excuses = ['My dog ate it', 'Aliens took it', 'I overslept'];";
+  Object.assign(TF_FLOWS, {
+/* ================================ GRADE 4 ================================= */
+'G4|A third language': [
+  {t: 'see', h: 'One line that makes something happen', p: 'HTML says what is there, CSS how it looks. JavaScript <b>does</b> things. The green box on the page is called <code>screen</code>. Tap each part of the line.',
+   parts: [['screen', 'WHO: the green box, known to JavaScript by this name'], ['.textContent', 'WHAT about it: the words inside it'], [' = ', 'PUT INTO: whatever is on the right goes in there'], ["'Hello!'", 'the words, in quotes'], [';', 'the end of the instruction']],
+   shows: S('Hello!'), why: 'Read it right to left: take the words, put them in the box.'},
+  {t: 'predict', h: 'Do the quotes show?', code: "screen.textContent = 'Hi, Josh';", q: 'What does the green box show?',
+   ch: [{pv: S('Hi, Josh'), cap: 'the words', ok: 1, why: 'Quotes mark where the words start and stop. They never show.'},
+        {pv: S("'Hi, Josh'"), cap: 'with quotes', why: 'The quotes are for the computer, like the pointy brackets of a tag.'},
+        {pv: S('screen.textContent'), cap: 'the code', why: 'The code is the instruction; only the words in quotes land in the box.'}]},
+  {t: 'fill', h: 'The words inside', code: "screen.___ = 'I am writing JavaScript!';", opts: ['textContent', 'text', 'content'], ans: 'textContent', gap: 'the name for the words inside the box', full: 1,
+   no: {'text': 'Close, but JavaScript calls it textContent: one word, capital C.', 'content': 'JavaScript calls it textContent.'},
+   why: '<code>textContent</code>: the text content of the box.'},
+  {t: 'tr', h: 'Your first line of JavaScript', p: 'Put your own message in the green box, and press <b>Run</b>.',
+   sub: ['<code>screen.textContent = </code>', 'Your own words, in quotes', 'A <code>;</code> at the end', 'Press <b>Run</b>']},
+  {t: 'tweak', h: 'The other quotes', p: 'Swap your single quotes for double ones, <code>"like this"</code>, and press <b>Run</b>.',
+   re: 'textContent\\s*=\\s*"', why: 'Single or double: both work, as long as the pair matches.'}
+],
+'G4|A box with a name on it': [
+  {t: 'see', h: 'A box with a label', p: '<code>const</code> makes a box and gives it a name. Step through: first the box is filled, then it is shown.',
+   code: "const myName = 'Josh';\nscreen.textContent = myName;", labels: [[0, '1 · a box called myName, holding Josh'], [1, '2 · show what is IN the box']], steps: [0, 1], stepBtn: 'Next line',
+   shows: S('Josh'), why: 'No quotes around <code>myName</code>, so JavaScript opens the box and shows what is inside.'},
+  {t: 'predict', h: 'Quotes change everything', code: "const myName = 'Josh';\nscreen.textContent = 'myName';", q: 'Quotes around the box name this time. What shows?',
+   ch: [{pv: S('Josh'), cap: 'Josh', why: 'In quotes, <code>myName</code> is just those letters. The box is never opened.'},
+        {pv: S('myName'), cap: 'myName', ok: 1, why: 'Quotes mean these exact letters, so it shows the word myName.'},
+        {pv: S(''), cap: 'nothing', why: 'Words in quotes always show. These letters happen to be the box name.'}]},
+  {t: 'fill', h: 'Show the box', code: "const myName = 'Josh';\nscreen.textContent = ___;", opts: ['myName', "'myName'", 'Josh'], ans: 'myName', gap: 'the box’s name, bare, so its contents show', full: 1,
+   no: {"'myName'": 'With quotes it shows the word myName, not Josh.', 'Josh': 'Bare Josh is a box name too, and no box is called Josh: it would stop with an error.'},
+   why: 'Quotes: these exact letters. No quotes: the box of that name.'},
+  {t: 'tr', h: 'Your box', p: 'Make a box holding some words, then show the box, and press <b>Run</b>.',
+   sub: ['<code>const</code>, a name, <code>=</code>, words in quotes', '<code>screen.textContent = </code> the box’s name, no quotes', 'Press <b>Run</b>']},
+  {t: 'tweak', h: 'Change the box, not the screen', p: 'Put different words in the box, leave the screen line alone, and press <b>Run</b>.',
+   re: "const\\s+\\w+\\s*=\\s*['\"](?!Josh['\"])[^'\"]+['\"]", why: 'The same screen line shows whatever the box holds.'}
+],
+'G4|Waiting for a click': [
+  {t: 'see', h: 'Instructions for later', p: 'The button is called <code>btn</code>. You can hand it a bundle of instructions to run when it is clicked. Step through.',
+   code: "btn.onclick = function () {\n  screen.textContent = 'You clicked!';\n};", labels: [[0, '1 · when btn is clicked, run this bundle'], [1, '2 · what the bundle does'], [2, '3 · the bundle ends']], steps: [0, 1, 2], stepBtn: 'Next part',
+   shows: '<button id="btn">Press me</button>\n' + S('You clicked!'), showsLabel: 'After a click', why: 'Run hands the button its bundle. The click runs it.'},
+  {t: 'predict', h: 'Before anyone clicks', q: 'You press <b>Run</b> and do not click the button. What does the green box say?',
+   ch: [{t: 'You clicked!', why: 'Not yet: the bundle waits for the click.'}, {t: 'nothing yet, the same as before', ok: 1, why: 'Run only hands the button its instructions.'}, {t: 'an error', why: 'Nothing is wrong: it is waiting.'}]},
+  {t: 'bug', h: 'A line outside the bundle', p: 'This screen line runs straight away instead of on the click. Tap it.',
+   lines: ['btn.onclick = function () {', '};', "screen.textContent = 'You clicked!';"], bad: 2,
+   why: 'It sits after <code>};</code>, outside the bundle, so it runs at once.', fix: 'move it inside, between { and };'},
+  {t: 'arrange', h: 'Wire the button', p: 'Put the lines in order.', full: 1,
+   lines: ['btn.onclick = function () {', "  screen.textContent = 'You clicked me!';", '};'], labels: ['when clicked, run...', '...this line', 'end of the bundle'],
+   why: 'The screen line lives inside the braces, so the click runs it.'},
+  {t: 'tr', h: 'Make the click do something', p: 'Wire the button so a click changes the green box. Press <b>Run</b>, then press the button in the preview.',
+   sub: ['<code>btn.onclick = function () {</code>', 'Inside: a <code>screen.textContent = ...</code> line', 'Close with <code>};</code>', 'Press <b>Run</b>, then the button']}
+],
+'G4|📋 Review: put it together': [
+  {t: 'bug', h: 'One line shows the wrong thing', p: 'All of Grade 4 in one program. The click shows the word myName instead of Josh. Tap the line.',
+   lines: ["const myName = 'Josh';", 'btn.onclick = function () {', "  screen.textContent = 'myName';", '};'], bad: 2,
+   why: 'Quotes around <code>myName</code> show those letters. Without them, the box is opened.', fix: '  screen.textContent = myName;'},
+  {t: 'arrange', h: 'Box, wiring, display', p: 'Put the lines in order.', full: 1,
+   lines: ["const myName = 'Josh';", 'btn.onclick = function () {', '  screen.textContent = myName;', '};'], labels: ['a box with your name', 'when clicked...', 'show the box, no quotes', 'end of the bundle'],
+   why: 'Made once at the top, shown on every click.'},
+  {t: 'tr', h: 'The checkpoint', p: 'A box holding your name, and a click that shows the box on screen.',
+   sub: ['<code>const</code> box with your name in quotes', '<code>btn.onclick = function () { ... };</code>', 'Inside: the screen shows the box, no quotes', 'Press <b>Run</b>, then the button']}
+],
+'G4|🏋 Rep: two boxes, one line': [
+  {t: 'predict', h: 'Where do the spaces come from?', code: "const name = 'Josh';\nconst city = 'Austin';\nscreen.textContent = name + 'lives in' + city;", q: 'What lands on the screen?',
+   ch: [{pv: S('Josh lives in Austin'), cap: 'with spaces', why: 'Only if the spaces are typed inside the quotes.'},
+        {pv: S('Joshlives inAustin'), cap: 'squashed', ok: 1, why: 'The + glues exactly what it is given, and adds nothing of its own.'},
+        {pv: S('name lives in city'), cap: 'the box names', why: 'name and city have no quotes, so the boxes are opened.'}]},
+  {t: 'fill', h: 'The middle piece', code: 'screen.textContent = name + ___ + city;', opts: ["' lives in '", "'lives in'", 'lives in'], ans: "' lives in '", gap: 'the middle words, with a space at each end, inside the quotes',
+   no: {"'lives in'": 'No spaces at the ends: Joshlives inAustin.', 'lives in': 'Words need quotes, or JavaScript looks for boxes called lives and in.'},
+   why: 'The spaces live inside the quotes, where you can see them.'},
+  {t: 'arrange', h: 'Two boxes, one sentence', p: 'Put the lines in order. The boxes can come either way round.', full: 1,
+   lines: ["const name = 'Josh';", "const city = 'Austin';", "screen.textContent = name + ' lives in ' + city;"], labels: ['a box', 'another box', 'glue them into a sentence'], free: [[0, 1]],
+   why: 'Boxes first, then the line that uses them.'},
+  {t: 'tr', h: 'Your two boxes', p: 'A name box and a city box, glued into one sentence that reads properly.',
+   sub: ['Two <code>const</code> boxes with quoted words', 'One screen line gluing them with <code>+</code>', 'Spaces inside the quotes', 'Press <b>Run</b>']}
+],
+'G4|🏋 Rep: the button talks back': [
+  {t: 'predict', h: 'A button can change itself', code: "btn.onclick = function () {\n  btn.textContent = 'Again!';\n};", q: 'The button starts as <b>Wake the machine</b>. After one click, what does it say?',
+   ch: [{t: 'Again!', ok: 1, why: 'btn is the button itself, so its own words change.'}, {t: 'Wake the machine', why: 'That was before the click.'}, {t: 'Nothing: buttons cannot change', why: 'Everything on the page can be changed, buttons included.'}]},
+  {t: 'arrange', h: 'Two changes, one click', p: 'Put the lines in order. The two middle lines can go either way round.', full: 1,
+   lines: ['btn.onclick = function () {', "  screen.textContent = 'You woke me up!';", "  btn.textContent = 'Again!';", '};'], labels: ['when clicked...', 'change the screen', 'change the button itself', 'end of the bundle'], free: [[1, 2]],
+   why: 'One bundle, as many changes as you like.'},
+  {t: 'tr', h: 'Make it talk back', p: 'On a click, change the screen AND the button’s own words.',
+   sub: ['<code>btn.onclick = function () {</code>', 'a <code>screen.textContent = ...</code> line', 'a <code>btn.textContent = ...</code> line', '<code>};</code> and press <b>Run</b>']}
+],
+'G4|🐍 print makes it happen': [
+  {t: 'see', h: 'Python’s way to show a line', p: 'Python has no green box. It has <code>print</code>, which writes one line in the console. Tap each part.',
+   parts: [['print', 'show one line in the console'], ['(', 'what to show goes inside the brackets'], ['"Ready"', 'the words, in quotes'], [')', 'close the brackets. No semicolon: Python needs none']],
+   why: 'One print, one line.'},
+  {t: 'predict', h: 'Two prints', code: 'print("Ready")\nprint("Set")', q: 'What does the console show?',
+   ch: [{t: 'Ready Set, on one line', why: 'Each print writes its own line.'}, {t: 'Ready, then Set on the next line', ok: 1, why: 'Top to bottom, one line each.'}, {t: 'Set, then Ready', why: 'Top to bottom, as written.'}]},
+  {t: 'arrange', h: 'Ready, Set, Go', p: 'Put the lines in order.', full: 1, lines: ['print("Ready")', 'print("Set")', 'print("Go")'], why: 'Three prints, three lines, in order.'},
+  {t: 'tr', h: 'Print all three', p: 'Print Ready, Set and Go, one per line, and press <b>Run</b>.', sub: ['<code>print("Ready")</code>', 'Then Set, then Go', 'Press <b>Run</b>']}
+],
+'G4|⚔️ Look before you step': [
+  {t: 'see', h: 'A call inside a call', p: 'The inside call asks a question; the outside call shows the answer. Tap each part.',
+   parts: [['hero.say(', 'outside: show something in a speech bubble'], ['hero.look("right")', 'inside: what is in the next square?'], [');', 'close the say']],
+   why: 'The inside one runs first and hands its answer out to say.'},
+  {t: 'predict', h: 'What does the bubble say?', code: 'hero.say(hero.look("right"));', q: 'Suppose the square to the right holds a gem. What appears in the bubble?',
+   ch: [{t: '<code>gem</code>', ok: 1, why: 'look answers with a word, and say shows it.'}, {t: '<code>hero.look("right")</code>', why: 'No quotes around the look, so it runs and its answer is shown.'}, {t: '<code>right</code>', why: '"right" is where to look, not what is there.'}]},
+  {t: 'fill', h: 'Then walk', code: 'hero.say(hero.look("right"));\nhero.moveRight(___);', opts: ['4', '"4"', 'flag'], ans: '4', gap: 'how many squares to the flag: a number, no quotes', full: 1,
+   no: {'"4"': 'In quotes it is text. moveRight wants a number.', 'flag': 'moveRight wants how many squares, as a number.'}, why: 'Say what is ahead, then four squares to the flag.'},
+  {t: 'tr', h: 'Look, then go', p: 'Say what is to the right, then walk to the flag, picking up the gem.',
+   sub: ['<code>hero.say(hero.look("right"));</code>', '<code>hero.moveRight(4);</code>', 'Press <b>Run</b>']}
+],
+'G4|Boss: show the count': [
+  {t: 'predict', h: 'A real fact, not a sentence', p: 'Nothing new: Grade 4 was making a line of code change what a person sees.',
+   code: 'hero.say("gems left: " + hero.gemsLeft());', q: 'Two gems are out and you have taken one. What does the bubble say?',
+   ch: [{t: 'gems left: 1', ok: 1, why: 'gemsLeft() hands back the real count, and + glues it on.'}, {t: 'gems left: hero.gemsLeft()', why: 'No quotes around the call, so it runs.'}, {t: 'gems left: 2', why: 'You took one already: it counts what is really there.'}]},
+  {t: 'arrange', h: 'Walk, count, walk, count', p: 'Put the lines in order: there is a gem two squares ahead, another two after it, then the flag.', full: 1,
+   lines: ['hero.moveRight(2);', 'hero.say("gems left: " + hero.gemsLeft());', 'hero.moveRight(2);', 'hero.say("gems left: " + hero.gemsLeft());', 'hero.moveRight(1);'],
+   labels: ['to the first gem', 'say how many are left', 'to the second gem', 'say it again', 'onto the flag'],
+   why: 'The same say line twice, and it shows 1 and then 0.'},
+  {t: 'tr', h: 'Clear the board', p: 'Take both gems, saying how many are left after each, and finish on the flag.',
+   sub: ['Walk to a gem', '<code>hero.say("gems left: " + hero.gemsLeft());</code>', 'Again for the second gem', 'Finish on the flag and press <b>Run</b>']}
+],
+/* ================================ GRADE 5 ================================= */
+'G5|Sticking words together': [
+  {t: 'see', h: 'Words + a box', p: 'The <code>+</code> glues pieces together. Quoted pieces show as written; a bare box name is swapped for what is inside.',
+   code: "const name = 'Josh';\nscreen.textContent = 'Hello ' + name + '!';", labels: [[0, '1 · the box'], [1, '2 · words + box + words, glued']], full: 1,
+   shows: S('Hello Josh!'), why: 'Mind the space inside <code>\'Hello \'</code>: the computer only puts spaces where you type them.'},
+  {t: 'predict', h: 'The missing space', code: "const name = 'Sam';\nscreen.textContent = 'Hello' + name;", q: 'What shows?',
+   ch: [{pv: S('Hello Sam'), cap: 'Hello Sam', why: 'Where would the space come from? Nobody typed one.'},
+        {pv: S('HelloSam'), cap: 'HelloSam', ok: 1, why: 'No space inside the quotes, so none on the screen.'},
+        {pv: S('Helloname'), cap: 'Helloname', why: 'name has no quotes, so the box is opened: Sam.'}]},
+  {t: 'fill', h: 'Glue in the box', code: "const name = 'Josh';\nscreen.textContent = 'Hello ' + ___ + '!';", opts: ['name', "'name'", 'Name'], ans: 'name', gap: 'the box, so its contents are glued in',
+   no: {"'name'": 'In quotes it is the word name, not Josh.', 'Name': 'Capitals matter: the box is called name, with a small n.'}, why: 'Bare name: the box is opened.'},
+  {t: 'tr', h: 'Greet a box', p: 'Make a name box, then greet it: quoted words, a <code>+</code>, the box.',
+   sub: ['<code>const</code> box with a name in it', '<code>screen.textContent = \'Hello \' + </code> the box', 'Press <b>Run</b>']},
+  {t: 'tweak', h: 'Glue on more', p: 'Add another quoted piece after the box, like <code>\' and welcome back!\'</code>, and press <b>Run</b>.',
+   re: "\\+\\s*\\w+\\s*\\+\\s*['\"][^'\"]{3,}", why: 'As many pieces as you like, glued in order.'}
+],
+'G5|Words and numbers are different': [
+  {t: 'predict', h: 'The trap', p: 'Numbers have no quotes. <code>+</code> adds numbers but glues words.',
+   code: "screen.textContent = 'Total: ' + 4 + 3;", q: 'What does the screen show?',
+   ch: [{pv: S('Total: 7'), cap: 'Total: 7', why: 'Only if the sum were worked out first. It is not.'},
+        {pv: S('Total: 43'), cap: 'Total: 43', ok: 1, why: 'Words + 4 glues to Total: 4, and then 3 glues on.'},
+        {pv: S('Total: 4 + 3'), cap: 'Total: 4 + 3', why: 'The + signs are instructions; they never show.'}]},
+  {t: 'see', h: 'Left to right', p: 'Tap each step, in the order the computer does them.',
+   parts: [["'Total: ' + 4", 'step 1: words + a number glue into the words Total: 4'], [' + 3', 'step 2: words + 3 glue again: Total: 43']],
+   why: 'Once it is words, every + after it glues.'},
+  {t: 'fill', h: 'Work it out first', code: "screen.textContent = 'Total: ' + ___;", opts: ['(4 + 3)', '4 + 3', "'4 + 3'"], ans: '(4 + 3)', gap: 'the sum, in round brackets so it is worked out first', full: 1,
+   no: {'4 + 3': 'Without brackets it is glued left to right: 43 again.', "'4 + 3'": 'In quotes it is just the words 4 + 3.'}, why: 'Brackets first: 4 + 3 is 7, then it is glued on.'},
+  {t: 'tr', h: 'Fix the total', p: 'The editor has the trap. Put round brackets around the sum and press <b>Run</b>.',
+   sub: ['<code>(4 + 3)</code> in round brackets', 'Press <b>Run</b>: Total: 7']}
+],
+'G5|📋 Review: put it together': [
+  {t: 'bug', h: 'The score is wrong', p: 'This shows Josh scored 107. Tap the line that does it.',
+   lines: ["const name = 'Josh';", 'const bonus = 7;', "screen.textContent = name + ' scored ' + 10 + bonus;"], bad: 2,
+   why: 'After the words, every + glues: 10 and then 7 are stuck on.', fix: "screen.textContent = name + ' scored ' + (10 + bonus);"},
+  {t: 'fill', h: 'Honest math', code: "const name = 'Josh';\nscreen.textContent = name + ' scored ' + ___ + ' points';", opts: ['(10 + 7)', '10 + 7', "'17'"], ans: '(10 + 7)', gap: 'a sum in brackets, worked out first', full: 1,
+   no: {'10 + 7': 'Glued left to right: scored 107.', "'17'": 'That is the word 17, typed by you. The lesson wants the computer to do the sum.'}, why: 'A box, a label, a bracketed sum: Josh scored 17 points.'},
+  {t: 'tr', h: 'The checkpoint', p: 'One line: the name box, a quoted label, and a correct bracketed sum.',
+   sub: ['The name box, bare', 'A label like <code>\' scored \'</code>', 'A sum in round brackets', 'Press <b>Run</b>']}
+],
+'G5|🏋 Rep: mad libs': [
+  {t: 'bug', h: 'Welded words', p: 'This shows Joshsaw araccoon. Tap the line.',
+   lines: ["const name = 'Josh';", "const animal = 'raccoon';", "screen.textContent = name + 'saw a' + animal;"], bad: 2,
+   why: 'Each quoted connector needs its own spaces.', fix: "screen.textContent = name + ' saw a ' + animal;"},
+  {t: 'arrange', h: 'Three boxes, one sentence', p: 'Put the lines in order. The boxes can come in any order.', full: 1,
+   lines: ["const name = 'Josh';", "const animal = 'raccoon';", "const food = 'tacos';", "screen.textContent = name + ' saw a ' + animal + ' eating ' + food + '!';"],
+   labels: ['a box', 'a box', 'a box', 'glue them all'], free: [[0, 2]], why: 'Read it out loud: Josh saw a raccoon eating tacos!'},
+  {t: 'tr', h: 'Your mad lib', p: 'A name, an animal and a food, glued into one sentence that reads properly.',
+   sub: ['Three <code>const</code> boxes', 'One screen line gluing them', 'Spaces inside every quoted piece', 'Press <b>Run</b>']}
+],
+'G5|🏋 Rep: honest math': [
+  {t: 'predict', h: 'The trap, once more', code: "screen.textContent = 'Sum: ' + 12 + 8;", q: 'What shows?',
+   ch: [{pv: S('Sum: 20'), cap: 'Sum: 20', why: 'Not until the sum is worked out first.'}, {pv: S('Sum: 128'), cap: 'Sum: 128', ok: 1, why: 'Words first, so 12 and 8 are glued on as text.'}, {pv: S('Sum: 12 + 8'), cap: 'Sum: 12 + 8', why: 'The + signs never show.'}]},
+  {t: 'fill', h: 'Brackets first', code: "screen.textContent = 'Sum: ' + ___;", opts: ['(12 + 8)', '12 + 8', '(12) + (8)'], ans: '(12 + 8)', gap: 'the whole sum inside one pair of brackets', full: 1,
+   no: {'12 + 8': 'Glued: Sum: 128.', '(12) + (8)': 'Each number is bracketed, but the + between them still glues.'}, why: 'One pair of brackets around the whole sum.'},
+  {t: 'tr', h: 'A real total', p: 'Show Sum: and the correct sum of 12 and 8.', sub: ['<code>(12 + 8)</code>', 'Press <b>Run</b>: Sum: 20']}
+],
+'G5|🐍 2 + 3 is not "2" + "3"': [
+  {t: 'predict', h: 'Quotes decide', code: 'print("2" + "3")', q: 'What does the console show?',
+   ch: [{t: '5', why: 'In quotes they are text, and + glues text.'}, {t: '23', ok: 1, why: 'Two pieces of text, glued.'}, {t: 'an error', why: 'Python happily glues two pieces of text.'}]},
+  {t: 'fill', h: 'Numbers, then text', code: 'print(2 + 3)\nprint(___)', opts: ['"2" + "3"', '2 + 3', '"2 + 3"'], ans: '"2" + "3"', gap: 'two pieces of text, each in its own quotes, glued', full: 1,
+   no: {'2 + 3': 'No quotes: numbers, added: 5 again.', '"2 + 3"': 'One piece of text that says 2 + 3.'}, why: '5, then 23: same +, two jobs.'},
+  {t: 'tr', h: 'Both, one per line', p: 'Print 2 + 3 as numbers, then "2" + "3" as text.', sub: ['<code>print(2 + 3)</code>', '<code>print("2" + "3")</code>', 'Press <b>Run</b>']}
+],
+'G5|🎵 The tempo is a number': [
+  {t: 'see', h: 'A number with no quotes', p: 'The rhythm string is text. The tempo is a number: beats per minute. Tap each part.',
+   parts: [['setTempo(', 'set the speed'], ['140', 'beats per minute: a number, no quotes'], [');', 'the end of the instruction']], why: 'Text goes in quotes; numbers never do.'},
+  {t: 'fill', h: 'The speed', code: 'setTempo(___);\nmakeBeat(KICK, 1, 1, "0---0---0---0---");', opts: ['140', '"140"', 'fast'], ans: '140', gap: 'the speed, as a number', full: 1,
+   no: {'"140"': 'In quotes it is the text 140, not a number to count beats with.', 'fast': 'The tempo wants a number of beats per minute.'}, why: '140 beats a minute, then the kick on every beat.'},
+  {t: 'tr', h: 'Set it and play it', p: 'The tempo on the first line, the kick under it.',
+   sub: ['<code>setTempo(140);</code>', '<code>makeBeat(KICK, 1, 1, "0---0---0---0---");</code>', 'Press <b>Run</b>']}
+],
+'G5|Boss: do the sum first': [
+  {t: 'predict', h: 'Eight squares, one line', p: 'Nothing new: Grade 5 was words and numbers.', q: 'Which line reaches a flag eight squares away?',
+   ch: [{code: 'hero.moveRight("4" + "4");', why: 'In quotes, that glues to the word 44.'}, {code: 'hero.moveRight(4 + 4);', ok: 1, why: 'The sum is worked out first: 8.'}, {code: 'hero.moveRight(4, 4);', why: 'A comma hands over two things; moveRight wants one number.'}]},
+  {t: 'fill', h: 'A sum in the brackets', code: 'hero.moveRight(4 ___ 4);', opts: ['+', '"+"', ','], ans: '+', gap: 'the sign that adds two numbers', full: 1,
+   no: {'"+"': 'In quotes it is just a character, not an instruction.', ',': 'A comma separates two things.'}, why: 'Worked out first, then moved: eight squares.'},
+  {t: 'tr', h: 'Reach the flag', p: 'One line, with a sum in the brackets.', sub: ['<code>hero.moveRight(4 + 4);</code>', 'Press <b>Run</b>']}
+],
+/* ================================ GRADE 6 ================================= */
+'G6|A list in a box': [
+  {t: 'see', h: 'One box, many things', p: 'Square brackets make a list; commas separate the things. Step through.',
+   code: XS + '\nscreen.textContent = excuses[0];', labels: [[0, '1 · three things in one box'], [1, '2 · reach in at position 0']], steps: [0, 1], stepBtn: 'Next line',
+   shows: S('My dog ate it'), why: 'Positions start at 0: the first thing is zero steps from the start.'},
+  {t: 'predict', h: 'Counting from zero', code: XS, q: 'What is <code>excuses[1]</code>?',
+   ch: [{t: 'My dog ate it', why: 'That is position 0.'}, {t: 'Aliens took it', ok: 1, why: 'Position 1 is the second thing.'}, {t: 'I overslept', why: 'That is position 2, the third.'}]},
+  {t: 'fill', h: 'The first one', code: "const snacks = ['chips', 'fruit', 'cookies'];\nscreen.textContent = snacks[___];", opts: ['0', '1', 'first'], ans: '0', gap: 'the position of the first snack', full: 1,
+   no: {'1': 'That is the second: counting starts at 0.', 'first': 'Positions are numbers.'}, why: 'snacks[0]: chips.'},
+  {t: 'tr', h: 'Your list', p: 'A list of three or more quoted things, then show the first one.',
+   sub: ['<code>const</code> box = <code>[ ]</code> with quoted things, commas between', '<code>screen.textContent = </code> list<code>[0]</code>', 'Press <b>Run</b>']},
+  {t: 'tweak', h: 'The last of three', p: 'Change <code>[0]</code> to <code>[2]</code> and press <b>Run</b>.', re: '\\[\\s*2\\s*\\]', why: 'Position 2: the third thing, the last of three.'}
+],
+'G6|Picking at random': [
+  {t: 'ladder', h: 'Three short steps first?', p: 'This line needs four new ideas at once. The ladder teaches them one at a time, and each step passes on its own. Or go straight to the lesson.'},
+  {t: 'see', h: 'The whole line', p: 'The three ideas from the ladder, in one line, and then the position used. Step through.',
+   code: XS + '\nconst pick = Math.floor(Math.random() * excuses.length);\nscreen.textContent = excuses[pick];', labels: [[0, '1 · the list'], [1, '2 · a random position: stretch, then chop'], [2, '3 · reach in with it']], steps: [0, 1, 2], stepBtn: 'Next line',
+   shows: S('Aliens took it'), showsLabel: 'One Run shows', why: 'Each Run can pick a different position, so a different excuse.'},
+  {t: 'predict', h: 'Which numbers can come out?', q: '<code>Math.floor(Math.random() * 3)</code> can give which numbers?',
+   ch: [{t: '1, 2 or 3', why: 'A random number like 0.2, times 3, chopped, is 0.'}, {t: '0, 1 or 2', ok: 1, why: 'Up to just under 3, chopped down: exactly the three positions.'}, {t: 'any number at all', why: 'Math.random() stays below 1, so times 3 stays below 3.'}]},
+  {t: 'arrange', h: 'Build the picker', p: 'Put the lines in order.', full: 1,
+   lines: [XS, 'const pick = Math.floor(Math.random() * excuses.length);', 'screen.textContent = excuses[pick];'], labels: ['the list', 'a fair random position', 'show the thing at that position'],
+   why: 'List, position, reach in.'},
+  {t: 'tr', h: 'Pick one at random', p: 'The list is in the editor. Pick a random position and show the excuse there.',
+   sub: ['<code>const pick = Math.floor(Math.random() * excuses.length);</code>', '<code>screen.textContent = excuses[pick];</code>', 'Press <b>Run</b> a few times']}
+],
+'G6|📋 Review: put it together': [
+  {t: 'bug', h: 'Tacos never come up', p: 'This picker can never pick tacos, and sometimes shows nothing. Tap the line.',
+   lines: ["const dinners = ['tacos', 'ramen', 'pizza', 'stir fry'];", 'const pick = Math.floor(Math.random() * 4) + 1;', "screen.textContent = 'Tonight: ' + dinners[pick];"], bad: 1,
+   why: 'The + 1 moves the positions to 1 to 4: position 0 is never picked and position 4 is empty.', fix: 'const pick = Math.floor(Math.random() * dinners.length);'},
+  {t: 'arrange', h: 'Tonight’s dinner', p: 'Put the lines in order.', full: 1,
+   lines: ["const dinners = ['tacos', 'ramen', 'pizza', 'stir fry'];", 'const pick = Math.floor(Math.random() * dinners.length);', "screen.textContent = 'Tonight: ' + dinners[pick];"], labels: ['your list', 'a fair position', 'a label + the pick'],
+   why: 'Grade 6 and Grade 5 together.'},
+  {t: 'tr', h: 'The checkpoint', p: 'Your own list of four or more, a random pick, shown after a label.',
+   sub: ['A list of 4+ quoted things', 'The fair-pick line', '<code>\'Tonight: \' + list[pick]</code> on the screen', 'Press <b>Run</b>']}
+],
+'G6|🏋 Rep: grab the last one': [
+  {t: 'predict', h: 'Where is the end?', code: "const queue = ['Ana', 'Bo', 'Cy', 'Dee'];", q: 'Which one reaches Dee, and still works when the queue grows?',
+   ch: [{code: 'queue[4]', why: 'Positions are 0 to 3: nothing is at 4.'}, {code: 'queue[queue.length - 1]', ok: 1, why: 'Length 4, minus 1: position 3.'}, {code: 'queue[queue.length]', why: 'One past the end: nothing there.'}]},
+  {t: 'fill', h: 'One back from the length', code: "const queue = ['Ana', 'Bo', 'Cy', 'Dee'];\nscreen.textContent = 'Last in line: ' + queue[queue.length ___];", opts: ['- 1', '+ 1', '* 1'], ans: '- 1', gap: 'the step back from the length to the last position', full: 1,
+   no: {'+ 1': 'That is two past the end.', '* 1': 'Times 1 changes nothing: position 4, which is empty.'}, why: 'The last position is always one less than the length.'},
+  {t: 'tr', h: 'The last in line', p: 'Show the last item with <code>length - 1</code>, after a label.', sub: ['<code>queue[queue.length - 1]</code>', 'A label like <code>\'Last in line: \'</code>', 'Press <b>Run</b>']}
+],
+'G6|🏋 Rep: roll the dice': [
+  {t: 'predict', h: 'No zero on a die', q: '<code>Math.floor(Math.random() * 6)</code> gives 0 to 5. A die shows 1 to 6. Which fixes it?',
+   ch: [{code: 'Math.floor(Math.random() * 7)', why: 'That gives 0 to 6: a 0 is still possible.'}, {code: 'Math.floor(Math.random() * 6) + 1', ok: 1, why: 'Shift all six up by one: 1 to 6.'}, {code: 'Math.random() * 6 + 1', why: 'Without Math.floor it is a decimal like 4.72.'}]},
+  {t: 'fill', h: 'The shift', code: "const roll = Math.floor(Math.random() * 6) ___;\nscreen.textContent = 'You rolled a ' + roll;", opts: ['+ 1', '- 1', '* 1'], ans: '+ 1', gap: 'the shift from 0 to 5 up to 1 to 6', full: 1,
+   no: {'- 1': 'That shifts down: -1 to 4.', '* 1': 'That changes nothing: still 0 to 5.'}, why: 'Chop first, then add one.'},
+  {t: 'tr', h: 'Roll it', p: 'Show a roll from 1 to 6 after a label.', sub: ['<code>Math.floor(Math.random() * 6) + 1</code>', 'A label like <code>\'You rolled a \'</code>', 'Press <b>Run</b>']}
+],
+'G6|⚔️ Pick and tell': [
+  {t: 'predict', h: 'Warm-up: one box, two jobs', p: 'Not the challenge: a neighbour of it.',
+   code: "const colors = ['red', 'green', 'blue'];\nconst at = 2;\nscreen.textContent = 'Slot ' + at + ': ' + colors[at];", q: 'What shows?',
+   ch: [{pv: S('Slot 2: blue'), cap: 'Slot 2: blue', ok: 1, why: 'The same box used twice: once as a number, once as a position.'},
+        {pv: S('Slot 2: green'), cap: 'Slot 2: green', why: 'Position 2 is the third: blue.'},
+        {pv: S('Slot at: colors[at]'), cap: 'the names', why: 'No quotes, so both are opened.'}]},
+  {t: 'tr', h: 'The challenge', p: 'Pick a snack at random and show both where it was and what it is, like <b>Pick #2: cookies</b>. No hints from here.'}
+],
+'G6|🐍 A list and how long it is': [
+  {t: 'see', h: 'The same list, in Python', p: 'Square brackets and commas, just as in JavaScript. Tap each line.',
+   parts: [['fruits = ["apple", "pear", "fig"]', 'a list in a box: no const in Python'], ['\nprint(len(fruits))', 'len: how many, here 3'], ['\nprint(fruits[0])', 'position 0: the first, apple']],
+   why: 'Different language, same list, same counting from 0.'},
+  {t: 'arrange', h: 'Build it', p: 'Put the lines in order.', full: 1,
+   lines: ['fruits = ["apple", "pear", "fig"]', 'print(len(fruits))', 'print(fruits[0])'], labels: ['the list', 'how many', 'the first'], why: 'List first, then the questions about it.'},
+  {t: 'tr', h: 'Your fruits', p: 'A list of three fruits, how many there are, then the first one.',
+   sub: ['A list of three quoted fruits', '<code>print(len(fruits))</code>', '<code>print(fruits[0])</code>', 'Press <b>Run</b>']}
+],
+'G6|Boss: walk the list': [
+  {t: 'see', h: 'A list of moves', p: 'The distances live in a list, and a loop takes them one at a time. Step through.',
+   code: 'const steps = [3, 2, 1];\nfor (const s of steps) {\n  hero.moveRight(s);\n}', labels: [[0, '1 · the distances, in a list'], [1, '2 · take them one at a time, calling each s'], [2, '3 · move that far'], [3, '4 · back for the next one']], steps: [0, 1, 2, 3], stepBtn: 'Next part',
+   why: 'The block runs once per item: 3, then 2, then 1. Six squares.'},
+  {t: 'predict', h: 'Change the list', q: 'Same loop, with <code>const steps = [2, 2, 2];</code>. How far does the hero go?',
+   ch: [{t: '2 squares', why: 'The block runs once for every item: three times.'}, {t: '6 squares', ok: 1, why: 'Three items, two squares each.'}, {t: '222 squares', why: 'They are numbers, each its own move.'}]},
+  {t: 'arrange', h: 'Build the walk', p: 'Put the lines in order.', full: 1,
+   lines: ['const steps = [3, 2, 1];', 'for (const s of steps) {', '  hero.moveRight(s);', '}'], labels: ['the list', 'for each one...', '...move that far', 'end of the loop'], why: 'Change the list and the route changes; the loop stays.'},
+  {t: 'tr', h: 'Walk it', p: 'Reach the flag by looping over a list of distances.', sub: ['A list of numbers in square brackets', '<code>for (const s of steps) {</code>', '<code>hero.moveRight(s);</code> inside, then <code>}</code>', 'Press <b>Run</b>']}
+],
+/* ================================ GRADE 7 ================================= */
+'G7|Teaching the computer a trick': [
+  {t: 'see', h: 'Teach it, then say it', p: 'A function is a trick with a name. Writing it teaches it; saying its name does it. Step through.',
+   code: "function sayHello() {\n  screen.textContent = 'Hello from my first function!';\n}\n\nsayHello();", labels: [[0, '1 · teach a trick called sayHello'], [1, '2 · what the trick does'], [2, '3 · end of the teaching'], [4, '4 · now do it']], steps: [0, 1, 2, 4], stepBtn: 'Next part',
+   shows: S('Hello from my first function!'), why: 'Lines 1 to 3 only teach. The last line performs.'},
+  {t: 'predict', h: 'Taught, never told', code: "function sayHello() {\n  screen.textContent = 'Hello!';\n}", q: 'That is the whole program: no last line. What shows?',
+   ch: [{t: 'Hello!', why: 'The trick was taught but never performed.'}, {t: 'nothing new', ok: 1, why: 'Nobody said its name, so it never ran.'}, {t: 'an error', why: 'Teaching a trick you never use is allowed.'}]},
+  {t: 'bug', h: 'Named, not called', p: 'This program still shows nothing. Tap the line.',
+   lines: ['function sayHello() {', "  screen.textContent = 'Hello!';", '}', 'sayHello;'], bad: 3,
+   why: 'Without the round brackets it only names the trick. <code>()</code> says: do it now.', fix: 'sayHello();'},
+  {t: 'fill', h: 'The call', code: "function sayHello() {\n  screen.textContent = 'Hello from my first function!';\n}\n\n___;", opts: ['sayHello()', 'sayHello', 'function sayHello()'], ans: 'sayHello()', gap: 'the call: the name, then round brackets', full: 1,
+   no: {'sayHello': 'That names it without calling it.', 'function sayHello()': 'That starts teaching it again.'}, why: 'Name plus <code>()</code>: do it now.'},
+  {t: 'tr', h: 'Your trick', p: 'Teach a trick that writes to the screen, then call it.', sub: ['<code>function name() {</code>', 'A screen line inside', '<code>}</code>', 'The call, <code>name();</code>, after it', 'Press <b>Run</b>']}
+],
+'G7|A trick with an ingredient': [
+  {t: 'see', h: 'A box for the ingredient', p: 'Name the ingredient in the round brackets. Whatever the call hands over lands in that box. Tap the parts.',
+   parts: [['function greet(', 'teach a trick called greet'], ['person', 'its ingredient: a box that exists only inside the trick'], [") {\n  screen.textContent = 'Hello ' + person + '!';\n}", 'use it like any box'], ["\ngreet('Josh');", 'the call: Josh lands in person']],
+   shows: S('Hello Josh!'), why: 'One trick, any name.'},
+  {t: 'predict', h: 'A different ingredient', code: "function greet(person) {\n  screen.textContent = 'Hello ' + person + '!';\n}\ngreet('Mum');", q: 'What shows?',
+   ch: [{pv: S('Hello Josh!'), cap: 'Hello Josh!', why: 'This call hands over Mum.'}, {pv: S('Hello Mum!'), cap: 'Hello Mum!', ok: 1, why: 'Mum lands in person, and person is glued in.'}, {pv: S('Hello person!'), cap: 'Hello person!', why: 'person is a box, so it is opened.'}]},
+  {t: 'fill', h: 'Hand it over', code: "function greet(person) {\n  screen.textContent = 'Hello ' + person + '!';\n}\n\ngreet(___);", opts: ["'Josh'", 'Josh', 'person'], ans: "'Josh'", gap: 'the value to hand over: words, so in quotes', full: 1,
+   no: {'Josh': 'Without quotes JavaScript looks for a box called Josh.', 'person': 'person only exists inside the trick.'}, why: 'The quoted words land in person.'},
+  {t: 'tr', h: 'Your greeting trick', p: 'A trick with one ingredient that glues it after a label, then a call with a value.',
+   sub: ['<code>function greet(person) {</code>', 'A screen line gluing a label + person', '<code>}</code>', "<code>greet('...');</code>", 'Press <b>Run</b>']},
+  {t: 'tweak', h: 'Someone else', p: 'Call it with a different name and press <b>Run</b>.', re: "\\w+\\s*\\(\\s*['\"](?!Josh['\"])[^'\"]+['\"]\\s*\\)", why: 'Same trick, new ingredient.'}
+],
+'G7|A trick that hands something back': [
+  {t: 'see', h: 'Work it out, hand it back', p: '<code>return</code> hands a value back to whoever called. The call is replaced by the answer. Step through.',
+   code: "function double(number) {\n  return number * 2;\n}\n\nscreen.textContent = 'Answer: ' + double(5);", labels: [[0, '1 · a trick with an ingredient'], [1, '2 · work it out and hand it back'], [4, '3 · double(5) becomes 10, then it is shown']], steps: [0, 1, 4], stepBtn: 'Next part',
+   shows: S('Answer: 10'), why: 'return hands back; only the screen line shows.'},
+  {t: 'predict', h: 'Handed back to nobody', code: "function double(number) {\n  return number * 2;\n}\ndouble(5);", q: 'No screen line. What shows?',
+   ch: [{t: '10', why: 'It was handed back and dropped: nobody put it on the screen.'}, {t: 'nothing new', ok: 1, why: 'Working it out is not showing it.'}, {t: 'double(5)', why: 'Nothing reaches the screen at all.'}]},
+  {t: 'bug', h: 'Shows instead of handing back', p: 'This shows <b>Answer: undefined</b>. Tap the line.',
+   lines: ['function double(number) {', '  screen.textContent = number * 2;', '}', "screen.textContent = 'Answer: ' + double(5);"], bad: 1,
+   no: {3: 'This line is right: it calls double and glues on whatever comes back. Look at what comes back.'},
+   why: 'The trick shows 10 but hands nothing back, so the call gives undefined.', fix: '  return number * 2;'},
+  {t: 'fill', h: 'The word that hands back', code: "function double(number) {\n  ___ number * 2;\n}\n\nscreen.textContent = 'Answer: ' + double(5);", opts: ['return', 'show', 'give'], ans: 'return', gap: 'the word that hands the answer back', full: 1,
+   no: {'show': 'JavaScript has no show. Handing back is return.', 'give': 'A good English word; JavaScript says return.'}, why: 'return number * 2: the call becomes 10.'},
+  {t: 'tr', h: 'Your returning trick', p: 'A trick that returns a worked-out value, and a screen line showing it after a label.',
+   sub: ['<code>function name(n) {</code> with <code>return ...;</code> inside', "<code>screen.textContent = 'Answer: ' + name(5);</code>", 'Press <b>Run</b>']}
+],
+'G7|Tricks using tricks': [
+  {t: 'predict', h: 'A trick inside a trick', code: "function double(number) {\n  return number * 2;\n}\nfunction describe(number) {\n  return number + ' doubled is ' + double(number);\n}", q: 'What does <code>describe(4)</code> hand back?',
+   ch: [{t: '4 doubled is 8', ok: 1, why: 'describe glues 4, the words, and what double(4) hands back.'}, {t: '8 doubled is 16', why: 'number is 4; only the end calls double.'}, {t: '4 doubled is double(4)', why: 'The call is not in quotes, so it runs.'}]},
+  {t: 'arrange', h: 'Stack the tricks', p: 'Put the lines in order: the small trick, the bigger one that uses it, then show it.', full: 1,
+   lines: ['function double(number) {', '  return number * 2;', '}', 'function describe(number) {', "  return number + ' doubled is ' + double(number);", '}', 'screen.textContent = describe(6);'],
+   labels: ['the small trick', 'hand back twice it', 'end', 'the bigger trick', 'use the small one mid-sentence', 'end', 'show the result'], why: 'Small tricks, stacked into a bigger one.'},
+  {t: 'tr', h: 'Two tricks', p: 'Two functions, the second calling the first, and the result on screen.',
+   sub: ['A small function that returns', 'A second that calls the first inside its braces', 'A screen line showing the second', 'Press <b>Run</b>']}
+],
+'G7|📋 Review: put it together': [
+  {t: 'bug', h: 'Wrong brackets', p: 'This stops with an error: <i>snacks is not a function</i>. Tap the line.',
+   lines: ["const snacks = ['chips', 'fruit', 'cookies'];", 'function describe(position) {', "  return 'Snack choice: ' + snacks(position);", '}', 'screen.textContent = describe(1);'], bad: 2,
+   why: 'Round brackets call a trick; square brackets reach into a list.', fix: "  return 'Snack choice: ' + snacks[position];"},
+  {t: 'arrange', h: 'A trick that reads a list', p: 'Put the lines in order.', full: 1,
+   lines: ["const snacks = ['chips', 'fruit', 'cookies'];", 'function describe(position) {', "  return 'Snack choice: ' + snacks[position];", '}', 'screen.textContent = describe(1);'],
+   labels: ['the list', 'a trick taking a position', 'hand back a label + that item', 'end', 'show a call'], why: 'Lists, functions and return, together.'},
+  {t: 'tr', h: 'The checkpoint', p: 'A trick that takes a position, returns that snack after a label, and a call shown on screen.',
+   sub: ['<code>function describe(position) {</code>', "<code>return 'Snack choice: ' + snacks[position];</code>", '<code>screen.textContent = describe(1);</code>', 'Press <b>Run</b>']}
+],
+'G7|🏋 Rep: one trick, two calls': [
+  {t: 'predict', h: 'Once written, twice used', code: "function greet(person) {\n  return 'Hi ' + person + '! ';\n}\nscreen.textContent = greet('Ana') + greet('Bo');", q: 'What shows?',
+   ch: [{pv: S('Hi Ana! Hi Bo! '), cap: 'both', ok: 1, why: 'Each call hands back its own answer; + glues them.'}, {pv: S('Hi Bo! '), cap: 'only Bo', why: 'Both calls happen.'}, {pv: S('Hi Ana! Bo! '), cap: 'half', why: 'The second call runs the whole trick again.'}]},
+  {t: 'fill', h: 'The second call', code: "function greet(person) {\n  return 'Hi ' + person + '! ';\n}\n\nscreen.textContent = greet('Ana') + ___;", opts: ["greet('Bo')", "'Bo'", 'greet'], ans: "greet('Bo')", gap: 'a second call, with a different person', full: 1,
+   no: {"'Bo'": 'That glues the word Bo on, without the greeting.', 'greet': 'Without brackets it is not called.'}, why: 'Write once, use as often as you like.'},
+  {t: 'tr', h: 'Two calls', p: 'A returning greet function, called twice for two people in one screen line.', sub: ['<code>function greet(person) { return ...; }</code>', "Two calls glued: <code>greet('Ana') + greet('Bo')</code>", 'Press <b>Run</b>']}
+],
+'G7|⚔️ The shouting trick': [
+  {t: 'predict', h: 'Warm-up: a string’s own trick', p: 'Not the challenge: the one new tool it uses.', code: "'hi'.toUpperCase()", q: 'What does this hand back?',
+   ch: [{code: "'HI'", ok: 1, why: 'The same letters, all in capitals.'}, {code: "'Hi'", why: 'All of them, not just the first.'}, {code: "'hi'", why: 'It hands back a capitalised copy.'}]},
+  {t: 'predict', h: 'Warm-up: gluing onto an answer', code: "'go' + '!!!'", q: 'What does this make?',
+   ch: [{code: "'go!!!'", ok: 1, why: 'Glued, with nothing between.'}, {code: "'go !!!'", why: 'No space was typed, so none appears.'}, {code: "'!!!go'", why: 'Left to right, in order.'}]},
+  {t: 'tr', h: 'The challenge', p: 'Teach <code>shout(text)</code> to return the text in capitals with <b>!!!</b> on the end, and show a call. No hints from here.'}
+],
+'G7|🐍 Teaching a trick, in Python': [
+  {t: 'see', h: 'def, a colon, an indent', p: 'Python spells function as <code>def</code>, and indentation does the job of braces. Tap each part.',
+   parts: [['def greet(name):', 'teach a trick: def, the name, the ingredient, a colon'], ['\n    print("Hi", name)', 'the body, indented four spaces: the indent is the braces'], ['\ngreet("Sam")', 'perform it with Sam']], why: 'Taught once, called by name.'},
+  {t: 'bug', h: 'The missing indent', p: 'Python refuses to run this. Tap the line.',
+   lines: ['def greet(name):', 'print("Hi", name)', 'greet("Sam")'], bad: 1, why: 'Without the indent Python cannot tell the line belongs to greet.', fix: '    print("Hi", name)'},
+  {t: 'arrange', h: 'Teach it, call it twice', p: 'Put the lines in order: Sam is greeted first.', full: 1,
+   lines: ['def greet(name):', '    print("Hi", name)', 'greet("Sam")', 'greet("Ada")'], labels: ['teach it', 'its body, indented', 'call it', 'call it again'], why: 'Hi Sam, then Hi Ada.'},
+  {t: 'tr', h: 'Your greet', p: 'Teach greet(name), then call it with Sam and with Ada.', sub: ['<code>def greet(name):</code>', 'An indented print inside', 'Two calls', 'Press <b>Run</b>']}
+],
+'G7|🧩 Double it': [
+  {t: 'predict', h: 'Five tests, three hidden', p: 'The Vault checks your function on inputs you cannot see.', q: 'Which body passes every test?',
+   ch: [{code: 'return 10;', why: 'That passes double(5) only.'}, {code: 'return n * 2;', ok: 1, why: 'Twice whatever n is, every time.'}, {code: 'screen.textContent = n * 2;', why: 'There is no screen in the Vault: the tests read what comes back.'}]},
+  {t: 'fill', h: 'Twice n', code: 'function double(n) {\n  return n ___ 2;\n}', opts: ['*', '+', 'x'], ans: '*', gap: 'the times sign', full: 1,
+   no: {'+': 'n + 2 adds two: double(5) would be 7.', 'x': 'Keyboards have no times sign, so code uses the star.'}, why: 'return n * 2: works for any n.'},
+  {t: 'tr', h: 'Open the lock', p: 'Write double(n) so all five tests pass.', sub: ['<code>return n * 2;</code> inside', 'Press <b>Run</b>']}
+],
+'G7|Boss: teach it a move': [
+  {t: 'predict', h: 'A recipe on a shelf', p: 'Nothing new: Grade 7 was teaching a trick once.', code: 'function hop() {\n  hero.moveRight(2);\n  hero.moveDown(1);\n}', q: 'That is the whole program. Where does the hero end up?',
+   ch: [{t: 'Where it started', ok: 1, why: 'Nobody called hop, so nothing moved.'}, {t: 'Two right, one down', why: 'Only if hop(); is called once.'}, {t: 'At the flag', why: 'Only if hop(); is called twice.'}]},
+  {t: 'arrange', h: 'Teach the step, use it twice', p: 'Put the lines in order.', full: 1,
+   lines: ['function hop() {', '  hero.moveRight(2);', '  hero.moveDown(1);', '}', 'hop();', 'hop();'], labels: ['teach the step', 'two right', 'one down', 'end of the teaching', 'hop once', 'hop again'],
+   why: 'Two lines of calls, a staircase of moves.'},
+  {t: 'tr', h: 'Down the stairs', p: 'Define one function and use it twice to reach the flag.', sub: ['<code>function hop() { ... }</code> with two moves', '<code>hop();</code> twice', 'Press <b>Run</b>']}
+],
+/* ================================ GRADE 8 ================================= */
+'G8|Making a choice': [
+  {t: 'see', h: 'IF this, then that', p: 'An <code>if</code> runs its braces only when the test in its round brackets is true. Step through.',
+   code: "const score = 8;\n\nif (score > 5) {\n  screen.textContent = 'Great score!';\n}", labels: [[0, '1 · a number in a box'], [2, '2 · IF this is true...'], [3, '3 · ...do this'], [4, '4 · end of the if']], steps: [0, 2, 3, 4], stepBtn: 'Next part',
+   shows: S('Great score!'), why: '8 is more than 5, so the braces run.'},
+  {t: 'predict', h: 'A lower score', code: "const score = 3;\n\nif (score > 5) {\n  screen.textContent = 'Great score!';\n}", q: 'What does the screen show now?',
+   ch: [{pv: S('Great score!'), cap: 'Great score!', why: '3 is not more than 5.'}, {pv: S('nothing yet'), cap: 'what it said before', ok: 1, why: 'The test is false, so the braces are skipped.'}, {pv: S('3'), cap: '3', why: 'An if decides whether its braces run; it never shows the score.'}]},
+  {t: 'fill', h: 'The comparison', code: "const score = 8;\n\nif (score ___ 5) {\n  screen.textContent = 'Great score!';\n}", opts: ['>', '=', '=>'], ans: '>', gap: 'the sign for more than', full: 1,
+   no: {'=': 'One = puts something into a box. A test compares.', '=>': 'That is an arrow, not a comparison.'}, why: '&gt; more than, &lt; less than, === exactly equal.'},
+  {t: 'tr', h: 'Your choice', p: 'A number box and an if that writes to the screen only when the number is big enough.', sub: ['<code>const score = 8;</code>', '<code>if (score &gt; 5) {</code>', 'A screen line inside, then <code>}</code>', 'Press <b>Run</b>']},
+  {t: 'tweak', h: 'Skipped, not broken', p: 'Change the number to 3 and press <b>Run</b>. It still passes, and the screen stays quiet.', re: 'const\\s+\\w+\\s*=\\s*[0-5]\\s*;', why: 'The braces were skipped. That is what an if is for.'}
+],
+'G8|Otherwise...': [
+  {t: 'predict', h: 'Two roads', code: "const score = 3;\n\nif (score > 5) {\n  screen.textContent = 'Great score!';\n} else {\n  screen.textContent = 'Keep practicing.';\n}", q: 'What shows?',
+   ch: [{pv: S('Great score!'), cap: 'Great score!', why: '3 is not more than 5.'}, {pv: S('Keep practicing.'), cap: 'Keep practicing.', ok: 1, why: 'The test is false, so the else road runs.'}, {pv: S('Great score! Keep practicing.'), cap: 'both', why: 'Exactly one road runs, never both.'}]},
+  {t: 'arrange', h: 'Build both roads', p: 'Put the lines in order.', full: 1,
+   lines: ['const score = 3;', 'if (score > 5) {', "  screen.textContent = 'Great score!';", '} else {', "  screen.textContent = 'Keep practicing.';", '}'], labels: ['the number', 'IF more than 5...', '...this road', 'OTHERWISE...', '...this road', 'end'],
+   why: 'The else sits between the two sets of braces.'},
+  {t: 'tr', h: 'Your two roads', p: 'An if/else where each road writes something different.', sub: ['<code>if (...) { ... }</code> with a screen line', '<code>else { ... }</code> with another', 'Press <b>Run</b>']},
+  {t: 'tweak', h: 'Take the other road', p: 'Change the number so the other message shows, and press <b>Run</b>.', re: 'const\\s+\\w+\\s*=\\s*([6-9]|\\d{2,})\\s*;', why: 'One road or the other, never neither.'}
+],
+'G8|A chain of choices': [
+  {t: 'predict', h: 'The first door that opens', code: "const temp = 30;\n\nif (temp > 25) {\n  screen.textContent = 'Shorts weather';\n} else if (temp > 10) {\n  screen.textContent = 'Jacket weather';\n} else {\n  screen.textContent = 'Stay inside';\n}", q: 'What shows?',
+   ch: [{t: 'Shorts weather', ok: 1, why: 'The first test is true, so the rest are skipped, even though 30 is over 10 too.'}, {t: 'Jacket weather', why: '30 > 10 is true, but the first door opened already.'}, {t: 'Both', why: 'The first open door wins; the rest are skipped.'}]},
+  {t: 'bug', h: 'A message that can never show', p: 'Shorts weather never shows, however hot it is. Tap the test that can never win.',
+   lines: ['if (temp > 10) {', "  screen.textContent = 'Jacket weather';", '} else if (temp > 25) {', "  screen.textContent = 'Shorts weather';", '} else {', "  screen.textContent = 'Stay inside';", '}'], bad: 2,
+   why: 'Anything over 25 is over 10 too, so the first door always opens first.', fix: 'put temp > 25 first'},
+  {t: 'arrange', h: 'Build the chain', p: 'Put the lines in order: the most demanding test first.', full: 1,
+   lines: ['const temp = 15;', 'if (temp > 25) {', "  screen.textContent = 'Shorts weather';", '} else if (temp > 10) {', "  screen.textContent = 'Jacket weather';", '} else {', "  screen.textContent = 'Stay inside';", '}'],
+   labels: ['the number', 'the hardest test', 'its message', 'otherwise, the next test', 'its message', 'otherwise, what is left', 'its message', 'end'], why: 'Checked top to bottom; the first true one wins.'},
+  {t: 'tr', h: 'Your chain', p: 'An if, an else if and an else: three different messages.', sub: ['<code>if (...) { ... }</code>', '<code>else if (...) { ... }</code>', '<code>else { ... }</code>', 'A screen line on every road', 'Press <b>Run</b>']}
+],
+'G8|Two things at once': [
+  {t: 'ladder', h: 'Two short steps first?', p: 'This lesson brings true and false, === between words, and && all at once. The ladder takes them one at a time. Or go straight to the lesson.'},
+  {t: 'predict', h: 'Both must be true', code: "const day = 'Saturday';\nconst sunny = false;\nif (day === 'Saturday' && sunny) { ... }", q: 'It is Saturday, but not sunny. What does the test give?',
+   ch: [{code: 'true', why: '&& needs both, and sunny is false.'}, {code: 'false', ok: 1, why: 'One side is false, so the whole AND is false.'}, {code: "'Saturday'", why: 'A test always hands back true or false.'}]},
+  {t: 'fill', h: 'AND or OR?', code: "if (day === 'Saturday' ___ sunny) {", opts: ['&&', '||', '&'], ans: '&&', gap: 'the sign for AND: beach only when both are true',
+   no: {'||': '|| means either will do: a rainy Saturday would be a beach day.', '&': 'AND is two of them: &&.'}, why: '&& both, || either.'},
+  {t: 'arrange', h: 'Build it', p: 'Put the lines in order. The two boxes can come either way round.', full: 1,
+   lines: ["const day = 'Saturday';", 'const sunny = true;', "if (day === 'Saturday' && sunny) {", "  screen.textContent = 'Beach day!';", '} else {', "  screen.textContent = 'Normal day.';", '}'],
+   labels: ['a word box', 'a yes-or-no box', 'both at once?', 'then this', 'otherwise', 'this', 'end'], free: [[0, 1]], why: 'Two tests joined by &&, with an else for the rest.'},
+  {t: 'tr', h: 'Two tests at once', p: 'An if that joins two tests with && (or ||), plus an else.', sub: ['Two boxes to test', '<code>if (test one &amp;&amp; test two) {</code>', 'An <code>else</code> road', 'Press <b>Run</b>']}
+],
+'G8|📋 Review: put it together': [
+  {t: 'bug', h: 'Gold is unreachable', p: 'rateScore(9) hands back silver. Tap the test that can never win.',
+   lines: ['function rateScore(score) {', '  if (score > 5) {', "    return 'silver';", '  } else if (score > 8) {', "    return 'gold';", '  } else {', "    return 'keep practicing';", '  }', '}'], bad: 3,
+   why: 'Anything over 8 is over 5 too, so silver always wins first.', fix: 'test score > 8 first, then score > 5'},
+  {t: 'arrange', h: 'A trick that decides', p: 'Put the lines in order.', full: 1,
+   lines: ['function rateScore(score) {', '  if (score > 8) {', "    return 'gold';", '  } else if (score > 5) {', "    return 'silver';", '  } else {', "    return 'keep practicing';", '  }', '}', "screen.textContent = 'Result: ' + rateScore(7);"],
+   labels: ['a trick with an ingredient', 'the hardest test', 'hand back gold', 'the next test', 'hand back silver', 'everything else', 'hand back keep practicing', 'end of the if', 'end of the trick', 'show a call'], why: 'Every road hands something back.'},
+  {t: 'tr', h: 'The checkpoint', p: 'rateScore(score): gold above 8, silver above 5, otherwise keep practicing. Show one call after a label.',
+   sub: ['A function with one ingredient', 'if, else if, else', 'A <code>return</code> on every road', "<code>'Result: ' + rateScore(7)</code> on screen", 'Press <b>Run</b>']}
+],
+'G8|🏋 Rep: even or odd': [
+  {t: 'predict', h: 'The leftover', p: '<code>%</code> hands back what is left over after dividing.', q: 'What is <code>7 % 2</code>?',
+   ch: [{code: '3', why: 'That is how many 2s fit. % is what is left.'}, {code: '1', ok: 1, why: 'Three 2s make 6, and 1 is left over: odd.'}, {code: '3.5', why: 'That is 7 / 2.'}]},
+  {t: 'fill', h: 'Nothing left over', code: "function evenOrOdd(n) {\n  if (n % 2 ___ 0) {\n    return 'even';\n  } else {\n    return 'odd';\n  }\n}\n\nscreen.textContent = 7 + ' is ' + evenOrOdd(7);", opts: ['===', '=', '!=='], ans: '===', gap: 'the sign that asks: exactly equal?', full: 1,
+   no: {'=': 'One = puts a value into a box; a test needs ===.', '!==': 'That asks "not equal": even and odd would swap.'}, why: 'Nothing left over when divided by 2: even.'},
+  {t: 'tr', h: 'Even or odd', p: 'evenOrOdd(n) returning even or odd using % 2, and a call on screen.', sub: ['<code>if (n % 2 === 0)</code>', "return 'even', else return 'odd'", 'A screen line calling it', 'Press <b>Run</b>']}
+],
+'G8|⚔️ FizzBuzz junior': [
+  {t: 'predict', h: 'Warm-up: divides exactly?', p: 'Not the challenge: the two ideas it leans on.', q: 'What is <code>10 % 5</code>, and what does it tell you?',
+   ch: [{t: '0: 10 divides by 5 exactly', ok: 1, why: 'Nothing left over means it divides cleanly.'}, {t: '2: there are two 5s in 10', why: 'That is 10 / 5. % gives the leftover.'}, {t: '5', why: 'Nothing is left over.'}]},
+  {t: 'bug', h: 'Warm-up: which test first?', p: 'size(500) hands back big, never huge. Tap the test that can never win.',
+   lines: ['function size(n) {', '  if (n > 10) {', "    return 'big';", '  } else if (n > 100) {', "    return 'huge';", '  } else {', "    return 'small';", '  }', '}'], bad: 3,
+   why: 'Over 100 is over 10 too, so big always wins. The most demanding test goes first.', fix: 'test n > 100 first'},
+  {t: 'tr', h: 'The challenge', p: 'FizzBuzz, for one number. The coach checks the shape; the rest is yours. No hints from here.'}
+],
+'G8|🐍 A choice, in Python': [
+  {t: 'see', h: 'Colons and indents', p: 'The same if and else, with colons and indentation doing the braces’ job. Tap each part.',
+   parts: [['if age < 13:', 'the test, then a colon'], ['\n    print("kid")', 'indented: what happens when it is true'], ['\nelse:', 'the other door, with its own colon'], ['\n    print("teen")', 'indented: what happens otherwise']], why: 'Change 11 to 15 and the other line prints.'},
+  {t: 'arrange', h: 'Build it', p: 'Put the lines in order.', full: 1,
+   lines: ['age = 11', 'if age < 13:', '    print("kid")', 'else:', '    print("teen")'], labels: ['the age', 'the test', 'if true', 'otherwise', 'this'], why: 'age 11 is under 13: kid.'},
+  {t: 'tr', h: 'Kid or teen', p: 'With age = 11, print kid if under 13, otherwise teen.', sub: ['<code>if age &lt; 13:</code>', 'An indented print', '<code>else:</code> and another', 'Press <b>Run</b>']}
+],
+'G8|🧩 Which way is it': [
+  {t: 'predict', h: 'Count the cases first', p: 'An if with one else covers two cases.', q: 'How many cases does sign(n) have?',
+   ch: [{t: 'Two: positive and negative', why: '0 is neither: the case the examples never mention.'}, {t: 'Three: positive, negative and zero', ok: 1, why: 'Three cases, so three roads: if, else if, else.'}, {t: 'One', why: 'Every number is one of three kinds here.'}]},
+  {t: 'arrange', h: 'Three roads', p: 'Put the lines in order.', full: 1,
+   lines: ['function sign(n) {', '  if (n > 0) {', '    return "positive";', '  } else if (n < 0) {', '    return "negative";', '  } else {', '    return "zero";', '  }', '}'],
+   labels: ['the function', 'more than 0?', 'positive', 'less than 0?', 'negative', 'what is left', 'zero', 'end of the if', 'end'], why: 'Every case has its road, the hidden one included.'},
+  {t: 'tr', h: 'Open the lock', p: 'Write sign(n) so every test passes.', sub: ['if n &gt; 0', 'else if n &lt; 0', 'else: zero', 'Press <b>Run</b>']}
+],
+'G8|⚔️ If there is a wall': [
+  {t: 'see', h: 'Ask before you step', p: 'An if can ask the board. Tap each part.',
+   parts: [['if (hero.look("right") === "wall")', 'is the next square a wall?'], [' {\n  hero.moveDown(1);\n}', 'only then: step down a row']], why: 'A program that checks will still work when the wall moves.'},
+  {t: 'arrange', h: 'Step, ask, go', p: 'Put the lines in order.', full: 1,
+   lines: ['hero.moveRight(1);', 'if (hero.look("right") === "wall") {', '  hero.moveDown(1);', '}', 'hero.moveRight(3);'], labels: ['one step', 'ask about the next', 'if so, step down', 'end of the if', 'walk to the flag'],
+   why: 'One step, one question, then the rest of the way.'},
+  {t: 'tr', h: 'Around the wall', p: 'Step right once, step down if the way is blocked, then walk to the flag.', sub: ['<code>hero.moveRight(1);</code>', 'The if with <code>look</code>', '<code>hero.moveRight(3);</code>', 'Press <b>Run</b>']}
+],
+'G8|Boss: it depends': [
+  {t: 'predict', h: 'Decide one step', p: 'Nothing new: Grade 8 was if and else.', code: 'if (hero.look("right") === "wall") {\n  hero.moveDown(1);\n} else {\n  hero.moveRight(1);\n}', q: 'The next square is clear. What does the hero do?',
+   ch: [{t: 'Steps right one square', ok: 1, why: 'Not a wall, so the else road runs.'}, {t: 'Steps down', why: 'Only when there is a wall.'}, {t: 'Both', why: 'Exactly one road runs.'}]},
+  {t: 'arrange', h: 'Decide it six times', p: 'The first line repeats its block six times (Grade 9 explains every piece). Put the lines in order.', full: 1,
+   lines: ['for (let i = 0; i < 6; i++) {', '  if (hero.look("right") === "wall") {', '    hero.moveDown(1);', '  } else {', '    hero.moveRight(1);', '  }', '}', 'hero.moveRight(1);'],
+   labels: ['six times over:', 'a wall ahead?', 'then step down', 'otherwise', 'step right', 'end of the if', 'end of the six', 'the last step, onto the flag'], why: 'Code that solves the kind of board, not just this one.'},
+  {t: 'tr', h: 'Decide every step', p: 'Get to the flag, deciding each step with if and else.', sub: ['An <code>if</code> asking <code>hero.look("right")</code>', 'An <code>else</code> for the other case', 'Repeat it, then the last step', 'Press <b>Run</b>']}
+],
+/* ============================ THE TWO NEW LADDERS ============================ */
+'G6|Random 1: count the list': [
+  {t: 'predict', h: 'A list knows its size', code: XS + '\nscreen.textContent = excuses.length;', q: 'What shows?',
+   ch: [{pv: S('3'), cap: '3', ok: 1, why: 'Three things in the list.'}, {pv: S('2'), cap: '2', why: '2 is the last position. The count is 3.'}, {pv: S('excuses.length'), cap: 'the code', why: 'No quotes, so it is worked out.'}]},
+  {t: 'fill', h: 'Ask how many', code: XS + "\nscreen.textContent = 'There are ' + excuses.___ + ' excuses';", opts: ['length', 'size', 'count'], ans: 'length', gap: 'the name of the count a list carries', full: 1,
+   no: {'size': 'Other languages say size; JavaScript says length.', 'count': 'JavaScript calls it length.'}, why: 'There are 3 excuses, counted by the list.'},
+  {t: 'tr', h: 'Count them', p: 'Show how many excuses there are, glued into a sentence.', sub: ['<code>excuses.length</code>', "Glued between <code>'There are '</code> and <code>' excuses'</code>", 'Press <b>Run</b>']}
+],
+'G6|Random 2: chop off the decimals': [
+  {t: 'predict', h: 'Down, always', q: 'What is <code>Math.floor(2.9)</code>?',
+   ch: [{code: '3', why: 'Math.floor never rounds up, however close.'}, {code: '2', ok: 1, why: 'The decimals are chopped off: 2.'}, {code: '2.9', why: 'Math.floor keeps only the whole part.'}]},
+  {t: 'fill', h: 'The chopper', code: "screen.textContent = 'Chopped: ' + Math.___(2.9);", opts: ['floor', 'round', 'chop'], ans: 'floor', gap: 'the name of the one that always goes down', full: 1,
+   no: {'round': 'Math.round goes to the nearest: 3.', 'chop': 'A good name for it; JavaScript calls it floor.'}, why: 'The floor is the whole number below.'},
+  {t: 'tr', h: 'Chop it', p: 'Show <code>Math.floor(2.9)</code> after a label.', sub: ["<code>'Chopped: ' + Math.floor(2.9)</code>", 'Press <b>Run</b>: 2']}
+],
+'G6|Random 3: a random position': [
+  {t: 'see', h: 'Stretch, then chop', p: 'Tap each part, from the inside out.',
+   parts: [['Math.floor(', '3 · chop off the decimals: 0, 1 or 2'], ['Math.random()', '1 · a new decimal each time, 0 up to not quite 1'], [' * excuses.length', '2 · stretched: 0 up to not quite 3'], [')', 'the end of the chop']],
+   why: 'Exactly the positions of a three-thing list.'},
+  {t: 'arrange', h: 'Build it', p: 'Put the lines in order.', full: 1,
+   lines: [XS, 'const pick = Math.floor(Math.random() * excuses.length);', "screen.textContent = 'Position: ' + pick;"], labels: ['the list', 'a random position', 'show it'], why: 'Run it a few times: 0, 1 or 2.'},
+  {t: 'tr', h: 'A random position', p: 'Keep a random position in <code>pick</code> and show it.', sub: ['<code>const pick = Math.floor(Math.random() * excuses.length);</code>', "<code>'Position: ' + pick</code> on screen", 'Press <b>Run</b> a few times']}
+],
+'G8|Two tests 1: a yes-or-no box': [
+  {t: 'predict', h: 'A yes, in a box', q: 'Which line puts a yes in the box?',
+   ch: [{code: "const sunny = 'true';", why: 'In quotes it is the word true, not the yes.'}, {code: 'const sunny = true;', ok: 1, why: 'true with no quotes is its own kind of value.'}, {code: 'const sunny = yes;', why: 'JavaScript says true and false.'}]},
+  {t: 'fill', h: 'Test the box', code: "const sunny = true;\n\nif (___) {\n  screen.textContent = 'Sunglasses on!';\n}", opts: ['sunny', "'sunny'", 'sunny = true'], ans: 'sunny', gap: 'the box itself: it already is true or false', full: 1,
+   no: {"'sunny'": 'In quotes it is the word sunny, not the box.', 'sunny = true': 'One = puts true into the box; it does not ask.'}, why: 'if (sunny): the box is the answer.'},
+  {t: 'tr', h: 'Your yes-or-no box', p: 'A box holding true, and an if that tests it.', sub: ['<code>const sunny = true;</code>', "<code>if (sunny) { screen.textContent = '...'; }</code>", 'Press <b>Run</b>']}
+],
+'G8|Two tests 2: is it exactly?': [
+  {t: 'predict', h: 'Exactly means exactly', code: "const day = 'saturday';\nif (day === 'Saturday') {\n  screen.textContent = 'No school today!';\n}", q: 'Does the screen change?',
+   ch: [{t: 'Yes: it is Saturday', why: 'A small s and a capital S are different letters.'}, {t: 'No: the letters are not exactly the same', ok: 1, why: '=== compares letter for letter.'}, {t: 'An error', why: 'Nothing is wrong; the test is false.'}]},
+  {t: 'fill', h: 'Three equals signs', code: "const day = 'Saturday';\n\nif (day ___ 'Saturday') {\n  screen.textContent = 'No school today!';\n}", opts: ['===', '=', '=>'], ans: '===', gap: 'the question: exactly the same?', full: 1,
+   no: {'=': 'One = puts Saturday into the box instead of asking.', '=>': 'That is an arrow, not a question.'}, why: 'Three equals signs ask.'},
+  {t: 'tr', h: 'Is it Saturday?', p: 'A day box, and an if asking whether it is exactly Saturday.', sub: ["<code>const day = 'Saturday';</code>", "<code>if (day === 'Saturday') { ... }</code>", 'Press <b>Run</b>']}
+]
+  });
+
+  /* the new rungs get what every lesson has on its full page: three steps with
+     the key line marked, a gap to fill, a reminder, and the picture of what the
+     answer shows */
+  const G = {
+    'Random 1: count the list': {steps: ['<b>The list is already there,</b> three excuses in square brackets.', '<b>Ask how many:</b> <code class="qkey">excuses.length</code> is the number of things in it.', "<b>Glue it into words and show it:</b> <code class=\"qkey\">screen.textContent = 'There are ' + excuses.length + ' excuses';</code>"],
+      cz: {code: "screen.textContent = 'There are ' + excuses.___ + ' excuses';", opts: ['length', 'size', 'count'], ans: 'length', why: 'length is the count every list carries, with no brackets after it.'},
+      remind: 'list.length is how many things are in it · no round brackets after length · glue it between quoted words'},
+    'Random 2: chop off the decimals': {steps: ['<b>One number with a decimal point:</b> 2.9.', '<b>Chop it:</b> <code class="qkey">Math.floor(2.9)</code> is 2. It never rounds up.', "<b>Show it after a label:</b> <code class=\"qkey\">screen.textContent = 'Chopped: ' + Math.floor(2.9);</code>"],
+      cz: {code: "screen.textContent = 'Chopped: ' + Math.___(2.9);", opts: ['floor', 'round', 'ceil'], ans: 'floor', why: 'floor goes down to the whole number below. round would give 3, and ceil always goes up.'},
+      remind: 'Math.floor(x) chops the decimals off · always down, never up'},
+    'Random 3: a random position': {steps: ['<b>A random decimal:</b> <code class="qkey">Math.random()</code>, from 0 up to not quite 1.', '<b>Stretch it and chop it:</b> <code class="qkey">const pick = Math.floor(Math.random() * excuses.length);</code> gives 0, 1 or 2.', "<b>Show the position:</b> <code class=\"qkey\">screen.textContent = 'Position: ' + pick;</code>"],
+      cz: {code: 'const pick = Math.floor(Math.random() ___ excuses.length);', opts: ['*', '+', '/'], ans: '*', why: 'Times the length stretches 0-to-1 into 0-to-3. Plus would only shift it.'},
+      remind: 'Math.random() is 0 to not quite 1 · times the length · Math.floor chops it to a position'},
+    'Two tests 1: a yes-or-no box': {steps: ['<b>A yes in a box, no quotes:</b> <code class="qkey">const sunny = true;</code>', '<b>Test the box itself:</b> <code class="qkey">if (sunny) {</code>', "<b>Something to do when it is true:</b> <code class=\"qkey\">screen.textContent = 'Sunglasses on!';</code> and close with <code>}</code>."],
+      cz: {code: 'const sunny = ___;', opts: ['true', "'true'", 'yes'], ans: 'true', why: 'true with no quotes is the yes. In quotes it is only a word, and yes is not JavaScript.'},
+      remind: 'true and false are values, no quotes · if (box) tests the box itself'},
+    'Two tests 2: is it exactly?': {steps: ["<b>A word in a box:</b> <code class=\"qkey\">const day = 'Saturday';</code>", "<b>Ask, with three equals signs:</b> <code class=\"qkey\">if (day === 'Saturday') {</code>", "<b>What to do when it is:</b> <code class=\"qkey\">screen.textContent = 'No school today!';</code> then <code>}</code>."],
+      cz: {code: "if (day ___ 'Saturday') {", opts: ['===', '=', '=>'], ans: '===', why: 'Three equals signs ask. One would put Saturday into the box.'},
+      remind: "=== asks: exactly the same? · letter for letter, capitals too · one = puts, three = ask"}
+  };
+  L.forEach((l, i) => {
+    const g = l.aside && G[l.title]; if (!g) return;
+    LGUIDE[i] = g; CLOZE[i] = g.cz; l.remind = g.remind;
+    if (l.tfShows != null && typeof MAKES_JS !== 'undefined') MAKES_JS[i] = {body: S(l.tfShows), rnd: !!l.tfRnd};
+  });
+})();
 /* ==== end of the Step Flow ==== */
 
 teachEl.addEventListener('click', tfClick);
 tfDragInit();
+tfMarkInit();
 
 let firstVisit=false;
 try{ firstVisit = !localStorage.getItem('codeschool') && !localStorage.getItem('welcomed'); }catch(e){}

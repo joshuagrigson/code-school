@@ -695,6 +695,12 @@ The phone is a first-class layout, not a narrowed desktop.
   spot the bug, try it, tweak it (worked examples, fading, subgoal labels,
   Parsons problems and PRIMM, from the computing-education research). "Read it
   all" keeps the full page one tap away.
+- **Grades 4 to 8 teach in steps too.** Every JavaScript lesson from Grade 4 to
+  Grade 8 has its own step flow, faded for older learners (fewer worked
+  examples, more fill-the-gap, put-in-order and spot-the-bug). Lessons that asked
+  for too many new ideas at once get a short ladder of rungs in front of them.
+  While you type, an unclosed brace, bracket, quote or tag gets a dot in the
+  gutter (the preview still waits for Run), and a Run names the exact spot.
 - **Never stuck.** After two failed Runs any lesson offers "Step it down": the
   answer with one to three gaps, each described by its job; after three, the
   lines to put in order. Passing a smaller step passes the lesson.

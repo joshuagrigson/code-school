@@ -701,6 +701,14 @@ The phone is a first-class layout, not a narrowed desktop.
   for too many new ideas at once get a short ladder of rungs in front of them.
   While you type, an unclosed brace, bracket, quote or tag gets a dot in the
   gutter (the preview still waits for Run), and a Run names the exact spot.
+- **Grade 9 to College teach in steps too**, faded furthest: mostly fill the
+  gap, put in order and spot the bug, with real browser error messages to read.
+  Big builds (the Excuse-O-Matic, the Mood Machine, the challenges) break into
+  milestones, each checked on its own Run.
+- **Ask a question knows 345 answers**, including Python, the Terminal, deeper
+  JavaScript, the Quest, the Sound Room, the Puzzle Vault, Big-O, every lesson
+  feature, and how to keep learning; symbols like `===`, `=>` and backticks are
+  understood.
 - **Never stuck.** After two failed Runs any lesson offers "Step it down": the
   answer with one to three gaps, each described by its job; after three, the
   lines to put in order. Passing a smaller step passes the lesson.

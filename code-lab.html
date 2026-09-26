@@ -2789,6 +2789,42 @@ body.atprompt #tfgut{display:none}
 .tfsr{position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
 /* a keyword inside a dark code line keeps that line's own ink */
 .tfbl code .cw,.tffix code .cw,.tfch code .cw,.tfeachi code .cw{color:inherit}
+/* ==== The Step Flow, stage three: milestones and real error messages ==========
+   A milestone is written in the editor, like the Try card, so it wears the Try
+   card's green; its checklist ticks on Run. The error box is the preview's own
+   red note, the same colors the page uses when a Run stops. */
+.tfcard.tf-ms.now{background:var(--tfEmBg);box-shadow:inset 0 0 0 2px var(--tfEm),0 0 0 4px rgba(43,176,128,.14),0 14px 28px -18px rgba(18,100,74,.6)}
+.tf-ms .tfbadge{background:#12644a;color:#fff}
+body.dark .tf-ms .tfbadge{background:#2bb080;color:#10231b}
+.tfcard.done.tf-ms .tfbadge{background:transparent;color:var(--tfSoft)}
+.tfneed{list-style:none;margin:0 0 10px;padding:0;display:flex;flex-direction:column;gap:5px}
+.tfneed li{display:flex;align-items:flex-start;gap:9px;line-height:1.45;font-size:.95rem}
+.tfnk{flex:none;display:grid;place-items:center;width:20px;height:20px;margin-top:1px;border-radius:6px;background:var(--tfA);box-shadow:inset 0 0 0 1.5px var(--tfEmLine)}
+.tfneed li.got .tfnk{background:var(--tfEm);box-shadow:none;color:#fff}
+body.dark .tfneed li.got .tfnk{color:#10231b}
+.tfnk .lsi{width:13px;height:13px}
+.tfmodel{margin:8px 0 2px}
+.tfmodel summary{display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:.86rem;font-weight:650;color:var(--tfEmT);padding:3px 2px;border-radius:6px}
+.tfmodel summary .lsi{width:14px;height:14px}
+.tfmodel summary:focus-visible{outline:2px solid #e0a93a;outline-offset:2px}
+.tfmodel .tfcode{margin-top:6px}
+/* the error a Run of this code really gives */
+.tferr{margin:0 0 8px;padding:9px 12px 10px;border-radius:12px;background:#faeae5;color:#5a2417;box-shadow:inset 0 0 0 1.5px #c2542e,inset 3px 0 0 #c2542e}
+body.dark .tferr{background:#3a2320;color:#ffd9cf;box-shadow:inset 0 0 0 1.5px #b0543c,inset 3px 0 0 #ff8a78}
+.tferrl{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:#8f2f16}
+body.dark .tferrl{color:#ffb4a4}
+.tferrl .lsi{width:11px;height:11px}
+.tferrm{font:600 .88rem/1.5 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere;margin-top:3px}
+.tferrm code{background:rgba(255,255,255,.55);color:inherit;padding:0 4px;border-radius:4px}
+body.dark .tferrm code{background:rgba(0,0,0,.3)}
+.tferrr{margin-top:5px;font-size:.8rem;line-height:1.45}
+.tferrr code{font-family:var(--mono);font-size:.78rem;background:none;color:inherit;padding:0;overflow-wrap:anywhere}
+/* a Run that reached a milestone says so above the build's checklist */
+.tfmsline{display:flex;align-items:flex-start;gap:8px;margin:0 0 8px;padding:8px 11px;border-radius:10px;background:var(--tfEmBg);color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--tfEmLine);font-size:.92rem;line-height:1.45}
+.tfmsline>.lsi{flex:none;width:16px;height:16px;margin-top:2px;color:var(--tfEmT)}
+/* on a phone the flow's small controls (Read it all, Skip, a done card's peek, the text links) are fingers'
+   targets too: at least 30px tall, like every other button on the page */
+@media (max-width:700px),(pointer:coarse){.tfhd button,.tfpeek,.tfcard .tflink{min-height:30px}.tfmodel summary{min-height:30px}}
 </style>
 </head>
 <body>
@@ -6969,6 +7005,100 @@ for (const [t, r] of [["Not a wall", "look(\"right\") answers a word: \"clear\" 
   });
 })();
 
+/* ---- Two more ladders: the first loop, and the no-repeat polish -----------------
+   Two lessons in Grades 9 to College ask for more than three new ideas at once:
+   - "Doing it again and again" (Grade 9) wants a box that changes (let), a pile
+     of text built up from nothing, and the loop's three-part header, all in the
+     first loop anyone writes;
+   - "No repeats — the polish" (Grade 10) wants a box that survives between
+     clicks, a while that rolls again, and the memory updated after each pick.
+   Everything else in these grades is one or two new ideas, or old ideas put
+   together (the Mood Machine is all old ideas: its stages are milestones, not a
+   ladder). So two ladders, two steps each, built exactly like the others: the
+   steps are appended at the end of the list (no lesson changes its number, so
+   no saved tick moves), walked just before their door, listed in front of it in
+   the grade's sidebar, and kept out of the grade's count and the 155 of
+   graduation. */
+(function(){
+  const LADDERS = [
+    {g: 'G9', door: 'Doing it again and again', rungs: [
+      {title: 'Loops 1: a box that can change', say: 'let makes a box you can fill again.',
+       teach: '<p>The first of two short steps before <b>Doing it again and again</b>. One idea: a box made with <code>let</code> can be filled again, and the new value can be worked out from the old one.</p>'
+         + '<pre>let score = 0;\nscore = score + 5;</pre><p>Read the second line right to left: take what is in score, add 5, put the answer back into score. A <code>const</code> box refuses that; a <code>let</code> box is made for it.</p>',
+       goal: 'Make a <code>let</code> box, add onto it twice with <code>score = score + 5;</code>, and show it after a label like <code>\'Score: \'</code>.',
+       start: '',
+       sol: "let score = 0;\nscore = score + 5;\nscore = score + 5;\nscreen.textContent = 'Score: ' + score;",
+       hint: '<code>let score = 0;</code>, then <code>score = score + 5;</code> twice, then <code>screen.textContent = \'Score: \' + score;</code>',
+       check: (c) => all(c, [[/let\s+[A-Za-z_$][\w$]*\s*=/, 'a box made with <code>let</code>, so it can change'],
+                             [/([A-Za-z_$][\w$]*)\s*=\s*\1\s*[-+*]/, 'the box filled again from itself, like <code>score = score + 5</code>'],
+                             [/screen\.textContent\s*=/, 'a screen line showing it']])
+         ? {ok: true, msg: 'Score: 10. The same box, changed twice, each time from what it already held. A loop does exactly this, once a lap.'}
+         : {ok: false, msg: 'A <code>let</code> box, then <code>score = score + 5;</code> (the box on both sides), then show it.'},
+       rn: 'Putting a new value into a box that already exists is <b>reassignment</b>; <code>score += 5</code> is the short way to write it.',
+       shows: 'Score: 10'},
+      {title: 'Loops 2: build a pile of words', say: 'Start with empty quotes, add a piece at a time.',
+       teach: '<p>Step two of two. One idea: text can be built up the same way. Start with <code>\'\'</code>, two quotes with nothing between them: a pile with no letters in it yet.</p>'
+         + '<pre>let out = \'\';\nout = out + \'Hip \';\nout = out + \'hip \';\nout = out + \'hooray!\';</pre><p>Each line keeps the pile and glues a piece on. Show it once, at the end. The loop in the next lesson writes those middle lines for you.</p>',
+       goal: 'Start a <code>let</code> box as <code>\'\'</code>, glue at least two pieces onto it, and show the whole pile at the end.',
+       start: '',
+       sol: "let out = '';\nout = out + 'Hip ';\nout = out + 'hip ';\nout = out + 'hooray!';\nscreen.textContent = out;",
+       hint: "<code>let out = '';</code>, then <code>out = out + 'Hip ';</code> and more pieces, then <code>screen.textContent = out;</code>",
+       check: (c) => all(c, [[/let\s+[A-Za-z_$][\w$]*\s*=\s*(['"])\1/, 'a <code>let</code> box starting as empty quotes <code>\'\'</code>'],
+                             [/([A-Za-z_$][\w$]*)\s*=\s*\1\s*\+[\s\S]*\1\s*=\s*\1\s*\+/, 'two or more lines gluing a piece onto it'],
+                             [/screen\.textContent\s*=\s*[A-Za-z_$][\w$]*\s*;?\s*$/m, 'the whole pile shown at the end']])
+         ? {ok: true, msg: 'Hip hip hooray! Built from nothing, a piece at a time: that is the accumulator. Next, a loop writes the gluing lines for you.'}
+         : {ok: false, msg: "Start with <code>let out = '';</code>, glue pieces on with <code>out = out + '...';</code>, then show <code>out</code>."},
+       rn: 'A box that collects a result as a program goes along is an <b>accumulator</b>; <code>\'\'</code> is the <b>empty string</b>.',
+       shows: 'Hip hip hooray!'}
+    ]},
+    {g: 'G10', door: 'No repeats &mdash; the polish', rungs: [
+      {title: 'No repeats 1: a box that remembers', say: 'A box outside the click keeps its value.',
+       teach: '<p>The first of two short steps before <b>No repeats</b>. One idea: a box made OUTSIDE the click survives between clicks.</p>'
+         + '<pre>let presses = 0;\n\nbtn.onclick = function () {\n  presses = presses + 1;\n  screen.textContent = \'Pressed \' + presses + \' times\';\n};</pre>'
+         + '<p>Each click runs the bundle again, but the box is not inside the bundle, so it is not made again: it remembers. Made inside, it would start from 0 on every click.</p>',
+       goal: 'A <code>let</code> box above the button’s bundle, one added to it on every click, and the screen showing how many.',
+       start: '',
+       sol: "let presses = 0;\n\nbtn.onclick = function () {\n  presses = presses + 1;\n  screen.textContent = 'Pressed ' + presses + ' times';\n};",
+       hint: "<code>let presses = 0;</code> on top, then inside <code>btn.onclick = function () { ... };</code>: <code>presses = presses + 1;</code> and a screen line.",
+       html: '<button id="btn">Press me</button>\n<p id="screen">not pressed yet</p>',
+       check: (c) => all(c, [[/let\s+[A-Za-z_$][\w$]*\s*=[^\n]*\n[\s\S]*(?:onclick|addEventListener)/, 'a <code>let</code> box made ABOVE the click, outside it'],
+                             [/(?:onclick|addEventListener)[\s\S]*([A-Za-z_$][\w$]*)\s*=\s*\1\s*\+/, 'inside the click, the box grows from itself'],
+                             [/(?:onclick|addEventListener)[\s\S]*screen\.textContent\s*=/, 'inside the click, a screen line showing it']])
+         ? {ok: true, msg: 'Press it a few times: the number keeps climbing. The box lives outside the click, so every click finds it where the last one left it.'}
+         : {ok: false, msg: 'Put <code>let presses = 0;</code> above the button’s bundle, and inside it add one and show the box.'},
+       rn: 'Values a program keeps between one event and the next are its <b>state</b>.',
+       /* the picture is the page as the answer leaves it before anyone clicks, like every button lesson's */
+       shows: 'not pressed yet', showsHtml: '<button id="btn">Press me</button>\n<p id="screen">not pressed yet</p>'},
+      {title: 'No repeats 2: roll again', say: 'while keeps rolling until the roll is new.',
+       teach: '<p>Step two of two. One idea: a <code>while</code> can roll again for as long as the roll is one you do not want.</p>'
+         + '<pre>const last = 2;\nlet pick = Math.floor(Math.random() * 4);\nwhile (pick === last) {\n  pick = Math.floor(Math.random() * 4);\n}</pre>'
+         + '<p>If the first roll is 2, the loop rolls again, and again, until it is not. If it is not 2, the loop runs zero times. Note <code>let pick</code>: the loop changes it.</p>',
+       goal: 'Roll a random <code>pick</code> from 0 to 3, roll it again <code>while</code> it equals <code>last</code>, and show it.',
+       start: 'const last = 2;\n',
+       sol: "const last = 2;\nlet pick = Math.floor(Math.random() * 4);\nwhile (pick === last) {\n  pick = Math.floor(Math.random() * 4);\n}\nscreen.textContent = 'Picked ' + pick;",
+       hint: '<code>let pick = Math.floor(Math.random() * 4);</code>, then <code>while (pick === last) { pick = Math.floor(Math.random() * 4); }</code>, then show it.',
+       check: (c) => all(c, [[/let\s+[A-Za-z_$][\w$]*\s*=\s*Math\.floor\s*\(\s*Math\.random/, 'a <code>let</code> box holding a random roll'],
+                             [/while\s*\(\s*[A-Za-z_$][\w$]*\s*===\s*[A-Za-z_$][\w$]*\s*\)\s*\{[\s\S]*Math\.random[\s\S]*\}/, 'a <code>while</code> that rolls again as long as it matches'],
+                             [/screen\.textContent\s*=/, 'a screen line showing the roll']])
+         ? {ok: true, msg: 'Run it ten times: 0, 1 or 3, never 2. One step left, and it is the lesson: remember the last excuse and roll again on a match.'}
+         : {ok: false, msg: 'A <code>let pick</code> rolled at random, a <code>while (pick === last)</code> that rolls again inside its braces, then show it.'},
+       rn: 'Trying again until a condition holds is <b>rejection sampling</b>: throw away the rolls you do not want.',
+       shows: 'Picked 3', rnd: true}
+    ]}
+  ];
+  LADDERS.forEach(lad => {
+    const di = L.findIndex(l => l.g === lad.g && l.title === lad.door);
+    if (di < 0) return;
+    lad.rungs.forEach((r, n) => {
+      const les = JL(r.title, r.teach, r.goal, r.start, r.sol, r.hint, r.check, r.html);
+      les.g = lad.g; les.beyond = true; les.aside = true;
+      les.rung = n + 1; les.rungOf = lad.rungs.length; les.door = di; les.seq = di - 0.5 + n * 0.1;
+      les.ladderSay = r.say; les.rn = r.rn; les.tfShows = r.shows; les.tfShowsHtml = r.showsHtml; les.tfRnd = !!r.rnd;
+      L.push(les);
+    });
+  });
+})();
+
 const ORDER = [];
 /* Within a grade the walk is: the lessons, then the reps, then the challenge,
    then the arcade prep, then the boss - whatever order they were appended to
@@ -7223,6 +7353,115 @@ const QA = [
  {k:'style polish clean code matter looks readable why', a:'Style notes (🧹) never touch your ✓ &mdash; correctness comes first. But code is read far more often than it is written, and messy-but-working code is where future bugs hide. Clean indentation and honest names are what make a vet trust your work at a glance. ✨ clean code pays +2 XP.'},
  {k:'indentation spaces two levels nesting readable', a:'Two spaces per level of nesting; closers step back out one level. The browser ignores it completely &mdash; indentation is a letter to the next human (usually future you), making the structure visible so mismatched tags and braces jump out.'},
  {k:'label labeled prefix quoted glued front', a:'In this course a <b>label</b> is a quoted piece of text you glue in front of a value so a human knows what the value is: <code>screen.textContent = \'Total: \' + 7;</code> shows <code>Total: 7</code>. The real lingo is a <b>string literal</b>. Watch out &mdash; from Grade 11 on, \u201clabel\u201d also means the NAME of a compartment inside an object (<code>{ name: \'Josh\' }</code>); that one is really called a <b>key</b>.'},
+ {k:'python print say show output words', a:'In Python, <code>print("Hello")</code> shows a line of text. It is the Python cousin of <code>screen.textContent =</code>: the words in quotes come out exactly, a name without quotes shows what that box holds.'},
+ {k:'python indent indentation colon block spaces', a:'Python uses indentation instead of curly braces. A line ending in a colon (<code>if x &gt; 3:</code>, <code>for n in nums:</code>, <code>def greet():</code>) opens a block, and every line that belongs to it is pushed in by four spaces. Line up wrong and Python stops with an IndentationError.'},
+ {k:'python javascript difference which same', a:'Same ideas, different spelling. Both have variables, if/else, loops, functions and lists. Python drops the braces and semicolons and uses indentation; JavaScript runs in every browser. Learn the idea once and the second language is mostly new vocabulary.'},
+ {k:'def python function define', a:'<code>def</code> is how Python defines a function: <code>def double(n):</code> then an indented <code>return n * 2</code>. It is exactly the JavaScript <code>function double(n) { return n * 2; }</code> with a colon and indentation instead of braces.'},
+ {k:'python let const no keyword variable', a:'Python has no <code>let</code> or <code>const</code>: you just write <code>score = 0</code> and the box exists. Change it the same way: <code>score = score + 1</code>.'},
+ {k:'fstring f string format python curly', a:'An f-string puts values inside text: <code>f"Hi {name}, you have {score} points"</code>. The f before the quote turns the curly braces into windows that show the value. JavaScript&rsquo;s version uses backticks: <code>`Hi ${name}`</code>.'},
+ {k:'input ask user type python', a:'<code>input("Your name? ")</code> pauses, shows the question and waits for the person to type. Whatever they type comes back as a string, even if it looks like a number, so <code>int(input("Age? "))</code> turns it into a real number.'},
+ {k:'int str convert number text python', a:'<code>int("42")</code> turns text into a whole number and <code>str(42)</code> turns a number into text. You need it because <code>"4" + "2"</code> is <code>"42"</code> (glued), while <code>4 + 2</code> is 6.'},
+ {k:'append python list add item end', a:'<code>fruits.append("pear")</code> adds pear to the end of a Python list. JavaScript&rsquo;s version is <code>fruits.push("pear")</code>. <code>len(fruits)</code> tells you how many items there are.'},
+ {k:'range python for count numbers', a:'<code>for n in range(5):</code> runs the block five times with n = 0, 1, 2, 3, 4. <code>range(1, 6)</code> gives 1 to 5: the end number is never included, just like list positions starting at 0.'},
+ {k:'dictionary dict python key value', a:'A dictionary stores values under names: <code>pet = {"name": "Rex", "age": 3}</code>, then <code>pet["name"]</code> gives Rex. It is Python&rsquo;s version of a JavaScript object.'},
+ {k:'true false capital python boolean', a:'Python writes them with capitals: <code>True</code> and <code>False</code>. JavaScript uses lowercase <code>true</code> and <code>false</code>. Type the wrong case and Python thinks you mean a variable that does not exist.'},
+ {k:'elif python else if chain', a:'<code>elif</code> is Python for "else if": <code>if x &gt; 10:</code> &hellip; <code>elif x &gt; 5:</code> &hellip; <code>else:</code>. Python checks them top to bottom and runs only the first one that is true.'},
+ {k:'none python nothing empty value', a:'<code>None</code> is Python&rsquo;s "no value here". A function that never says <code>return</code> hands back None. It plays the part JavaScript splits between <code>null</code> and <code>undefined</code>.'},
+ {k:'traceback python error read bottom line', a:'Read a Python error from the bottom up. The last line names the problem (<code>NameError: name &#39;scroe&#39; is not defined</code>), and the line above it points at the file and line number. Most of the time the fix is on that exact line.'},
+ {k:'terminal command line shell what', a:'The terminal is a way to drive the computer by typing commands instead of clicking. Each line is one instruction: a command name, then what it works on (<code>ls notes</code>, <code>cat todo.txt</code>). Programmers use it because it is fast, exact and can be repeated.'},
+ {k:'pwd where am i folder current', a:'<code>pwd</code> (print working directory) says which folder you are standing in right now. Every other command works relative to that spot, so when anything surprises you, <code>pwd</code> first.'},
+ {k:'ls list files folder see', a:'<code>ls</code> lists what is in the current folder. <code>ls notes</code> lists what is inside the notes folder without walking into it.'},
+ {k:'cd change directory move folder dot dot', a:'<code>cd notes</code> walks into the notes folder, <code>cd ..</code> steps back up one level, and <code>cd</code> on its own goes home. Two dots always mean "the folder above this one".'},
+ {k:'path absolute relative slash folder route', a:'A path is directions to a file. A relative path starts from where you stand (<code>notes/todo.txt</code>); an absolute path starts from the very top with a slash (<code>/home/you/notes/todo.txt</code>) and works from anywhere.'},
+ {k:'mkdir touch make folder new file create', a:'<code>mkdir projects</code> makes a new folder; <code>touch idea.txt</code> makes a new empty file (or just updates the time on one that exists).'},
+ {k:'cat head tail read file show', a:'<code>cat file.txt</code> prints the whole file, <code>head file.txt</code> shows the first 10 lines and <code>tail file.txt</code> the last 10. <code>head -n 3 file.txt</code> shows just 3.'},
+ {k:'rm delete remove file trash undo', a:'<code>rm file.txt</code> deletes a file for good: there is no trash can and no undo in a real terminal. Read the line twice before pressing Enter, and be extra careful with wildcards like <code>*</code>.'},
+ {k:'mv cp move rename copy file', a:'<code>mv old.txt new.txt</code> renames (or moves) a file; <code>cp a.txt b.txt</code> makes a copy and keeps the original. Same shape both times: source first, destination second.'},
+ {k:'grep search find word inside files', a:'<code>grep pizza menu.txt</code> prints every line of menu.txt that contains pizza. It is the terminal&rsquo;s find, and it is how programmers search thousands of files in a blink.'},
+ {k:'pipe vertical bar chain commands wc', a:'The pipe <code>|</code> hands one command&rsquo;s output to the next: <code>grep pizza menu.txt | wc -l</code> counts how many lines mention pizza. Small tools snapped together is the whole terminal philosophy.'},
+ {k:'tab complete up arrow history shortcut terminal', a:'Two shortcuts save most of the typing: Tab finishes a file or folder name for you, and the up arrow brings back the command you ran before. Press it again to go further back.'},
+ {k:'echo redirect arrow write into file', a:'<code>echo hello</code> prints hello. <code>echo hello &gt; note.txt</code> writes it into note.txt instead (replacing what was there); <code>&gt;&gt;</code> adds to the end without replacing.'},
+ {k:'git version control github what', a:'Git keeps a history of your project: every time you commit, it saves a snapshot you can go back to. GitHub is a website that stores those histories online so you can back them up, share them and work with other people.'},
+ {k:'triple equals double equals strict compare', a:'<code>===</code> checks that two things are the same value AND the same type; <code>==</code> tries to convert first, so <code>"5" == 5</code> is true but <code>"5" === 5</code> is false. Use <code>===</code> and you avoid a whole family of surprises.'},
+ {k:'arrow function fat arrow short', a:'An arrow function is a shorter way to write a function: <code>const double = n =&gt; n * 2;</code> does the same job as <code>function double(n) { return n * 2; }</code>. You will see it everywhere in modern code, especially inside map and filter.'},
+ {k:'backtick backticks template literal dollar brace', a:'Backticks make a template string: <code>`Hi ${name}, you have ${score} points`</code>. Anything inside <code>${ }</code> is worked out and dropped into the text, so you do not need a chain of plus signs.'},
+ {k:'addeventlistener onclick difference event', a:'<code>btn.onclick = ...</code> gives the button one click handler (a second one replaces the first). <code>btn.addEventListener("click", ...)</code> can attach many, and works for every event name. Same idea, the second is the one big apps use.'},
+ {k:'queryselector getelementbyid grab element', a:'<code>document.getElementById("title")</code> finds the element with that id. <code>document.querySelector("#title")</code> takes any CSS selector (<code>.card</code>, <code>p</code>, <code>#title</code>) and returns the first match.'},
+ {k:'innerhtml textcontent difference safe', a:'<code>textContent</code> puts plain text on the page, exactly as written. <code>innerHTML</code> reads the text as HTML, so tags become real elements. Never put something a user typed into innerHTML: that is how websites get hacked.'},
+ {k:'push pop array add remove last', a:'<code>list.push(x)</code> adds x to the end of a list, <code>list.pop()</code> removes the last item and hands it back. <code>list.length</code> is always the current count.'},
+ {k:'includes indexof array contains find position', a:'<code>list.includes("cat")</code> answers true or false: is it in there? <code>list.indexOf("cat")</code> gives its position, or -1 if it is missing. Strings have both too.'},
+ {k:'map filter array transform new list', a:'<code>nums.map(n =&gt; n * 2)</code> makes a new list with every item changed; <code>nums.filter(n =&gt; n &gt; 3)</code> makes a new list with only the items that pass the test. Neither changes the original list.'},
+ {k:'foreach array each item do', a:'<code>names.forEach(n =&gt; console.log(n))</code> runs the little function once for every item. It is a for...of loop in one line, for when you do something with each item but do not need a new list.'},
+ {k:'break continue loop skip stop early', a:'<code>break</code> stops the whole loop right now; <code>continue</code> skips the rest of this lap and moves on to the next one. Both are for the "I already know enough" moment.'},
+ {k:'scope variable inside outside function visible', a:'Scope is where a name can be seen. A <code>let</code> or <code>const</code> made inside curly braces only exists inside them; one made at the top of the file can be seen everywhere below. If JavaScript says a name "is not defined", check which braces it lives in.'},
+ {k:'null undefined difference nothing', a:'<code>undefined</code> means "nobody put anything here yet" (a box never filled, a missing field). <code>null</code> means "somebody deliberately put nothing here". Both are falsy, so <code>if (x)</code> treats them the same.'},
+ {k:'boolean truthy falsy true false values', a:'A boolean is just true or false. Other values act like one inside an if: <code>0</code>, <code>""</code>, <code>null</code>, <code>undefined</code> and <code>NaN</code> count as false (falsy); almost everything else counts as true.'},
+ {k:'and or not operators ampersand pipe exclamation', a:'<code>&amp;&amp;</code> means both must be true, <code>||</code> means at least one, <code>!</code> flips true and false. <code>if (age &gt;= 13 &amp;&amp; hasPass)</code> needs both; <code>if (!done)</code> runs while done is false.'},
+ {k:'switch case many choices instead if', a:'<code>switch (day) { case "sat": case "sun": ... break; default: ... }</code> picks a branch by matching one value. It is tidy when you compare the same thing to many exact values; for ranges like <code>x &gt; 10</code>, else-if is clearer.'},
+ {k:'string methods uppercase lowercase trim length', a:'<code>text.toUpperCase()</code>, <code>text.toLowerCase()</code>, <code>text.trim()</code> (cuts spaces off the ends) and <code>text.length</code> (how many characters). They all hand back a new value; the original string never changes.'},
+ {k:'split join string list words', a:'<code>"a,b,c".split(",")</code> cuts text into a list: <code>["a","b","c"]</code>. <code>list.join(" - ")</code> glues a list back into one string with whatever you put between.'},
+ {k:'slice substring part of string list', a:'<code>"coding".slice(0, 3)</code> gives "cod": from position 0 up to (not including) 3. Lists have <code>slice</code> too. The end number is never included.'},
+ {k:'number parseint string to number convert', a:'<code>Number("42")</code> and <code>parseInt("42")</code> both turn text into a number. You need it for anything typed into a box, because inputs always hand you strings, and <code>"4" + 2</code> is <code>"42"</code>.'},
+ {k:'math round ceil floor decimals', a:'<code>Math.round(2.5)</code> is 3, <code>Math.floor(2.9)</code> is 2 (always down), <code>Math.ceil(2.1)</code> is 3 (always up). <code>n.toFixed(2)</code> shows a number with exactly two decimals, as text.'},
+ {k:'modulo remainder percent even odd', a:'<code>%</code> gives the remainder after dividing: <code>7 % 3</code> is 1. <code>n % 2 === 0</code> is the classic test for an even number, and <code>% length</code> wraps a counter back to the start of a list.'},
+ {k:'plus plus plus equals increment shortcut', a:'<code>score += 5</code> means <code>score = score + 5</code>. <code>count++</code> adds one. They are shortcuts for the same thing, not new ideas.'},
+ {k:'comments javascript slash note ignore', a:'<code>// like this</code> is a one-line comment and <code>/* like this */</code> can span lines. The computer skips them; they are notes for the next human, who is often you in three weeks.'},
+ {k:'camelcase naming variables convention', a:'JavaScript names use camelCase: <code>highScore</code>, <code>userName</code>, <code>countVowels</code>. No spaces, no dashes, start with a letter. Good names say what the box holds, so the code reads like a sentence.'},
+ {k:'const object array still change push', a:'<code>const</code> stops you pointing the name at something else, but the list or object it holds can still change: <code>const pets = []; pets.push("cat")</code> is fine. What fails is <code>pets = []</code> again.'},
+ {k:'return console log difference', a:'<code>console.log</code> only shows a value to you, the developer. <code>return</code> hands the value back to the code that called the function so it can be used. Tests, and the rest of your program, only see what you return.'},
+ {k:'off by one error length minus one last', a:'An off-by-one error is being one step wrong at an edge: using <code>list[list.length]</code> (nothing is there) instead of <code>list[list.length - 1]</code>, or <code>&lt;=</code> where you meant <code>&lt;</code>. When a result is almost right, check the first and last item first.'},
+ {k:'settimeout later delay wait seconds', a:'<code>setTimeout(() =&gt; say("Go!"), 2000)</code> runs the function once, 2000 milliseconds (2 seconds) later. The rest of your code does not wait for it; it carries on straight away.'},
+ {k:'recursion function calls itself', a:'Recursion is a function that calls itself on a smaller piece of the problem until the piece is so small the answer is obvious (the base case). Forget the base case and it calls itself forever, which crashes with "too much recursion".'},
+ {k:'hero commands quest list move look attack', a:'On the Quest board your hero understands <code>moveRight()</code>, <code>moveLeft()</code>, <code>moveUp()</code>, <code>moveDown()</code> (each can take a number of squares), <code>look("right")</code>, <code>attack("right")</code>, <code>say("...")</code>, and the questions <code>atExit()</code>, <code>gemsLeft()</code> and <code>foesLeft()</code>.'},
+ {k:'look what returns wall floor foe quest', a:'<code>hero.look("right")</code> tells you what is on the square next to you in that direction, as a word like "wall", "floor" or "foe". Put it in an if and the hero decides for itself: <code>if (hero.look("right") === "wall")</code>.'},
+ {k:'ran out of moves budget quest why', a:'Every level allows a number of moves (the meter under the board). Running out usually means a loop goes round more times than it needs to, or the hero keeps bumping a wall. Watch the replay: the step where it stops making progress is the bug.'},
+ {k:'bump wall walked into quest hero stopped', a:'When the hero walks into a wall it bumps and stays put, and the move still counts. The replay marks the bump. Check the direction and the number in that line, or look before you step.'},
+ {k:'the deep floors 650 endless dungeon', a:'The Deep is the endless dungeon under the Quest map: 650 floors, each built from its own number and proved winnable before you see it. The same floor number always builds the same board, so you can come back to one.'},
+ {k:'par deep score beat better route', a:'Par is how many moves a plain, unclever route takes on a Deep floor. Clearing a floor at all counts; finishing under par means you found something smarter than the machine did.'},
+ {k:'makebeat rhythm string zero dash', a:'In the Sound Room, a rhythm is a string of 16 characters, one per slice of the bar: <code>0</code> is a hit and <code>-</code> is a rest. <code>"0---0---0---0---"</code> hits on every beat. The panel reads your string back with the slice numbers.'},
+ {k:'sixteen slices beat bar count music', a:'A bar has 4 beats and each beat is split into 4 slices, so 16 slices in all. Slices 1, 5, 9 and 13 are the beats you would clap along to; the ones between are the in-between hits that make a groove.'},
+ {k:'instruments kick snare hat sound room', a:'The kick is the low thump (usually on beats 1 and 3), the snare is the crack (usually on 2 and 4), and the hat is the tick that fills the gaps. Most pop and hip-hop beats are built from just those three.'},
+ {k:'loop music repeat bars sound code', a:'In the Sound Room a loop lays bars down one after another, so eight bars of a beat is one line inside a <code>for</code> loop, not eight copies. Change the pattern once and every bar changes.'},
+ {k:'hidden tests vault why cant see', a:'Each vault has tests you are shown and tests you are not. The hidden ones check the cases people forget (empty input, capitals, one item, huge numbers). Real code gets judged the same way: by inputs you did not think of.'},
+ {k:'edge case what means empty zero one', a:'An edge case is an input at the edge of what is normal: an empty string, zero, one item, a negative number, capital letters. Most bugs live there. Before writing, ask "what if it is empty?" and "what if it is huge?"'},
+ {k:'tumbler jammed red vault row', a:'Each tumbler is one test. A jammed (red) tumbler is a test your function got wrong; its row in the table shows what went in, what you returned and what was expected. Fix the first red row first.'},
+ {k:'vault keys earn lesson unlock', a:'A vault key is cut by a school lesson that teaches a skill the vault needs. A missing key never locks the door; it points you at the lesson that makes the puzzle easier, and the back button brings you straight back.'},
+ {k:'function tests return not show vault', a:'In the vault the tests call your function and read what it returns. Showing the answer on screen does not count; <code>return</code> it. That is how real test suites check code too.'},
+ {k:'big o notation efficiency fast slow', a:'Big-O describes how the work grows as the input grows. O(n) means twice the data, twice the work; O(n&sup2;) means twice the data, four times the work; O(1) means the same work no matter how big. It is why one way beats another.'},
+ {k:'binary search halve sorted list guess', a:'Binary search finds something in a SORTED list by checking the middle and throwing away the half it cannot be in, again and again. A million items take about 20 checks instead of a million.'},
+ {k:'hash table lookup instant dictionary fast', a:'A hash table turns a key (like a username) into a position, so looking it up takes one step no matter how many items there are. JavaScript objects and Python dictionaries work this way, which is why they are so fast.'},
+ {k:'sorting sort algorithm order how', a:'Sorting puts items in order. Simple sorts compare every pair (fine for a few, slow for thousands); smart sorts like merge sort split the list, sort the halves and merge them. JavaScript&rsquo;s <code>list.sort()</code> already does the smart version for you.'},
+ {k:'algorithm program difference what', a:'An algorithm is the recipe: the exact steps to solve a problem. A program is that recipe written in a language a computer can run. The same algorithm can be written in JavaScript, Python or anything else.'},
+ {k:'why efficiency matter speed users', a:'On ten items every method is instant. On ten million, the difference between O(n) and O(n&sup2;) is one second versus weeks. Efficiency is what lets search boxes, feeds and maps answer before you finish blinking.'},
+ {k:'bug name origin first moth', a:'A bug is any mistake that makes a program do the wrong thing. The famous story is a real moth found in a 1947 computer, taped into the logbook as the "first actual case of bug being found"; the word was already in use by engineers before that.'},
+ {k:'step it down smaller version easier stuck', a:'After two Runs that do not pass, a lesson offers "Step it down": the answer with one to three gaps to fill, each gap described by its job. After three, it offers the lines to put in order. Passing a smaller step passes the lesson, and "Try the full version" is always there.'},
+ {k:'step cards read it all skip task', a:'Lessons teach in short cards, one idea each, and every card ends in something to do. "Skip to the task" jumps to the real exercise; "Read it all" opens the full page with everything on it.'},
+ {k:'predict card wrong answer penalty', a:'Guessing wrong on a Predict card costs nothing: no XP lost, nothing recorded against you. A wrong prediction followed by the reason why is one of the fastest ways to learn, which is why the cards ask before they tell.'},
+ {k:'run theater big screen close back', a:'When you press Run the result takes over most of the screen so you can watch it without scrolling. "Back to my code", Esc or simply typing takes you back to the editor.'},
+ {k:'objectives checklist tick when do this', a:'The DO THIS card lists what the coach checks. The boxes tick only when you press Run and the coach sees each one; typing alone never ticks them, so the list always tells the truth.'},
+ {k:'warm up quick recall spaced review old', a:'Warm-ups bring back something from an earlier lesson just as you are about to forget it. Answering from memory is what makes the memory stick. There is no grade and no way to lose anything.'},
+ {k:'xp level rank title earn points', a:'You earn XP for passing lessons (more for bosses and bonus twists), and XP moves you up the rank titles in the header, from Rookie upward. XP is for fun and motivation; nothing is ever locked behind it.'},
+ {k:'badges earned how get medals', a:'Badges mark milestones: making your hero, clearing your first Quest level, opening a vault, finishing a grade and more. Your character sheet shows the ones you have and hints at the rest.'},
+ {k:'hero class change choose pick later', a:'Your class (Knight, Ranger, Mage, Skald, Barbarian, Guard, Monk or Artificer) changes how your hero looks and fights, not what you learn. Open your character from the header and change class, species or looks any time; nothing is locked in.'},
+ {k:'tier legend final form grow grades', a:'Your hero grows as you finish grades: Recruit at the start, then Squire, Veteran, Champion and finally Legend after Grades 10 to 12. "See your final form" on the character screen shows your class as a Legend right now.'},
+ {k:'gutter dot marker unclosed brace typing', a:'A small dot beside a line while you type means something opened on that line has not been closed yet: a brace, bracket, parenthesis, quote or tag. It is only a heads-up; nothing is graded until you press Run.'},
+ {k:'ladder rungs small lessons before skip', a:'Some big lessons have a ladder in front of them: two to four short rungs that teach one new idea each and pass on their own. They are optional. You can go straight to the main lesson any time.'},
+ {k:'vault back button return detour', a:'When a vault key or "Learn it first" sends you to another lesson, a "Back to" button in the banner takes you straight back to the vault you came from. Passing the detour lesson walks you back too.'},
+ {k:'hint help me lead show me which first', a:'Try them in this order: Help me (a nudge that points without telling), then Give me a lead (reveals the answer a step at a time), then Show me (the full answer). The closer you stop to the start, the more you learn.'},
+ {k:'how long learn coding job ready months', a:'Most people who practise about an hour a day can build simple, real web pages within a few weeks and small apps within a few months. Being hired usually takes 6 to 18 months of steady building. Consistency beats marathon sessions.'},
+ {k:'which language first learn best start', a:'For the web, HTML, CSS and JavaScript are the natural start because you see results instantly in any browser. Python is the other great first language (data, automation, AI). The second language is much easier than the first, whichever you pick.'},
+ {k:'too old start coding age late', a:'No. People start at 8 and at 68. Adults often learn faster because they already know what they want to build. What matters is regular practice, not age.'},
+ {k:'ai tools write code copilot claude chatgpt', a:'AI assistants can write, explain and fix code, and professionals use them every day. They work best when you understand the code yourself: you can spot when it is wrong and ask for exactly what you need. That is what this course builds.'},
+ {k:'practice ideas after lesson build own', a:'Build tiny things you actually want: a page about your hobby, a tip calculator, a random dinner picker, a to-do list. Free play is there for it. Finishing a small project teaches more than starting a big one.'},
+ {k:'portfolio projects show employer', a:'A portfolio is a few finished projects you can link to: live pages plus their code. Three small, polished, working projects beat ten half-finished ones. The Portfolio track here walks you through five client-style jobs.'},
+ {k:'frontend backend fullstack difference', a:'Front-end is what runs in the browser (HTML, CSS, JavaScript: what people see and click). Back-end runs on servers (storing data, logins, payments). Full-stack means doing both. This course is front-end first, with a look behind the curtain.'},
+ {k:'publish website online free github pages host', a:'To put a page online for free, services like GitHub Pages, Netlify or Cloudflare Pages take your HTML file and give it a web address. This very course is a single HTML file published that way.'},
+ {k:'stuck frustrated give up normal', a:'Being stuck is the normal state of programming, even for professionals. Take a break, explain the problem out loud (the rubber duck), shrink it to the smallest piece that fails, then use Help me or Step it down. Stuck is where the learning happens.'},
+ {k:'study tips remember learn faster', a:'Short, frequent sessions beat long, rare ones. Type the code yourself, predict before you run, and come back to old lessons after a few days (the warm-ups do this for you). Teaching an idea to someone else is the best test that you know it.'},
+ {k:'responsive design phone screen sizes media query', a:'Responsive design means one page that fits every screen. CSS media queries change the rules at certain widths: <code>@media (max-width: 600px) { ... }</code> applies only on narrow screens, like phones.'},
+ {k:'flexbox row line up side by side', a:'<code>display: flex</code> on a container lines its children up in a row (or a column with <code>flex-direction: column</code>). <code>gap</code> spaces them, <code>justify-content</code> and <code>align-items</code> position them. It is the everyday tool for layouts.'},
+ {k:'css grid layout columns rows', a:'<code>display: grid</code> lays children out in rows and columns: <code>grid-template-columns: 1fr 1fr 1fr</code> makes three equal columns. Use flexbox for a line of things, grid for a two-dimensional layout.'},
+ {k:'accessibility alt text screen reader blind', a:'Accessibility means everyone can use the page, including people who use screen readers or a keyboard only. Give images an <code>alt</code> that says what they show, use real headings and buttons, and keep enough contrast between text and background.'},
 ];
 
 /* extra reference material for lessons whose teach text is short */
@@ -22037,7 +22276,7 @@ function rankQA(words, curLang){
 function qaHit(n){ return '<p>' + QA[n].a + '</p>'; }
 
 function answer(q){
-  const words = [...new Set(q.toLowerCase().replace(/[^a-z0-9\s]/g,' ').split(/\s+/).filter(w=>w && !STOP.has(w)))];
+  const words = [...new Set(q.toLowerCase().replace(/===|!==/g,' triple equals ').replace(/==|!=/g,' double equals ').replace(/=>/g,' arrow ').replace(/`/g,' backtick ').replace(/&&/g,' and ').replace(/\|\|/g,' or ').replace(/%/g,' modulo ').replace(/[^a-z0-9\s]/g,' ').split(/\s+/).filter(w=>w && !STOP.has(w)))];
   const les = (!sandbox && L[idx]) ? L[idx] : null;
   const ranked = rankQA(words, les ? les.lang : null);
   const top = ranked[0] || {n:-1, score:0, hits:0, bestW:0};
@@ -28924,7 +29163,7 @@ function tfMount(les, i){
   const cards = tfFlowFor(les, i);
   TF.cards = cards && cards.length ? cards : null;
   if (!TF.cards) return;
-  const n = TF.cards.length, tryAt = TF.cards.findIndex(c => c.t === 'tr');
+  const n = TF.cards.length, tryAt = tfTaskAt();
   let at = TF.pos[TF.key] | 0;
   if (lessonDone(i)) at = n;
   TF.at = Math.max(0, Math.min(at, n));
@@ -28966,7 +29205,7 @@ function tfRender(scroll){
   markCode(box, tfLes());
   const c = teachEl.querySelector('.tfcount'); if (c) c.textContent = TF.at >= n ? 'All ' + n + ' steps done' : 'Step ' + (TF.at + 1) + ' of ' + n;
   teachEl.querySelectorAll('.tfpips i').forEach((e, k) => { e.className = k < TF.at ? 'on' : k === TF.at ? 'now' : ''; });
-  const sk = teachEl.querySelector('.tfskip'); if (sk) sk.hidden = TF.at >= TF.cards.findIndex(x => x.t === 'tr');
+  const sk = teachEl.querySelector('.tfskip'); if (sk) sk.hidden = TF.at >= tfTaskAt();
   tfMountPvs(box);
   tfCardInit(box.querySelector('.tfcard.now'));
   if (scroll){
@@ -28986,9 +29225,10 @@ function tfCardHtml(c, k, done){
   else if (kind === 'fill') h += tfFillHtml(c, k, done);
   else if (kind === 'arrange') h += tfArrHtml(c, k, done);
   else if (kind === 'bug') h += tfBugHtml(c, k, done);
-  else if (kind === 'tr') h += tfTryHtml(c, k, done);
+  else if (kind === 'tr') h += tfTryHtml(c, k, done) + tfModelHtml(c, done);
   else if (kind === 'tweak') h += tfTweakHtml(c, k, done);
   else if (kind === 'ladder') h += tfLadderHtml(c, k, done);
+  else if (kind === 'ms') h += tfMsHtml(c, k, done);
   h += '<div class="tfwhy" aria-live="polite">' + (done && c.why ? tfWhyDone(c) : '') + '</div>';
   if (!done) h += '<div class="tfnav"><button type="button" class="tfnext" hidden>' + (k + 1 >= TF.cards.length ? 'Finish' : 'Next step') + lsIc('right') + '</button></div>';
   return h + '</div></article>';
@@ -29005,7 +29245,7 @@ function tfDone(card, why, miss){
   if (w && say) w.innerHTML = (miss ? '<span class="tfno2">' + lsIc('left') + '</span>' : '<span class="tfok">' + lsIc('check') + '</span>') + say;
   const nx = card.querySelector('.tfnext');
   if (nx){ nx.hidden = false; if (!card.contains(document.activeElement) || document.activeElement.disabled) try { nx.focus({preventScroll: true}); } catch (e) {} }
-  if (c.t === 'tr' || c.t === 'tweak' || c.t === 'ladder') tfNext();
+  if (c.t === 'tr' || c.t === 'ms' || c.t === 'tweak' || c.t === 'ladder') tfNext();
 }
 function tfNext(){
   if (!TF.cards) return;
@@ -29144,7 +29384,7 @@ function tfScramble(n, seed){
 }
 /* SPOT THE BUG: one line is wrong; find it before the computer does */
 function tfBugHtml(c, k, done){
-  return '<div class="tfbug" role="group" aria-label="Tap the line with the mistake">' + c.lines.map((l, n) => '<button type="button" class="tfbl' + (done && n === c.bad ? ' hit' : '') + '" data-n="' + n + '"' + (done ? ' disabled' : '') + '><span class="tfbn">' + (n + 1) + '</span><code>' + (esc(l) || ' ') + '</code></button>').join('') + '</div>'
+  return tfErrBox(c) + '<div class="tfbug" role="group" aria-label="Tap the line with the mistake">' + c.lines.map((l, n) => '<button type="button" class="tfbl' + (done && n === c.bad ? ' hit' : '') + '" data-n="' + n + '"' + (done ? ' disabled' : '') + '><span class="tfbn">' + (n + 1) + '</span><code>' + (esc(l) || ' ') + '</code></button>').join('') + '</div>'
     + (done && c.fix ? '<p class="tffix"><b>Fixed:</b> <code>' + esc(c.fix) + '</code></p>' : '');
 }
 /* TRY IT: now the real thing, in the real editor, with the steps as a checklist */
@@ -29172,13 +29412,13 @@ function tfRungs(){ return tfRungsOf(TF.i); }
 function tfCardInit(card){
   if (!card) return;
   const c = TF.cards[+card.dataset.k];
-  if (c.t === 'tr' && lessonDone(TF.i)) tfDone(card);
+  if ((c.t === 'tr' || c.t === 'ms') && lessonDone(TF.i)) tfDone(card);
 }
 /* ---- every click in the flow ---- */
 function tfClick(e){
   const t = e.target;
   if (t.closest('.tfalltog')){ tfAllSet(!TF.all, true); if (TF.all){ const a = document.getElementById('tfAll'); if (a) try { a.scrollIntoView({behavior: 'smooth', block: 'start'}); } catch (e2) {} } return; }
-  if (t.closest('.tfskip')){ tfGoto(TF.cards.findIndex(x => x.t === 'tr')); return; }
+  if (t.closest('.tfskip')){ tfGoto(tfTaskAt()); return; }
   if (t.closest('.tfagain')){ tfGoto(0); return; }
   const pk = t.closest('.tfpeek');
   if (pk){ const card = pk.closest('.tfcard'); const o = !card.classList.contains('open'); card.classList.toggle('open', o); pk.setAttribute('aria-expanded', o ? 'true' : 'false'); if (o) tfMountPvs(card); return; }
@@ -29373,6 +29613,7 @@ function tfAfterRunFlow(ok){
     TF.at = tryAt + 1; TF.pos[TF.key] = TF.at; tfSavePos(); tfRender(false);
     return;
   }
+  if (!ok && tfMsAfter()) return;
   const cur = TF.cards[TF.at];
   if (ok && cur && cur.t === 'tweak'){
     const code = edEl.value, hit = cur.re ? new RegExp(cur.re, cur.fl || '').test(code) : true;
@@ -29433,7 +29674,7 @@ function tfAfterRun(was){
   if (ok){
     if (TF.down && lessonDone(idx) && !was) TF.downWon = true;
     if (TF.down) tfDownClose(false);
-  } else if (code && code !== String(les.start || '').trim()) TF.fails++;
+  } else if (code && code !== String(les.start || '').trim() && !tfMsRun()) TF.fails++;
   tfOfferPaint();
   tfAfterRunFlow(ok);
   if (TF.down && !ok) tfDownMiss();
@@ -31030,6 +31271,703 @@ function tfAtLine(msg, a){
     const g = l.aside && G[l.title]; if (!g) return;
     LGUIDE[i] = g; CLOZE[i] = g.cz; l.remind = g.remind;
     if (l.tfShows != null && typeof MAKES_JS !== 'undefined') MAKES_JS[i] = {body: S(l.tfShows), rnd: !!l.tfRnd};
+  });
+})();
+
+/* ==== The Step Flow, stage three ==============================================
+   Grades 9 to 12 and College build real things: the Excuse-O-Matic in three
+   sittings, the Mood Machine from a spec, a picker that bad data cannot crash.
+   Two new pieces for that.
+   A MILESTONE card is one stage of a bigger build, written in the editor. It
+   says what this stage must do, lists what it checks, and is checked on Run
+   (only on Run: the preview and the checks never move while you type). Reach
+   it and the next stage opens; the last stage is the lesson's own check, so a
+   build is a few small wins instead of one giant blank. A Run that reaches a
+   milestone is progress, not a failed try, so it never counts toward the
+   "step it down" offer. In a challenge the milestones say what, never how.
+   And a SPOT THE BUG card can carry the error a Run of that code really
+   produces, worked out live in your own browser (never typed in by hand): the
+   line the preview or the coach shows, and the words a browser console uses. */
+TF_KIND.ms = 'Milestone'; TF_ICON.ms = 'check';
+TF.msGot = {}; TF.msRun = null;
+
+/* where "Skip to the task" lands: the first thing written in the editor */
+function tfTaskAt(){ return TF.cards ? TF.cards.findIndex(c => c.t === 'tr' || c.t === 'ms') : -1; }
+
+/* ---- a milestone, as a card ---- */
+function tfMsHtml(c, k, done){
+  const got = done ? c.need.map(() => true) : (TF.msGot[TF.key + '#' + k] || []);
+  let h = '<ul class="tfneed" aria-label="What this milestone checks">' + c.need.map((n, j) => '<li' + (got[j] ? ' class="got"' : '') + '><span class="tfnk" aria-hidden="true">' + (got[j] ? lsIc('check') : '') + '</span><span>' + n[1] + '<span class="tfsr">' + (got[j] ? ': in' : ': not yet') + '</span></span></li>').join('') + '</ul>';
+  if (!done) h += '<div class="tfdo"><button type="button" class="tfgo tfed">' + lsIc('pencil') + (innerWidth <= 700 ? 'Open the editor' : 'Start typing') + '</button>'
+    + '<span class="tfnote">Press <b>Run</b> when this part is in: this step checks only this part.' + (tfLes() && tfLes().chal ? '' : ' A Run that reaches it counts as progress, not a miss.') + '</span></div>';
+  return h + tfModelHtml(c, done);
+}
+/* after a stage is built: one way it could look, to compare with your own */
+function tfModelHtml(c, done){
+  if (!done || !c.model) return '';
+  return '<details class="tfmodel"><summary>' + lsIc('code') + 'One way it could look</summary>' + tfCodeHtml(c.model) + '</details>';
+}
+/* what a milestone checks, against the code in the editor. Code that cannot be
+   read reaches no milestone: the coach's one-line explanation comes first. */
+function tfMsCheck(c, code){
+  const les = tfLes();
+  if (les && les.lang === 'js' && jsSyntaxError(code)) return c.need.map(() => false);
+  return c.need.map(n => { try { return typeof n[0] === 'function' ? !!n[0](code) : n[0].test(code); } catch (e) { return false; } });
+}
+/* on a Run that did not pass the lesson: how far did it get? (true: a milestone was reached) */
+function tfMsRun(){
+  TF.msRun = null;
+  if (!TF.cards || TF.i !== idx) return false;
+  const code = edEl.value;
+  let k = TF.at, hit = 0;
+  if (!TF.cards[k] || TF.cards[k].t !== 'ms') return false;
+  while (TF.cards[k] && TF.cards[k].t === 'ms'){
+    const got = tfMsCheck(TF.cards[k], code);
+    TF.msGot[TF.key + '#' + k] = got;
+    if (!got.every(Boolean)) break;
+    hit++; k++;
+  }
+  TF.msRun = {hit, from: TF.at};
+  return hit > 0;
+}
+/* ...and then the cards catch up: ticks on the stage you are on, or the next stage opens */
+function tfMsAfter(){
+  const r = TF.msRun; TF.msRun = null;
+  if (!r || !TF.cards) return false;
+  if (!r.hit){
+    const card = teachEl.querySelector('.tfcard.now'), c = TF.cards[TF.at];
+    if (!card || !c || c.t !== 'ms') return false;
+    const got = TF.msGot[TF.key + '#' + TF.at] || [];
+    const ul = card.querySelector('.tfneed');
+    if (ul){ const tmp = document.createElement('div'); tmp.innerHTML = tfMsHtml(c, TF.at, false); ul.replaceWith(tmp.querySelector('.tfneed')); }
+    const miss = c.need.filter((n, j) => !got[j]).map(n => n[1]);
+    const w = card.querySelector('.tfwhy');
+    if (w) w.innerHTML = '<span class="tfno2">' + lsIc('left') + '</span>' + (got.some(Boolean) ? got.filter(Boolean).length + ' of ' + got.length + ' in. ' : '') + 'This milestone still needs: ' + miss.join('; ') + '.';
+    return false;
+  }
+  let last = null;
+  for (let n = 0; n < r.hit; n++){
+    const card = teachEl.querySelector('.tfcard.now'), c = TF.cards[TF.at];
+    if (!card || !c || c.t !== 'ms') break;
+    last = c; tfDone(card);
+  }
+  if (last){
+    statusEl.insertAdjacentHTML('afterbegin', '<div class="tfmsline">' + lsIc('star') + '<span><b>' + (last.label || 'Milestone') + ' reached.</b> '
+      + (last.why || '') + ' The list below is the whole build: the next stage is waiting in the lesson column.</span></div>');
+    try { lsHero('cheer'); lsBubble('<b>Milestone reached!</b> On to the next stage.', 'cheer'); } catch (e) {}
+  }
+  return true;
+}
+
+/* ---- the real error a piece of code produces, worked out in this browser ---- */
+function tfErrOf(c){
+  const les = tfLes(), code = c.err === true ? c.lines.join('\n') : String(c.err);
+  if (c.py || (les && les.lang === 'py')){
+    try { const R = PY.run(code, {stdin: [], steps: 20000}); if (R.err) return {run: 'Line ' + R.err.line + ': ' + R.err.kind + ': ' + R.err.msg, raw: null, kind: R.err.kind}; } catch (e) {}
+    return null;
+  }
+  let fn;
+  try { fn = new Function('screen', 'btn', 'document', 'console', code); }
+  catch (e){
+    const keep = lintRange; let say = '';
+    try { say = friendlySyntax(e.message, code); } catch (e2) {}
+    lintRange = keep;
+    return {run: say, raw: 'Uncaught SyntaxError: ' + e.message, kind: 'SyntaxError', coach: true};
+  }
+  const scr = {textContent: ''}, bt = {textContent: ''};
+  const doc = {getElementById: (id) => id === 'screen' ? scr : id === 'btn' ? bt : null};
+  try { fn(scr, bt, doc, {log(){}}); } catch (e){
+    return {run: '⚠ The page stopped here: ' + (e && e.message || e), raw: 'Uncaught ' + (e && e.name ? e.name + ': ' : '') + (e && e.message || e), kind: e && e.name};
+  }
+  return null;
+}
+function tfErrBox(c){
+  if (!c.err) return '';
+  const e = tfErrOf(c); if (!e) return '';
+  return '<div class="tferr" role="note"><span class="tferrl">' + lsIc('play') + (e.coach ? 'Run it, and the coach says' : e.raw ? 'Run it, and the preview says' : 'Run it, and Python says') + '</span>'
+    + '<div class="tferrm">' + (e.coach ? e.run : esc(e.run)) + '</div>'
+    + (e.raw ? '<div class="tferrr">In a browser’s own console (F12): <code>' + esc(e.raw) + '</code></div>' : '') + '</div>';
+}
+
+/* ---- the flows for Grades 9 to College are written against the lesson titles as
+   they stand in the list (some hold an &mdash;); each is filed under the lesson's
+   own key, and a build's milestones learn their numbers ---- */
+function tfAddFlows(map){
+  Object.keys(map).forEach(k => {
+    const bar = k.indexOf('|'), g = k.slice(0, bar), t = k.slice(bar + 1);
+    const les = L.find(l => l.g === g && l.title === t);
+    if (!les) return;
+    const f = map[k], ms = f.filter(c => c.t === 'ms');
+    if (ms.length){
+      const tot = ms.length + 1;
+      ms.forEach((c, n) => { c.label = 'Milestone ' + (n + 1) + ' of ' + tot; });
+      f.filter(c => c.t === 'tr').forEach(c => { c.label = 'Milestone ' + tot + ' of ' + tot; c.last = 1; });
+    }
+    TF_FLOWS[tfKey(les)] = f;
+  });
+}
+
+/* ---- The flows, by hand: Grades 9 to 12, and College --------------------------
+   Loops; the Excuse-O-Matic, built in stages; objects; debugging; taste. The
+   same loop as the grades below, faded further: hardly any examples to watch,
+   a guess only where a guess teaches something, and mostly gaps to fill, lines
+   to order, bugs to spot and code to write. The debugging grade leans on
+   spotting bugs from the error a Run really gives. A build (the Excuse-O-Matic
+   stages, the Mood Machine, the challenges) is split into milestones, each
+   checked on its own Run, so nobody faces one giant blank. Every flow but a
+   challenge holds one whole program that passes the lesson's own check: a card
+   marked "full", or the last stage of its milestones. A challenge's milestones
+   say what to build, never how. */
+(function(){
+  const S = t => '<p id="screen">' + t + '</p>';
+  const B = (b, t) => '<button id="btn">' + b + '</button>\n' + S(t);
+  const X3 = "const excuses = ['My dog ate it', 'Aliens', 'I overslept'];";
+  const X4 = "const excuses = ['My dog ate it', 'Aliens took it', 'I overslept', 'Gravity failed'];";
+  const MOOD = "const workExcuses = ['My laptop died', 'Traffic was biblical', 'The meeting ran over'];\nconst schoolExcuses = ['My dog ate it', 'Aliens took it', 'I overslept'];\nconst mood = 'work';";
+  /* what the milestones look for */
+  const listOf = (c, n) => { const m = c.match(/=\s*\[([^\]]*)\]/); return !!m && (m[1].match(/['"][^'"\n]+['"]/g) || []).length >= n; };
+  const FN_PICK = /function\s+[A-Za-z_$][\w$]*\s*\([^)]*\)\s*\{[\s\S]*Math\.random[\s\S]*return/;
+  const CLICK = /(?:onclick|addEventListener)/;
+  const CLICK_SHOWS = /(?:onclick|addEventListener)[\s\S]*screen\.textContent\s*=/;
+  const CLICK_CALLS = /(?:onclick|addEventListener)[\s\S]*screen\.textContent\s*=\s*[A-Za-z_$][\w$]*\s*\(/;
+  /* a let box made above the function, and filled again inside it */
+  const REMEMBERS = (c) => { const f = c.search(/function\s/); if (f < 0) return false; const m = c.slice(0, f).match(/let\s+([A-Za-z_$][\w$]*)\s*=/); return !!m && new RegExp('\\b' + m[1] + '\\s*=\\s*[^=]').test(c.slice(f)); };
+  const BRAIN42 = X4 + "\n\nfunction pickExcuse() {\n  const pick = Math.floor(Math.random() * excuses.length);\n  return excuses[pick];\n}";
+  const WIRED = "\n\nbtn.onclick = function () {\n  screen.textContent = pickExcuse();\n};";
+  tfAddFlows({
+/* ================================ GRADE 9 ================================= */
+'G9|Doing it again and again': [
+  {t: 'ladder', h: 'Two short steps first?', p: 'Your first loop needs three new things at once: a box that changes, a pile built up from nothing, and the loop itself. The ladder teaches the first two on their own. Or go straight in.'},
+  {t: 'see', h: 'The three parts in the brackets', p: 'Step through the loop. The line after <code>for</code> says where to start, when to keep going, and what changes after each lap.',
+   code: "let out = '';\nfor (let i = 1; i <= 5; i = i + 1) {\n  out = out + i + ' ';\n}\nscreen.textContent = out;",
+   labels: [[0, '1 · an empty pile to build into'], [1, '2 · start at 1 ; keep going while i <= 5 ; add 1 after each lap'], [2, '3 · each lap: glue the number and a space on'], [4, '4 · after the loop: show the pile']], steps: [0, 1, 2, 4], stepBtn: 'Next part', full: 1,
+   shows: S('1 2 3 4 5 '), why: 'Five laps from one line of gluing. The braces are the lap; the loop does the typing.'},
+  {t: 'predict', h: 'Where does it stop?', code: "let out = '';\nfor (let i = 1; i <= 3; i = i + 1) {\n  out = out + i + ' ';\n}\nscreen.textContent = out;", q: 'What shows?',
+   ch: [{pv: S('1 2 3 '), cap: '1 2 3', ok: 1, why: 'i is 1, 2, then 3; at 4 the test i <= 3 is false, and the loop ends.'},
+        {pv: S('1 2 '), cap: '1 2', why: '<= means "at most": 3 still gets its lap.'},
+        {pv: S('0 1 2 3 '), cap: '0 1 2 3', why: 'The first part says where to start: 1.'}]},
+  {t: 'fill', h: 'After each lap', code: "let out = '';\nfor (let i = 1; i <= 5; ___) {\n  out = out + i + ' ';\n}\nscreen.textContent = out;", opts: ['i = i + 1', 'i = i - 1', 'i + 1'], ans: 'i = i + 1', gap: 'the change after each lap: one more, put back into i',
+   no: {'i = i - 1': 'Going down from 1, i <= 5 is true for ever: the loop would never end.', 'i + 1': 'That works out i + 1 and throws it away. i never changes, so the loop never ends.'},
+   why: 'i = i + 1: the Loops 1 move, once a lap.'},
+  {t: 'tr', h: 'Your first loop', p: 'Build the text 1 2 3 4 5 with a <code>for</code> loop, and show it.',
+   sub: ["<code>let out = '';</code> an empty pile", '<code>for (let i = 1; i &lt;= 5; i = i + 1) {</code>', "Inside: <code>out = out + i + ' ';</code>", 'After the <code>}</code>, show <code>out</code>', 'Press <b>Run</b>']},
+  {t: 'tweak', h: 'Ten laps', p: 'Change the 5 to 10 and press <b>Run</b>. One number, twice the laps.', re: '<=\\s*10\\b', why: 'The loop does the typing: one number decides how many laps.'}
+],
+'G9|A loop over a list': [
+  {t: 'predict', h: 'Each lap, the next one', code: X3 + "\nlet out = '';\nfor (const excuse of excuses) {\n  out = out + excuse + '. ';\n}\nscreen.textContent = out;", q: 'What shows?',
+   ch: [{pv: S('My dog ate it. Aliens. I overslept. '), cap: 'all three', ok: 1, why: 'Each lap, excuse holds the next thing in the list, and it is glued onto the pile.'},
+        {pv: S('excuse. excuse. excuse. '), cap: 'excuse, three times', why: 'excuse has no quotes: it is a box, holding a new excuse each lap.'},
+        {pv: S('I overslept. '), cap: 'only the last', why: 'out = out + ... keeps what is there and adds on.'}]},
+  {t: 'fill', h: 'The walk', code: X3 + "\nlet out = '';\nfor (const excuse ___ excuses) {\n  out = out + excuse + '. ';\n}\nscreen.textContent = out;", opts: ['of', 'in', 'from'], ans: 'of', gap: 'the word between each item’s name and the list', full: 1,
+   no: {'in': 'for...in walks the positions (0, 1, 2), not the things: you would get 0. 1. 2.', 'from': 'Good English, but JavaScript says of.'},
+   why: '"For each excuse of the excuses." No counting, no positions.'},
+  {t: 'bug', h: 'Only the last one shows', p: 'This shows I overslept. and nothing else. Tap the line.',
+   lines: [X3, "let out = '';", 'for (const excuse of excuses) {', "  out = excuse + '. ';", '}', 'screen.textContent = out;'], bad: 3,
+   why: 'Without out + on the right, every lap replaces the pile instead of adding to it.', fix: "  out = out + excuse + '. ';"},
+  {t: 'tr', h: 'Walk the list', p: 'Walk the excuses with <code>for...of</code>, building text the screen shows.',
+   sub: ["<code>let out = '';</code>", '<code>for (const excuse of excuses) {</code>', 'Glue each one onto <code>out</code>', 'Show <code>out</code> after the loop', 'Press <b>Run</b>']},
+  {t: 'tweak', h: 'A fourth excuse', p: 'Add a fourth excuse to the list, leave the loop alone, and press <b>Run</b>.', re: "\\[\\s*(?:['\"][^'\"]*['\"]\\s*,\\s*){3,}['\"]", why: 'The loop walks whatever the list holds.'}
+],
+'G9|Building a sentence in a loop': [
+  {t: 'predict', h: 'A choice on every lap', code: "const scores = [3, 9];\nlet out = '';\nfor (const s of scores) {\n  if (s >= 6) {\n    out = out + s + ' passed. ';\n  } else {\n    out = out + s + ' failed. ';\n  }\n}\nscreen.textContent = out;", q: 'What shows?',
+   ch: [{pv: S('3 failed. 9 passed. '), cap: 'both, judged', ok: 1, why: 'Each lap decides again: 3 takes the else road, 9 the if road.'},
+        {pv: S('3 passed. 9 passed. '), cap: 'both passed', why: '3 is not 6 or more.'},
+        {pv: S('9 passed. '), cap: 'only 9', why: 'The else road adds to the pile too.'}]},
+  {t: 'arrange', h: 'An if inside a for', p: 'Put the lines in order.', full: 1,
+   lines: ['const scores = [3, 9, 6, 10];', "let out = '';", 'for (const s of scores) {', '  if (s >= 6) {', "    out = out + s + ' passed. ';", '  } else {', "    out = out + s + ' failed. ';", '  }', '}', 'screen.textContent = out;'],
+   labels: ['the list', 'an empty pile', 'for each score...', '...is it 6 or more?', 'then: passed', 'otherwise', 'failed', 'end of the if', 'end of the lap', 'show it, once'], why: 'A loop, a choice on every lap, a pile: three grades in ten lines.'},
+  {t: 'tr', h: 'Pass or fail', p: 'Walk the scores; glue passed onto the pile for 6 and up, failed for the rest; show it.',
+   sub: ['A <code>for...of</code> over the scores', 'An <code>if</code> and <code>else</code> inside', 'Each road glues onto the pile', 'Show it after the loop, press <b>Run</b>']},
+  {t: 'tweak', h: 'Raise the bar', p: 'Change the 6 to 9 and press <b>Run</b>. Who passes now?', re: '>=\\s*9\\b', why: 'One number moves the line for every lap.'}
+],
+'G9|Knowing when to stop': [
+  {t: 'predict', h: 'How many bites?', code: "let pile = 10;\nlet bites = 0;\nwhile (pile > 0) {\n  pile = pile - 3;\n  bites = bites + 1;\n}\nscreen.textContent = 'Finished in ' + bites + ' bites.';", q: 'What shows?',
+   ch: [{pv: S('Finished in 4 bites.'), cap: '4 bites', ok: 1, why: '10, 7, 4, 1, then -2: four bites, and -2 is not more than 0.'},
+        {pv: S('Finished in 3 bites.'), cap: '3 bites', why: 'After three bites 1 is left, and 1 > 0 is still true: one more.'},
+        {pv: S('Finished in 10 bites.'), cap: '10 bites', why: 'Each bite takes 3, not 1.'}]},
+  {t: 'bug', h: 'It never stops', p: 'This loop never ends. Tap the line that should push it toward the exit, and does not.',
+   lines: ['let pile = 10;', 'let bites = 0;', 'while (pile > 0) {', '  pile = pile + 3;', '  bites = bites + 1;', '}'], bad: 3,
+   why: 'The pile grows, so pile > 0 stays true for ever. Something inside must push toward the exit.', fix: '  pile = pile - 3;'},
+  {t: 'arrange', h: 'Eat the pile', p: 'Put the lines in order.', full: 1,
+   lines: ['let pile = 10;', 'let bites = 0;', 'while (pile > 0) {', '  pile = pile - 3;', '  bites = bites + 1;', '}', "screen.textContent = 'Finished in ' + bites + ' bites.';"],
+   labels: ['what is left', 'a lap counter', 'as long as some is left...', 'the push toward the exit', 'count the lap', 'end of the lap', 'show the count'], free: [[0, 1], [3, 4]], why: 'while: keep going until. Something inside moves it toward the end.'},
+  {t: 'tr', h: 'Count it down', p: 'A <code>while</code> loop that counts something down to zero and counts its laps; then show the count after a label.',
+   sub: ['Two <code>let</code> boxes: what is left, and a counter', '<code>while (pile &gt; 0) {</code>', 'Inside: shrink it, count the lap', "After the loop: <code>'Finished in ' + bites</code>", 'Press <b>Run</b>']}
+],
+'G9|📋 Review: put it together': [
+  {t: 'bug', h: 'Only one result shows', p: 'This shows only 8 pass. Tap the line that empties the pile on every lap.',
+   lines: ['const scores = [4, 9, 7, 2, 8];', 'for (const s of scores) {', "  let out = '';", '  if (s >= 6) {', "    out = out + s + ' pass. ';", '  } else {', "    out = out + s + ' fail. ';", '  }', '  screen.textContent = out;', '}'], bad: 2,
+   why: 'Made inside the loop, the pile starts empty on every lap. Make it once, above the loop, and show it once, below.', fix: "let out = '';  (above the for)"},
+  {t: 'arrange', h: 'Loop, choice, pile', p: 'Put the lines in order.', full: 1,
+   lines: ['const scores = [4, 9, 7, 2, 8];', "let out = '';", 'for (const s of scores) {', '  if (s >= 6) {', "    out = out + s + ' pass. ';", '  } else {', "    out = out + s + ' fail. ';", '  }', '}', 'screen.textContent = out;'],
+   labels: ['the scores', 'an empty pile, once', 'for each score...', '6 or more?', 'pass', 'otherwise', 'fail', 'end of the if', 'end of the lap', 'show it, once'], why: 'The three-piece engine: loop, choice, accumulator.'},
+  {t: 'tr', h: 'The checkpoint', p: 'Walk the scores; add pass or fail for each (6 and up passes); show the result after the loop.',
+   sub: ["An empty <code>let</code> pile", 'A <code>for...of</code> over the scores', '<code>if</code> and <code>else</code> inside', 'Show the pile after the loop', 'Press <b>Run</b>']}
+],
+'G9|🏋 Rep: countdown': [
+  {t: 'bug', h: 'It never counts', p: 'This shows only liftoff!. Tap the line.',
+   lines: ["let out = '';", 'for (let i = 5; i <= 1; i = i - 1) {', "  out = out + i + ' ';", '}', "screen.textContent = out + 'liftoff!';"], bad: 1,
+   why: '5 <= 1 is false before the first lap, so there are no laps. Counting down, reverse all three parts: keep going while i >= 1.', fix: 'for (let i = 5; i >= 1; i = i - 1) {'},
+  {t: 'fill', h: 'Step down', code: "let out = '';\nfor (let i = 5; i >= 1; ___) {\n  out = out + i + ' ';\n}\nscreen.textContent = out + 'liftoff!';", opts: ['i = i - 1', 'i = i + 1', 'i - 1'], ans: 'i = i - 1', gap: 'the change after each lap: one less, put back into i', full: 1,
+   no: {'i = i + 1': 'Up from 5, i >= 1 stays true for ever: it never lifts off.', 'i - 1': 'Worked out and thrown away: i never changes.'},
+   why: '5 4 3 2 1 liftoff!'},
+  {t: 'tr', h: 'Liftoff', p: 'Build <b>5 4 3 2 1 liftoff!</b> with a loop counting down.', sub: ['Start at 5, keep going while <code>&gt;= 1</code>, step <code>- 1</code>', 'Glue each number and a space', "Show it with <code>'liftoff!'</code> on the end", 'Press <b>Run</b>']}
+],
+'G9|⚔️ The accountant': [
+  {t: 'predict', h: 'Warm-up: adding, not gluing', p: 'Not the challenge: the one trap in it.', code: 'let total = 0;\ntotal = total + 12;\ntotal = total + 5;', q: 'What is in total now?',
+   ch: [{code: '17', ok: 1, why: 'Numbers with no quotes: + adds.'}, {code: '125', why: 'Only if they were text in quotes: then + glues.'}, {code: '5', why: 'total + 5 adds onto what is already there.'}]},
+  {t: 'ms', h: 'A total that starts at nothing', p: 'A total box that starts at 0, shown after the label <b>Total: </b>. Run it: Total: 0 is right, for now.',
+   need: [[/let\s+[A-Za-z_$][\w$]*\s*=\s*0\b/, 'a total box that starts at 0'], [/screen\.textContent\s*=\s*['"][^'"\n]*['"]\s*\+\s*[A-Za-z_$][\w$]*/, 'the total shown after a quoted label']],
+   why: 'The box and the display both work. Now fill the box.'},
+  {t: 'tr', h: 'The challenge', p: 'Walk the prices and add each one to the total, so the screen reads <b>Total: 34</b>. No hints from here.'}
+],
+'G9|🐍 Doing it again, in Python': [
+  {t: 'predict', h: 'Three laps, three lines', code: 'for n in [1, 2, 3]:\n    print(n)', q: 'What does the console show?',
+   ch: [{t: '1, 2 and 3, one per line', ok: 1, why: 'n holds each number in turn, and each print writes its own line.'}, {t: '1 2 3 on one line', why: 'Each print writes its own line.'}, {t: 'n, three times', why: 'n is a name: each lap it holds the next number.'}]},
+  {t: 'fill', h: 'Doubled', code: 'for n in [1, 2, 3]:\n    print(n ___ 2)', opts: ['*', '+', 'x'], ans: '*', gap: 'the times sign', full: 1,
+   no: {'+': 'n + 2 adds two: 3, 4, 5.', 'x': 'Keyboards have no times sign, so code uses the star.'}, why: '2, 4, 6.'},
+  {t: 'tr', h: 'Double each one', p: 'Loop over [1, 2, 3] and print each number doubled.', sub: ['<code>for n in [1, 2, 3]:</code>', 'An indented <code>print(n * 2)</code>', 'Press <b>Run</b>']}
+],
+'G9|🎵 Let the loop lay the bars': [
+  {t: 'predict', h: 'Which bars?', code: 'for (let m = 1; m < 3; m++) {\n  makeBeat(KICK, 1, m, "0---0---0---0---");\n}', q: 'Which measures get a kick?',
+   ch: [{t: 'Measures 1 and 2', ok: 1, why: 'm is 1, then 2; 3 < 3 is false, so it stops.'}, {t: 'Measures 1, 2 and 3', why: 'm < 3 stops before 3.'}, {t: 'Only measure 1', why: 'The line runs once a lap, with m as the measure.'}]},
+  {t: 'fill', h: 'The lap is the measure', code: 'for (let m = 1; m < 3; m++) {\n  makeBeat(KICK, 1, ___, "0---0---0---0---");\n}', opts: ['m', '1', '"m"'], ans: 'm', gap: 'the measure number: whatever lap this is', full: 1,
+   no: {'1': 'Every lap would write measure 1 again: one bar.', '"m"': 'In quotes it is the letter m, not the lap number.'}, why: 'Two bars from one line.'},
+  {t: 'tr', h: 'Lay the bars', p: 'Inside the loop, a kick on every beat of measure m.', sub: ['<code>makeBeat(KICK, 1, m, "0---0---0---0---");</code> inside', 'Press <b>Run</b>']}
+],
+'G9|🧩 Add them all up': [
+  {t: 'predict', h: 'The empty list', q: 'sumAll([]) must be 0. Where does that come from?',
+   ch: [{t: 'The total starts at 0, and nothing is added', ok: 1, why: 'With no items the loop runs zero laps, and 0 comes back.'}, {t: 'A special if for empty lists', why: 'Not needed: a total that starts at 0 already handles it.'}, {t: 'The tests skip empty lists', why: 'One hidden test hands it [].'}]},
+  {t: 'arrange', h: 'A running total', p: 'Put the lines in order.', full: 1,
+   lines: ['function sumAll(list) {', '  let total = 0;', '  for (const n of list) {', '    total = total + n;', '  }', '  return total;', '}'],
+   labels: ['the function', 'a total at 0', 'for each number...', 'add it on', 'end of the lap', 'hand back the total, after the loop', 'end'], why: 'The loop you will write more than any other.'},
+  {t: 'tr', h: 'Open the lock', p: 'Write sumAll(list) so every test passes.', sub: ['A total at 0', 'Add each item in a loop', '<code>return</code> it after the loop', 'Press <b>Run</b>']}
+],
+'G9|Boss: again, and again': [
+  {t: 'predict', h: 'Count the laps', p: 'Nothing new: Grade 9 was loops.', q: 'Three enemies, evenly spaced. How many laps of step, swing, step?',
+   ch: [{t: '3: one per enemy', ok: 1, why: 'One round per enemy, then the walk out.'}, {t: '4', why: 'A fourth round swings at nothing and wastes turns.'}, {t: '9: one per move', why: 'A lap is a whole round: two steps and a swing.'}]},
+  {t: 'arrange', h: 'Three rounds, then out', p: 'Put the lines in order.', full: 1,
+   lines: ['for (let i = 0; i < 3; i++) {', '  hero.moveRight(1);', '  hero.attack();', '  hero.moveRight(1);', '}', 'hero.moveRight(2);'],
+   labels: ['three times over:', 'step up to the enemy', 'swing', 'step into the gap', 'end of the round', 'two more to the flag'], why: 'Written once, done three times.'},
+  {t: 'tr', h: 'Clear the corridor', p: 'Three enemies with one loop, then finish on the flag.', sub: ['A loop of three rounds', 'Step, <code>hero.attack();</code>, step', 'Then walk to the flag', 'Press <b>Run</b>']}
+],
+/* ================================ GRADE 10 ================================ */
+'G10|The machine’s body': [
+  {t: 'predict', h: 'Skeleton first', p: 'Three sittings: body, brain, polish.', q: 'Why build a button that always shows the same excuse?',
+   ch: [{t: 'To prove the wiring works before the clever part', ok: 1, why: 'If the dumb version fails, the problem is the wiring: cheap to find now.'}, {t: 'Because random is too hard', why: 'Random is next lesson. This is about order, not difficulty.'}, {t: 'It is the finished machine', why: 'It is stage one of three.'}]},
+  {t: 'arrange', h: 'The body', p: 'Put the lines in order.', full: 1,
+   lines: ['btn.onclick = function () {', "  screen.textContent = 'My dog ate my homework.';", '};'], labels: ['when pressed...', '...show an excuse', 'end of the bundle'], why: 'Press, excuse. Wired.'},
+  {t: 'tr', h: 'Wire it', p: 'Wire the button so a click shows a fixed excuse. Run, then press it.', sub: ['<code>btn.onclick = function () {</code>', 'A screen line inside', '<code>};</code>', 'Press <b>Run</b>, then the button']},
+  {t: 'tweak', h: 'The button answers too', p: 'Inside the click, add a line that changes the button’s own words. Press <b>Run</b>, then the button.', re: 'btn\\.textContent\\s*=', why: 'One click, as many changes as you like.'}
+],
+'G10|The machine’s brain': [
+  {t: 'fill', h: 'The brain hands it back', code: "function pickExcuse() {\n  const pick = Math.floor(Math.random() * excuses.length);\n  ___ excuses[pick];\n}", opts: ['return', 'screen.textContent =', 'show'], ans: 'return', gap: 'the word that hands the pick back to whoever asked',
+   no: {'screen.textContent =': 'That would show it, and the brain would decide where it goes. Its job is only to choose.', 'show': 'JavaScript has no show. The word is return.'}, why: 'The brain chooses and hands back; the wiring decides where it goes.'},
+  {t: 'ms', h: 'The data', p: 'At the top: a list of four or more excuses. Show one of them, so a Run proves the list is there.',
+   need: [[c => listOf(c, 4), 'a list of four or more quoted excuses'], [/screen\.textContent\s*=/, 'one of them on the screen, like <code>excuses[0]</code>']],
+   model: X4 + '\nscreen.textContent = excuses[0];', why: 'The data is in.'},
+  {t: 'ms', h: 'The brain', p: 'Add <code>pickExcuse()</code>: it picks one at random and returns it. Show a call to it straight away; no button yet.',
+   need: [[FN_PICK, 'a function that picks at random and <code>return</code>s the pick'], [/screen\.textContent\s*=\s*[A-Za-z_$][\w$]*\s*\(/, 'the screen showing a call to it']],
+   model: BRAIN42 + '\n\nscreen.textContent = pickExcuse();', why: 'It thinks: every Run, a new excuse.'},
+  {t: 'tr', h: 'The wiring', p: 'Move the screen line inside a click on <code>btn</code>, so every press asks the brain again.',
+   sub: ['<code>btn.onclick = function () {</code>', 'Inside: <code>screen.textContent = pickExcuse();</code>', '<code>};</code>', 'Press <b>Run</b>, then the button, lots'], model: BRAIN42 + WIRED}
+],
+'G10|No repeats &mdash; the polish': [
+  {t: 'ladder', h: 'Two short steps first?', p: 'The polish needs a box that survives between clicks, and a loop that rolls again: two new ideas, plus the whole machine. The ladder teaches each on its own. Or go straight in.'},
+  {t: 'predict', h: 'Why it repeats', q: 'Four excuses, picked at random. How often is the next pick the same as the last?',
+   ch: [{t: 'About one press in four', ok: 1, why: 'Each press is a fresh roll with no memory: a 1 in 4 chance of matching.'}, {t: 'Never: random does not repeat', why: 'Random has no memory. That is the whole problem.'}, {t: 'Every time', why: 'Only about a quarter of the time. Often enough to annoy.'}]},
+  {t: 'ms', h: 'The machine so far', p: 'The list is there. Rebuild Grade 10: <code>pickExcuse()</code> returning a random excuse, and a click that shows it.',
+   need: [[FN_PICK, 'a function that picks at random and returns it'], [CLICK_CALLS, 'a click that shows a call to it']],
+   model: BRAIN42 + WIRED, why: 'Body and brain, back in one sitting.'},
+  {t: 'ms', h: 'A memory', p: 'Above the function, <code>let last = -1;</code>: nothing picked yet. Inside, just before the <code>return</code>, store this pick in it.',
+   need: [[c => /let\s+[A-Za-z_$][\w$]*\s*=/.test(c.slice(0, Math.max(0, c.search(/function\s/)))), 'a <code>let</code> box above the function'], [REMEMBERS, 'inside the function, the pick stored in it']],
+   model: X4 + "\nlet last = -1;\n\nfunction pickExcuse() {\n  const pick = Math.floor(Math.random() * excuses.length);\n  last = pick;\n  return excuses[pick];\n}" + WIRED, why: 'It remembers between presses.'},
+  {t: 'fill', h: 'Roll again while it matches', code: "  let pick = Math.floor(Math.random() * excuses.length);\n  ___ (pick === last) {\n    pick = Math.floor(Math.random() * excuses.length);\n  }", opts: ['while', 'if', 'for'], ans: 'while', gap: 'the word for "keep going as long as"',
+   no: {'if': 'An if rolls again once, and the second roll can match too. while keeps rolling until it does not.', 'for': 'for runs a set number of laps. Nobody knows how many rolls this takes.'}, why: 'The No repeats 2 move, inside the brain.'},
+  {t: 'tr', h: 'The guard', p: 'Make <code>pick</code> a <code>let</code>, and roll again while it equals <code>last</code>. Then press the button a lot.',
+   sub: ['<code>let pick = ...</code> inside the function', '<code>while (pick === last) { ... }</code> rolls again', '<code>last = pick;</code> before the return', 'Press <b>Run</b>, then the button, lots'],
+   model: X4 + "\nlet last = -1;\n\nfunction pickExcuse() {\n  let pick = Math.floor(Math.random() * excuses.length);\n  while (pick === last) {\n    pick = Math.floor(Math.random() * excuses.length);\n  }\n  last = pick;\n  return excuses[pick];\n}" + WIRED}
+],
+'G10|📋 Review: put it together': [
+  {t: 'bug', h: 'It still repeats', p: 'This machine has a memory and a guard, and repeats anyway. Tap the line that wipes the memory.',
+   lines: ['let last = -1;', 'function pickExcuse() {', '  let pick = Math.floor(Math.random() * excuses.length);', '  while (pick === last) {', '    pick = Math.floor(Math.random() * excuses.length);', '  }', '  last = -1;', '  return excuses[pick];', '}'], bad: 6,
+   why: 'It resets the memory on every call, so last is never the real last pick and the guard never fires.', fix: '  last = pick;'},
+  {t: 'ms', h: 'Brain and wiring', p: 'From memory: a function that returns a random excuse, and a click that shows a call to it.',
+   need: [[FN_PICK, 'a function that picks at random and returns it'], [CLICK_CALLS, 'a click showing a call to it']], model: BRAIN42 + WIRED, why: 'The machine runs.'},
+  {t: 'ms', h: 'Memory', p: 'A <code>let</code> box above the function that holds the last pick, filled inside the function.',
+   need: [[c => /let\s+[A-Za-z_$][\w$]*\s*=/.test(c.slice(0, Math.max(0, c.search(/function\s/)))), 'a <code>let</code> box above the function'], [REMEMBERS, 'the pick stored in it, inside the function']],
+   model: X4 + "\nlet last = -1;\n\nfunction pickExcuse() {\n  const pick = Math.floor(Math.random() * excuses.length);\n  last = pick;\n  return excuses[pick];\n}" + WIRED, why: 'It remembers.'},
+  {t: 'tr', h: 'The guard', p: 'The last stage: roll again while the pick equals the last one.',
+   sub: ['<code>let pick</code>, rolled at random', '<code>while (pick === last)</code> rolls again', 'Store it, return it', 'Press <b>Run</b>, then the button'],
+   model: X4 + "\nlet last = -1;\n\nfunction pickExcuse() {\n  let pick = Math.floor(Math.random() * excuses.length);\n  while (pick === last) {\n    pick = Math.floor(Math.random() * excuses.length);\n  }\n  last = pick;\n  return excuses[pick];\n}" + WIRED}
+],
+'G10|⚔️ The counting machine': [
+  {t: 'predict', h: 'Warm-up: where memory lives', p: 'Not the challenge: the idea it leans on.', code: "btn.onclick = function () {\n  let presses = 0;\n  presses = presses + 1;\n  screen.textContent = presses;\n};", q: 'Pressed three times. What shows?',
+   ch: [{pv: B('Press', '1'), cap: '1', ok: 1, why: 'Made inside the click, the box starts again at 0 on every press. Memory lives outside.'}, {pv: B('Press', '3'), cap: '3', why: 'Only if the box lived outside the click.'}, {pv: B('Press', '0'), cap: '0', why: 'It adds 1 before showing.'}]},
+  {t: 'ms', h: 'A button that answers', p: 'Wire the button so each press shows a random excuse from the list.',
+   need: [[CLICK, 'the button wired up'], [/Math\.random/, 'a random excuse picked'], [CLICK_SHOWS, 'shown on the screen by the click']], why: 'It answers.'},
+  {t: 'ms', h: 'A counter', p: 'Add a box that counts presses: it starts at 0 and grows by one on every press.',
+   need: [[/let\s+[A-Za-z_$][\w$]*\s*=\s*0\b/, 'a counter starting at 0, outside the click'], [/([A-Za-z_$][\w$]*)\s*=\s*\1\s*\+\s*1\b|[A-Za-z_$][\w$]*\s*\+=\s*1\b|[A-Za-z_$][\w$]*\s*\+\+/, 'one added on every press']], why: 'It counts.'},
+  {t: 'tr', h: 'The challenge', p: 'Glue it together: <b>Excuse #3: My dog ate it</b>, the number growing every press. No hints from here.'}
+],
+'G10|💻 Build it in stages': [
+  {t: 'predict', h: 'Stage one first', q: 'You type the echo line before <code>mkdir site</code>. What happens?',
+   ch: [{t: 'A complaint: there is no folder called site yet', ok: 1, why: 'The file has nowhere to go. Stage two needs stage one to be real.'}, {t: 'It makes the folder for you', why: 'The shell does exactly what it is told, no more.'}, {t: 'Nothing at all', why: 'It says what went wrong, in the panel.'}]},
+  {t: 'arrange', h: 'Four stages', p: 'Put the commands in order. The file and the empty file can come either way round.', full: 1,
+   lines: ['mkdir site', 'echo "<h1>Stage one</h1>" > site/index.html', 'touch site/app.js', 'ls site'], labels: ['a folder', 'a file with a heading', 'an empty file', 'check'], free: [[1, 2]],
+   why: 'Run each one and read the panel before the next.'},
+  {t: 'tr', h: 'Build it', p: 'At the prompt, one line at a time, reading the panel after each. Then press <b>Run</b>.', sub: ['<code>mkdir site</code>', 'the <code>echo ... &gt; site/index.html</code> line', '<code>touch site/app.js</code>', '<code>ls site</code>', 'Press <b>Run</b>']}
+],
+'G10|Boss: the machine in stages': [
+  {t: 'predict', h: 'Plan the order', p: 'Nothing new: Grade 10 was building in stages.', q: 'Switch, door, gem, flag. Why that order?',
+   ch: [{t: 'The door only opens once the switch is pressed', ok: 1, why: 'Stage two needs stage one to be real.'}, {t: 'Gems always come first', why: 'The gem is past the door.'}, {t: 'Any order works', why: 'Only one order gets through the door.'}]},
+  {t: 'arrange', h: 'Stage by stage', p: 'Put the moves in order.', full: 1,
+   lines: ['hero.moveDown(2);', 'hero.moveRight(2);', 'hero.moveUp(2);', 'hero.moveRight(4);', 'hero.moveDown(2);', 'hero.moveUp(2);', 'hero.moveRight(1);'],
+   labels: ['down to the bottom row', 'onto the switch: the door opens', 'back up to the top row', 'through the open door', 'down to the gem', 'back up', 'onto the flag'], why: 'Four stages, in the only order that works.'},
+  {t: 'tr', h: 'Through the door', p: 'Open the door, take the gem, finish on the flag. Run after each stage.', sub: ['The switch', 'Through the door', 'The gem', 'The flag, and <b>Run</b>']}
+],
+/* ================================ GRADE 11 ================================ */
+'G11|A box with labels inside': [
+  {t: 'see', h: 'Labels instead of positions', p: 'A list numbers what is inside; an object names it. Tap each part.',
+   parts: [['const person = {', 'a box with named compartments: curly braces'], ["\n  name: 'Josh',", 'a label, a colon, a value, a comma'], ['\n  age: 40,', 'another pair: a number this time'], ["\n  hobby: 'camping'", 'the last pair needs no comma'], ['\n};', 'close the braces'], ['\nscreen.textContent = person.name;', 'a dot reads one label: Josh']],
+   shows: S('Josh'), why: 'person.name: the name compartment of person. You have used this dot since Grade 4: screen.textContent.'},
+  {t: 'fill', h: 'Commas between', code: "const person = {\n  name: 'Josh'___\n  age: 40,\n  hobby: 'camping'\n};\n\nscreen.textContent = person.name;", opts: [',', ';', '.'], ans: ',', gap: 'what goes between one label: value pair and the next', full: 1,
+   no: {';': 'Inside the braces the pairs are a list: commas, like a list.', '.': 'A dot reads a label; it does not separate them.'}, why: 'Pairs, commas between, braces around.'},
+  {t: 'tr', h: 'Your object', p: 'An object with three or more labelled values; show one of them with a dot.',
+   sub: ['<code>const</code> name <code>= {</code>', '<code>label: value</code> pairs, commas between', '<code>};</code>', '<code>screen.textContent = thing.label;</code>', 'Press <b>Run</b>']},
+  {t: 'tweak', h: 'Another label', p: 'Change which label the screen reads, and press <b>Run</b>.', re: 'screen\\.textContent\\s*=\\s*\\w+\\.(?!name\\b)\\w+', why: 'Ask for exactly what you mean, by name.'}
+],
+'G11|Reading several labels': [
+  {t: 'bug', h: 'Squashed', p: 'This shows Joshis40. Tap the line.',
+   lines: ['const person = {', "  name: 'Josh',", '  age: 40', '};', "screen.textContent = person.name + 'is' + person.age;"], bad: 4,
+   why: 'Each dot fetches one value and + glues exactly what it is given. The spaces live inside the quotes.', fix: "screen.textContent = person.name + ' is ' + person.age;"},
+  {t: 'fill', h: 'The second read', code: "const person = {\n  name: 'Josh',\n  age: 40\n};\n\nscreen.textContent = person.name + ' is ' + person.___ + ' years old.';", opts: ['age', '40', "'age'"], ans: 'age', gap: 'the label of the compartment to read', full: 1,
+   no: {'40': 'That is what is inside. After the dot comes the label.', "'age'": 'After a dot comes a bare label, no quotes.'}, why: 'Josh is 40 years old.'},
+  {t: 'tr', h: 'A sentence from data', p: 'Show a sentence built from at least two fields of the object.', sub: ['Two <code>person.label</code> reads', 'Quoted words between, glued with <code>+</code>', 'Press <b>Run</b>']}
+],
+'G11|A list of labelled boxes': [
+  {t: 'predict', h: 'Read it like an address', code: "const excuses = [\n  { text: 'My dog ate it', danger: 2 },\n  { text: 'Aliens took it', danger: 5 },\n  { text: 'I overslept', danger: 1 }\n];\nscreen.textContent = excuses[1].text;", q: 'What shows?',
+   ch: [{pv: S('Aliens took it'), cap: 'Aliens took it', ok: 1, why: 'The list, item 1 (the second), its text.'}, {pv: S('My dog ate it'), cap: 'My dog ate it', why: 'That is item 0: positions count from 0.'}, {pv: S('5'), cap: '5', why: 'That is excuses[1].danger.'}]},
+  {t: 'bug', h: 'A comma short', p: 'This will not run. Tap the line.',
+   lines: ['const excuses = [', "  { text: 'My dog ate it', danger: 2 }", "  { text: 'Aliens took it', danger: 5 },", "  { text: 'I overslept', danger: 1 }", '];'], bad: 1,
+   why: 'Objects in a list are items like any others: commas between them.', fix: "  { text: 'My dog ate it', danger: 2 },"},
+  {t: 'arrange', h: 'A list of objects', p: 'Put the lines in order.', full: 1,
+   lines: ['const excuses = [', "  { text: 'My dog ate it', danger: 2 },", "  { text: 'Aliens took it', danger: 5 },", "  { text: 'I overslept', danger: 1 }", '];', 'screen.textContent = excuses[1].text;'],
+   labels: ['open the list', 'item 0', 'item 1', 'item 2, no comma', 'close the list', 'item 1, its text'], free: [[1, 2]], why: 'The data shape of nearly every real app.'},
+  {t: 'tr', h: 'Your list of objects', p: 'A list of three or more objects; show one field of one of them.', sub: ['<code>[ {...}, {...}, {...} ]</code>', '<code>list[1].label</code> on the screen', 'Press <b>Run</b>']}
+],
+'G11|Changing what’s inside': [
+  {t: 'predict', h: 'Left of the equals', code: "const person = {\n  name: 'Josh',\n  mood: 'sleepy'\n};\nperson.mood = 'caffeinated';\nscreen.textContent = person.name + ' is ' + person.mood;", q: 'What shows?',
+   ch: [{t: 'Josh is caffeinated', ok: 1, why: 'The line above changed the compartment before the screen read it.'}, {t: 'Josh is sleepy', why: 'The screen reads it after the change.'}, {t: 'An error: it is a const', why: 'const stops the box being swapped; what is inside can change.'}]},
+  {t: 'fill', h: 'Put a new value in', code: "const person = {\n  name: 'Josh',\n  mood: 'sleepy'\n};\n\nperson.mood ___ 'caffeinated';\nscreen.textContent = person.name + ' is now ' + person.mood;", opts: ['=', '===', ':'], ans: '=', gap: 'the sign that puts a value into a box', full: 1,
+   no: {'===': 'Three equals signs ask a question. They change nothing.', ':': 'The colon belongs inside the braces, where the object is made.'}, why: 'Dot on the left: put into. Dot on the right: read.'},
+  {t: 'tr', h: 'Change it', p: 'Make an object, change one of its fields, then show the new value in a sentence.', sub: ['An object', "<code>thing.label = 'new value';</code>", 'A screen line reading it back', 'Press <b>Run</b>']}
+],
+'G11|📋 Review: put it together': [
+  {t: 'bug', h: 'Undefined points', p: 'This shows Sam: undefined points. Alex: undefined points. Tap the line.',
+   lines: ['const players = [', "  { name: 'Sam', points: 12 },", "  { name: 'Alex', points: 9 },", "  { name: 'Jo', points: 15 }", '];', "let out = '';", 'for (const p of players) {', "  out = out + p.name + ': ' + p.point + ' points. ';", '}', 'screen.textContent = out;'], bad: 7,
+   why: 'The label is points, with an s. A label that does not exist reads as undefined: no error, just a wrong answer.', fix: "  out = out + p.name + ': ' + p.points + ' points. ';"},
+  {t: 'fill', h: 'Each player’s points', code: "const players = [\n  { name: 'Sam', points: 12 },\n  { name: 'Alex', points: 9 },\n  { name: 'Jo', points: 15 }\n];\nlet out = '';\nfor (const p of players) {\n  out = out + p.name + ': ' + ___ + ' points. ';\n}\nscreen.textContent = out;", opts: ['p.points', 'points', 'players.points'], ans: 'p.points', gap: 'this lap’s player, its points', full: 1,
+   no: {'points': 'A bare points is a box nobody made. The dot reaches into this lap’s player.', 'players.points': 'The list has no points label; each player inside it does.'}, why: 'Sam: 12 points. Alex: 9 points. Jo: 15 points.'},
+  {t: 'tr', h: 'The checkpoint', p: 'Walk the players and build one line each, like <b>Sam: 12 points.</b>; show it after the loop.', sub: ['A <code>for...of</code> over the players', '<code>p.name</code> and <code>p.points</code>', 'Show it after the loop', 'Press <b>Run</b>']}
+],
+'G11|🏋 Rep: the pet card': [
+  {t: 'fill', h: 'The third read', code: "const pet = {\n  name: 'Biscuit',\n  kind: 'corgi',\n  age: 3\n};\n\nscreen.textContent = pet.name + ' is a ' + pet.age + ' year old ' + pet.___ + '.';", opts: ['kind', 'corgi', 'type'], ans: 'kind', gap: 'the label that holds corgi', full: 1,
+   no: {'corgi': 'That is the value. After the dot comes the label.', 'type': 'There is no type label; the object says kind.'}, why: 'Biscuit is a 3 year old corgi.'},
+  {t: 'tr', h: 'The pet card', p: 'A pet with name, kind and age, shown as one sentence reading all three.', sub: ['An object with three labels', 'Three dot-reads, glued', 'Press <b>Run</b>']},
+  {t: 'tweak', h: 'A fourth label', p: 'Give the pet a fourth label, like a favorite toy, glue it onto the sentence, and press <b>Run</b>.', re: '(?:\\bpet\\.\\w+[\\s\\S]*){4}', why: 'Add a label, read a label: the object grows with the card.'}
+],
+'G11|🏋 Rep: team total': [
+  {t: 'bug', h: 'The total vanished', p: 'Read what Run says, then tap the line to blame.', err: true,
+   lines: ['const team = [', "  { name: 'Sam', points: 12 },", "  { name: 'Alex', points: 9 },", "  { name: 'Jo', points: 15 }", '];', 'for (const p of team) {', '  let total = 0;', '  total = total + p.points;', '}', "screen.textContent = 'Team total: ' + total;"], bad: 6,
+   why: 'Made inside the loop, total starts at 0 every lap, and it does not exist after the }. Make it once, above the loop.', fix: 'let total = 0;  (above the for)'},
+  {t: 'fill', h: 'Add each one', code: "const team = [\n  { name: 'Sam', points: 12 },\n  { name: 'Alex', points: 9 },\n  { name: 'Jo', points: 15 }\n];\nlet total = 0;\nfor (const p of team) {\n  total = total + ___;\n}\nscreen.textContent = 'Team total: ' + total;", opts: ['p.points', 'points', 'p'], ans: 'p.points', gap: 'this lap’s player’s points', full: 1,
+   no: {'points': 'No box is called points: it lives inside each player.', 'p': 'p is the whole player object: you would glue [object Object] on.'}, why: 'Team total: 36.'},
+  {t: 'tr', h: 'Team total', p: 'Total the points across the team and show it after a label.', sub: ['A total at 0, above the loop', 'Add <code>p.points</code> each lap', "<code>'Team total: ' + total</code> after the loop", 'Press <b>Run</b>']}
+],
+'G11|🐍 A box with labels, in Python': [
+  {t: 'predict', h: 'A number inside', code: 'pet = {"name": "Rex", "age": 3}\nprint(pet["age"] + 1)', q: 'What does the console show?',
+   ch: [{t: '4', ok: 1, why: 'The age is a real number: 3 + 1.'}, {t: '31', why: '3 has no quotes: a number, so + adds.'}, {t: 'an error', why: 'Numbers add fine.'}]},
+  {t: 'fill', h: 'Read the name', code: 'pet = {"name": "Rex", "age": 3}\nprint(pet[___])\nprint(pet["age"] + 1)', opts: ['"name"', 'name', '.name'], ans: '"name"', gap: 'the label, in quotes, inside square brackets', full: 1,
+   no: {'name': 'Bare, Python looks for a box called name. The label is text: quotes.', '.name': 'Python dicts read with square brackets and the label in quotes.'}, why: 'Rex, then 4.'},
+  {t: 'tr', h: 'Rex, in a dict', p: 'A pet dict with a name and an age; print the name, then the age plus one.', sub: ['<code>pet = {"name": ..., "age": ...}</code>', '<code>print(pet["name"])</code>', '<code>print(pet["age"] + 1)</code>', 'Press <b>Run</b>']}
+],
+'G11|🧩 Read the label': [
+  {t: 'bug', h: 'A label is not a place', p: 'Every test hands back undefined. Tap the line.',
+   lines: ['function nameOf(pet) {', '  return pet[0];', '}'], bad: 1,
+   why: 'Objects have labels, not positions: there is nothing at 0. A label is found by its name, wherever it sits.', fix: '  return pet.name;'},
+  {t: 'fill', h: 'One line', code: 'function nameOf(pet) {\n  return pet.___;\n}', opts: ['name', 'Rex', 'label'], ans: 'name', gap: 'the label to read', full: 1,
+   no: {'Rex': 'That is one pet’s value. The tests hand in other pets.', 'label': 'The label is literally called name.'}, why: 'return pet.name: right for every pet.'},
+  {t: 'tr', h: 'Open the lock', p: 'Write nameOf(pet) so every test passes.', sub: ['<code>return pet.name;</code>', 'Press <b>Run</b>']}
+],
+'G11|Boss: read your own labels': [
+  {t: 'predict', h: 'The hero is an object', p: 'Nothing new: Grade 11 was labels.', q: 'Which line says your hearts?',
+   ch: [{code: 'hero.say("hearts: " + hero.hp);', ok: 1, why: 'hp lives inside hero: a dot gets it.'}, {code: 'hero.say("hearts: " + hp);', why: 'A bare hp is a box nobody made.'}, {code: 'hero.say("hearts: hero.hp");', why: 'Inside the quotes it is just letters.'}]},
+  {t: 'arrange', h: 'Report, walk, report', p: 'Put the lines in order.', full: 1,
+   lines: ['hero.say("hearts: " + hero.hp);', 'hero.moveRight(3);', 'hero.say("gems: " + hero.gems);', 'hero.moveRight(2);'], labels: ['your hearts, before you go', 'to the gem', 'your gems, now one', 'onto the flag'], why: 'Read with a dot, like every move you have made.'},
+  {t: 'tr', h: 'Report in', p: 'Say your hearts, take the gem, say your gems, finish on the flag.', sub: ['<code>hero.hp</code>', 'Walk to the gem', '<code>hero.gems</code>', 'The flag, and <b>Run</b>']}
+],
+/* ================================ GRADE 12 ================================ */
+'G12|The detective’s notebook': [
+  {t: 'predict', h: 'Two audiences', code: "const pick = Math.floor(Math.random() * 3);\nconsole.log('pick was:', pick);\nscreen.textContent = 'Picked number ' + pick;", q: 'Where does <b>pick was: 2</b> appear?',
+   ch: [{t: 'In the console, for you: F12 in a browser', ok: 1, why: 'The log is for you; the screen is for users.'}, {t: 'On the screen, under the message', why: 'The screen shows only what textContent is given.'}, {t: 'Nowhere: it is thrown away', why: 'It is written in the console, waiting to be read.'}]},
+  {t: 'fill', h: 'A note for you', code: "const pick = Math.floor(Math.random() * 3);\n___('pick was:', pick);\nscreen.textContent = 'Picked number ' + pick;", opts: ['console.log', 'screen.textContent =', 'print'], ans: 'console.log', gap: 'the notebook the user never sees', full: 1,
+   no: {'screen.textContent =': 'That line is for the user. Your note goes in the console.', 'print': 'That is Python. JavaScript writes notes with console.log.'}, why: 'One line for you, one for them.'},
+  {t: 'bug', h: 'Follow the clue', p: 'The console says <b>total is now: 04</b>, then <b>046</b>. Tap the line the clue points at.',
+   lines: ['const prices = [4, 6];', "let total = '0';", 'for (const p of prices) {', '  total = total + p;', "  console.log('total is now:', total);", '}'], bad: 1,
+   why: "total starts as the text '0', so + glues instead of adding. The log showed it on the very first lap.", fix: 'let total = 0;'},
+  {t: 'tr', h: 'Notebook and screen', p: 'Log a value with <code>console.log</code>, and still show a proper message on the screen.', sub: ['A value in a box', "<code>console.log('pick was:', pick);</code>", "<code>'Picked number ' + pick</code> on the screen", 'Press <b>Run</b>']},
+  {t: 'tweak', h: 'A second clue', p: 'Add another <code>console.log</code> line with a different clue, and press <b>Run</b>. The screen does not change.', re: 'console\\.log[\\s\\S]*console\\.log', why: 'Sprinkle, read, delete. Notes cost nothing.'}
+],
+'G12|Reading an error message': [
+  {t: 'bug', h: 'Read it, then find it', p: 'Read what Run says. Tap the line it is about.', err: true,
+   lines: ["const name = 'Josh';", "const city = 'Austin;", "screen.textContent = name + ' lives in ' + city;"], bad: 1,
+   why: 'The quote before Austin is never closed, so the computer reads to the end of the line still inside it.', fix: "const city = 'Austin';"},
+  {t: 'bug', h: 'A name nobody made', p: 'A different kind of message: this code reads fine, and stops when it runs. Tap the line.', err: true,
+   lines: ["const greeting = 'Hi there';", 'screen.textContent = greting;'], bad: 1,
+   why: 'Not defined means no box by that name. It was made as greeting on line 1: one letter short.', fix: 'screen.textContent = greeting;'},
+  {t: 'fill', h: 'Close it', code: "screen.textContent = 'I closed the quote properly!___;", opts: ["'", '"', ')'], ans: "'", gap: 'the closing quote, the same kind as the opening one', full: 1,
+   no: {'"': 'Quotes come in matching pairs: this one opened with a single quote.', ')': 'No bracket was opened here: it is the quote that is waiting.'}, why: 'Every opening quote needs its partner.'},
+  {t: 'tr', h: 'Fix the real one', p: 'The editor holds a broken line. Press <b>Run</b> first, read what it says, and fix exactly that.', sub: ['Press <b>Run</b> and read the message', 'Fix the one thing it names', 'Press <b>Run</b>: green']}
+],
+'G12|Asking a value “what are you?”': [
+  {t: 'predict', h: 'Looks like a number', code: "const mystery = '4';\nscreen.textContent = 'mystery is a ' + typeof mystery;", q: 'What shows?',
+   ch: [{pv: S('mystery is a string'), cap: 'string', ok: 1, why: 'Quotes make text, whatever the letters are.'}, {pv: S('mystery is a number'), cap: 'number', why: 'The quotes make it text: a string.'}, {pv: S('mystery is a 4'), cap: '4', why: 'typeof answers with the kind, not the value.'}]},
+  {t: 'bug', h: 'The Total: 43 bug', p: 'This shows 43, not 7. Tap the box that is the wrong kind.',
+   lines: ["const a = '4';", 'const b = 3;', 'screen.textContent = a + b;'], bad: 0,
+   why: "'4' is a string, so + glues: 43. typeof a would have said string before you had to guess.", fix: 'const a = 4;'},
+  {t: 'fill', h: 'Ask it', code: "const mystery = '4';\nscreen.textContent = 'mystery is a ' + ___ mystery;", opts: ['typeof', 'type', 'kind'], ans: 'typeof', gap: 'the word that asks a value what kind it is', full: 1,
+   no: {'type': 'Close: the word is typeof, all one word.', 'kind': 'The word is typeof.'}, why: 'mystery is a string.'},
+  {t: 'tr', h: 'Ask the species', p: 'Show what kind of value a box holds with <code>typeof</code>, glued after a label.', sub: ['A box', "<code>'mystery is a ' + typeof mystery</code>", 'Press <b>Run</b>']},
+  {t: 'tweak', h: 'Ask about a list', p: 'Make the box hold a list, like <code>[1, 2]</code>, and press <b>Run</b>. What kind is a list?', re: '=\\s*\\[', why: 'object: to typeof, a list is a kind of object.'}
+],
+'G12|Guarding the door': [
+  {t: 'predict', h: 'Which door?', code: "const name = '';\n\nif (name === '') {\n  screen.textContent = 'No name given - try again!';\n} else {\n  screen.textContent = 'Welcome, ' + name + '!';\n}", q: 'The box is empty. What shows?',
+   ch: [{pv: S('No name given - try again!'), cap: 'the complaint', ok: 1, why: 'Empty text equals empty quotes: the first door.'}, {pv: S('Welcome, !'), cap: 'Welcome, !', why: 'That is what happens with no guard.'}, {pv: S('Welcome, undefined!'), cap: 'undefined', why: 'The box holds empty text, not undefined.'}]},
+  {t: 'bug', h: 'The guard that crashes', p: 'Read what Run says. Tap the line it is about.', err: true,
+   lines: ["const name = 'Sam';", "if (name = '') {", "  screen.textContent = 'No name given - try again!';", '} else {', "  screen.textContent = 'Welcome, ' + name + '!';", '}'], bad: 1,
+   why: 'One = tries to put empty text into name instead of asking. A const refuses. Asking takes three.', fix: "if (name === '') {"},
+  {t: 'arrange', h: 'Check first, act second', p: 'Put the lines in order.', full: 1,
+   lines: ["const name = '';", "if (name === '') {", "  screen.textContent = 'No name given - try again!';", '} else {', "  screen.textContent = 'Welcome, ' + name + '!';", '}'],
+   labels: ['what you were given', 'is it empty?', 'then complain', 'otherwise', 'use it', 'end'], why: 'Every login form does this before trusting what it was given.'},
+  {t: 'tr', h: 'Guard it', p: 'If a box is empty show a helpful complaint, else greet with it.', sub: ["<code>if (name === '')</code>", 'A complaint', '<code>else</code>: a welcome with the box', 'Press <b>Run</b>']},
+  {t: 'tweak', h: 'The other door', p: 'Put a name between the quotes on the first line and press <b>Run</b>.', re: "const\\s+\\w+\\s*=\\s*['\"][^'\"]+['\"]", why: 'Two doors, both tested. Always try both.'}
+],
+'G12|The magic trick, revealed': [
+  {t: 'predict', h: 'Where did screen come from?', q: 'Before every lesson the school quietly runs one line. Which?',
+   ch: [{code: "const screen = document.getElementById('screen');", ok: 1, why: 'Get element by id: the Grade 3 name tag, found by JavaScript.'}, {code: "const screen = 'screen';", why: 'That is a word, not the element.'}, {code: 'const screen = new Screen();', why: 'No such thing: the element is found by its id.'}]},
+  {t: 'bug', h: 'One letter off', p: 'Read what Run says. Tap the line to blame.', err: true,
+   lines: ["const out = document.getElementById('screne');", "out.textContent = 'Hello';"], bad: 0,
+   why: 'No element wears the id screne, so getElementById hands back null: nothing. The error shows up on the next line, but the mistake is here.', fix: "const out = document.getElementById('screen');"},
+  {t: 'fill', h: 'Fetch it yourself', code: "const out = document.___('screen');\nout.textContent = 'No more magic. I know how everything works.';", opts: ['getElementById', 'getElement', 'findId'], ans: 'getElementById', gap: 'get element by id, in one word', full: 1,
+   no: {'getElement': 'Close. Its full name says how: getElementById.', 'findId': 'A fine name, but the real one is getElementById.'}, why: 'No training wheels left.'},
+  {t: 'tr', h: 'No more magic', p: 'Grab the screen yourself, under your own name, and write to it.', sub: ["<code>const out = document.getElementById('screen');</code>", "<code>out.textContent = '...';</code>", 'Press <b>Run</b>']}
+],
+'G12|📋 Review: put it together': [
+  {t: 'bug', h: 'It works today', p: 'This runs fine with an empty name. Tap the line that breaks the day someone types one.',
+   lines: ["const username = '';", "console.log('username is:', username, typeof username);", "if (username === '') {", "  screen.textContent = 'No username given - try again!';", '} else {', "  screen.textContent = 'Welcome, ' + usernme + '!';", '}'], bad: 5,
+   why: 'usernme is not defined. It sits on the else road, so a test with an empty name never reaches it. Test both doors.', fix: "  screen.textContent = 'Welcome, ' + username + '!';"},
+  {t: 'arrange', h: 'Log, check, act', p: 'Put the lines in order.', full: 1,
+   lines: ["const username = '';", "console.log('username is:', username, typeof username);", "if (username === '') {", "  screen.textContent = 'No username given - try again!';", '} else {', "  screen.textContent = 'Welcome, ' + username + '!';", '}'],
+   labels: ['what you were given', 'a clue: the value and its kind', 'empty?', 'complain', 'otherwise', 'welcome', 'end'], why: 'The whole debugging reflex, in seven lines.'},
+  {t: 'tr', h: 'The checkpoint', p: 'Log the value and its <code>typeof</code>; complain if it is empty, otherwise welcome.', sub: ['<code>console.log</code> with <code>typeof</code>', "<code>if (username === '')</code>", 'A complaint, <code>else</code> a welcome', 'Press <b>Run</b>']}
+],
+'G12|🏋 Rep: type detective': [
+  {t: 'predict', h: 'Twins?', code: "const a = '42';\nconst b = 42;", q: 'What does typeof say about a, then b?',
+   ch: [{t: 'string, then number', ok: 1, why: 'Quotes make a text. b has none.'}, {t: 'number, then number', why: 'The quotes make a a string.'}, {t: 'string, then string', why: 'b has no quotes: a number.'}]},
+  {t: 'fill', h: 'Ask both', code: "const a = '42';\nconst b = 42;\nscreen.textContent = 'a is a ' + typeof a + ', b is a ' + ___ b;", opts: ['typeof', 'typeOf', 'kind'], ans: 'typeof', gap: 'the question, asked of b', full: 1,
+   no: {'typeOf': 'Capitals matter: typeof is all lower case.', 'kind': 'The word is typeof.'}, why: 'a is a string, b is a number.'},
+  {t: 'tr', h: 'Settle it', p: 'Show the typeof of both boxes in one sentence.', sub: ['<code>typeof a</code>', '<code>typeof b</code>', 'Quoted labels between', 'Press <b>Run</b>']}
+],
+'G12|💻 Find every TODO': [
+  {t: 'predict', h: 'Why -r?', q: 'The notes are in files inside project, one of them a folder further down. What does <code>-r</code> add?',
+   ch: [{t: 'It keeps going down into every folder inside', ok: 1, why: 'Recursive: the terminal’s word for keep going down.'}, {t: 'It finds the word in red', why: 'Colors are not what -r is about.'}, {t: 'It removes the notes', why: 'grep only reads. It never changes a file.'}]},
+  {t: 'fill', h: 'Search everything', code: 'grep ___ TODO project', opts: ['-r', '-v', '-x'], ans: '-r', gap: 'the flag for "and every folder inside"', full: 1,
+   no: {'-v': '-v flips it: every line WITHOUT the word.', '-x': '-x wants the whole line to be exactly TODO.'}, why: 'The -r goes before the word; the folder comes last.'},
+  {t: 'tr', h: 'Find them all', p: 'At the prompt, search the whole project for TODO. Then press <b>Run</b>.', sub: ['<code>grep -r TODO project</code>', 'Read the four lines', 'Press <b>Run</b>']}
+],
+'G12|🐍 Read the traceback': [
+  {t: 'bug', h: 'Read it first', p: 'Read what Run says. It names the kind of error and the line.', err: true,
+   lines: ['total = 5', 'print("Total: " + total)'], bad: 1,
+   why: 'Text + a number: Python refuses to guess. The line number and the words both point here.', fix: 'print("Total:", total)'},
+  {t: 'fill', h: 'The comma way', code: 'total = 5\nprint("Total:"___ total)', opts: [',', ' +', '.'], ans: ',', gap: 'what hands print two things to show, with a space between', full: 1,
+   no: {' +': 'That is the line that stopped: text + a number.', '.': 'A dot reaches inside something; it does not separate.'}, why: 'Total: 5.'},
+  {t: 'tr', h: 'Change one line', p: 'Press <b>Run</b> first and read it, then fix the one line.', sub: ['Run it broken, read the red', '<code>print("Total:", total)</code>', 'Press <b>Run</b>']}
+],
+'G12|🧩 Fix the one that is wrong': [
+  {t: 'predict', h: 'Past the end', q: 'A list of three: positions 0, 1, 2. What is <code>list[3]</code>?',
+   ch: [{code: 'undefined', ok: 1, why: 'Past the end there is nothing. That word in the tests is the clue.'}, {code: 'the last item', why: 'The last is at position 2.'}, {code: 'an error', why: 'Reading past the end is not an error in JavaScript: it is quietly undefined.'}]},
+  {t: 'fill', h: 'One step back', code: 'function lastOf(list) {\n  return list[list.length ___];\n}', opts: ['- 1', '+ 1', '* 1'], ans: '- 1', gap: 'from the length back to the last position', full: 1,
+   no: {'+ 1': 'That is two past the end.', '* 1': 'Times 1 changes nothing: still past the end.'}, why: 'The last position is always one less than the length.'},
+  {t: 'tr', h: 'Fix that line', p: 'Run it first, read the table, then change the one line.', sub: ['Run: every test says undefined', '<code>list.length - 1</code>', 'Press <b>Run</b>']}
+],
+'G12|Boss: it is already broken': [
+  {t: 'predict', h: 'Run it first', p: 'Nothing new: Grade 12 was reading what went wrong.', q: 'The hero stops dead before the wall. What is your first move?',
+   ch: [{t: 'Read the note under the board: it says what it hit', ok: 1, why: 'The message says what and where.'}, {t: 'Delete everything and start again', why: 'The most expensive habit in programming.'}, {t: 'Add more moveRight', why: 'Walking harder into a wall is still a wall.'}]},
+  {t: 'arrange', h: 'Round the wall', p: 'Put the moves in order.', full: 1,
+   lines: ['hero.moveRight(2);', 'hero.moveDown(1);', 'hero.moveRight(2);', 'hero.moveUp(1);', 'hero.moveRight(2);'], labels: ['up to the wall', 'down a row, beside it', 'past the wall', 'back up', 'onto the flag'], why: 'One line was wrong; the rest of the route was fine.'},
+  {t: 'tr', h: 'Repair it', p: 'Fix the program that is there and reach the flag.', sub: ['Run it and read the note', 'Go down around the wall and back up', 'Press <b>Run</b>']}
+],
+/* ================================ COLLEGE ================================= */
+'C|Names that tell the truth': [
+  {t: 'predict', h: 'Six weeks later', code: "const x = ['My dog ate it', 'Aliens', 'I overslept'];\nfunction doIt() {\n  return x[Math.floor(Math.random() * x.length)];\n}", q: 'Without reading the body, what does doIt do?',
+   ch: [{t: 'No idea: the name does not say', ok: 1, why: 'That is the problem. You have to read every line to find out.'}, {t: 'Everything', why: 'The name suggests it; the code only picks one.'}, {t: 'Shows the list', why: 'It picks one at random. The name gave no clue.'}]},
+  {t: 'bug', h: 'A rename that missed one', p: 'Read what Run says. Tap the line.', err: true,
+   lines: ["const excuseList = ['My dog ate it', 'Aliens', 'I overslept'];", 'function pickRandom() {', '  return x[Math.floor(Math.random() * x.length)];', '}', 'screen.textContent = pickRandom();'], bad: 2,
+   why: 'A rename has to land everywhere. x is still on line 3, and nothing is called x any more.', fix: '  return excuseList[Math.floor(Math.random() * excuseList.length)];'},
+  {t: 'arrange', h: 'Honest names', p: 'Put the lines in order.', full: 1,
+   lines: ["const excuseList = ['My dog ate it', 'Aliens', 'I overslept'];", 'function pickRandom() {', '  return excuseList[Math.floor(Math.random() * excuseList.length)];', '}', 'screen.textContent = pickRandom();'],
+   labels: ['the list, named for what it is', 'a function named for what it does', 'pick one at random', 'end', 'show one'], why: 'Same machine, readable next month.'},
+  {t: 'tr', h: 'Rename it', p: 'Rename the list to excuseList and the function to pickRandom, everywhere. Same behavior.', sub: ['<code>excuseList</code> everywhere <code>x</code> was', '<code>pickRandom</code> everywhere <code>doIt</code> was', 'Press <b>Run</b>']}
+],
+'C|One job per trick': [
+  {t: 'predict', h: 'Which one has one job?', q: 'Which function does ONE job?',
+   ch: [{code: 'function pickExcuse() { ... return excuseList[pick]; }', ok: 1, why: 'It chooses and hands back. Showing is somebody else’s job.'}, {code: 'function doEverything() { ... screen.textContent = ...; }', why: 'It chooses AND shows.'}, {code: 'function showExcuse() { const pick = ...; screen.textContent = ...; }', why: 'Named for showing, but it chooses too.'}]},
+  {t: 'arrange', h: 'Chooser, shower, snapped together', p: 'Put the lines in order.', full: 1,
+   lines: ["const excuseList = ['My dog ate it', 'Aliens', 'I overslept'];", 'function pickExcuse() {', '  const pick = Math.floor(Math.random() * excuseList.length);', '  return excuseList[pick];', '}', 'function showExcuse(excuse) {', "  screen.textContent = 'Your excuse: ' + excuse;", '}', 'showExcuse(pickExcuse());'],
+   labels: ['the data', 'job one: choose', 'a random position', 'hand the choice back', 'end', 'job two: show', 'with a label', 'end', 'snap them together'], why: 'Next month, the same chooser can feed a different display.'},
+  {t: 'tr', h: 'Untangle it', p: 'Split the blob: pickExcuse only chooses, showExcuse(excuse) only displays. Snap them together.', sub: ['<code>pickExcuse()</code> with a <code>return</code>', '<code>showExcuse(excuse)</code> with the screen line', '<code>showExcuse(pickExcuse());</code>', 'Press <b>Run</b>']}
+],
+'C|Don’t repeat yourself': [
+  {t: 'bug', h: 'Five copies, one slip', p: 'Copy-paste, then a slip. Tap the line.',
+   lines: ["let out = '';", "out = out + 'Day 1 done. ';", "out = out + 'Day 2 done. ';", "out = out + 'Day 3 done. ';", "out = out + 'Day 4 dnoe. ';", "out = out + 'Day 5 done. ';", 'screen.textContent = out;'], bad: 4,
+   why: 'Every pasted copy is one more place for a slip. Only the number changes from line to line: a loop types the rest once.', fix: "out = out + 'Day 4 done. ';"},
+  {t: 'fill', h: 'The counter goes in', code: "let out = '';\nfor (let day = 1; day <= 5; day = day + 1) {\n  out = out + 'Day ' + ___ + ' done. ';\n}\nscreen.textContent = out;", opts: ['day', '1', "'day'"], ans: 'day', gap: 'the counter, bare, so its number is glued in', full: 1,
+   no: {'1': 'Day 1 done, five times.', "'day'": 'Day day done: the word, not the box.'}, why: 'One pattern, five days.'},
+  {t: 'tr', h: 'Dry it out', p: 'Replace the five copied lines with one loop that makes the same text.', sub: ['<code>for (let day = 1; day &lt;= 5; day = day + 1) {</code>', "<code>'Day ' + day + ' done. '</code> inside", 'Delete the copies', 'Press <b>Run</b>']},
+  {t: 'tweak', h: 'A hundred days', p: 'Change the 5 to 100 and press <b>Run</b>. The copy-paste version would need 95 more lines.', re: '<=\\s*100\\b', why: 'One number, not ninety-five lines.'}
+],
+'C|The final project: the Mood Machine': [
+  {t: 'predict', h: 'Plan it first', p: 'No worked example: this is the exam. It is built in three stages, each checked on its own Run.', q: 'Which stage first?',
+   ch: [{t: 'The wiring: a button that shows anything', ok: 1, why: 'Skeleton first, the Grade 10 way: it proves the wiring before the clever part.'}, {t: 'The guard', why: 'The guard protects the brain, and there is no brain yet.'}, {t: 'All of it, then one Run', why: 'Then a mistake could be anywhere.'}]},
+  {t: 'ms', h: 'The skeleton', p: 'Wire the button: a click shows any fixed words. Run, press it, see them.',
+   need: [[CLICK, 'the button wired up'], [CLICK_SHOWS, 'a screen line inside the click']],
+   model: MOOD + "\n\nbtn.onclick = function () {\n  screen.textContent = 'Wired!';\n};", why: 'The wiring works.'},
+  {t: 'ms', h: 'The brain, one list', p: 'A function that picks a random work excuse and returns it. The click shows a call to it.',
+   need: [[FN_PICK, 'a function that picks at random and returns it'], [CLICK_CALLS, 'the click showing a call to it']],
+   model: MOOD + "\n\nfunction pickExcuse() {\n  const pick = Math.floor(Math.random() * workExcuses.length);\n  return workExcuses[pick];\n}\n\nbtn.onclick = function () {\n  screen.textContent = pickExcuse();\n};", why: 'It thinks, from one list.'},
+  {t: 'tr', h: 'The mood decides, and the guard', p: 'Inside the function, the mood chooses the list: work or school. Any other mood returns a complaint instead.',
+   sub: ["<code>if (mood === 'work')</code>: one list", "<code>else if (mood === 'school')</code>: the other", '<code>else</code>: return a complaint', 'Pick from the chosen list, return it', 'Press <b>Run</b>, then the button'],
+   model: MOOD + "\n\nfunction pickExcuse() {\n  let list;\n  if (mood === 'work') {\n    list = workExcuses;\n  } else if (mood === 'school') {\n    list = schoolExcuses;\n  } else {\n    return 'I have no excuse for that mood.';\n  }\n  const pick = Math.floor(Math.random() * list.length);\n  return list[pick];\n}\n\nbtn.onclick = function () {\n  screen.textContent = pickExcuse();\n};"},
+  {t: 'tweak', h: 'Try every door', p: "Change the mood to <code>'school'</code> and press <b>Run</b>. Then try <code>'party'</code>.", re: "mood\\s*=\\s*['\"](?!work['\"])", why: 'Three doors, all tested: that is how a guard earns trust.'}
+],
+'C|Graduation': [
+  {t: 'arrange', h: 'Your road, in order', p: 'One line from each part of the school. Put them in the order you learned them.',
+   lines: ['<h1>Josh</h1>', 'h1 { color: tomato; }', "const name = 'Josh';", 'const pick = Math.floor(Math.random() * 3);', 'for (const x of list) {', "const pet = { name: 'Biscuit' };", "console.log('pick was:', pick);"],
+   labels: ['Kindergarten: words on a screen', 'Grade 2: coloring things in', 'Grade 4: a box with a name', 'Grade 6: picking at random', 'Grade 9: doing it again', 'Grade 11: boxes with labels', 'Grade 12: when things go wrong'],
+   why: 'Seven lines, and you can read every one of them.'},
+  {t: 'fill', h: 'One last line', code: 'screen.textContent = ___;', opts: ["'I am a programmer.'", 'I am a programmer.', "'I am a programmer.;"], ans: "'I am a programmer.'", gap: 'your words, in a matching pair of quotes', full: 1,
+   no: {'I am a programmer.': 'Without quotes, JavaScript reads the words as box names.', "'I am a programmer.;": 'The quote was opened and never closed.'}, why: 'Make it true.'},
+  {t: 'tr', h: 'Say it', p: 'Put a sentence about who you are on the screen. Your words.', sub: ['<code>screen.textContent = \'...\';</code>', 'Press <b>Run</b>']}
+],
+'C|📋 Review: put it together': [
+  {t: 'bug', h: 'The screen shows code', p: 'Pressing the button shows the text of a function. Tap the line.',
+   lines: ["const greetings = ['Hello!', 'Welcome back!', 'Good to see you!'];", 'function pickGreeting() {', '  const pick = Math.floor(Math.random() * greetings.length);', '  return greetings[pick];', '}', 'function showGreeting(text) {', '  screen.textContent = text;', '}', 'btn.onclick = function () {', '  showGreeting(pickGreeting);', '};'], bad: 9,
+   why: 'Without its round brackets, pickGreeting is the recipe, not a call: the screen gets the recipe itself.', fix: '  showGreeting(pickGreeting());'},
+  {t: 'arrange', h: 'Clean, and wired', p: 'Put the lines in order.', full: 1,
+   lines: ["const greetings = ['Hello!', 'Welcome back!', 'Good to see you!'];", 'function pickGreeting() {', '  const pick = Math.floor(Math.random() * greetings.length);', '  return greetings[pick];', '}', 'function showGreeting(text) {', '  screen.textContent = text;', '}', 'btn.onclick = function () {', '  showGreeting(pickGreeting());', '};'],
+   labels: ['the data', 'job one: choose', 'a random position', 'hand it back', 'end', 'job two: show', 'on the screen', 'end', 'on every press...', 'snap them together', 'end of the bundle'], why: 'Code a professional would merge.'},
+  {t: 'tr', h: 'The last checkpoint', p: 'pickGreeting() returns a random greeting; showGreeting(text) shows it; the button snaps them together.', sub: ['<code>pickGreeting()</code> with a <code>return</code>', '<code>showGreeting(text)</code>', '<code>showGreeting(pickGreeting())</code> in the click', 'Press <b>Run</b>, then the button']}
+],
+'C|🏋 Rep: rename rescue': [
+  {t: 'bug', h: 'One old name left', p: 'Read what Run says. Tap the line.', err: true,
+   lines: ["const menuList = ['ramen', 'tacos', 'curry'];", 'function pickMeal() {', '  return menuList[Math.floor(Math.random() * menuList.length)];', '}', 'screen.textContent = go();'], bad: 4,
+   why: 'Nothing is called go any more. A rename lands everywhere or it breaks.', fix: 'screen.textContent = pickMeal();'},
+  {t: 'fill', h: 'The new name', code: "const menuList = ['ramen', 'tacos', 'curry'];\nfunction pickMeal() {\n  return menuList[Math.floor(Math.random() * menuList.length)];\n}\nscreen.textContent = ___();", opts: ['pickMeal', 'go', 'menuList'], ans: 'pickMeal', gap: 'the function’s new, honest name', full: 1,
+   no: {'go': 'go is the old name: nothing is called go any more.', 'menuList': 'menuList is the list. A list cannot be called like a function.'}, why: 'Readable, and still working.'},
+  {t: 'tr', h: 'Rescue it', p: 'Rename the list to menuList and the function to pickMeal. No x, no go.', sub: ['<code>menuList</code> everywhere', '<code>pickMeal</code> everywhere', 'Press <b>Run</b>']}
+],
+'C|⚔️ The bulletproof picker': [
+  {t: 'predict', h: 'Warm-up: what empty does', p: 'Not the challenge: what it guards against.', code: "const empty = [];\nconst pick = Math.floor(Math.random() * empty.length);\nscreen.textContent = 'Picked: ' + empty[pick];", q: 'What shows?',
+   ch: [{pv: S('Picked: undefined'), cap: 'undefined', ok: 1, why: 'Nothing at position 0: no crash, just nonsense, which is worse.'}, {pv: S('Picked: '), cap: 'nothing', why: 'undefined is glued in as a word.'}, {pv: S('Picked: 0'), cap: '0', why: 'That is the position, not what is there.'}]},
+  {t: 'ms', h: 'A picker for any list', p: 'Teach <code>pickFrom(list)</code> to hand back a random item from whatever list it is given. Show it on the full list.',
+   need: [[/function\s+[A-Za-z_$][\w$]*\s*\(\s*[A-Za-z_$][\w$]*\s*\)/, 'a function taking the list as its ingredient'], [/Math\.random/, 'a random pick from that list'], [/screen\.textContent\s*=[^\n]*[A-Za-z_$][\w$]*\s*\(\s*[A-Za-z_$][\w$]*\s*\)/, 'the screen showing a call on a list']], why: 'It picks from any list it is handed.'},
+  {t: 'ms', h: 'The guard', p: 'Before it picks: an empty list hands back <b>nothing to pick</b>.',
+   need: [[/\.length\s*===?\s*0/, 'the empty case caught first'], [/['"]nothing to pick['"]/, 'handing back <b>nothing to pick</b>']], why: 'Bad data, handled.'},
+  {t: 'tr', h: 'The challenge', p: "Prove it: both lists in one line, glued with <b>' / '</b>. No hints from here."}
+],
+'C|💻 Commit it, and say why': [
+  {t: 'predict', h: 'Which message?', q: 'A stranger reads your log in a year. Which helps?',
+   ch: [{code: 'git commit -m "Start the project: the app and its readme"', ok: 1, why: 'What changed, and why, in a sentence.'}, {code: 'git commit -m "fix"', why: 'Fix what? Why?'}, {code: 'git commit -m "stuff"', why: 'Tells a stranger nothing.'}]},
+  {t: 'arrange', h: 'Snapshot, in order', p: 'Put the commands in order.', full: 1,
+   lines: ['cd project', 'git init', 'git add .', 'git commit -m "Start the project: the app and its readme"', 'git log --oneline'], labels: ['into the folder', 'start remembering', 'everything on the table', 'the snapshot, with a sentence', 'read it back'], why: 'Read your sentence back the way someone will in a year.'},
+  {t: 'tr', h: 'Commit it', p: 'At the prompt: init, add, a commit whose message is a real sentence, then the log. Then <b>Run</b>.', sub: ['<code>git init</code>', '<code>git add .</code>', '<code>git commit -m "..."</code> with a sentence', '<code>git log --oneline</code>', 'Press <b>Run</b>']}
+],
+'C|🐍 One job, with a note on the door': [
+  {t: 'bug', h: 'Nothing comes back', p: 'This prints None. Tap the line.',
+   lines: ['def area(width, height):', '    """Area of a rectangle."""', '    width * height', 'print(area(3, 4))'], bad: 2,
+   why: 'Worked out and thrown away: without return, a call hands back None.', fix: '    return width * height'},
+  {t: 'fill', h: 'A note on the door', code: 'def area(width, height):\n    ___\n    return width * height\n\nprint(area(3, 4))\nprint(area(2, 5))', opts: ['"""Area of a rectangle."""', '# Area of a rectangle.', 'print("Area of a rectangle.")'], ans: '"""Area of a rectangle."""', gap: 'a sentence in triple quotes, first thing in the body', full: 1,
+   no: {'# Area of a rectangle.': 'A comment is a note too, but a docstring is the one Python keeps with the function.', 'print("Area of a rectangle.")': 'That prints on every call: noise, not a note.'}, why: '12, then 10.'},
+  {t: 'tr', h: 'One job, documented', p: 'area(width, height) with a docstring; print area(3, 4) and area(2, 5).', sub: ['<code>def area(width, height):</code>', 'A docstring', '<code>return width * height</code>', 'Two prints', 'Press <b>Run</b>']}
+],
+'C|🧩 One job, named as a question': [
+  {t: 'predict', h: 'Already an answer', q: 'What is <code>n % 2 === 0</code> when n is 4?',
+   ch: [{code: 'true', ok: 1, why: 'It is already true or false: return it directly.'}, {code: '0', why: 'n % 2 is 0; === 0 turns that into true.'}, {code: '"even"', why: 'A question answers true or false.'}]},
+  {t: 'fill', h: 'Return the answer', code: 'function isEven(n) {\n  return n % 2 ___ 0;\n}', opts: ['===', '=', '!=='], ans: '===', gap: 'the sign that asks: exactly equal?', full: 1,
+   no: {'=': 'One = puts a value into a box; it does not ask.', '!==': 'That would answer isOdd.'}, why: 'One line, and a reviewer would sign it.'},
+  {t: 'tr', h: 'Open the lock', p: 'Write isEven(n) so every test passes.', sub: ['<code>return n % 2 === 0;</code>', 'Press <b>Run</b>']}
+],
+'C|Boss: one rule, written once': [
+  {t: 'predict', h: 'One step, whatever it is', p: 'Nothing new: College was one job, written once.', q: 'forward() finds a foe ahead. What does it do?',
+   ch: [{t: 'Swings, and stays put', ok: 1, why: 'One job per call: this step is a swing. The next call decides again.'}, {t: 'Swings, then moves', why: 'One action per call.'}, {t: 'Walks into the foe', why: 'The if looks first.'}]},
+  {t: 'arrange', h: 'The rule, and its repeats', p: 'Put the lines in order.', full: 1,
+   lines: ['function forward() {', '  if (hero.look("right") === "foe") {', '    hero.attack();', '  } else {', '    hero.moveRight(1);', '  }', '}', 'for (let i = 0; i < 12; i++) {', '  forward();', '}'],
+   labels: ['one rule, one name', 'a foe ahead?', 'swing', 'otherwise', 'one step', 'end of the if', 'end of the rule', 'twelve times over', 'apply the rule', 'end of the loop'], why: 'It would solve a different corridor too.'},
+  {t: 'tr', h: 'Clear the corridor', p: 'Write the rule once, and repeat it until the flag.', sub: ['<code>function forward()</code> with an if', 'A loop calling it', 'Press <b>Run</b>']}
+],
+/* ============================ THE TWO NEW LADDERS ============================ */
+'G9|Loops 1: a box that can change': [
+  {t: 'predict', h: 'Changed from itself', code: "let score = 0;\nscore = score + 5;\nscore = score + 5;\nscreen.textContent = 'Score: ' + score;", q: 'What shows?',
+   ch: [{pv: S('Score: 10'), cap: 'Score: 10', ok: 1, why: 'Each line takes what is there, adds 5, puts it back.'}, {pv: S('Score: 5'), cap: 'Score: 5', why: 'The second line adds onto the first line’s 5.'}, {pv: S('Score: 0'), cap: 'Score: 0', why: 'It started at 0, then changed twice.'}]},
+  {t: 'fill', h: 'A box that can change', code: "___ score = 0;\nscore = score + 5;\nscore = score + 5;\nscreen.textContent = 'Score: ' + score;", opts: ['let', 'const', 'box'], ans: 'let', gap: 'the word for a box that may be filled again', full: 1,
+   no: {'const': 'A const box cannot be filled again: the next line would stop with an error.', 'box': 'A good name for it; JavaScript says let.'}, why: 'let: made to change.'},
+  {t: 'tr', h: 'Score it', p: 'A let box, added onto twice, shown after a label.', sub: ['<code>let score = 0;</code>', '<code>score = score + 5;</code>, twice', "<code>'Score: ' + score</code> on screen", 'Press <b>Run</b>']}
+],
+'G9|Loops 2: build a pile of words': [
+  {t: 'predict', h: 'A pile, a piece at a time', code: "let out = '';\nout = out + 'Hip ';\nout = out + 'hip ';\nout = out + 'hooray!';\nscreen.textContent = out;", q: 'What shows?',
+   ch: [{pv: S('Hip hip hooray!'), cap: 'all of it', ok: 1, why: 'Each line keeps the pile and glues a piece on.'}, {pv: S('hooray!'), cap: 'only the last', why: 'out + ... keeps what was there.'}, {pv: S('Hiphiphooray!'), cap: 'squashed', why: 'The spaces are typed inside the quotes, so they show.'}]},
+  {t: 'fill', h: 'Start with nothing', code: "let out = ___;\nout = out + 'Hip ';\nout = out + 'hip ';\nout = out + 'hooray!';\nscreen.textContent = out;", opts: ["''", "' '", '0'], ans: "''", gap: 'empty text: two quotes, nothing between', full: 1,
+   no: {"' '": 'That starts the pile with a space, shown before Hip.', '0': 'A 0 would be glued on the front: 0Hip hip hooray!'}, why: 'An empty pile, ready to build into.'},
+  {t: 'tr', h: 'Build a cheer', p: 'Start a let box as empty quotes, glue on at least two pieces, show it.', sub: ["<code>let out = '';</code>", "<code>out = out + '...';</code>, two or more", '<code>screen.textContent = out;</code>', 'Press <b>Run</b>']}
+],
+'G10|No repeats 1: a box that remembers': [
+  {t: 'predict', h: 'Outside the click', code: "let presses = 0;\n\nbtn.onclick = function () {\n  presses = presses + 1;\n  screen.textContent = 'Pressed ' + presses + ' times';\n};", q: 'Pressed three times. What shows?',
+   ch: [{pv: B('Press me', 'Pressed 3 times'), cap: '3 times', ok: 1, why: 'The box lives outside the click, so it keeps its number between presses.'}, {pv: B('Press me', 'Pressed 1 times'), cap: '1 time', why: 'Only if the box were made inside the click, fresh each time.'}, {pv: B('Press me', 'Pressed 0 times'), cap: '0 times', why: 'Each press adds one before showing.'}]},
+  {t: 'arrange', h: 'A memory and a click', p: 'Put the lines in order.', full: 1,
+   lines: ['let presses = 0;', 'btn.onclick = function () {', '  presses = presses + 1;', "  screen.textContent = 'Pressed ' + presses + ' times';", '};'], labels: ['outside: a box that remembers', 'on every press...', 'one more', 'show it', 'end of the bundle'], why: 'Made once, changed on every click.'},
+  {t: 'tr', h: 'Count the presses', p: 'A let box above the click; one more on every press; the screen shows how many.', sub: ['<code>let presses = 0;</code> on top', 'Inside the click: <code>presses = presses + 1;</code>', 'A screen line', 'Press <b>Run</b>, then the button']}
+],
+'G10|No repeats 2: roll again': [
+  {t: 'predict', h: 'Which can never show?', code: "const last = 2;\nlet pick = Math.floor(Math.random() * 4);\nwhile (pick === last) {\n  pick = Math.floor(Math.random() * 4);\n}\nscreen.textContent = 'Picked ' + pick;", q: 'Run it a hundred times. Which never shows?',
+   ch: [{pv: S('Picked 2'), cap: 'Picked 2', ok: 1, why: 'While the pick is 2 it rolls again: 2 never gets out.'}, {pv: S('Picked 0'), cap: 'Picked 0', why: '0 is fine: only 2 is rolled again.'}, {pv: S('Picked 3'), cap: 'Picked 3', why: '3 is fine: only 2 is rolled again.'}]},
+  {t: 'fill', h: 'Keep rolling', code: "const last = 2;\nlet pick = Math.floor(Math.random() * 4);\n___ (pick === last) {\n  pick = Math.floor(Math.random() * 4);\n}\nscreen.textContent = 'Picked ' + pick;", opts: ['while', 'if', 'for'], ans: 'while', gap: 'the word for "as long as this is true"', full: 1,
+   no: {'if': 'An if rolls again once, and the new roll could be 2 again.', 'for': 'for counts laps. Nobody knows how many rolls this takes.'}, why: 'As long as it matches, roll again.'},
+  {t: 'tr', h: 'Never 2', p: 'Roll a pick, roll again while it equals last, and show it.', sub: ['<code>let pick = Math.floor(Math.random() * 4);</code>', '<code>while (pick === last) { ... }</code>', 'A screen line', 'Press <b>Run</b> a few times']}
+]
+  });
+
+  /* the new steps get what every lesson has on its full page: three steps with
+     the key line marked, a gap to fill, a reminder, and the picture of what the
+     answer shows */
+  const G = {
+    'Loops 1: a box that can change': {steps: ['<b>A box that is allowed to change:</b> <code class="qkey">let score = 0;</code>', '<b>Change it from itself:</b> <code class="qkey">score = score + 5;</code> takes what is there, adds 5, puts it back. Do it twice.', "<b>Show it:</b> <code class=\"qkey\">screen.textContent = 'Score: ' + score;</code>"],
+      cz: {code: 'score = score ___ 5;', opts: ['+', '=', '==='], ans: '+', why: 'score + 5 works out the new value from the old one; the = on the left puts it back.'},
+      remind: 'let can be filled again · score = score + 5 changes it from itself · const cannot change'},
+    'Loops 2: build a pile of words': {steps: ["<b>An empty pile:</b> <code class=\"qkey\">let out = '';</code> two quotes, nothing between.", "<b>Glue a piece on, keeping the pile:</b> <code class=\"qkey\">out = out + 'Hip ';</code> and again for each piece.", '<b>Show the whole pile once, at the end:</b> <code class="qkey">screen.textContent = out;</code>'],
+      cz: {code: "out = ___ + 'hip ';", opts: ['out', "'out'", "''"], ans: 'out', why: 'out on the right keeps the pile. Without it, each line would replace the pile instead of adding to it.'},
+      remind: "'' is empty text · out = out + piece keeps the pile and adds · show it once, at the end"},
+    'No repeats 1: a box that remembers': {steps: ['<b>A box OUTSIDE the click:</b> <code class="qkey">let presses = 0;</code> above everything else.', '<b>Inside the click, one more:</b> <code class="qkey">presses = presses + 1;</code>', "<b>Show it:</b> <code class=\"qkey\">screen.textContent = 'Pressed ' + presses + ' times';</code>"],
+      cz: {code: '___ presses = 0;', opts: ['let', 'const', 'function'], ans: 'let', why: 'The click changes it, so it must be a let. A const would stop the first click with an error.'},
+      remind: 'made outside the click, a box survives between clicks · made inside, it starts again every time'},
+    'No repeats 2: roll again': {steps: ['<b>A roll that can change:</b> <code class="qkey">let pick = Math.floor(Math.random() * 4);</code>', '<b>Roll again while it matches:</b> <code class="qkey">while (pick === last) {</code> and the same roll inside, then <code>}</code>.', "<b>Show it:</b> <code class=\"qkey\">screen.textContent = 'Picked ' + pick;</code>"],
+      cz: {code: '___ (pick === last) {', opts: ['while', 'if', 'for'], ans: 'while', why: 'while keeps rolling as long as it matches. An if would roll once more and could match again.'},
+      remind: 'while (it matches) { roll again } · zero laps if the first roll is fine · pick must be a let'}
+  };
+  L.forEach((l, i) => {
+    const g = l.aside && G[l.title]; if (!g) return;
+    LGUIDE[i] = g; CLOZE[i] = g.cz; l.remind = g.remind;
+    if (l.tfShows != null && typeof MAKES_JS !== 'undefined') MAKES_JS[i] = {body: l.tfShowsHtml || S(l.tfShows), rnd: !!l.tfRnd};
   });
 })();
 /* ==== end of the Step Flow ==== */

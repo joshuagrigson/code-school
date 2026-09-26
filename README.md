@@ -689,6 +689,18 @@ The phone is a first-class layout, not a narrowed desktop.
   goal is a quest card whose objectives are the coach's own checklist, ticking
   only when a Run is graded; your hero stands beside the editor, watching,
   stumbling with a plain-words hint on a failed Run, and cheering on a pass.
+- **Lessons teach in small steps.** Kindergarten to Grade 3 teach in short cards,
+  one idea each, every card ending in something to do: see a worked example with
+  its parts labelled, predict what code makes, fill one gap, put lines in order,
+  spot the bug, try it, tweak it (worked examples, fading, subgoal labels,
+  Parsons problems and PRIMM, from the computing-education research). "Read it
+  all" keeps the full page one tap away.
+- **Never stuck.** After two failed Runs any lesson offers "Step it down": the
+  answer with one to three gaps, each described by its job; after three, the
+  lines to put in order. Passing a smaller step passes the lesson.
+- **Warm-ups you can answer.** Every fill-the-gap card shows what the code is for,
+  the code around the gap and the page it makes.
+- **Count the vowels, as a ladder.** Four short lessons lead up to Vault I.
 - **The Run theater.** Pressing Run dims the room and the page you made (or the
   Quest board, Sound Room or Vault door) takes over most of the screen, with the
   verdict, objectives and Next beside it; Back to my code, Esc or typing returns.

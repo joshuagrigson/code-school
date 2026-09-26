@@ -2485,6 +2485,294 @@ body.lsNoMate .lsthmate{display:none}
   body.lsTheater #lsDim,body.lsTheater #lsTh,.czgap.lsgap{animation:none!important}
 }
 /* ==== end of the Lesson Stage ==== */
+/* ==== The Step Flow ===========================================================
+   Short cards in the lesson column, dressed like the quest card beside the
+   editor: cream paper (plum at night), a gold badge, one idea each and one
+   thing to do. Code sits in the same dark file panel the warm-ups use. Colors
+   carry their own light and dark values. */
+:root{--tfA:#fffdf7;--tfB:#fff7ea;--tfLine:#e7d6b8;--tfSoft:#5c5064;--tfGoldT:#7a5410;--tfGoldBg:#fff3d6;--tfGoldLine:#e7c679;--tfEm:#12644a;--tfEmT:#0f5a43;--tfEmBg:#e8f5ee;--tfEmLine:#9fd3b8;
+  --tfBad:#9c2f22;--tfBadBg:#fbe9e4;--tfBadLine:#e4a99b;--tfCode:#221a2c;--tfCodeT:#f3eaf7;--tfCodeSoft:#c9b8d6;--tfChip:#2e2340;--tfChipLine:#54426b;--tfPage:#fffdf8}
+body.dark{--tfA:#221c29;--tfB:#1c1822;--tfLine:#4a3d55;--tfSoft:#c4b8cc;--tfGoldT:#f6cf6e;--tfGoldBg:#3a2d16;--tfGoldLine:#7a5c22;--tfEm:#2bb080;--tfEmT:#7fe6bd;--tfEmBg:#16302a;--tfEmLine:#2f6b55;
+  --tfBad:#ffb4a4;--tfBadBg:#3a2320;--tfBadLine:#7a3f35;--tfCode:#15101b;--tfCodeT:#f3eaf7;--tfCodeSoft:#c9b8d6;--tfChip:#2a2138;--tfChipLine:#5b4a73;--tfPage:#fffdf8}
+
+/* the page as it was, folded away until asked for */
+.teach.tfOn:not(.tfAllOpen) .tfall{display:none}
+.tfall{margin-top:26px;padding-top:18px;border-top:1.5px dashed var(--tfLine)}
+.tfallh{display:flex;flex-direction:column;gap:2px;margin:0 0 16px}
+.tfallh b{font-family:var(--serif);font-size:1.2rem;font-weight:620;letter-spacing:-.01em}
+.tfallh span{font-size:.88rem;color:var(--tfSoft)}
+
+/* ---- the flow's header: where you are, and the way out to the full page ---- */
+.tfflow{margin:0 0 8px}
+.tfhd{display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:0 0 12px}
+.tfkick{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--tfGoldT)}
+.tfkick .lsi{width:14px;height:14px}
+.tfcount{font-size:.84rem;font-weight:620;color:var(--ink)}
+.tfcount{margin-right:auto}
+.tfpips{display:flex;gap:4px;flex:0 0 100%;order:9}
+.tfpips i{flex:1 1 0;height:5px;border-radius:3px;background:var(--lsPip,#eadcc4);transition:background .3s}
+.tfpips i.on{background:var(--tfEm)}
+.tfpips i.now{background:#e0a93a}
+.tfhd button{font:inherit;font-size:.8rem;font-weight:620;padding:5px 11px;border-radius:999px;border:0;cursor:pointer;color:var(--ink);background:transparent;box-shadow:inset 0 0 0 1.5px var(--tfLine)}
+.tfhd button:hover{box-shadow:inset 0 0 0 1.5px var(--tfGoldLine);background:var(--tfGoldBg)}
+.tfhd .tfalltog[aria-expanded="true"]{background:var(--tfGoldBg);box-shadow:inset 0 0 0 1.5px var(--tfGoldLine);color:var(--tfGoldT)}
+
+/* ---- a card ---- */
+.tfcards{display:flex;flex-direction:column;gap:10px}
+.tfcard{position:relative;border-radius:16px;padding:14px 17px 15px;background:var(--tfB) linear-gradient(180deg,var(--tfA),var(--tfB));
+  box-shadow:inset 0 0 0 1.5px var(--tfLine),0 10px 22px -18px rgba(42,29,51,.6);color:var(--ink)}
+.tfcard.now{box-shadow:inset 0 0 0 2px var(--tfGoldLine),0 0 0 4px rgba(242,193,78,.14),0 14px 28px -18px rgba(42,29,51,.65)}
+@media (prefers-reduced-motion:no-preference){.tfcard.now{animation:tfIn .38s cubic-bezier(.2,.9,.3,1)}}
+@keyframes tfIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.tfct{display:flex;align-items:center;gap:8px;margin:0 0 6px}
+.tfbadge{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:.66rem;letter-spacing:.13em;text-transform:uppercase;font-weight:700;padding:3px 8px 3px 6px;border-radius:7px;background:#2a1d33;color:#f6cf6e}
+body.dark .tfbadge{background:#f2c14e;color:#2a1d33}
+.tfbadge .lsi{width:12px;height:12px}
+.tf-tr .tfbadge{background:#12644a;color:#fff}
+body.dark .tf-tr .tfbadge{background:#2bb080;color:#10231b}
+.tfno{margin-left:auto;font-family:var(--mono);font-size:.74rem;font-weight:700;color:var(--tfSoft)}
+.tfcard h3{font-family:var(--serif);font-size:1.28rem;line-height:1.2;font-weight:640;letter-spacing:-.012em;margin:4px 0 6px;color:var(--ink)}
+.tfcard h3:focus{outline:none}
+.tfcard h3:focus-visible{outline:2px solid #e0a93a;outline-offset:3px;border-radius:4px}
+.teach .tfcard p.tfp,.tfdown p.tfp{margin:0 0 10px;line-height:1.55;font-size:.98rem;max-width:62ch}
+.tfcard code,.tfdown code{font-family:var(--mono);font-size:.88em}
+/* done cards fold to one line; peeking opens them again */
+.tfcard.done{padding:9px 14px;background:var(--tfA);box-shadow:inset 0 0 0 1.5px var(--tfLine)}
+.tfcard.done .tfct{margin:0}
+.tfcard.done h3{font-size:.98rem;margin:0;font-family:inherit;font-weight:620;letter-spacing:0}
+.tfcard.done{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:0 10px}
+.tfcard.done .tfct{grid-column:1}
+.tfcard.done h3{grid-column:2;grid-row:1}
+.tfcard.done .tfbody{grid-column:1 / -1;display:none}
+.tfcard.done.open .tfbody{display:block;margin-top:8px}
+.tfpeek{margin-left:2px;display:inline-flex;align-items:center;gap:4px;border:0;cursor:pointer;font:inherit;font-size:.72rem;font-weight:700;padding:3px 8px;border-radius:999px;color:var(--tfEmT);background:var(--tfEmBg);box-shadow:inset 0 0 0 1px var(--tfEmLine)}
+.tfpeek .lsi{width:12px;height:12px}
+.tfcard.done .tfbadge{background:transparent;color:var(--tfSoft);padding-left:0;box-shadow:none}
+body.dark .tfcard.done .tfbadge{background:transparent;color:var(--tfSoft)}
+.tfcard.done .tfbadge .lsi{display:none}
+
+/* ---- code, with the structure labelled ---- */
+.tfcode{margin:0 0 10px;padding:11px 14px;border-radius:12px;background:var(--tfCode);color:var(--tfCodeT);font-family:var(--mono);font-size:.9rem;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere;box-shadow:inset 0 2px 0 #f2c14e}
+.teach .tfcode{background:var(--tfCode)}
+.tfcode .tfln{display:block;min-height:1.55em}
+.tfcode.tfinl .tfln{display:inline}
+.tfcode .tfsub{display:block;width:max-content;max-width:100%;margin:6px 0 2px;padding:1px 8px;border-radius:6px;font-family:var(--sans,system-ui);font-size:.72rem;font-weight:700;letter-spacing:.02em;color:#2a1d33;background:#f2c14e;white-space:normal}
+.tfcode .tfsub:first-child{margin-top:0}
+.tfcode .tfhide{display:none}
+@media (prefers-reduced-motion:no-preference){.tfcode .tfln,.tfcode .tfsub{animation:tfLn .3s ease-out}}
+@keyframes tfLn{from{opacity:0;transform:translateX(-4px)}to{opacity:1;transform:none}}
+
+/* ---- things to press ---- */
+.tfdo{display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:4px 0 2px}
+.tfgo,.tfnext{display:inline-flex;align-items:center;gap:7px;border:0;cursor:pointer;font:inherit;font-size:.9rem;font-weight:680;padding:9px 15px;border-radius:12px;color:var(--lsBtnInk,#2a1d33);
+  background:var(--lsBtnB,#f6ecdc) linear-gradient(180deg,var(--lsBtnA,#fffdf8),var(--lsBtnB,#f6ecdc));box-shadow:inset 0 0 0 1.5px var(--lsBtnLine,#d9c9b2),0 3px 0 var(--lsBtnEdge,#cdb99a)}
+.tfgo:hover{box-shadow:inset 0 0 0 1.5px #e0a93a,0 3px 0 var(--lsBtnEdge,#cdb99a)}
+.tfgo:active,.tfnext:active{transform:translateY(2px);box-shadow:inset 0 0 0 1.5px var(--lsBtnLine,#d9c9b2),0 1px 0 var(--lsBtnEdge,#cdb99a)}
+.tfgo:disabled{opacity:.55;cursor:default;transform:none}
+.tfgo .lsi,.tfnext .lsi{width:15px;height:15px}
+.tfnav{display:flex;justify-content:flex-end;margin-top:10px}
+.tfnext{color:#fff;background:#12644a linear-gradient(180deg,#187d5b,#12644a 80%);box-shadow:inset 0 0 0 1.5px #0d4a37,0 3px 0 #0b3b2c;text-shadow:0 1px 0 rgba(0,0,0,.25)}
+.tfnext:hover{background:#15704f linear-gradient(180deg,#1c8c66,#15704f 80%)}
+.tflink{border:0;background:none;cursor:pointer;font:inherit;font-size:.86rem;font-weight:620;color:var(--tfEmT);text-decoration:underline;text-underline-offset:3px;padding:4px 2px}
+.tfnote{font-size:.84rem;color:var(--tfSoft);line-height:1.45;flex:1 1 220px}
+.teach .tfcard p.tfhint{font-size:.88rem;color:var(--tfSoft);margin:6px 0 0;line-height:1.45}
+.teach .tfcard p.tfq{font-weight:680;margin:6px 0 8px;font-size:1rem;line-height:1.45}
+.teach .tfcard p.tfgapsay,.teach .tfcard p.tffix{font-size:.93rem;line-height:1.45}
+.tfnext[hidden],.tfskip[hidden]{display:none}
+.tfcard :is(button,input):focus-visible,.tfdown :is(button,input):focus-visible,.tfoffer button:focus-visible,.tfhd button:focus-visible{outline:2.5px solid #e0a93a;outline-offset:2px}
+
+/* SEE: parts to tap */
+.tfparts{display:flex;flex-wrap:wrap;gap:4px;padding:10px;border-radius:12px;background:var(--tfCode);box-shadow:inset 0 2px 0 #f2c14e;margin:0 0 8px}
+.tfpart{font-family:var(--mono);font-size:.92rem;white-space:pre;cursor:pointer;border:0;border-radius:8px;padding:6px 8px;color:var(--tfCodeT);background:var(--tfChip);box-shadow:inset 0 0 0 1.5px var(--tfChipLine)}
+.tfpart:hover{box-shadow:inset 0 0 0 1.5px #f2c14e}
+.tfpart.seen{background:#3a2d16;box-shadow:inset 0 0 0 1.5px #f2c14e;color:#ffe7a0}
+.tfmeans{margin:4px 0 8px;padding:0 0 0 20px;font-size:.93rem;line-height:1.5}
+.tfmeans li{margin:3px 0}
+.tfmeans li code{padding:1px 6px;border-radius:5px;background:var(--tfGoldBg);color:var(--tfGoldT);box-shadow:inset 0 0 0 1px var(--tfGoldLine);white-space:pre}
+@media (prefers-reduced-motion:no-preference){.tfmeans li:not([hidden]){animation:tfLn .3s ease-out}}
+.tfstepn{font-family:var(--mono);font-size:.76rem;color:var(--tfSoft)}
+
+/* the mini page */
+.tfpvbox{margin:6px 0 4px;border-radius:12px;overflow:hidden;box-shadow:inset 0 0 0 1.5px var(--tfLine);background:var(--tfPage)}
+.tfpvbox.tfwait{display:none}
+.tfpvl{display:flex;align-items:center;gap:6px;padding:5px 10px;font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:#e4d6ec;background:#2a1d33}
+.tfpvl .lsi{width:11px;height:11px}
+.tfpv{display:block;max-height:190px;overflow:hidden;background:var(--tfPage)}
+.tfpv.tfmini{max-height:110px;pointer-events:none}
+
+/* PREDICT: three answers */
+.tfchs{display:grid;grid-template-columns:1fr;gap:7px}
+.tfchs.tfpvs{grid-template-columns:repeat(3,minmax(0,1fr))}
+.tfch{display:flex;flex-direction:column;align-items:stretch;gap:0;text-align:left;cursor:pointer;border:0;border-radius:12px;padding:9px 12px;font:inherit;font-size:.95rem;color:var(--ink);background:var(--tfA);box-shadow:inset 0 0 0 1.5px var(--tfLine),0 2px 0 var(--tfLine);transition:box-shadow .15s,transform .08s}
+.tfch:hover:not(:disabled){box-shadow:inset 0 0 0 1.5px #e0a93a,0 2px 0 var(--tfLine)}
+.tfch:active:not(:disabled){transform:translateY(1px)}
+.tfch:disabled{cursor:default}
+.tfch code{font-size:.9rem;white-space:pre-wrap;color:var(--ink);background:none}
+.tfchs.tfpvs .tfch{padding:0;overflow:hidden}
+.tfchs.tfpvs .tfch .tfpv{border-bottom:1px solid var(--tfLine);min-height:64px}
+.tfcapt{display:block;padding:6px 9px;font-size:.82rem;font-weight:650}
+.tfch.hit{box-shadow:inset 0 0 0 2px var(--tfEm),0 2px 0 var(--tfEmLine);background:var(--tfEmBg)}
+.tfch.miss{box-shadow:inset 0 0 0 2px var(--tfBadLine);background:var(--tfBadBg)}
+.tfch.hit::after,.tfch.miss::after{font-family:var(--mono);font-size:.72rem;font-weight:700;padding:2px 9px 5px;letter-spacing:.06em}
+.tfch.hit::after{content:'RIGHT';color:var(--tfEmT)}
+.tfch.miss::after{content:'YOUR PICK';color:var(--tfBad)}
+.tfwhy{font-size:.95rem;line-height:1.5;margin-top:8px}
+.tfwhy:empty{display:none}
+.tfok,.tfno2{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;margin-right:7px;vertical-align:-4px}
+.tfok{background:var(--tfEm);color:#fff}
+body.dark .tfok{color:#10231b}
+.tfno2{background:var(--tfBadBg);color:var(--tfBad);box-shadow:inset 0 0 0 1px var(--tfBadLine)}
+.tfok .lsi,.tfno2 .lsi{width:12px;height:12px}
+.tffix{display:block;margin-top:6px}
+.tffix code{padding:1px 6px;border-radius:5px;background:var(--tfEmBg);color:var(--tfEmT);box-shadow:inset 0 0 0 1px var(--tfEmLine)}
+
+/* FILL: one gap */
+.tfgap{display:inline-block;min-width:2.6em;padding:0 .4em;border-radius:6px;text-align:center;font-weight:800;color:#2a1d33;background:#f2c14e;box-shadow:0 0 0 2px rgba(242,193,78,.35)}
+@media (prefers-reduced-motion:no-preference){.tfgap:not(.hit){animation:tfGap 1.8s ease-in-out infinite}}
+@keyframes tfGap{50%{box-shadow:0 0 0 5px rgba(242,193,78,.25)}}
+.tfgap.hit{background:#2bb080;color:#10231b;box-shadow:none}
+.tfgapsay{margin:0 0 9px;font-size:.93rem;line-height:1.45}
+.tfgapsay b{color:var(--tfGoldT)}
+.tfopts{display:flex;flex-wrap:wrap;gap:7px}
+.tfopt{font-family:var(--mono);font-size:.92rem;white-space:pre;cursor:pointer;border:0;border-radius:10px;padding:8px 13px;color:var(--ink);background:var(--tfA);box-shadow:inset 0 0 0 1.5px var(--tfLine),0 2px 0 var(--tfLine)}
+.tfopt:hover:not(:disabled){box-shadow:inset 0 0 0 1.5px #e0a93a,0 2px 0 var(--tfLine)}
+.tfopt.hit{background:var(--tfEmBg);box-shadow:inset 0 0 0 2px var(--tfEm)}
+.tfopt.miss{background:var(--tfBadBg);box-shadow:inset 0 0 0 1.5px var(--tfBadLine);text-decoration:line-through;color:var(--tfBad)}
+.tfopt:disabled{cursor:default}
+
+/* ARRANGE: slots and a pile */
+.tfarr{display:flex;flex-direction:column;gap:8px}
+.tfslots{list-style:none;margin:0;padding:10px;border-radius:12px;background:var(--tfCode);box-shadow:inset 0 2px 0 #f2c14e;display:flex;flex-direction:column;gap:5px;counter-reset:none}
+.tfarrh{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--tfSoft);margin:2px 0 -4px}
+.tfslot{display:flex;flex-direction:column;gap:3px;border-radius:9px}
+.tfarr.tflab .tfslot{display:grid;grid-template-columns:8.5em 1fr;align-items:center;gap:8px}
+.tfslot .tfsub{align-self:flex-start;padding:1px 8px;border-radius:6px;font-size:.72rem;font-weight:700;color:#2a1d33;background:#f2c14e}
+.tfarr.tflab .tfslot .tfsub{align-self:center;justify-self:end;text-align:right;line-height:1.3}
+.tfarr.tflab .tfslot .tfsub:empty{background:none}
+.tfsl{display:flex;min-height:34px;border-radius:9px;outline:1.5px dashed var(--tfChipLine);outline-offset:-1.5px;margin-left:calc(var(--ind,0) * .45ch)}
+.tfsl:has(.tfline){outline:none}
+.tfph{display:flex;align-items:center;padding:0 12px;font-family:var(--mono);font-size:.78rem;color:var(--tfCodeSoft)}
+.tfslot.over .tfsl{outline:2px solid #f2c14e}
+.tfslot.bad .tfsl .tfline{box-shadow:inset 0 0 0 2px #ff8a78;background:#3d2020}
+.tfslot.good .tfsl .tfline{box-shadow:inset 0 0 0 2px #2bb080;background:#173228}
+.tfpool{display:flex;flex-direction:column;gap:5px;min-height:10px}
+.tfpool:empty::after{content:'All placed.';font-size:.84rem;color:var(--tfSoft)}
+.tfline{flex:1;display:block;text-align:left;font-family:var(--mono);font-size:.9rem;white-space:pre-wrap;overflow-wrap:anywhere;cursor:grab;border:0;border-radius:9px;padding:7px 12px;color:var(--tfCodeT);background:var(--tfChip);box-shadow:inset 0 0 0 1.5px var(--tfChipLine),0 2px 0 #140e1b;touch-action:none;user-select:none}
+.tfline:hover:not(:disabled){box-shadow:inset 0 0 0 1.5px #f2c14e,0 2px 0 #140e1b}
+.tfline:disabled{cursor:default}
+.tfline.tfdrag{position:relative;z-index:30;cursor:grabbing;opacity:.92;box-shadow:inset 0 0 0 2px #f2c14e,0 12px 24px -8px rgba(0,0,0,.6)}
+body.tfdragging{user-select:none}
+.tfarr.tfinl .tfslots{flex-direction:row;flex-wrap:wrap}
+.tfarr.tfinl .tfslot{flex:0 0 auto}
+.tfarr.tfinl .tfsl{min-width:52px}
+.tfarr.tfinl .tfpool{flex-direction:row;flex-wrap:wrap}
+.tfarr.tfinl .tfline{flex:0 0 auto;white-space:pre}
+
+/* SPOT THE BUG */
+.tfbug{display:flex;flex-direction:column;gap:4px;padding:8px;border-radius:12px;background:var(--tfCode);box-shadow:inset 0 2px 0 #f2c14e}
+.tfbl{display:flex;align-items:baseline;gap:10px;text-align:left;cursor:pointer;border:0;border-radius:8px;padding:6px 10px;color:var(--tfCodeT);background:transparent;font:inherit}
+.tfbl:hover:not(:disabled){background:var(--tfChip)}
+.tfbl code{font-family:var(--mono);font-size:.9rem;white-space:pre-wrap;color:inherit;background:none}
+.tfbn{font-family:var(--mono);font-size:.74rem;color:var(--tfCodeSoft);min-width:1.4em;text-align:right}
+.tfbl.hit{background:#173228;box-shadow:inset 0 0 0 2px #2bb080}
+.tfbl.miss{background:#3d2020;box-shadow:inset 0 0 0 1.5px #ff8a78}
+.tfbl:disabled{cursor:default}
+
+/* TRY IT: the real thing, in the editor */
+.tfcard.tf-tr.now{background:var(--tfEmBg);box-shadow:inset 0 0 0 2px var(--tfEm),0 0 0 4px rgba(43,176,128,.14),0 14px 28px -18px rgba(18,100,74,.6)}
+.tfsubs{margin:0 0 10px;padding:0 0 0 22px;line-height:1.5}
+.tfsubs li{margin:4px 0;padding-left:2px}
+.tfsubs li::marker{font-weight:800;color:var(--tfEmT)}
+.tfend{display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px;padding:12px 15px;border-radius:14px;background:var(--tfEmBg);box-shadow:inset 0 0 0 1.5px var(--tfEmLine);color:var(--ink);font-size:.93rem}
+.tfend>.lsi{width:18px;height:18px;color:var(--tfEmT)}
+.tfend span{flex:1 1 200px}
+.tfend button{font:inherit;font-size:.84rem;font-weight:650;border:0;cursor:pointer;padding:6px 12px;border-radius:999px;background:transparent;color:var(--tfEmT);box-shadow:inset 0 0 0 1.5px var(--tfEmLine)}
+
+/* the ladder */
+.tfrungs{list-style:none;margin:0 0 8px;padding:0;display:flex;flex-direction:column;gap:6px}
+.tfrungs li{display:flex;align-items:center;gap:11px;padding:8px 10px;border-radius:12px;background:var(--tfA);box-shadow:inset 0 0 0 1.5px var(--tfLine)}
+.tfrungs li.got{background:var(--tfEmBg);box-shadow:inset 0 0 0 1.5px var(--tfEmLine)}
+.tfrn{flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;font-family:var(--mono);font-weight:800;font-size:.85rem;background:#2a1d33;color:#f6cf6e}
+body.dark .tfrn{background:#f2c14e;color:#2a1d33}
+.tfrungs li.got .tfrn{background:var(--tfEm);color:#fff}
+body.dark .tfrungs li.got .tfrn{color:#10231b}
+.tfrn .lsi{width:14px;height:14px}
+.tfrt{flex:1;display:flex;flex-direction:column;line-height:1.3;min-width:0}
+.tfrt b{font-size:.95rem}
+.tfrt span{font-size:.84rem;color:var(--tfSoft)}
+.tfrungs .tfgo{padding:6px 13px;font-size:.84rem}
+
+/* ---- the smaller version ---- */
+.tfdown{position:relative;margin:0 0 16px;padding:14px 17px 15px;border-radius:16px;color:var(--ink);background:var(--tfEmBg);box-shadow:inset 0 0 0 2px var(--tfEm),0 0 0 4px rgba(43,176,128,.12),0 14px 28px -18px rgba(18,100,74,.6)}
+@media (prefers-reduced-motion:no-preference){.tfdown{animation:tfIn .4s cubic-bezier(.2,.9,.3,1)}}
+.tfdh{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.tfdown .tfbadge{background:#12644a;color:#fff}
+body.dark .tfdown .tfbadge{background:#2bb080;color:#10231b}
+.tfdx{margin-left:auto;display:inline-flex;align-items:center;gap:4px;border:0;cursor:pointer;font:inherit;font-size:.8rem;font-weight:620;padding:4px 10px;border-radius:999px;color:var(--ink);background:transparent;box-shadow:inset 0 0 0 1.5px var(--tfEmLine)}
+.tfdx .lsi{width:12px;height:12px}
+.tfdown h3{font-family:var(--serif);font-size:1.3rem;font-weight:640;margin:8px 0 6px;letter-spacing:-.012em}
+.tfcompw{margin:0 0 10px}
+.tfcompw .lsczfile{margin-top:0}
+.tfcompw .tfcode{border-radius:0 0 12px 12px;box-shadow:none}
+.tfcomp{line-height:2}
+.tfgin{font:inherit;font-size:.92rem;color:#ffe7a0;background:#3a2d16;border:0;border-bottom:2px solid #f2c14e;border-radius:6px 6px 2px 2px;padding:2px 5px;margin:0 1px;max-width:100%;box-sizing:content-box}
+.tfgin::placeholder{color:#c9b8d6}
+.tfgin.bad{border-bottom-color:#ff8a78;background:#3d2020;color:#ffd9d2}
+.tfgin.shown{border-bottom-color:#2bb080;background:#173228;color:#c9f5e2}
+.tfgaps{margin:0 0 10px;padding:0 0 0 20px;font-size:.92rem;line-height:1.5}
+.tfgaps li{margin:3px 0}
+.tfreq{display:block;font-size:.84rem;color:var(--tfSoft)}
+.tfgaps .tflink{margin-left:6px;font-size:.84rem}
+
+/* the offer, under the coach's verdict */
+.tfoffer{display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:10px 12px 10px 14px;border-radius:14px;color:var(--ink);background:var(--tfGoldBg);box-shadow:inset 0 0 0 1.5px var(--tfGoldLine)}
+.tfoffer[hidden]{display:none}
+body:not(.lsOn) .tfoffer{display:none}
+.tfoffer.won{background:var(--tfEmBg);box-shadow:inset 0 0 0 1.5px var(--tfEmLine)}
+.tfoi{flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#2a1d33;color:#f6cf6e}
+body.dark .tfoi{background:#f2c14e;color:#2a1d33}
+.tfoffer.won .tfoi{background:var(--tfEm);color:#fff}
+body.dark .tfoffer.won .tfoi{color:#10231b}
+.tfoi .lsi{width:15px;height:15px}
+.tfot{flex:1 1 240px;font-size:.9rem;line-height:1.45}
+.tfob{display:flex;flex-wrap:wrap;gap:6px}
+.tfob button{border:0;cursor:pointer;font:inherit;font-size:.86rem;font-weight:700;padding:7px 13px;border-radius:11px;color:#fff;background:#12644a linear-gradient(180deg,#187d5b,#12644a 80%);box-shadow:inset 0 0 0 1.5px #0d4a37,0 2px 0 #0b3b2c}
+.tfob button.tfsec{color:var(--lsBtnInk,#2a1d33);background:var(--lsBtnB,#f6ecdc) linear-gradient(180deg,var(--lsBtnA,#fffdf8),var(--lsBtnB,#f6ecdc));box-shadow:inset 0 0 0 1.5px var(--lsBtnLine,#d9c9b2),0 2px 0 var(--lsBtnEdge,#cdb99a)}
+@media (max-width:700px){body.tab-code .tfoffer{display:none}}
+
+/* ---- warm-up cards: the page the code makes, and what the gap holds ---- */
+.tfgoalbox{margin:10px 0 0;border-radius:12px;overflow:hidden;box-shadow:inset 0 0 0 1.5px var(--tfLine);background:var(--tfPage)}
+.tfgoalbox .tfpv{max-height:150px}
+.drillcard .tfgapsay,.clozebox .tfgapsay{margin-top:8px}
+.tfeach{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
+.tfeach>b{grid-column:1 / -1;font-size:.9rem}
+.tfeachi{display:flex;flex-direction:column;border-radius:10px;overflow:hidden;box-shadow:inset 0 0 0 1.5px var(--tfLine);background:var(--tfPage)}
+.tfeachi code{display:block;padding:5px 8px;font-size:.78rem;background:#2a1d33;color:#f3eaf7;white-space:pre-wrap;overflow-wrap:anywhere}
+
+/* ---- a phone: the same cards, stacked tighter ---- */
+@media (max-width:700px){
+  .tfcard{padding:12px 13px 13px}
+  .tfcard h3{font-size:1.16rem}
+  .tfchs.tfpvs{grid-template-columns:1fr}
+  .tfchs.tfpvs .tfch{flex-direction:row;align-items:stretch}
+  .tfchs.tfpvs .tfch .tfpv{flex:1 1 60%;border-bottom:0;border-right:1px solid var(--tfLine)}
+  .tfchs.tfpvs .tfcapt{flex:0 0 auto;max-width:40%;min-width:3em;align-self:center}
+  .tfhd{gap:6px 8px}
+  .tfarr.tflab .tfslot{grid-template-columns:1fr;gap:2px}
+  .tfarr.tflab .tfslot .tfsub{justify-self:start;text-align:left}
+  .tfarr.tflab .tfslot .tfsub:empty{display:none}
+  .tfeach{grid-template-columns:1fr}
+  .tfdown{padding:12px 13px 13px}
+}
+@media (prefers-reduced-motion:reduce){.tfcard.now,.tfdown,.tfcode .tfln,.tfcode .tfsub,.tfmeans li,.tfgap{animation:none!important}}
+
+/* the ladder's rungs in the sidebar, tucked in front of their door */
+#navList .navitem.rung{padding-left:30px;font-size:.86rem}
+#navList .navitem.rung>span:last-child::before{content:'\2197\00a0';opacity:.6}
+/* code that sits in its own panel is not a chip */
+.teach .tfbl code,.teach .tfch code,.teach .tfeachi code{border:0;padding:0;background:none;border-radius:0;font-size:.9rem;color:inherit}
+.teach .tfeachi code{padding:5px 8px;background:#2a1d33;color:#f3eaf7;font-size:.78rem}
+.teach .tfch code{color:var(--ink)}
 </style>
 </head>
 <body>
@@ -6483,6 +6771,83 @@ QU('Plan B, plan C',
 /* the reminder bar over each step names the one word that step adds */
 for (const [t, r] of [["Not a wall", "look(\"right\") answers a word: \"clear\" \"wall\" \"edge\" \"gem\" \"exit\" ... · === is · !== is not"], ["The wall and the edge", "&amp;&amp; means both must be true · || means either one is enough · write hero.look(\"right\") on each side · \"edge\" is off the map"], ["Plan B, plan C", "look(\"up\") look(\"down\") look(\"left\") look(\"right\") · else if is the next choice · the first true branch wins"], ["You are not driving", "function turn(hero) { one decision, one move } · the game calls it every tick · no while, and no moves outside the braces"]]) { const l = L.find(x => x.title === t && x.g === 'QS'); if (l) l.remind = r; }
 
+/* ---- The vowels ladder --------------------------------------------------------
+   "Count the vowels" asked for four new things at once (walk a string, test a
+   letter, keep a count, hand it back) behind a door with hidden tests. That is
+   one puzzle for someone who has done it before and a wall for someone who has
+   not. So it has a ladder: four short lessons, each one new idea, each passing
+   on its own, and then the vault door itself. They are practice locks in the
+   same vault, so they look and grade the way the vault does.
+   They are appended to the end of the list, so every lesson that already
+   exists keeps its number and every saved tick stays where it was; "seq" puts
+   them just before the door on the walk. They are not doors themselves: the
+   vault hall, its count and its badges only ever see the seven. */
+(function(){
+  const vi = L.findIndex(l => l.g === 'KT' && l.title === 'Count the vowels');
+  if (vi < 0) return;
+  const R = [
+    {title: 'Vowels 1: walk the letters', say: 'Visit every letter, one at a time.', keys: ['loop', 'str'],
+     spec: {fn: 'showEach', tests: [{in: ['cat'], out: '[c][a][t]'}, {in: ['hi'], out: '[h][i]'}],
+       hidden: [{in: [''], out: '', note: 'nothing to walk'}, {in: ['a b'], out: '[a][ ][b]', note: 'a space is a letter too'}]},
+     teach: '<p>The first rung of the ladder to Vault I. One idea: a loop can walk a piece of text one letter at a time.</p>'
+       + '<p><code>for (const letter of text)</code> runs its block once for every letter in <code>text</code>, and inside the block <code>letter</code> holds the one it is on. It is the loop over a list from Grade 9, pointed at a word.</p>'
+       + '<p>To show each letter, build a pile the way you built a sentence in a loop: start with empty quotes, add a piece each lap, hand the pile back at the end.</p>',
+     goal: 'Write <code>showEach(text)</code> so that it hands back every letter in square brackets: <code>showEach("cat")</code> gives <code>"[c][a][t]"</code>.',
+     start: 'function showEach(text) {\n  let out = "";\n  \n  return out;\n}',
+     sol: 'function showEach(text) {\n  let out = "";\n  for (const letter of text) {\n    out = out + "[" + letter + "]";\n  }\n  return out;\n}',
+     hint: 'Inside the function, between the pile and the return: <code>for (const letter of text) { out = out + "[" + letter + "]"; }</code>',
+     pass: 'Every letter, visited once, in order, including the space. That is the whole trick of walking text: the loop hands you each letter and you decide what to do with it.',
+     fail: 'Read the rows below: each shows what you handed back and what was wanted.',
+     rn: 'Walking a string one character at a time is <b>iterating over a string</b>; <code>for...of</code> is the <b>iteration</b> statement, and each character it hands you is one <b>element</b> of the sequence.',
+     rw: 'Every spell checker, word counter and search box starts exactly here: a loop that visits one character at a time.'},
+    {title: 'Vowels 2: is it a vowel?', say: 'Ask one question about one letter.', keys: ['fn', 'str', 'cond'],
+     spec: {fn: 'isVowel', tests: [{in: ['a'], out: true}, {in: ['b'], out: false}],
+       hidden: [{in: ['u'], out: true}, {in: ['y'], out: false, note: 'y is not a vowel here'}, {in: ['o'], out: true}]},
+     teach: '<p>Rung two. One idea: a string can answer "do you contain this?"</p>'
+       + '<p><code>"aeiou".includes(letter)</code> hands back <code>true</code> when the letter is one of those five and <code>false</code> when it is not. That is the whole test for a vowel, in one line.</p>'
+       + '<p>Return that answer straight out of the function. No if is needed: the question already is the answer.</p>',
+     goal: 'Write <code>isVowel(letter)</code> so that it hands back <code>true</code> for a, e, i, o and u, and <code>false</code> for anything else.',
+     start: 'function isVowel(letter) {\n  \n}',
+     sol: 'function isVowel(letter) {\n  return "aeiou".includes(letter);\n}',
+     hint: 'One line: <code>return "aeiou".includes(letter);</code>',
+     pass: 'True for the five, false for everything else, y included. A question whose answer is true or false can be handed back as it is: you never need <code>if (x) { return true; } else { return false; }</code>.',
+     fail: 'Look at the rows below: which letters came back wrong?',
+     rn: 'A function that answers true or false is a <b>predicate</b>, and <code>includes</code> is a <b>membership test</b>.',
+     rw: 'Password rules ("must contain a digit") and form checks ("is this a real email?") are predicates like this one, run on every keystroke.'},
+    {title: 'Vowels 3: count them', say: 'Walk the letters, test each one, keep a mark.', keys: ['loop', 'str', 'cond'],
+     spec: {fn: 'tally', tests: [{in: ['hello'], out: '||'}, {in: ['sky'], out: ''}],
+       hidden: [{in: ['banana'], out: '|||'}, {in: [''], out: '', note: 'the empty string'}, {in: ['queue'], out: '||||', note: 'vowels side by side'}]},
+     teach: '<p>Rung three puts the first two together. Walk the letters (rung one), ask each one the vowel question (rung two), and when the answer is yes, make a mark.</p>'
+       + '<p>A tally mark is the oldest way to count: one <code>|</code> for every vowel you meet. It is the same pile as rung one, except a letter only adds to it when it passes the test, so the <code>if</code> goes inside the loop.</p>',
+     goal: 'Write <code>tally(text)</code> so that it hands back one <code>|</code> for every vowel: <code>tally("hello")</code> gives <code>"||"</code>.',
+     start: 'function tally(text) {\n  let marks = "";\n  for (const letter of text) {\n    \n  }\n  return marks;\n}',
+     sol: 'function tally(text) {\n  let marks = "";\n  for (const letter of text) {\n    if ("aeiou".includes(letter)) {\n      marks = marks + "|";\n    }\n  }\n  return marks;\n}',
+     hint: 'Inside the loop: <code>if ("aeiou".includes(letter)) { marks = marks + "|"; }</code>',
+     pass: 'A mark for every vowel and none for anything else. Walk, test, keep: that shape (a loop with an if inside, adding to something that lives outside it) is most of what counting code ever is.',
+     fail: 'The rows below show each word, the marks you made, and the marks that were wanted.',
+     rn: 'A loop that looks at every item and keeps only some is a <b>filter</b>; adding up what it keeps is an <b>accumulator</b>.',
+     rw: 'Election counts, step counters and "you have 3 unread messages" are all a loop with an if inside and a tally outside.'},
+    {title: 'Vowels 4: hand back the count', say: 'Swap the marks for a number, and return it.', keys: ['fn', 'loop', 'cond'],
+     spec: {fn: 'howMany', tests: [{in: ['hello'], out: 2}, {in: ['rhythm'], out: 0}],
+       hidden: [{in: ['banana'], out: 3}, {in: [''], out: 0, note: 'the empty string'}, {in: ['aeiou'], out: 5}]},
+     teach: '<p>The last rung. Same walk, same test, but the count is a number now: a box that starts at <code>0</code> and goes up by one for each vowel.</p>'
+       + '<p>Where things go matters. The box is made <i>above</i> the loop, or it would start again at 0 on every letter. The <code>return</code> goes <i>below</i> the loop, or the function would hand back an answer after the first letter.</p>',
+     goal: 'Write <code>howMany(text)</code> so that it hands back how many vowels there are, as a number: <code>howMany("hello")</code> gives <code>2</code>.',
+     start: 'function howMany(text) {\n  \n}',
+     sol: 'function howMany(text) {\n  let count = 0;\n  for (const letter of text) {\n    if ("aeiou".includes(letter)) {\n      count = count + 1;\n    }\n  }\n  return count;\n}',
+     hint: 'Three parts in order: <code>let count = 0;</code> above the loop, <code>count = count + 1;</code> inside the if, <code>return count;</code> after the loop.',
+     pass: 'That is the vowel counter. The door to Vault I asks for exactly this, with one more thing: capitals. Go and try it.',
+     fail: 'The rows below show what came back. A 1 where you expected more usually means the return is inside the loop.',
+     rn: 'A variable that is changed on each lap and read after the loop is an <b>accumulator</b>; putting it in the right <b>scope</b> (above the loop) is what keeps it.',
+     rw: 'Word counts in an editor, the number on a notification badge, the total in a basket: a box above a loop, a +1 inside it, a return after it.'}
+  ];
+  R.forEach((r, n) => {
+    KA(r.title, 10, r.spec, r.teach, r.goal, r.start, r.sol, r.hint, r.pass, r.fail, r.rn, r.rw);
+    const les = L[L.length - 1];
+    les.rung = n + 1; les.seq = vi - 0.5 + n * 0.1; les.ladderSay = r.say; les.rungKeys = r.keys;
+  });
+})();
+
 const ORDER = [];
 /* Within a grade the walk is: the lessons, then the reps, then the challenge,
    then the arcade prep, then the boss - whatever order they were appended to
@@ -6496,7 +6861,7 @@ for (const g of GRADES){
   run.sort((a, b) => ORDER_RANK(L[a]) - ORDER_RANK(L[b]) || at(a) - at(b)).forEach(i => ORDER.push(i));
 }
 /* the walk's own idea of the lessons in a grade, in the order it visits them */
-function walkOf(gid){ return ORDER.filter(i => L[i].g === gid); }
+function walkOf(gid){ return ORDER.filter(i => L[i].g === gid && !L[i].rung); }
 
 /* ============================ QA BANK ============================ */
 const STOP = new Set(['the','a','an','is','are','was','do','does','i','my','me','it','to','of','in','on','and','or','what','how','why','when','can','cant','dont','this','that','you','your','would','use','used','using','real','life','for','back','need','needs','about','there','will','take','much','get','got','put','thing','things','be','been','being','if','but','so','just','any','all','into','very','really','actually','should','could','did','has','have','had','am','were','who','which','whose','from','with','at','as','by','not','please','tell','explain','happens','happen','ever','even','still','also','than','then','them','they','their','our','us','we','one']);
@@ -19664,6 +20029,8 @@ function vaultKeyOf(k){
 /* which vault a lesson is, or null for a lesson that is not one of the seven */
 function vaultRoom(les){
   if (!les || les.g !== 'KT') return null;
+  /* a rung of the ladder is a practice lock in front of Vault I */
+  if (les.rung) return {n: -1, at: 0, rn: 'I', rung: les.rung, relic: les.rung < 4 ? 'the next rung' : 'the way to Vault I', line: '', keys: (les.rungKeys || ['fn']).map(vaultKeyOf).filter(Boolean)};
   const walk = walkOf('KT'), at = walk.indexOf(L.indexOf(les));
   let n = VAULT_ROOMS.findIndex(r => r.t === les.title);
   if (n < 0) n = at;
@@ -20764,7 +21131,7 @@ function runCheck(){
   const was = live && lessonDone(idx);
   S.res = null; S.proj = null;
   lsRunCheck0();
-  if (live) lsAfterRun(was);
+  if (live){ lsAfterRun(was); tfAfterRun(was); }
 }
 function lsRunCheck0(){
   runNudgeOff();
@@ -21330,10 +21697,10 @@ function renderNav(){
       bh.classList.toggle('closed', !openB);
       bh.onclick = ()=>{ if (openGrades.has(g.id)) openGrades.delete(g.id); else openGrades.add(g.id); renderNav(); };
       listEl.appendChild(bh);
-      for (const x of bs){
+      for (const x of (g.id === 'KT' ? ORDER.filter(i => L[i].g === 'KT').map(i => ({l:L[i], i})) : bs)){
         if (q && !x.l.title.toLowerCase().includes(q)) continue;
         const b = document.createElement('button');
-        b.className = 'navitem' + (x.i===idx && !sandbox && !hub ? ' cur':'') + (openB ? '' : ' ghidden');
+        b.className = 'navitem' + (x.l.rung ? ' rung' : '') + (x.i===idx && !sandbox && !hub ? ' cur':'') + (openB ? '' : ' ghidden');
         b.innerHTML = '<span class="tick">' + (beyondDone.has(x.i)?'\u2713':'') + '</span><span>' + x.l.title + '</span>';
         b.onclick = ()=>loadLesson(x.i);
         listEl.appendChild(b);
@@ -21428,12 +21795,14 @@ function loadLesson(i){
                   include it, and two disagreeing counts on one screen is one
                   of them lying */
                : les.boss ? 'end of grade'
+               : les.rung ? 'lesson ' + les.rung + ' of 4 on the ladder'
                : 'lesson ' + (pos+1) + ' of ' + gl.length), op);
   teachEl.innerHTML = crumb + readyNote(les) + vaultKeysStrip(les) + lessonTeach(les, i) + rhythmBox(les) + shapeHtml(i) + widgetsFor(i) + decoderFor(les) + ((RN[i]||les.rn) ? '<div class="realname"><b>Real name</b>' + (RN[i]||les.rn) + '</div>' : '') + (MORE[i] ? '<div class="morebox"><b>More to chew on</b>' + MORE[i] + '</div>' : '') + (OLDS[i] ? '<div class="elders"><b class="el">📜 Lineage</b>' + OLDS[i] + '</div>' : '');
   mountMakes();
   recallShow(i);
   goalEl.innerHTML = lsGoalHtml(les, i);
   markCode(teachEl, les); markCode(goalEl, les); captionExamples(teachEl, les);
+  tfMount(les, i);
   const remind = remindFor(les);
   remindTxt.innerHTML = remind;
   remindBox.style.display = (!remind || localStorage.getItem('remindHidden')==='1') ? 'none' : 'flex';
@@ -23369,11 +23738,11 @@ function drillCard(id) {
   }
   if (kind === 'c') {
     const d = CLOZE[n]; if (!d) return null;
-    const cz = lsCloze(n, d);
-    return { les: n, head: 'Fill the gap', from: title, q: cz.q, czHtml: cz.html,
+    const cz = lsCloze(n, d), each = cz.whole ? tfWhichWhy(n, d) : '';
+    return { les: n, head: cz.whole ? 'Which one makes it?' : 'Fill the gap', from: title, q: cz.q, czHtml: cz.html,
       code: d.code.split('___').join('████'),
       ch: d.opts.map(o => ({ t: o, ok: o === d.ans,
-        why: o === d.ans ? d.why : 'Not that one. Look at the pieces either side of the gap: what shape has to fit there?' })) };
+        why: (o === d.ans ? d.why : cz.whole ? 'Not that one: look below at the page each one makes.' : 'Not that one. The gap holds ' + cz.say + ': which piece does that job?') + each })) };
   }
   const d = BUGS[n]; if (!d) return null;
   return { les: n, head: 'Spot the bug', from: title, q: 'Exactly one line is wrong. Which one?', code: '',
@@ -23421,6 +23790,7 @@ function drillShow() {
     + '<div class="rcch">' + ord.map(k => '<button class="rco" data-n="' + k + '">' + hlEsc(card.ch[k].t) + '</button>').join('') + '</div>'
     + '<div class="rcwhy"></div></div>';
   teachEl.scrollTop = 0;
+  tfMountPvs(teachEl);
   announce('Question ' + (d.at + 1) + ' of ' + d.ids.length + '. ' + card.q);
   const first = teachEl.querySelector('.rco'); if (first) first.focus();
 }
@@ -23438,6 +23808,7 @@ function drillAnswer(k) {
     (c.ok ? '&#9989; <b>Yes.</b> ' : '&#10060; <b>Not this time.</b> ') + c.why
     + '<div class="drillnext"><button class="drillgo">' + (d.at + 1 >= d.ids.length ? 'See how you did &rarr;' : 'Next &rarr;') + '</button>'
     + '<button class="drillopen" data-go="' + card.les + '">Open that lesson</button></div>';
+  tfMountPvs(teachEl);
   announce((c.ok ? 'Correct. ' : 'Not correct. ') + String(c.why).replace(/<[^>]+>/g, ''));
   const go = box.querySelector('.drillgo'); if (go) go.focus();
 }
@@ -23497,7 +23868,7 @@ function arcCount(gid){
   if (gid === 'DP') return 'floor ' + deepFloor + ' of ' + DEEP_FLOORS;
   if (gid === 'QS') { const q = walkOf('QS'); return q.filter(i => beyondDone.has(i)).length + ' of ' + q.length + ' \u00b7 Deep floor ' + deepFloor; }
   if (gid === 'LP') return lpUnitsDone() + ' of ' + LP_UNITS.length + ' units';
-  const items = L.map((l, i) => ({l, i})).filter(x => x.l.g === gid);
+  const items = L.map((l, i) => ({l, i})).filter(x => x.l.g === gid && !x.l.rung);
   return items.filter(x => beyondDone.has(x.i)).length + ' of ' + items.length;
 }
 function arcadeBand(){
@@ -25620,7 +25991,7 @@ function advCheck(){
   if (!adv) return;
   const got = [];
   const award = (id) => badge(id, got);
-  const by = (g) => L.map((l,i)=>({l,i})).filter(x => x.l.g === g);
+  const by = (g) => L.map((l,i)=>({l,i})).filter(x => x.l.g === g && !x.l.rung);
   const dn = (g) => by(g).filter(x => beyondDone.has(x.i)).length;
   if (dn('QS') >= 1) award('quest1');
   if (by('QS').length && dn('QS') === by('QS').length) award('questall');
@@ -26032,7 +26403,7 @@ function advFrame(cls){
 function advSheet(){
   const c = advClass();
   const got = new Set(adv.badges);
-  const by = (g) => L.map((l,i)=>({l,i})).filter(x => x.l.g === g);
+  const by = (g) => L.map((l,i)=>({l,i})).filter(x => x.l.g === g && !x.l.rung);
   const dn = (g) => by(g).filter(x => beyondDone.has(x.i)).length;
   const ico2 = (k) => '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' + ADV_ROOM_ICO[k] + '</svg>';
   const bar = (n, m) => '<em class="advbar" aria-hidden="true"><i style="width:' + (m && n > 0 ? Math.max(3, Math.round(100 * Math.min(n, m) / m)) : 0) + '%"></i></em>';
@@ -26628,7 +26999,7 @@ function guideInit(){
   document.querySelectorAll('.guidechip').forEach(x=>x.remove());
   document.querySelectorAll('.guide-now').forEach(x=>x.classList.remove('guide-now'));
   guideList=[]; guideIdx=-1; guideDoneKinds=new Set();
-  if (sandbox || done.has(idx)) return;
+  if (sandbox || done.has(idx) || TF.cards) return;
   teachEl.querySelectorAll('.shufbox,.tibox,.tracebox,.tilesbox,.clozebox,.bugbox').forEach(el=>{
     const cls=[...el.classList].find(c=>GUIDE_KIND[c]);
     guideList.push({el, kind: GUIDE_KIND[cls]});
@@ -28379,7 +28750,879 @@ function lsTheaterClose(toCode){
 }
 
 /* ---- fill the gap, with the code around the gap and what it is for ---- */
-function lsCloze(n, d, inLesson){
+function lsCloze(n, d, inLesson){ return tfCloze(n, d, inLesson); }
+
+/* ==== The Step Flow ==========================================================
+   The lesson column used to be a page to scroll: a paragraph, a picture, three
+   steps, a table, a gap to fill, a decoder, a real name, more to chew on. All of
+   it good, and all of it read before anything was done. Worked examples, faded
+   into completion problems and then into writing, beat that for anyone new to a
+   thing (the worked-example effect; PRIMM's predict-then-run; Parsons problems
+   with subgoal labels), so a lesson with a flow now teaches in short cards:
+   one idea each, every card ending in something to do, the next card appearing
+   when this one is done. SEE a worked example with its parts labelled, PREDICT
+   what it makes, FILL one gap, ARRANGE the lines, then WRITE it for real in the
+   editor and TWEAK it. Early lessons lean on the first three; later ones fade
+   to arranging and writing.
+   Nothing is lost: "Read it all" opens the whole lesson page underneath, the
+   same page as before, with every widget still working.
+   The standing rule holds: none of this touches the preview. Only Run does. */
+var TF = {key: '', i: -1, cards: null, at: 0, st: [], pv: {}, pvn: 0, all: false, pos: {}, fails: 0, down: null, keep: null, downWon: false};
+try { TF.pos = JSON.parse(localStorage.getItem('tflow') || '{}') || {}; } catch (e) { TF.pos = {}; }
+try { TF.all = localStorage.getItem('tfAll') === '1'; } catch (e) {}
+function tfSavePos(){ try { localStorage.setItem('tflow', JSON.stringify(TF.pos)); } catch (e) {} }
+function tfKey(les){ return les.g + '|' + plain(les.title); }
+var TF_KIND = {see: 'See it', predict: 'Predict', fill: 'Fill the gap', arrange: 'Put it in order', bug: 'Spot the bug', tr: 'Try it', tweak: 'Tweak it', ladder: 'The ladder'};
+var TF_ICON = {see: 'book', predict: 'star', fill: 'pencil', arrange: 'code', bug: 'check', tr: 'play', tweak: 'pencil', ladder: 'right'};
+/* a lesson's hand-made flow, or none: the lesson then keeps its page */
+function tfFlowFor(les, i){
+  if (!les || les.proj || les.chal || typeof TF_FLOWS === 'undefined') return null;
+  const f = TF_FLOWS[tfKey(les)];
+  if (!f) return null;
+  return typeof f === 'function' ? f(les, i) : f;
+}
+function tfEsc(s){ return esc(String(s == null ? '' : s)); }
+function tfWords(h){ return plain(h).split(/\s+/).filter(Boolean).length; }
+
+/* ---- the lesson opens: the page folds into "Read it all", the cards go on top ---- */
+function tfMount(les, i){
+  TF.i = i; TF.key = tfKey(les); TF.fails = 0; TF.down = null; TF.keep = null; TF.downWon = false; TF.pv = {};
+  tfOfferPaint();
+  teachEl.classList.remove('tfOn', 'tfAllOpen');
+  const cards = tfFlowFor(les, i);
+  TF.cards = cards && cards.length ? cards : null;
+  if (!TF.cards) return;
+  const n = TF.cards.length, tryAt = TF.cards.findIndex(c => c.t === 'tr');
+  let at = TF.pos[TF.key] | 0;
+  if (lessonDone(i)) at = n;
+  TF.at = Math.max(0, Math.min(at, n));
+  TF.st = TF.cards.map((c, k) => ({done: k < TF.at}));
+  /* the page as it was, all of it, folded away under the cards */
+  const all = document.createElement('div'); all.className = 'tfall'; all.id = 'tfAll';
+  all.innerHTML = '<div class="tfallh"><b>The whole lesson, as one page</b><span>Everything the cards teach, and a little more, the way it used to read.</span></div>';
+  /* the banner, a due recall question and a "this leans on the school" warning stay on top */
+  /* and a Sound Room lesson keeps its "reading the line" panel under the cards: it is the key to every card */
+  const refs = [];
+  [...teachEl.children].forEach(c => { if (c.classList.contains('rhythm')) refs.push(c); else if (!c.classList.contains('lsban') && !c.classList.contains('rcbox') && !c.classList.contains('saybox') && !c.classList.contains('readynote')) all.appendChild(c); });
+  const fl = document.createElement('section'); fl.className = 'tfflow'; fl.id = 'tfFlow'; fl.setAttribute('aria-label', 'This lesson, one step at a time');
+  fl.innerHTML = '<div class="tfhd"><span class="tfkick">' + lsIc('book') + 'Step by step</span><span class="tfcount" aria-live="polite"></span>'
+    + (tryAt > 0 ? '<button type="button" class="tfskip">Skip to the task</button>' : '')
+    + '<button type="button" class="tfalltog" aria-expanded="false" aria-controls="tfAll">Read it all</button>'
+    + '<span class="tfpips" aria-hidden="true">' + TF.cards.map(() => '<i></i>').join('') + '</span></div>'
+    + '<div class="tfcards"></div>';
+  teachEl.appendChild(fl); refs.forEach(r => teachEl.appendChild(r)); teachEl.appendChild(all);
+  teachEl.classList.add('tfOn');
+  tfAllSet(TF.all, false);
+  tfRender(false);
+}
+function tfAllSet(on, save){
+  TF.all = !!on;
+  teachEl.classList.toggle('tfAllOpen', TF.all);
+  const b = teachEl.querySelector('.tfalltog');
+  if (b){ b.setAttribute('aria-expanded', TF.all ? 'true' : 'false'); b.textContent = TF.all ? 'Hide the full page' : 'Read it all'; }
+  if (save) try { localStorage.setItem('tfAll', TF.all ? '1' : '0'); } catch (e) {}
+}
+/* draw the cards: the ones done fold to a line, the current one is open, the rest wait */
+function tfRender(scroll){
+  const box = teachEl.querySelector('.tfcards'); if (!box || !TF.cards) return;
+  const n = TF.cards.length;
+  let h = '';
+  for (let k = 0; k < Math.min(TF.at + 1, n); k++) h += tfCardHtml(TF.cards[k], k, k < TF.at);
+  if (TF.at >= n) h += '<div class="tfend">' + lsIc('star') + '<span><b>Every step done.</b> ' + (lessonDone(TF.i) ? 'This lesson is yours. Go through the steps again whenever you like.' : 'Now make it pass in the editor.') + '</span>'
+    + '<button type="button" class="tfagain">Walk through it again</button></div>';
+  box.innerHTML = h;
+  const c = teachEl.querySelector('.tfcount'); if (c) c.textContent = TF.at >= n ? 'All ' + n + ' steps done' : 'Step ' + (TF.at + 1) + ' of ' + n;
+  teachEl.querySelectorAll('.tfpips i').forEach((e, k) => { e.className = k < TF.at ? 'on' : k === TF.at ? 'now' : ''; });
+  const sk = teachEl.querySelector('.tfskip'); if (sk) sk.hidden = TF.at >= TF.cards.findIndex(x => x.t === 'tr');
+  tfMountPvs(box);
+  tfCardInit(box.querySelector('.tfcard.now'));
+  if (scroll){
+    const now = box.querySelector('.tfcard.now') || box.querySelector('.tfend');
+    if (now) try { now.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'nearest'}); } catch (e) {}
+  }
+}
+function tfCardHtml(c, k, done){
+  const kind = c.t, lab = c.label || TF_KIND[kind] || '';
+  let h = '<article class="tfcard tf-' + kind + (done ? ' done' : ' now') + '" data-k="' + k + '" aria-labelledby="tfh' + k + '">'
+    + '<div class="tfct"><span class="tfbadge">' + lsIc(TF_ICON[kind] || 'book') + lab + '</span>'
+    + (done ? '<button type="button" class="tfpeek" aria-expanded="false" aria-label="Open step ' + (k + 1) + ' again">' + lsIc('check') + '<span>done</span></button>' : '<span class="tfno">' + (k + 1) + '</span>') + '</div>'
+    + '<h3 id="tfh' + k + '">' + c.h + '</h3><div class="tfbody">';
+  if (c.p) h += '<p class="tfp">' + c.p + '</p>';
+  if (kind === 'see') h += tfSeeHtml(c, k, done);
+  else if (kind === 'predict') h += tfPredHtml(c, k, done);
+  else if (kind === 'fill') h += tfFillHtml(c, k, done);
+  else if (kind === 'arrange') h += tfArrHtml(c, k, done);
+  else if (kind === 'bug') h += tfBugHtml(c, k, done);
+  else if (kind === 'tr') h += tfTryHtml(c, k, done);
+  else if (kind === 'tweak') h += tfTweakHtml(c, k, done);
+  else if (kind === 'ladder') h += tfLadderHtml(c, k, done);
+  h += '<div class="tfwhy" aria-live="polite">' + (done && c.why ? tfWhyDone(c) : '') + '</div>';
+  if (!done) h += '<div class="tfnav"><button type="button" class="tfnext" hidden>' + (k + 1 >= TF.cards.length ? 'Finish' : 'Next step') + lsIc('right') + '</button></div>';
+  return h + '</div></article>';
+}
+function tfWhyDone(c){ return '<span class="tfok">' + lsIc('check') + '</span>' + c.why; }
+/* a card is done: say why, then offer the next one */
+function tfDone(card, why, miss){
+  if (!card || card.classList.contains('solved')) return;
+  const k = +card.dataset.k; TF.st[k] = {done: true};
+  card.classList.add('solved');
+  const w = card.querySelector('.tfwhy'), c = TF.cards[k];
+  const say = why != null ? why : c.why;
+  /* a wrong prediction still finishes the card, but it must not wear a green tick */
+  if (w && say) w.innerHTML = (miss ? '<span class="tfno2">' + lsIc('left') + '</span>' : '<span class="tfok">' + lsIc('check') + '</span>') + say;
+  const nx = card.querySelector('.tfnext');
+  if (nx){ nx.hidden = false; if (!card.contains(document.activeElement) || document.activeElement.disabled) try { nx.focus({preventScroll: true}); } catch (e) {} }
+  if (c.t === 'tr' || c.t === 'tweak' || c.t === 'ladder') tfNext();
+}
+function tfNext(){
+  if (!TF.cards) return;
+  TF.at = Math.min(TF.cards.length, TF.at + 1);
+  TF.pos[TF.key] = TF.at; tfSavePos();
+  tfRender(true);
+  const now = teachEl.querySelector('.tfcard.now h3');
+  if (now){ now.setAttribute('tabindex', '-1'); try { now.focus({preventScroll: true}); } catch (e) {} }
+}
+function tfGoto(k){
+  TF.at = Math.max(0, Math.min(k, TF.cards.length)); TF.pos[TF.key] = TF.at; tfSavePos(); tfRender(true);
+}
+
+/* ---- the mini page: what a piece of code makes, drawn where you are reading ----
+   The same trick as "What you are making": the page goes into a shadow root, so
+   its styles stay inside it and nothing in it runs. It is a picture of an idea,
+   not the preview: the preview below still waits for Run. */
+function tfPvHost(les, code, cls){
+  const id = 'p' + (++TF.pvn); TF.pv[id] = {les, code};
+  return '<span class="tfpv' + (cls ? ' ' + cls : '') + '" data-pv="' + id + '" aria-hidden="true"></span>';
+}
+function tfMountPvs(root){
+  if (!root) return;
+  root.querySelectorAll('.tfpv[data-pv]').forEach(host => {
+    if (host.shadowRoot || host.closest('.tfcard.done:not(.open)')) return;
+    const d = TF.pv[host.dataset.pv]; if (!d) return;
+    tfDrawPage(host, d.les, d.code);
+    delete TF.pv[host.dataset.pv];
+  });
+}
+function tfDrawPage(host, les, code){
+  let css = '', body = '';
+  try {
+    if (les.lang === 'js'){ body = String(code); css = NICE_CSS; }
+    else {
+      const keep = lintRange, doc = buildDoc(les, code); lintRange = keep;
+      css = [...doc.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map(m => m[1]).join('\n');
+      const d = new DOMParser().parseFromString(doc, 'text/html'); d.querySelectorAll('script,.guessnote').forEach(x => x.remove()); body = d.body.innerHTML;
+    }
+  } catch (e) { return; }
+  css = css.replace(/(^|[{},;\s])(html|body)(?=[\s{,.:#\[>])/g, '$1.pg').replace(/url\([^)]*\)/g, 'none');
+  const tpl = document.createElement('template'); tpl.innerHTML = body;
+  tpl.content.querySelectorAll('img,iframe,video,audio,source,object,embed,link,script').forEach(x => x.remove());
+  if (!tpl.content.textContent.trim() && !tpl.content.querySelector('button,input,hr,svg,table')) tpl.innerHTML += '<i class="tfnone">(nothing shows)</i>';
+  const sr = host.attachShadow({mode: 'open'});
+  sr.innerHTML = '<style>:host{display:block}.pg{display:block;margin:0;padding:12px 14px;background:#fffdf8;color:#2b2320;font-family:Georgia,serif;box-sizing:border-box;min-height:100%}a{pointer-events:none}button{pointer-events:none}.tfnone{font:italic 13px/1.4 system-ui,sans-serif;color:#6d6358}</style><style>' + css + '</style><div class="pg">' + tpl.innerHTML + '</div>';
+}
+
+/* ---- the code a card shows: its lines, with the structure labelled ----
+   Subgoal labels ("1. open the list", "2. one bullet per thing") sit on the
+   lines they describe, so the shape of the example is visible, not just its
+   letters. */
+function tfCodeHtml(code, labels, upto){
+  const lines = String(code).split('\n');
+  const at = {}; (labels || []).forEach(l => { at[l[0]] = l[1]; });
+  let h = '<pre class="tfcode">';
+  lines.forEach((ln, n) => {
+    const hide = upto != null && n > upto;
+    if (at[n] != null) h += '<span class="tfsub' + (hide ? ' tfhide' : '') + '">' + at[n] + '</span>';
+    h += '<span class="tfln' + (hide ? ' tfhide' : '') + '" data-l="' + n + '">' + (esc(ln) || ' ') + '</span>';
+  });
+  return h + '</pre>';
+}
+function tfLes(){ return L[TF.i] || L[idx]; }
+function tfPvLabel(les){ return les.lang === 'css' ? 'Show the page with this style' : 'Show what it makes'; }
+
+/* SEE: a worked example. Tap its parts to hear what each does, or step through
+   it a line at a time and watch the page it makes grow. */
+function tfSeeHtml(c, k, done){
+  const les = tfLes();
+  let h = '';
+  if (c.parts){
+    h += '<div class="tfparts' + (done ? ' all' : '') + '" role="group" aria-label="The example, in parts: tap each one">' + c.parts.map((p, n) => '<button type="button" class="tfpart' + (done ? ' seen' : '') + '" data-n="' + n + '">' + esc(p[0]).replace(/\n/g, '<br>') + '</button>').join('') + '</div>'
+      + '<ol class="tfmeans">' + c.parts.map((p, n) => '<li data-n="' + n + '"' + (done ? '' : ' hidden') + '><code>' + esc(p[0].trim()) + '</code> ' + p[1] + '</li>').join('') + '</ol>'
+      + (done ? '' : '<p class="tfhint">' + (c.ask || 'Tap each part of the code to see what it does.') + '</p>');
+  } else {
+    const steps = c.steps ? c.steps.length : 0;
+    h += tfCodeHtml(c.code, c.labels, !done && steps ? c.steps[0] : null);
+    if (!done) h += '<div class="tfdo"><button type="button" class="tfgo tfsee" data-s="0">' + lsIc(steps ? 'right' : 'play') + (steps ? (c.stepBtn || 'Next line') : (c.btn || tfPvLabel(les))) + '</button>'
+      + (steps ? '<span class="tfstepn">' + '1 of ' + (steps) + '</span>' : '') + '</div>';
+  }
+  if (c.pv !== false && (les.lang === 'html' || les.lang === 'css')){
+    const code = c.pvCode || c.code || (c.parts ? c.parts.map(p => p[0]).join('') : '');
+    h += '<div class="tfpvbox' + (done || (c.steps && c.pvEach) ? '' : ' tfwait') + '"><span class="tfpvl">' + lsIc('play') + 'What it makes</span>' + tfPvHost(les, done || !c.steps || !c.pvEach ? code : tfUpTo(c, 0)) + '</div>';
+  }
+  return h;
+}
+function tfUpTo(c, s){ return String(c.code).split('\n').slice(0, c.steps[s] + 1).join('\n'); }
+
+/* PREDICT: commit to an answer first; the reveal says why, right or wrong */
+function tfPredHtml(c, k, done){
+  const les = tfLes();
+  let h = c.code ? tfCodeHtml(c.code, c.labels) : '';
+  h += '<p class="tfq">' + (c.q || 'What will the page show?') + '</p><div class="tfchs' + (c.ch.some(x => x.pv != null) ? ' tfpvs' : '') + '" role="group" aria-label="Three answers: pick one">';
+  c.ch.forEach((x, n) => {
+    const inner = x.pv != null ? tfPvHost(les, x.pv, 'tfmini') + '<span class="tfcapt">' + (x.cap || ('Page ' + 'ABC'[n])) + '</span>'
+      : x.code != null ? '<code>' + esc(x.code) + '</code>' : '<span>' + x.t + '</span>';
+    h += '<button type="button" class="tfch' + (done && x.ok ? ' hit' : '') + '" data-n="' + n + '"' + (done ? ' disabled' : '') + (x.pv != null ? ' aria-label="' + tfEsc(x.say || x.cap || ('Page ' + 'ABC'[n])) + '"' : '') + '>' + inner + '</button>';
+  });
+  return h + '</div>';
+}
+/* FILL: one gap in real code, and the card says plainly what goes in it */
+function tfFillHtml(c, k, done){
+  const parts = String(c.code).split('___');
+  let h = '<pre class="tfcode tfgapcode">' + esc(parts[0]) + '<span class="tfgap' + (done ? ' hit' : '') + '">' + (done ? esc(c.ans) : '?') + '</span>' + esc(parts.slice(1).join('___')) + '</pre>';
+  if (c.gap) h += '<p class="tfgapsay"><b>The gap holds:</b> ' + c.gap + '</p>';
+  if (!done){
+    const ord = scrambleIdx(c.opts.length);
+    h += '<div class="tfopts" role="group" aria-label="Pick the piece for the gap">' + ord.map(n => '<button type="button" class="tfopt" data-n="' + n + '">' + esc(c.opts[n]) + '</button>').join('') + '</div>';
+  }
+  return h;
+}
+/* ARRANGE: a Parsons problem. The lines are all there; the order is the lesson.
+   Tap a line (or press Enter on it) to put it in the next empty slot, tap a
+   placed line to send it back, or drag lines into place. */
+function tfArrHtml(c, k, done){
+  const items = c.lines || c.pieces, inline = !c.lines;
+  if (done) return '<pre class="tfcode' + (inline ? ' tfinl' : '') + '">' + items.map((x, n) => (c.labels && c.labels[n] ? '<span class="tfsub">' + c.labels[n] + '</span>' : '') + '<span class="tfln">' + (esc(x) || ' ') + '</span>').join(inline ? '' : '') + '</pre>';
+  const ord = tfScramble(items.length, k);
+  let h = '<div class="tfarr' + (inline ? ' tfinl' : '') + (c.labels ? ' tflab' : '') + '" data-k="' + k + '">'
+    + '<span class="tfarrh">The ' + (inline ? 'pieces' : 'lines') + ', mixed up</span>'
+    + '<div class="tfpool" role="group" aria-label="The ' + (inline ? 'pieces' : 'lines') + ', mixed up: tap them in order">' + ord.map(n => '<button type="button" class="tfline" data-n="' + n + '">' + (esc(inline ? x0(items[n]) : items[n].replace(/^\s+/, '')) || ' ') + '</button>').join('') + '</div>'
+    + '<span class="tfarrh">Your ' + (inline ? 'line' : 'code') + ', in order</span>'
+    + '<ol class="tfslots" aria-label="Your ' + (inline ? 'line' : 'code') + ', in order">' + items.map((x, n) => '<li class="tfslot" data-s="' + n + '">' + (c.labels ? '<span class="tfsub">' + (c.labels[n] || '') + '</span>' : '') + '<span class="tfsl" style="--ind:' + (inline ? 0 : (items[n].match(/^\s*/)[0].length)) + '"><span class="tfph">' + (n + 1) + '</span></span></li>').join('') + '</ol></div>';
+  return h;
+}
+function x0(s){ return s.replace(/^ +| +$/g, ' '); }
+/* a scramble that is the same every time and is never already the answer */
+function tfScramble(n, seed){
+  const a = [...Array(n).keys()];
+  let s = (seed + 7) * 9301 + n * 49297;
+  for (let i = n - 1; i > 0; i--){ s = (s * 9301 + 49297) % 233280; const j = Math.floor(s / 233280 * (i + 1)); const t = a[i]; a[i] = a[j]; a[j] = t; }
+  if (n > 1 && a.every((v, i) => v === i)){ const t = a[0]; a[0] = a[1]; a[1] = t; }
+  return a;
+}
+/* SPOT THE BUG: one line is wrong; find it before the computer does */
+function tfBugHtml(c, k, done){
+  return '<div class="tfbug" role="group" aria-label="Tap the line with the mistake">' + c.lines.map((l, n) => '<button type="button" class="tfbl' + (done && n === c.bad ? ' hit' : '') + '" data-n="' + n + '"' + (done ? ' disabled' : '') + '><span class="tfbn">' + (n + 1) + '</span><code>' + (esc(l) || ' ') + '</code></button>').join('') + '</div>'
+    + (done && c.fix ? '<p class="tffix"><b>Fixed:</b> <code>' + esc(c.fix) + '</code></p>' : '');
+}
+/* TRY IT: now the real thing, in the real editor, with the steps as a checklist */
+function tfTryHtml(c, k, done){
+  let h = '';
+  if (c.sub && c.sub.length) h += '<ol class="tfsubs">' + c.sub.map(s => '<li>' + s + '</li>').join('') + '</ol>';
+  if (!done) h += '<div class="tfdo"><button type="button" class="tfgo tfed">' + lsIc('pencil') + (innerWidth <= 700 ? 'Open the editor' : 'Start typing') + '</button>'
+    + '<span class="tfnote">Stuck after two tries? You will be offered a smaller version: no need to fail your way through.</span></div>';
+  return h;
+}
+function tfTweakHtml(c, k, done){
+  return done ? '' : '<div class="tfdo"><button type="button" class="tfgo tfed">' + lsIc('pencil') + 'Change it</button><button type="button" class="tflink tftwskip">Skip this one</button></div>';
+}
+/* the vowels ladder: four short lessons that each pass on their own */
+function tfLadderHtml(c, k, done){
+  const rungs = tfRungs(), nd = rungs.filter(r => beyondDone.has(r.i)).length;
+  let h = '<ol class="tfrungs">' + rungs.map((r, n) => '<li class="' + (beyondDone.has(r.i) ? 'got' : '') + '"><span class="tfrn">' + (beyondDone.has(r.i) ? lsIc('check') : (n + 1)) + '</span><span class="tfrt"><b>' + r.l.title.replace(/^Vowels \d: /, '') + '</b><span>' + r.l.ladderSay + '</span></span>'
+    + '<button type="button" class="tfgo tfrung" data-i="' + r.i + '">' + (beyondDone.has(r.i) ? 'Again' : 'Go') + '</button></li>').join('') + '</ol>';
+  if (!done) h += '<div class="tfdo"><button type="button" class="tflink tfladskip">' + (nd === rungs.length ? 'Ladder climbed: on to the vault' : 'I know this: straight to the vault') + '</button></div>';
+  return h;
+}
+function tfRungs(){ return L.map((l, i) => ({l, i})).filter(x => x.l.rung).sort((a, b) => a.l.rung - b.l.rung); }
+
+/* ---- a card becomes current: anything it needs set up ---- */
+function tfCardInit(card){
+  if (!card) return;
+  const c = TF.cards[+card.dataset.k];
+  if (c.t === 'tr' && lessonDone(TF.i)) tfDone(card);
+}
+/* ---- every click in the flow ---- */
+function tfClick(e){
+  const t = e.target;
+  if (t.closest('.tfalltog')){ tfAllSet(!TF.all, true); if (TF.all){ const a = document.getElementById('tfAll'); if (a) try { a.scrollIntoView({behavior: 'smooth', block: 'start'}); } catch (e2) {} } return; }
+  if (t.closest('.tfskip')){ tfGoto(TF.cards.findIndex(x => x.t === 'tr')); return; }
+  if (t.closest('.tfagain')){ tfGoto(0); return; }
+  const pk = t.closest('.tfpeek');
+  if (pk){ const card = pk.closest('.tfcard'); const o = !card.classList.contains('open'); card.classList.toggle('open', o); pk.setAttribute('aria-expanded', o ? 'true' : 'false'); if (o) tfMountPvs(card); return; }
+  const card = t.closest('.tfcard.now'); if (!card) return;
+  const k = +card.dataset.k, c = TF.cards[k];
+  if (t.closest('.tfnext')){ tfNext(); return; }
+  const part = t.closest('.tfpart');
+  if (part){
+    part.classList.add('seen');
+    const li = card.querySelector('.tfmeans li[data-n="' + part.dataset.n + '"]'); if (li) li.hidden = false;
+    if (![...card.querySelectorAll('.tfpart')].some(b => !b.classList.contains('seen'))){
+      card.querySelector('.tfparts').classList.add('all');
+      const hint = card.querySelector('.tfhint'); if (hint) hint.remove();
+      const pb = card.querySelector('.tfpvbox'); if (pb) pb.classList.remove('tfwait');
+      tfDone(card);
+    }
+    return;
+  }
+  const see = t.closest('.tfsee');
+  if (see){
+    const steps = c.steps || [];
+    let s = +see.dataset.s + 1;
+    if (steps.length && s < steps.length){
+      const upto = steps[s];
+      card.querySelectorAll('.tfln,.tfsub').forEach(el => {
+        const n = el.classList.contains('tfln') ? +el.dataset.l : +(el.nextElementSibling && el.nextElementSibling.dataset.l);
+        if (n <= upto) el.classList.remove('tfhide');
+      });
+      see.dataset.s = s;
+      const sn = card.querySelector('.tfstepn'); if (sn) sn.textContent = (s + 1) + ' of ' + steps.length;
+      const pb = card.querySelector('.tfpvbox');
+      if (pb && c.pvEach){ const host = pb.querySelector('.tfpv'); const nh = document.createElement('span'); nh.className = 'tfpv'; host.replaceWith(nh); tfDrawPage(nh, tfLes(), tfUpTo(c, s)); }
+      if (s === steps.length - 1){ see.remove(); if (sn) sn.remove(); if (pb) pb.classList.remove('tfwait'); tfDone(card); }
+      return;
+    }
+    see.remove();
+    const pb = card.querySelector('.tfpvbox'); if (pb) pb.classList.remove('tfwait');
+    tfDone(card);
+    return;
+  }
+  const ch = t.closest('.tfch');
+  if (ch && !ch.disabled){
+    const x = c.ch[+ch.dataset.n];
+    card.querySelectorAll('.tfch').forEach(b => { b.disabled = true; if (c.ch[+b.dataset.n].ok) b.classList.add('hit'); });
+    if (!x.ok) ch.classList.add('miss');
+    const right = c.ch.find(y => y.ok);
+    tfDone(card, (x.ok ? '<b>Yes.</b> ' : '<b>Not quite, and that is useful to know.</b> ') + (x.why || '') + (!x.ok && right && right.why ? ' ' + right.why : ''), !x.ok);
+    return;
+  }
+  const op = t.closest('.tfopt');
+  if (op && !op.disabled){
+    const pick = c.opts[+op.dataset.n];
+    if (pick === c.ans){
+      const g = card.querySelector('.tfgap'); g.textContent = pick; g.classList.add('hit');
+      card.querySelectorAll('.tfopt').forEach(b => { b.disabled = true; if (c.opts[+b.dataset.n] === c.ans) b.classList.add('hit'); });
+      tfDone(card);
+    } else {
+      op.classList.add('miss'); op.disabled = true;
+      const w = card.querySelector('.tfwhy');
+      w.innerHTML = '<span class="tfno2">' + lsIc('left') + '</span>' + ((c.no && c.no[pick]) || 'Not that one. Read the code on both sides of the gap: what has to fit there?');
+    }
+    return;
+  }
+  const bl = t.closest('.tfbl');
+  if (bl && !bl.disabled){
+    if (+bl.dataset.n === c.bad){
+      card.querySelectorAll('.tfbl').forEach(b => { b.disabled = true; });
+      bl.classList.add('hit');
+      tfDone(card, c.why + (c.fix ? '<span class="tffix"><b>Fixed:</b> <code>' + esc(c.fix) + '</code></span>' : ''));
+    } else {
+      bl.classList.add('miss'); bl.disabled = true;
+      card.querySelector('.tfwhy').innerHTML = '<span class="tfno2">' + lsIc('left') + '</span>' + ((c.no && c.no[+bl.dataset.n]) || 'That line is fine. Read each one aloud and ask: does it say exactly what it means?');
+    }
+    return;
+  }
+  const ln = t.closest('.tfline');
+  if (ln){ tfArrPlace(card, ln); return; }
+  if (t.closest('.tfed')){ tfToEditor(); return; }
+  if (t.closest('.tftwskip')){ tfDone(card, 'Skipped. It will still be here next time.'); return; }
+  const rg = t.closest('.tfrung');
+  if (rg){ const i = +rg.dataset.i; lsS().back = null; loadLesson(i); return; }
+  if (t.closest('.tfladskip')){ tfDone(card, 'On to the vault itself.'); return; }
+}
+function tfToEditor(){
+  const b = document.querySelector('#tabbar button[data-tab="tab-code"]');
+  if (b && b.offsetParent !== null) b.click();
+  /* a Terminal lesson types at its prompt, not in the editor */
+  const sh = L[idx] && L[idx].kind === 'shell' ? document.getElementById('shIn') : null;
+  try { (sh || edEl).focus({preventScroll: innerWidth > 700}); } catch (e) {}
+}
+/* ---- arranging: place, send back, drag, check ---- */
+function tfArrPlace(card, btn){
+  const arr = card.querySelector('.tfarr'); if (!arr || arr.classList.contains('won')) return;
+  if (btn.closest('.tfslot')){
+    /* a placed line goes back to the pile */
+    const slot = btn.closest('.tfslot'); arr.querySelector('.tfpool').appendChild(btn);
+    slot.querySelector('.tfsl').innerHTML = '<span class="tfph">' + (+slot.dataset.s + 1) + '</span>';
+    arr.querySelectorAll('.tfslot').forEach(s => s.classList.remove('bad', 'good'));
+    card.querySelector('.tfwhy').innerHTML = '';
+    try { btn.focus(); } catch (e) {}
+    return;
+  }
+  const empty = [...arr.querySelectorAll('.tfslot')].find(s => !s.querySelector('.tfline'));
+  if (!empty) return;
+  tfArrPut(card, btn, empty);
+}
+function tfArrPut(card, btn, slot){
+  const arr = card.querySelector('.tfarr');
+  const had = slot.querySelector('.tfline');
+  if (had) arr.querySelector('.tfpool').appendChild(had);
+  slot.querySelector('.tfsl').innerHTML = ''; slot.querySelector('.tfsl').appendChild(btn);
+  arr.querySelectorAll('.tfslot').forEach(s => s.classList.remove('bad', 'good'));
+  const next = arr.querySelector('.tfpool .tfline'); if (next) try { next.focus({preventScroll: true}); } catch (e) {}
+  tfArrCheck(card);
+}
+function tfArrCheck(card){
+  const k = +card.dataset.k, c = TF.cards[k], items = c.lines || c.pieces, arr = card.querySelector('.tfarr');
+  const slots = [...arr.querySelectorAll('.tfslot')];
+  if (slots.some(s => !s.querySelector('.tfline'))){ card.querySelector('.tfwhy').innerHTML = ''; return; }
+  const norm = s => String(s).trim();
+  const got = slots.map(s => items[+s.querySelector('.tfline').dataset.n]);
+  /* lines inside a "free" range may come in any order among themselves */
+  const freeOf = n => (c.free || []).find(r => n >= r[0] && n <= r[1]);
+  const bad = slots.filter((s, n) => {
+    const r = freeOf(n);
+    if (!r) return norm(got[n]) !== norm(items[n]);
+    return !items.slice(r[0], r[1] + 1).map(norm).includes(norm(got[n]));
+  });
+
+  if (!bad.length){
+    arr.classList.add('won'); slots.forEach(s => s.classList.add('good'));
+    arr.querySelectorAll('.tfline').forEach(b => { b.disabled = true; });
+    tfDone(card);
+    return;
+  }
+  bad.forEach(s => s.classList.add('bad'));
+  card.querySelector('.tfwhy').innerHTML = '<span class="tfno2">' + lsIc('left') + '</span>' + (bad.length === 1 ? 'One line is in the wrong place (marked). Tap it to send it back, then try again.' : bad.length + ' lines are in the wrong place (marked). Tap one to send it back.')
+    + (c.hint ? ' ' + c.hint : '');
+}
+/* drag, for a mouse or a finger; tapping stays the way that always works */
+function tfDragInit(){
+  let drag = null;
+  teachEl.addEventListener('pointerdown', (e) => {
+    const b = e.target.closest('.tfarr:not(.won) .tfline'); if (!b || e.button > 0) return;
+    drag = {b, x: e.clientX, y: e.clientY, on: false, id: e.pointerId};
+  });
+  addEventListener('pointermove', (e) => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+    if (!drag.on && Math.hypot(dx, dy) < 8) return;
+    if (!drag.on){ drag.on = true; drag.b.classList.add('tfdrag'); document.body.classList.add('tfdragging'); }
+    drag.b.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
+    const over = document.elementsFromPoint(e.clientX, e.clientY).find(x => x.classList && x.classList.contains('tfslot'));
+    teachEl.querySelectorAll('.tfslot.over').forEach(s => s.classList.remove('over'));
+    if (over) over.classList.add('over');
+    e.preventDefault();
+  }, {passive: false});
+  addEventListener('pointerup', (e) => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const d = drag; drag = null;
+    if (!d.on) return;
+    d.b.classList.remove('tfdrag'); d.b.style.transform = ''; document.body.classList.remove('tfdragging');
+    const over = document.elementsFromPoint(e.clientX, e.clientY).find(x => x.classList && x.classList.contains('tfslot'));
+    teachEl.querySelectorAll('.tfslot.over').forEach(s => s.classList.remove('over'));
+    d.b.dataset.dragged = '1'; setTimeout(() => { delete d.b.dataset.dragged; }, 0);
+    const card = d.b.closest('.tfcard'); if (!card) return;
+    if (over && over.closest('.tfcard') === card){
+      const from = d.b.closest('.tfslot');
+      if (from && from !== over){
+        /* a swap between two slots */
+        const other = over.querySelector('.tfline');
+        from.querySelector('.tfsl').innerHTML = '';
+        if (other) from.querySelector('.tfsl').appendChild(other); else from.querySelector('.tfsl').innerHTML = '<span class="tfph">' + (+from.dataset.s + 1) + '</span>';
+        over.querySelector('.tfsl').innerHTML = ''; over.querySelector('.tfsl').appendChild(d.b);
+        card.querySelectorAll('.tfslot').forEach(s => s.classList.remove('bad', 'good'));
+        tfArrCheck(card);
+      } else if (!from) tfArrPut(card, d.b, over);
+    } else if (d.b.closest('.tfslot') && e.target.closest && e.target.closest('.tfpool')){
+      tfArrPlace(card, d.b);
+    }
+  });
+  /* a drag must not also count as a tap */
+  teachEl.addEventListener('click', (e) => { const b = e.target.closest('.tfline'); if (b && b.dataset.dragged){ e.stopImmediatePropagation(); e.preventDefault(); } }, true);
+}
+
+/* ---- a Run was graded: the Try card ticks, the Tweak card listens ---- */
+function tfAfterRunFlow(ok){
+  if (!TF.cards || TF.i !== idx) return;
+  const tryAt = TF.cards.findIndex(c => c.t === 'tr');
+  if (ok && lessonDone(idx) && tryAt > -1 && TF.at <= tryAt){
+    /* passing jumps the flow past the Try card: nothing ever gates the editor */
+    TF.at = tryAt + 1; TF.pos[TF.key] = TF.at; tfSavePos(); tfRender(false);
+    return;
+  }
+  const cur = TF.cards[TF.at];
+  if (ok && cur && cur.t === 'tweak'){
+    const code = edEl.value, hit = cur.re ? new RegExp(cur.re, cur.fl || '').test(code) : true;
+    const card = teachEl.querySelector('.tfcard.now');
+    if (hit && card) tfDone(card, cur.why || 'Changed, and still working. That is most of programming.');
+  }
+}
+
+/* ---- Step it down ----------------------------------------------------------
+   "I want to click through the lesson without having to fail 1000 times."
+   Two Runs that do not pass and the school offers a smaller version of the same
+   task: the answer with one to three key pieces taken out (a completion
+   problem), the pieces chosen from what your own Run was still missing. A third
+   and it offers the lines themselves, mixed up, to put in order (a Parsons
+   problem). Nothing about either is a different lesson: the pieces you fill in
+   or the order you choose go into the editor and the lesson's own check grades
+   them, so passing the smaller version passes the lesson. Afterwards there is a
+   quiet offer to try the full version, and never a lock. It works for every
+   lesson with an answer to take apart, in every grade, with no hand-writing. */
+function tfDownOk(les){
+  return !!les && !sandbox && !hub && !drillOn && !sensei && !les.chal && !les.proj && les.kind !== 'shell'
+    && typeof les.sol === 'string' && les.sol.trim().length > 0;
+}
+/* the offer, under the coach's verdict */
+function tfOfferPaint(){
+  let o = document.getElementById('tfOffer');
+  const les = L[idx], st = document.getElementById('status');
+  if (!o && st){ o = document.createElement('div'); o.id = 'tfOffer'; o.className = 'tfoffer'; st.insertAdjacentElement('afterend', o);
+    o.addEventListener('click', tfOfferClick); }
+  if (!o) return;
+  const live = tfDownOk(les) && TF.i === idx;
+  if (!live){ o.hidden = true; o.innerHTML = ''; return; }
+  if (TF.downWon && lessonDone(idx)){
+    o.hidden = false; o.className = 'tfoffer won';
+    o.innerHTML = '<span class="tfoi">' + lsIc('star') + '</span><span class="tfot"><b>That counts: the lesson is passed.</b> You did it with the smaller version. Whenever you like, try the whole thing from a blank start.</span>'
+      + '<span class="tfob"><button type="button" class="tfofull">Try the full version</button></span>';
+    return;
+  }
+  if (lessonDone(idx) || TF.fails < 2 || (TF.down && document.getElementById('tfDown'))){ o.hidden = true; o.innerHTML = ''; return; }
+  o.hidden = false; o.className = 'tfoffer';
+  const n = TF.fails, ord = n >= 3 && tfOrderOk(les);
+  o.innerHTML = '<span class="tfoi">' + lsIc('right') + '</span><span class="tfot"><b>' + (ord ? 'Three tries. Take the pieces instead?' : 'Two tries without a pass. Step it down?') + '</b> '
+    + (ord ? 'Every piece of the answer is given, mixed up: put them in order and Run. Or fill a few gaps.' : 'The same task with most of the code written for you and a few gaps to fill. It still passes the lesson.') + '</span>'
+    + '<span class="tfob">' + (ord ? '<button type="button" class="tfoorder">Put them in order</button>' : '') + '<button type="button" class="tfofill' + (ord ? ' tfsec' : '') + '">' + (ord ? 'Fill a few gaps' : 'Step it down') + '</button></span>';
+}
+function tfOfferClick(e){
+  if (e.target.closest('.tfofill')) tfDownOpen('fill');
+  else if (e.target.closest('.tfoorder')) tfDownOpen('order');
+  else if (e.target.closest('.tfofull')) tfFull();
+}
+/* after every graded Run of a lesson */
+function tfAfterRun(was){
+  if (sandbox || hub || drillOn || !L[idx] || TF.i !== idx) return;
+  const S = lsS(), les = L[idx];
+  if (S.quiet) return;
+  const ok = !!(S.res && S.res.ok) || (S.proj ? S.proj.every(Boolean) : false);
+  const code = edEl.value.trim();
+  if (ok){
+    if (TF.down && lessonDone(idx) && !was) TF.downWon = true;
+    if (TF.down) tfDownClose(false);
+  } else if (code && code !== String(les.start || '').trim()) TF.fails++;
+  tfOfferPaint();
+  tfAfterRunFlow(ok);
+  if (TF.down && !ok) tfDownMiss();
+}
+/* the full version: a blank start, the lesson stays passed */
+function tfFull(){
+  const les = L[idx]; killNext();
+  TF.downWon = false; TF.fails = 0; TF.keep = null;
+  edEl.value = les.start; syncHl(); edFit(les); previewOnly();
+  statusEl.className = ''; statusEl.innerHTML = 'The full version, from the start. Your tick is safe: this one is just for you.';
+  tfOfferPaint(); tfToEditor();
+}
+
+/* ---- which pieces to take out ----
+   Every key piece of the answer is a candidate: tags, attribute names, CSS
+   selectors, properties and values, keywords, signs, names being called,
+   numbers and quoted words. A piece scores for being the kind that carries the
+   lesson, more if your code does not have it yet, and most if it sits where a
+   checklist item you are still missing is found in the answer. */
+var TF_KW = {'return': 'the word that hands the answer back', 'if': 'the word that asks the question', 'else': 'the word for the other road', 'for': 'the word that starts the loop',
+  'of': 'the word between the item’s name and what it walks through', 'while': 'the word for "keep going as long as"', 'const': 'the word that makes a box', 'let': 'the word that makes a box that can change',
+  'function': 'the word that teaches the computer a trick', 'typeof': 'the word that asks what kind of value this is', 'def': 'the word that defines a function', 'elif': 'the word for "or else, if"', 'in': 'the word between the name and what it walks through', 'print': 'the command that shows a line'};
+var TF_OPS = {'===': 'the sign that asks "exactly the same?"', '!==': 'the sign that asks "not the same?"', '>=': 'the sign for "at least"', '<=': 'the sign for "at most"', '>': 'the sign for "more than"', '<': 'the sign for "less than"',
+  '&&': 'the sign for "and, both must be true"', '||': 'the sign for "or, either will do"', '+=': 'the sign that adds onto what is already there', '-=': 'the sign that takes away from what is there', '%': 'the remainder sign', '*': 'the times sign', '+': 'the joining sign'};
+function tfTagName(t){
+  const n = {h1: 'big heading', h2: 'heading', h3: 'heading', h4: 'heading', h5: 'heading', h6: 'smallest heading', p: 'paragraph', em: 'leaning word', strong: 'bold word', ul: 'list', ol: 'numbered list', li: 'list item', a: 'link', div: 'box', button: 'button', span: 'span', label: 'label', section: 'section'};
+  return (n[t] || t) + ' (' + t + ')';
+}
+function tfPieces(les){
+  const sol = String(les.sol), lang = les.lang === 'arc' ? 'js' : les.lang, out = [];
+  const add = (a, text, kind, say, w) => { if (text && text.trim() && !out.some(o => a < o.b && a + text.length > o.a)) out.push({a, b: a + text.length, text, kind, say, w}); };
+  let m;
+  if (lang === 'html'){
+    const re = /<(\/?)([a-zA-Z][\w-]*)([^>]*)>/g;
+    while ((m = re.exec(sol))){
+      const tag = m[2].toLowerCase(), attrs = m[3];
+      if (!attrs.trim()) { add(m.index, m[0], 'tag', (m[1] ? 'the tag that closes the ' : 'the tag that opens the ') + tfTagName(tag), 3); continue; }
+      const base = m.index + 1 + m[2].length, re2 = /([\w-]+)(?:="([^"]*)")?/g; let m2;
+      while ((m2 = re2.exec(attrs))){
+        const at = base + m2.index;
+        add(at, m2[1], 'attr', 'the attribute’s name: the word just before the =', 3);
+        if (m2[2]) add(at + m2[1].length + 2, m2[2], 'val', 'the ' + m2[1] + ' attribute’s value, inside its quotes', 1);
+      }
+    }
+    const tr = /(>)([^<>\n]+)(<)/g;
+    while ((m = tr.exec(sol))) if (m[2].trim()) add(m.index + 1, m[2], 'text', 'your own words: anything will do', 0);
+    if (!out.length && sol.trim()) add(sol.indexOf(sol.trim()), sol.trim(), 'text', 'your own words: anything will do', 0);
+  } else if (lang === 'css'){
+    const rs = /(^|\})\s*([^{}]+?)\s*\{([^}]*)\}/g;
+    while ((m = rs.exec(sol))){
+      const selAt = sol.indexOf(m[2], m.index);
+      add(selAt, m[2], 'sel', 'the selector: which elements this rule dresses (' + (m[2][0] === '.' ? 'a dot means a class' : m[2][0] === '#' ? 'a hash means an id' : 'a bare tag name') + ')', 3);
+      const bodyAt = sol.indexOf('{', selAt) + 1, body = m[3], rp = /([a-z-]+)\s*:\s*([^;]+);/g; let m2;
+      while ((m2 = rp.exec(body))){
+        const pa = bodyAt + m2.index;
+        add(pa, m2[1], 'prop', 'the property: what this line changes', 3);
+        add(pa + m2[0].indexOf(m2[2], m2[1].length), m2[2].trim(), 'val', 'the value for ' + m2[1] + ': what to set it to', 2);
+      }
+    }
+  } else {
+    const re = /(\/\/[^\n]*|#[^\n]*)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*')|(===|!==|>=|<=|&&|\|\||\+=|-=|[<>%*])|\b(return|if|else|for|of|while|const|let|function|typeof|def|elif|in|print)\b|\.?([A-Za-z_$][\w$]*)(?=\s*\()|\b(\d+(?:\.\d+)?)\b/g;
+    while ((m = re.exec(sol))){
+      if (m[1]) continue;
+      if (lang !== 'py' && m[0][0] === '#') continue;
+      if (m[2]) add(m.index, m[2], 'str', 'the words in quotes, quotes and all', m[2].length > 24 ? 0 : 1);
+      else if (m[3]) add(m.index, m[3], 'op', TF_OPS[m[3]] || 'a sign', 3);
+      else if (m[4]) add(m.index, m[4], 'kw', TF_KW[m[4]] || 'a keyword', 3);
+      else if (m[5]){ const dot = m[0][0] === '.'; add(m.index + (dot ? 1 : 0), m[5], 'call', 'the name of the ' + (dot ? 'thing being called after the dot' : 'function being called'), 2); }
+      else if (m[6]) add(m.index, m[6], 'num', 'a number', 1);
+    }
+  }
+  return out.sort((a, b) => a.a - b.a);
+}
+function tfMissingRanges(les, code){
+  const keepReq = reqLog, keepLint = lintRange, out = [];
+  try {
+    reqLog = []; normRes(les, code); const mine = reqLog.slice();
+    reqLog = []; normRes(les, les.sol); const ref = reqLog.slice();
+    mine.forEach((r, j) => {
+      if (r.ok || !ref[j] || !ref[j].src) return;
+      try { const mm = new RegExp(ref[j].src).exec(les.sol); if (mm) out.push({a: mm.index, b: mm.index + mm[0].length, t: r.t}); } catch (e) {}
+    });
+  } catch (e) {}
+  finally { reqLog = keepReq; lintRange = keepLint; }
+  return out;
+}
+function tfBlanks(les, code){
+  const sol = String(les.sol), cands = tfPieces(les), miss = tfMissingRanges(les, code || '');
+  const lineOf = a => sol.slice(0, a).split('\n').length - 1, nLines = sol.split('\n').filter(x => x.trim()).length;
+  const has = (t) => code && code.indexOf(t) > -1;
+  cands.forEach(c => {
+    c.score = c.w + (has(c.text) ? 0 : 3) + (miss.some(r => c.a >= r.a && c.b <= r.b) ? 5 : 0);
+    const r = miss.find(x => c.a >= x.a && c.b <= x.b); if (r) c.req = r.t;
+  });
+  let pool = cands.filter(c => c.w > 0);
+  if (!pool.length) pool = cands;
+  pool.sort((a, b) => b.score - a.score || a.a - b.a);
+  const want = Math.max(1, Math.min(3, nLines <= 1 ? 2 : Math.ceil(nLines / 2), pool.filter(c => c.score >= 4).length || 1));
+  const pick = [], used = new Set();
+  for (const c of pool){ if (pick.length >= want) break; const ln = lineOf(c.a); if (used.has(ln) && pool.length - pick.length > want) continue; pick.push(c); used.add(ln); }
+  for (const c of pool){ if (pick.length >= want) break; if (!pick.includes(c)) pick.push(c); }
+  return pick.sort((a, b) => a.a - b.a);
+}
+
+/* ---- the smaller version, on the lesson page ---- */
+function tfDownOpen(kind){
+  const les = L[idx]; if (!tfDownOk(les)) return;
+  if (TF.keep == null) TF.keep = edEl.value;
+  TF.down = {kind, les: idx};
+  let box = document.getElementById('tfDown');
+  if (!box){ box = document.createElement('section'); box.id = 'tfDown'; box.className = 'tfdown'; box.setAttribute('aria-label', 'A smaller version of this task');
+    box.addEventListener('click', tfDownClick); box.addEventListener('keydown', tfDownKey); }
+  const anchor = teachEl.querySelector('.tfflow') || teachEl.querySelector('.saybox') || teachEl.querySelector('.rcbox') || teachEl.querySelector('.lsban');
+  if (anchor && anchor.classList.contains('tfflow')) anchor.insertAdjacentElement('beforebegin', box);
+  else if (anchor) anchor.insertAdjacentElement('afterend', box); else teachEl.prepend(box);
+  box.innerHTML = kind === 'order' ? tfOrderHtml(les) : tfFillDownHtml(les, TF.keep || '');
+  tfOfferPaint();
+  const lt = document.querySelector('#tabbar button[data-tab="tab-lesson"]');
+  if (lt && lt.offsetParent !== null) lt.click();
+  if (document.body.classList.contains('lsTheater')) lsTheaterClose(false);
+  try { box.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start'}); } catch (e) {}
+  const f = box.querySelector('input.tfgin, .tfpool .tfline'); if (f) try { f.focus({preventScroll: true}); } catch (e) {}
+}
+function tfDownHead(title, say){
+  return '<div class="tfdh"><span class="tfbadge">' + lsIc('right') + 'A smaller step</span><button type="button" class="tfdx" aria-label="Close the smaller version">' + lsIc('left') + 'Back to the full task</button></div>'
+    + '<h3>' + title + '</h3><p class="tfp">' + say + '</p>';
+}
+function tfFillDownHtml(les, code){
+  const sol = String(les.sol), bl = tfBlanks(les, code);
+  TF.down.blanks = bl;
+  let h = tfDownHead(bl.length === 1 ? 'Fill one gap' : 'Fill ' + bl.length + ' gaps', 'This is the answer with ' + (bl.length === 1 ? 'one piece' : bl.length + ' pieces') + ' taken out. Type what goes in each gap, then Run it. The lesson’s own check grades it, so a pass here is a pass.');
+  let at = 0, pre = '';
+  bl.forEach((b, n) => {
+    pre += esc(sol.slice(at, b.a));
+    const w = Math.max(3, Math.min(28, b.text.length + 1));
+    pre += '<input class="tfgin" data-n="' + n + '" style="width:' + (w + 1.2) + 'ch" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Gap ' + (n + 1) + ': ' + tfEsc(plain(b.say)) + '">';
+    at = b.b;
+  });
+  pre += esc(sol.slice(at));
+  h += '<div class="tfcompw"><div class="lsczfile"><span>' + lsLang(les)[1] + '</span></div><pre class="tfcode tfcomp">' + pre + '</pre></div>'
+    + '<ol class="tfgaps">' + bl.map((b, n) => '<li data-n="' + n + '"><b>Gap ' + (n + 1) + '</b> holds ' + b.say + (b.req ? '<span class="tfreq">Your last Run was missing this: ' + b.req + '</span>' : '') + '<button type="button" class="tflink tfshow" data-n="' + n + '" hidden>Show me this one</button></li>').join('') + '</ol>'
+    + '<div class="tfdo"><button type="button" class="tfgo tfdrun">' + lsIc('play') + 'Run this version</button><button type="button" class="tflink tfdkeep">Back to my own code</button></div>'
+    + '<div class="tfwhy" aria-live="polite"></div>';
+  return h;
+}
+function tfOrderLines(les){
+  const sol = String(les.sol), ls = sol.split('\n').filter(x => x.trim());
+  if (ls.length >= 3) return {lines: ls, inline: false};
+  /* one or two lines: the pieces of the line are what get put in order */
+  const lang = les.lang === 'arc' ? 'js' : les.lang, out = [];
+  sol.split('\n').forEach((line, n) => {
+    const re = lang === 'html' ? /\s*(?:<[^>]+>|[^<]+)/g : /\s*(?:"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|\.?[A-Za-z_$][\w$]*|\d+(?:\.\d+)?|[^\sA-Za-z0-9_$])/g;
+    let ps = line.match(re) || [line];
+    /* a line that is only words (a sentence, a name) is put in order a word at a time */
+    if (ps.length === 1 && lang === 'html') ps = line.match(/\s*\S+/g) || [line];
+    ps.forEach((p, k) => out.push((n && !k ? '\n' : '') + p));
+  });
+  /* never more than eight pieces: neighbours that are only punctuation join up */
+  while (out.length > 8){ let best = 1, bl = 1e9; for (let i = 1; i < out.length; i++){ const l = out[i - 1].length + out[i].length; if (l < bl){ bl = l; best = i; } } out.splice(best - 1, 2, out[best - 1] + out[best]); }
+  return {lines: out, inline: true};
+}
+/* ordering needs three things or more: one word has no order to find */
+function tfOrderOk(les){ return tfOrderLines(les).lines.length >= 3; }
+function tfOrderHtml(les){
+  const o = tfOrderLines(les); TF.down.order = o;
+  const items = o.lines;
+  let h = tfDownHead('Put the ' + (o.inline ? 'pieces' : 'lines') + ' in order', 'Every ' + (o.inline ? 'piece' : 'line') + ' of the answer is here, mixed up. Tap them in order (or drag them), then Run it. The lesson’s own check grades it.');
+  const ord = tfScramble(items.length, 3);
+  h += '<div class="tfarr' + (o.inline ? ' tfinl' : '') + '"><span class="tfarrh">The ' + (o.inline ? 'pieces' : 'lines') + ', mixed up</span>'
+    + '<div class="tfpool" role="group" aria-label="The ' + (o.inline ? 'pieces' : 'lines') + ', mixed up">' + ord.map(n => '<button type="button" class="tfline" data-n="' + n + '">' + (esc(o.inline ? x0(items[n].replace(/^\n/, '')) : items[n].replace(/^\s+/, '')) || ' ') + '</button>').join('') + '</div>'
+    + '<span class="tfarrh">Your code, in order</span><ol class="tfslots" aria-label="Your code, in order">' + items.map((x, n) => '<li class="tfslot" data-s="' + n + '"><span class="tfsl" style="--ind:' + (o.inline ? 0 : items[n].match(/^\s*/)[0].length) + '"><span class="tfph">' + (n + 1) + '</span></span></li>').join('') + '</ol></div>'
+    + '<div class="tfdo"><button type="button" class="tfgo tfdrun" disabled>' + lsIc('play') + 'Run this version</button><button type="button" class="tflink tfdkeep">Back to my own code</button></div>'
+    + '<div class="tfwhy" aria-live="polite"></div>';
+  return h;
+}
+function tfDownCode(){
+  const box = document.getElementById('tfDown'), les = L[idx], sol = String(les.sol);
+  if (!box || !TF.down) return null;
+  if (TF.down.kind === 'fill'){
+    let at = 0, out = '';
+    TF.down.blanks.forEach((b, n) => { const inp = box.querySelector('input.tfgin[data-n="' + n + '"]'); out += sol.slice(at, b.a) + (inp ? inp.value : ''); at = b.b; });
+    return out + sol.slice(at);
+  }
+  const slots = [...box.querySelectorAll('.tfslot')];
+  if (slots.some(s => !s.querySelector('.tfline'))) return null;
+  const items = TF.down.order.lines;
+  return slots.map(s => items[+s.querySelector('.tfline').dataset.n]).join(TF.down.order.inline ? '' : '\n').replace(/^\n/, '');
+}
+function tfDownClick(e){
+  const t = e.target, box = document.getElementById('tfDown');
+  if (t.closest('.tfdx')){ tfDownClose(true); return; }
+  if (t.closest('.tfdkeep')){ tfDownKeep(); return; }
+  const sh = t.closest('.tfshow');
+  if (sh){ const n = +sh.dataset.n, inp = box.querySelector('input.tfgin[data-n="' + n + '"]'); if (inp){ inp.value = TF.down.blanks[n].text; inp.classList.add('shown'); inp.classList.remove('bad'); } sh.hidden = true; return; }
+  if (t.closest('.tfdrun')){ tfDownRun(); return; }
+  const ln = t.closest('.tfline');
+  if (ln && TF.down && TF.down.kind === 'order'){
+    const arr = box.querySelector('.tfarr');
+    if (ln.closest('.tfslot')){ const slot = ln.closest('.tfslot'); arr.querySelector('.tfpool').appendChild(ln); slot.querySelector('.tfsl').innerHTML = '<span class="tfph">' + (+slot.dataset.s + 1) + '</span>'; }
+    else { const empty = [...arr.querySelectorAll('.tfslot')].find(s => !s.querySelector('.tfline')); if (empty){ empty.querySelector('.tfsl').innerHTML = ''; empty.querySelector('.tfsl').appendChild(ln); } }
+    arr.querySelectorAll('.tfslot').forEach(s => s.classList.remove('bad'));
+    const full = ![...arr.querySelectorAll('.tfslot')].some(s => !s.querySelector('.tfline'));
+    box.querySelector('.tfdrun').disabled = !full;
+    const nx = arr.querySelector('.tfpool .tfline'); try { (nx || box.querySelector('.tfdrun')).focus({preventScroll: true}); } catch (e2) {}
+  }
+}
+function tfDownKey(e){
+  if (e.key === 'Enter' && e.target.matches && e.target.matches('input.tfgin')){ e.preventDefault(); tfDownRun(); }
+}
+function tfDownRun(){
+  const code = tfDownCode(); if (code == null) return;
+  /* this is the sanctioned road: whatever the ghost typed earlier does not
+     turn a pass here into a "guided lap" */
+  assistedKeys = 0; solShown = false; killGhost();
+  edEl.value = code; syncHl(); edFit(L[idx]);
+  const run = document.getElementById('btnRun'); if (run) run.click(); else runCheck();
+}
+/* a Run of the smaller version that did not pass: mark the gaps that differ
+   from the answer, and let each one be shown */
+function tfDownMiss(){
+  const box = document.getElementById('tfDown'); if (!box || !TF.down) return;
+  const w = box.querySelector('.tfwhy');
+  if (TF.down.kind === 'fill'){
+    let n = 0;
+    TF.down.blanks.forEach((b, k) => { const inp = box.querySelector('input.tfgin[data-n="' + k + '"]'); if (!inp) return; const off = inp.value.trim() !== b.text.trim(); inp.classList.toggle('bad', off); const sh = box.querySelector('.tfshow[data-n="' + k + '"]'); if (sh) sh.hidden = !off; if (off) n++; });
+    if (w) w.innerHTML = '<span class="tfno2">' + lsIc('left') + '</span>' + (n ? 'Not yet. ' + (n === 1 ? 'The marked gap is' : 'The marked gaps are') + ' different from the answer: check ' + (n === 1 ? 'it' : 'them') + ', or tap <b>Show me this one</b>.' : 'Not yet: read the coach’s note under Run for what it saw.');
+  } else {
+    const items = TF.down.order.lines, slots = [...box.querySelectorAll('.tfslot')];
+    let n = 0; slots.forEach((s, k) => { const ln = s.querySelector('.tfline'); const off = !ln || items[+ln.dataset.n].trim() !== items[k].trim(); s.classList.toggle('bad', off); if (off) n++; });
+    if (w) w.innerHTML = '<span class="tfno2">' + lsIc('left') + '</span>' + (n ? n + ' ' + (n === 1 ? 'piece is' : 'pieces are') + ' out of place (marked). Tap one to send it back, then place it again.' : 'Not yet: read the coach’s note under Run.');
+  }
+}
+function tfDownKeep(){
+  if (TF.keep != null){ edEl.value = TF.keep; syncHl(); edFit(L[idx]); previewOnly(true); }
+  tfDownClose(true);
+}
+function tfDownClose(focusEd){
+  const box = document.getElementById('tfDown'); if (box) box.remove();
+  TF.down = null;
+  tfOfferPaint();
+  if (focusEd) tfToEditor();
+}
+
+/* ---- Fill the gap, answerable from the card alone ----------------------------
+   A warm-up card is met days after its lesson, with nothing else on screen, so
+   everything needed to answer it has to be on the card: what the code is for,
+   the code around the gap, a picture of the page it makes when there is one,
+   and, in plain words, what kind of thing goes in the gap (its job, never its
+   spelling). A gap that was the whole answer, with no code around it at all,
+   used to show a lone "?" and three options; that card is now a different
+   question: here is the page it should make, which of these makes it? */
+function tfGapSay(les, d){
+  const code = String(d.code), at = code.indexOf('___'), ans = String(d.ans);
+  const ls = code.lastIndexOf('\n', at) + 1, le = code.indexOf('\n', at), line = code.slice(ls, le < 0 ? code.length : le);
+  const before = code.slice(ls, at), after = code.slice(at + 3, le < 0 ? code.length : le);
+  const lang = les.lang === 'arc' ? les.kind : les.lang;
+  const whole = !before.trim() && !after.trim();
+  const tagOf = (t) => (t.match(/<\/?([a-zA-Z][\w-]*)/) || [])[1] || '';
+  if (lang === 'html'){
+    if (/^<\/[a-zA-Z][\w-]*>$/.test(ans)) return 'the tag that closes the ' + tfTagName(tagOf(ans).toLowerCase());
+    if (/^<[a-zA-Z][\w-]*>$/.test(ans)) return 'the tag that opens the ' + tfTagName(tagOf(ans).toLowerCase()) + (whole ? ': the whole line is the gap' : '');
+    if (/^[a-z]\w*$/i.test(ans) && /<\/?$/.test(before)) return 'the element’s name, inside the pointy brackets';
+    if (/=/.test(ans)) return 'an attribute that gives this element its name tag';
+    if (/^[a-z][\w-]*$/i.test(ans) && /^=/.test(after)) return 'the attribute’s name: the word just before the =' + (ans === 'title' ? ', the one browsers show as a tooltip' : ans === 'href' ? ', the one that says where a link goes' : '');
+    if (/^[\w-]+$/.test(ans) && /"\s*$/.test(before)) return 'the name it points at, inside the quotes';
+    return whole ? 'everything in the file: the words that show on the page' : 'your own words: what the page shows';
+  }
+  if (lang === 'css'){
+    if (ans === ':') return 'the mark that sits between a property and its value';
+    if (ans === ';') return 'the mark that ends a line of CSS';
+    if (/^\s*\{/.test(after) || /^[.#]?[\w-]+$/.test(ans) && /\{/.test(after)) return 'the selector: which element' + (ans[0] === '#' || /id/.test(les.goal || '') ? '' : 's') + ' this rule dresses';
+    if (/^\s*:/.test(after)) return 'the property: what this line changes';
+    if (/:\s*$/.test(before) || /:\s*\S/.test(before)) return 'the value: what ' + (before.match(/([a-z-]+)\s*:/) || [, 'it'])[1] + ' is set to';
+    return 'the missing piece of this rule';
+  }
+  if (lang === 'shell'){
+    if (/^-/.test(ans)) return 'the flag: a letter after a dash that changes how the command behaves';
+    if (whole || !before.trim()) return 'the command: the word that says what to do';
+    if (/^[>|]+$/.test(ans)) return 'the sign that says where the output goes';
+    return 'the name of the file or folder it works on';
+  }
+  if (lang === 'sound'){
+    if (/^[0\-+]+$/.test(ans.replace(/"/g, ''))) return 'the rhythm: sixteen characters, a 0 for each hit and a - for each rest';
+    if (/^\d+$/.test(ans)) return /fitMedia\(\w+,\s*\d+,\s*\d+,\s*$/.test(before) ? 'the measure where it stops (it stops before this one)' : /setEffect\($/.test(before) ? 'the track number the effect goes on' : /makeBeat\(\w+,\s*$/.test(before) ? 'the track number' : 'a number';
+    if (/^[A-Z]+$/.test(ans)) return 'the name of the sound, exactly as the Sound Room spells it';
+  }
+  if (whole) return 'one whole line: ' + (/^\w+\(.*\);?$/.test(ans) ? 'a call that makes something happen' : /;$/.test(ans) ? 'one instruction' : 'the missing step');
+  if (TF_KW[ans]) return TF_KW[ans];
+  if (ans === 'else if') return 'the words for "otherwise, if this instead"';
+  if (TF_OPS[ans]) return TF_OPS[ans];
+  if (ans === '-') return 'the sign that takes one away';
+  if (ans === ':' ) return lang === 'py' ? 'the mark that ends the line before an indented block' : 'the mark between a label and its value';
+  if (ans === ',') return 'the mark between two things handed to it';
+  if (ans === "';" || ans === '";') return 'the end of the line: first what closes the words, then what closes the line';
+  if (/^\d+(\.\d+)?$/.test(ans) || /^-\d+$/.test(ans)){
+    if (/\[$/.test(before)) return 'the slot number (lists count from 0)';
+    if (/move\w*\($/.test(before)) return 'how many squares, as a number';
+    if (/i < $/.test(before) || /range\(/.test(before)) return 'how many laps, as a number';
+    return 'a number';
+  }
+  if (/["']$/.test(before) && /^["']/.test(after)) return 'the word inside the quotes';
+  if (/\w$/.test(before) && /^\(/.test(after)) return 'the rest of the move\u2019s name: which way';
+  if (/^["']/.test(ans) && /attack\($/.test(before)) return 'who to hit, by name, written as text';
+  if (/^["']/.test(ans)) return /say\($/.test(before) || /textContent = $/.test(before) || /print\($/.test(before) ? 'the words to show, written as text' : 'a piece of text';
+  if (/^\[.*\]$/.test(ans)) return 'the reach into it: which slot or label';
+  if (/^\.\w/.test(ans)) return 'the field reached with a dot';
+  if (/\w\.\w/.test(ans)) return 'a value reached through a dot';
+  if (/\(.*\)$/.test(ans)) return /^\(/.test(ans) ? 'the sum, worked out before anything is joined to it' : 'a call: the trick, run, so its answer lands here';
+  if (/\($/.test(after) || /^\s*\(/.test(after)) return 'the name of what is being called';
+  if (/^[A-Za-z_$][\w$]*$/.test(ans)) return /\.$/.test(before) ? 'the part after the dot' : 'a box (or a trick) the code already made: what it holds goes here';
+  return 'the missing piece of this line';
+}
+/* the page a lesson's answer makes, small, for the card */
+function tfGoalPv(les, n, d){
+  if (!les) return '';
+  /* a project has no single answer: the gap's own code, filled in, is the picture */
+  if (!les.sol && d && (les.lang === 'html' || les.lang === 'css')) return tfPvHost(les, d.code.split('___').join(d.ans), 'tfgoalpv');
+  if (!les.sol) return '';
+  if (les.lang === 'html' || les.lang === 'css') return tfPvHost(les, les.sol, 'tfgoalpv');
+  if (les.lang === 'js' && typeof MAKES_JS !== 'undefined' && MAKES_JS[n]) return tfPvHost(les, MAKES_JS[n].body, 'tfgoalpv');
+  return '';
+}
+function tfCloze(n, d, inLesson){
   const les = L[n] || {}, filled = d.code.split('___').join(d.ans), sol = les.sol || '';
   let code = d.code;
   /* the lesson's own answer holds the whole program: show the gap inside it (only
@@ -28391,12 +29634,523 @@ function lsCloze(n, d, inLesson){
   const parts = code.split('___');
   const lg = lsLang(les);
   const gap = '<span class="czgap lsgap">?</span>';
-  const html = '<div class="lsczfile"><span>' + lg[1] + '</span>' + (whole ? '<em>your whole answer goes in the gap</em>' : '') + '</div>'
-    + '<pre class="czcode lscz">' + hlEsc(parts[0]) + gap + hlEsc(parts.slice(1).join('___')) + '</pre>';
+  const pv = inLesson ? '' : tfGoalPv(les, n, d);
+  const say = tfGapSay(les, Object.assign({}, d, {code}));
+  const html = (pv ? '<div class="tfgoalbox"><span class="tfpvl">' + (whole ? 'The page it has to make' : 'The page this code makes') + '</span>' + pv + '</div>' : '')
+    + '<div class="lsczfile"><span>' + lg[1] + '</span>' + (whole ? '<em>your whole answer goes in the gap</em>' : '') + '</div>'
+    + '<pre class="czcode lscz">' + hlEsc(parts[0]) + gap + hlEsc(parts.slice(1).join('___')) + '</pre>'
+    + '<p class="tfgapsay"><b>The gap holds:</b> ' + say + '.</p>';
   const q = '<span class="lsczjob"><b>What this code is for:</b> ' + (les.goal || '') + '</span>'
-    + (whole ? 'Which answer goes in the gap?' : 'Which piece belongs in the gap?');
-  return {q, html};
+    + (whole ? 'Which of these, typed into the file, makes that page?' : 'Which piece belongs in the gap?');
+  return {q, html, whole, say};
 }
+/* a whole-answer card: after you answer, each option shows the page it makes */
+function tfWhichWhy(n, d){
+  const les = L[n] || {};
+  if (les.lang !== 'html' && les.lang !== 'css') return '';
+  return '<span class="tfeach"><b>What each one makes:</b>' + d.opts.map(o => '<span class="tfeachi"><code>' + esc(o) + '</code>' + tfPvHost(les, o, 'tfmini') + '</span>').join('') + '</span>';
+}
+
+/* ---- The flows, by hand: Kindergarten to Grade 3, and the vowels ladder -------
+   Keyed by grade and title (not by number, so a lesson keeps its flow wherever
+   it sits). Each card is one idea in fifty words or fewer and ends in a thing to
+   do. The loop fades across a grade: early lessons see a worked example, predict
+   and fill; later ones arrange and write; reviews and reps go almost straight to
+   writing. Every lesson keeps its own check: the flow teaches, Run grades. */
+var TF_FLOWS = {
+/* ============================== KINDERGARTEN ============================== */
+'K|Type your name': [
+  {t: 'see', h: 'The editor is magic paper', p: 'The dark box on the right is the <b>editor</b>. Whatever you type there becomes a page when you press <b>Run</b>. Someone typed one word here. Press the button to see their page.',
+   code: 'Josh', btn: 'Show their page', why: 'Exactly what was typed, and nothing else. That is the whole deal, forever: the computer does what you tell it, letter for letter.'},
+  {t: 'predict', h: 'Letter for letter', p: 'Now guess before you look. It is fine to be wrong: guessing first is what makes it stick.',
+   code: 'Hi, I am Sam', q: 'This is typed in the editor. What does the page show?',
+   ch: [{pv: 'Hi I am Sam', cap: 'no comma', why: 'The comma was typed, so it shows. The computer never drops a thing you typed.'},
+        {pv: 'Hi, I am Sam', cap: 'with the comma', ok: 1, why: 'Every letter, space and comma, exactly as typed.'},
+        {pv: 'HI, I AM SAM', cap: 'in capitals', why: 'The computer never changes your letters: small stays small.'}]},
+  {t: 'tr', h: 'Now you: type your name', p: 'Click in the editor and type your own name. Just the letters: no special symbols. Then press <b>Run</b> and look below.',
+   sub: ['Type your name in the editor', 'Press <b>Run</b>'], why: 'There you are, on a page you made.'},
+  {t: 'tweak', h: 'Make it yours', p: 'Add your last name or a nickname after a space, then press <b>Run</b> again. Changing working code and running it again is most of programming.',
+   re: '\\S+\\s+\\S+', why: 'Changed, and still working.'}
+],
+'K|Type a whole sentence': [
+  {t: 'predict', h: 'Spaces are yours to type', p: 'The computer never guesses where one word ends and the next begins.',
+   code: 'Iamlearningtocode', q: 'This is typed in the editor. What does the page show?',
+   ch: [{t: 'Iamlearningtocode', ok: 1, why: 'No spaces were typed, so none are shown.'},
+        {t: 'I am learning to code', why: 'That needs spaces, and only you can type them.'},
+        {t: 'Nothing: it is not a real word', why: 'The page shows any letters you type, real words or not.'}]},
+  {t: 'fill', h: 'One word short', p: 'The goal wants five words or more. This sentence has three and a gap.',
+   code: 'I am ___ code', opts: ['learning to', 'learningto', 'learning'], ans: 'learning to', gap: 'two more words, with a space between them',
+   no: {'learningto': 'Without a space that is one word, not two.', 'learning': 'That makes four words. The goal wants five.'},
+   why: 'Two words with a space between: I am learning to code. Five.'},
+  {t: 'tr', h: 'Your sentence', p: 'Type a true sentence about yourself, five words or more, and press <b>Run</b>. No save button anywhere: Run is all it takes.',
+   sub: ['Five words or more', 'A space between each word', 'Press <b>Run</b>']},
+  {t: 'tweak', h: 'One more', p: 'Add a second sentence after the first and press <b>Run</b>. The page grows with whatever you type.',
+   re: '[.!?]\\s*\\S', why: 'Two sentences, word for word.'}
+],
+'K|Make it BIG': [
+  {t: 'see', h: 'A tag is a hug', p: 'To turn words into a big headline, wrap them: an <b>opener</b> before, a <b>closer</b> after. Tap each part to see what it does.',
+   parts: [['<h1>', 'the opener: <b>h</b> for heading, <b>1</b> for the biggest kind'], ['My words', 'your words: the only part anyone sees'], ['</h1>', 'the closer: the same tag with a slash']],
+   why: 'Opener, words, closer. Every tag there will ever be has that shape.'},
+  {t: 'predict', h: 'What do tags look like on a page?', code: '<h1>Hello</h1>', q: 'This is typed in the editor. Which page does it make?',
+   ch: [{pv: '&lt;h1&gt;Hello&lt;/h1&gt;', cap: 'the tags show', why: 'Tags never show on a page: they are instructions to the browser.'},
+        {pv: 'Hello', cap: 'small Hello', why: 'Plain words are small. The h1 is what makes them big.'},
+        {pv: '<h1>Hello</h1>', cap: 'a big headline', ok: 1, why: 'The tags vanish and leave a big headline behind.'}]},
+  {t: 'fill', h: 'Close the hug', code: '<h1>My name is Josh___', opts: ['</h1>', '<h1>', '/h1'], ans: '</h1>', gap: 'the closer: it ends the headline',
+   no: {'<h1>': 'That is another opener. It would start a second headline instead of ending this one.', '/h1': 'Close. A tag always lives inside pointy brackets, < and >.'},
+   why: 'The closer is the opener with a slash right after the first pointy bracket.'},
+  {t: 'tr', h: 'Now wrap yours', p: 'The editor already says <code>My name is Josh</code>. Put the opener at the very start and the closer at the very end, then press <b>Run</b>.',
+   sub: ['<code>&lt;h1&gt;</code> at the very start', '<code>&lt;/h1&gt;</code> at the very end', 'Press <b>Run</b>']},
+  {t: 'tweak', h: 'Your own headline', p: 'Change the words between the tags to anything you like and press <b>Run</b>. Keep both tags.',
+   re: '<h1>(?!\\s*My name is Josh\\s*<)[^<]+</h1>', why: 'New words, same hug, still big.'}
+],
+'K|Where did the pointy bits go?': [
+  {t: 'predict', h: 'Where do the tags go?', p: 'You have seen a tag at work once. Commit to a guess first.',
+   code: '<h1>Big news</h1>', q: 'On the page, what do you see?',
+   ch: [{t: '<b>Big news</b>, as a headline', ok: 1, why: 'Tags are stage directions: the audience never sees them, only what they do.'},
+        {t: '<code>&lt;h1&gt;Big news&lt;/h1&gt;</code>, tags and all', why: 'The browser reads the tags and hides them.'},
+        {t: 'Nothing: the tags hide the words', why: 'A tag hides itself, never the words inside it.'}]},
+  {t: 'see', h: 'A tag for ordinary words', p: 'A headline is <code>h1</code>. An ordinary sentence gets <code>p</code>, short for <b>paragraph</b>. Same hug, different tag.',
+   code: '<p>Tags are invisible instructions.</p>', btn: 'Show the page', why: 'Ordinary-sized words, and again no pointy brackets in sight.'},
+  {t: 'fill', h: 'Open the paragraph', code: '___Tags are invisible instructions.</p>', opts: ['<p>', '</p>', 'p'], ans: '<p>', gap: 'the opener for the paragraph',
+   no: {'</p>': 'That is a closer. The slash only goes on the end.', 'p': 'Without pointy brackets it is just the letter p, and it would show on the page.'},
+   why: 'Open with <code>&lt;p&gt;</code>, close with <code>&lt;/p&gt;</code>.'},
+  {t: 'tr', h: 'Your paragraph', p: 'Write a sentence of your own inside a <code>p</code> hug and press <b>Run</b>. Look at the page: no pointy bits anywhere.',
+   sub: ['<code>&lt;p&gt;</code> before your sentence', '<code>&lt;/p&gt;</code> after it', 'Press <b>Run</b>']}
+],
+'K|What happens if you forget the end': [
+  {t: 'see', h: 'Every opener wants its closer', p: 'The closer tells the browser exactly where a hug ends. Without it, the browser has to guess. Tap each part.',
+   parts: [['<h1>', 'opens a headline'], ['Hello there', 'the words in it'], ['</h1>', 'closes it: here, and no further']],
+   why: 'Browsers do guess when a closer is missing, and a guess is how a page goes quietly wrong.'},
+  {t: 'bug', h: 'Spot the forgotten closer', p: 'Three lines, and one of them opens a hug it never closes. Tap it.',
+   lines: ['<h1>Welcome</h1>', '<p>Please come in', '<p>Shoes off, please.</p>'], bad: 1,
+   why: 'The first paragraph opens with <code>&lt;p&gt;</code> and never closes.', fix: '<p>Please come in</p>'},
+  {t: 'fill', h: 'Which closer?', code: '<h1>Hello there___', opts: ['</h1>', '<\\h1>', '<h1>'], ans: '</h1>', gap: 'the closer for the headline',
+   no: {'<\\h1>': 'That is a backslash, a different key. The browser only knows the forward slash.', '<h1>': 'That opens another headline instead of closing this one.'},
+   why: 'A forward slash, right after the first pointy bracket.'},
+  {t: 'tr', h: 'Finish the hug', p: 'The editor holds a headline with no closer. Add it at the end and press <b>Run</b>.',
+   sub: ['Add <code>&lt;/h1&gt;</code> after <code>Hello there</code>', 'Press <b>Run</b>']}
+],
+'K|A small hug': [
+  {t: 'see', h: 'A hug inside a hug', p: 'To make one word lean over (italics), wrap only that word in <code>em</code>, inside the paragraph. Tap the parts.',
+   parts: [['<p>I ', 'the paragraph opens, words begin'], ['<em>', 'the lean starts'], ['really', 'the only word that leans'], ['</em>', 'the lean stops'], [' mean it.</p>', 'more words, then the paragraph closes']],
+   why: 'Small tags go inside big ones. The em opens and closes before the paragraph does.'},
+  {t: 'predict', h: 'Which word leans?', code: '<p>You <em>can</em> do this.</p>', q: 'Which page does this make?',
+   ch: [{pv: '<p><em>You can do this.</em></p>', cap: 'all of it leans', why: 'Only what is between <code>&lt;em&gt;</code> and <code>&lt;/em&gt;</code> leans.'},
+        {pv: '<p>You <em>can</em> do this.</p>', cap: 'one word leans', ok: 1, why: 'Just <i>can</i>: the em hug holds one word.'},
+        {pv: '<p>You can <em>do this.</em></p>', cap: 'the end leans', why: 'The em hug starts right before <i>can</i> and ends right after it.'}]},
+  {t: 'arrange', h: 'Put the pieces back', p: 'Tap the pieces in order (or drag them into the slots). The lean has to open before its word and close after it.',
+   pieces: ['<p>I ', '<em>', 'really', '</em>', ' mean it.</p>'], why: 'Open, word, close, all inside the paragraph.'},
+  {t: 'tr', h: 'Your turn', p: 'The editor has the sentence without the lean. Wrap one word in <code>em</code> and press <b>Run</b>.',
+   sub: ['Keep the <code>p</code> hug around the whole sentence', 'Wrap exactly one word in <code>&lt;em&gt;</code> and <code>&lt;/em&gt;</code>', 'Press <b>Run</b>']}
+],
+'K|Make one word bold': [
+  {t: 'predict', h: 'Same shape, new tag', p: 'The bold hug is <code>strong</code>. You already know how it works.',
+   code: '<p>This part <strong>matters</strong> most.</p>', q: 'Which word is bold on the page?',
+   ch: [{t: '<b>matters</b>', ok: 1, why: 'Only what the strong hug holds.'}, {t: '<b>This part</b>', why: 'Those words sit outside the strong hug.'}, {t: 'the whole sentence', why: 'The paragraph is ordinary; one word inside it is strong.'}]},
+  {t: 'fill', h: 'Close the bold', code: '<p>This part <strong>matters___ most.</p>', opts: ['</strong>', '<strong>', '</em>'], ans: '</strong>', gap: 'the closer for the bold word',
+   no: {'</em>': 'That closes a leaning word, and none was opened here.', '<strong>': 'That would open a second bold instead of closing this one.'},
+   why: 'Every hug you open, you close, with the same name and a slash.'},
+  {t: 'tr', h: 'Make a word bold', p: 'Wrap one word of the sentence in <code>strong</code> and press <b>Run</b>. Open, contents, close: the pattern for every tag that will ever exist.',
+   sub: ['Wrap one word in <code>&lt;strong&gt;</code> and <code>&lt;/strong&gt;</code>', 'Keep it inside the <code>p</code>', 'Press <b>Run</b>']},
+  {t: 'tweak', h: 'Both at once', p: 'Make a different word lean with <code>em</code> as well, and press <b>Run</b>.',
+   re: '<em>[^<]+</em>', why: 'Bold and leaning, side by side, each in its own hug.'}
+],
+'K|Make your own sign': [
+  {t: 'see', h: 'Two lines, two hugs', p: 'A sign is a headline with smaller words under it. Step through it a line at a time and watch the page build.',
+   code: '<h1>Josh’s Room</h1>\n<p>Knock before entering.</p>', labels: [[0, '1 · the headline'], [1, '2 · the smaller words under it']], steps: [0, 1], pvEach: true,
+   why: 'The page is built in the order you write it, top to bottom.'},
+  {t: 'predict', h: 'Swap the lines', code: '<p>Knock before entering.</p>\n<h1>Josh’s Room</h1>', q: 'The two lines are swapped. Which page is it now?',
+   ch: [{pv: '<h1>Josh’s Room</h1>\n<p>Knock before entering.</p>', cap: 'headline on top', why: 'The browser does not sort by size: it follows your code from the top.'},
+        {pv: '<p>Knock before entering.</p>\n<h1>Josh’s Room</h1>', cap: 'small words on top', ok: 1, why: 'First line first. The small words come first now.'},
+        {pv: '<h1>Josh’s Room</h1>', cap: 'only the headline', why: 'Both lines still show; only their order changed.'}]},
+  {t: 'tr', h: 'Make your sign', p: 'A headline for your sign, and a sentence under it. Press <b>Run</b> when both are there.',
+   sub: ['An <code>h1</code> headline', 'A <code>p</code> sentence under it', 'Press <b>Run</b>']},
+  {t: 'tweak', h: 'A bigger sign', p: 'Add a second <code>p</code> line under the first and press <b>Run</b>.',
+   re: '<p>[\\s\\S]*<p>', why: 'One more line, one more hug.'}
+],
+'K|📋 Review: put it together': [
+  {t: 'arrange', h: 'Kindergarten, in one line', p: 'Everything from this grade in one paragraph. Put the pieces back in order: tap them, or drag them.',
+   pieces: ['<p>I ', '<em>really</em>', ' did learn ', '<strong>all</strong>', ' of this.</p>'], why: 'A paragraph, a leaning word and a bold word, each hug closed.'},
+  {t: 'tr', h: 'The checkpoint page', p: 'One page with everything: a headline, then a paragraph that holds one leaning word and one bold word.',
+   sub: ['An <code>h1</code> headline', 'A <code>p</code> under it', 'One word in <code>em</code>', 'One word in <code>strong</code>', 'Press <b>Run</b>']}
+],
+'K|💻 The machine has folders': [
+  {t: 'see', h: 'Ask the machine what is here', p: 'In a terminal you type a word, press Enter, and the machine answers. Tap each command to see what it asks.', pv: false,
+   parts: [['ls', '<b>list</b>: show me what is here'], ['ls project', 'list what is inside the folder called <b>project</b>']],
+   why: 'A word, a space, a name. That is how you point at something in a terminal: you say its name.'},
+  {t: 'predict', h: 'What comes back?', code: 'ls', q: 'You are in a folder that holds a folder called project. You type ls and press Enter. What comes back?',
+   ch: [{t: 'A list that includes <code>project/</code>', ok: 1, why: 'ls lists what is here. Folders end with a /.'},
+        {t: 'Nothing: you have to name a folder', why: 'On its own, ls lists the folder you are standing in.'},
+        {t: 'The files inside project', why: 'That is <code>ls project</code>. Plain ls shows only where you are.'}]},
+  {t: 'tr', h: 'Try it at the prompt', p: 'At the prompt, type <code>ls</code> and press Enter. Then <code>ls project</code> and Enter. Then press <b>Run</b> to have it checked.',
+   sub: ['<code>ls</code>, then Enter', '<code>ls project</code>, then Enter', 'Press <b>Run</b>']}
+],
+'K|🎵 One line makes a drum': [
+  {t: 'see', h: 'One line, one drum', p: 'This line plays a kick drum. Tap each part to see what it says.', pv: false,
+   parts: [['makeBeat(', 'make a beat'], ['KICK', 'which sound: the kick drum'], [', 1', 'track 1: which row it plays on'], [', 1', 'measure 1: which bar'], [', "0---0---0---0---"', 'the rhythm: 16 slots, a <b>0</b> is a hit, a <b>-</b> is a rest'], [');', 'the end of the instruction']],
+   why: 'Every part is a question answered: what, where, when, and how.'},
+  {t: 'predict', h: 'Count the hits', code: '"0---0---0---0---"', q: 'How many times does the kick play?',
+   ch: [{t: '16', why: 'There are 16 slots, but only the 0s are hits. The dashes are rests.'}, {t: '4', ok: 1, why: 'Four 0s, one at the start of each group of four.'}, {t: '1', why: 'Each 0 is a hit, and there are four of them.'}]},
+  {t: 'fill', h: 'Sixteen, exactly', code: 'makeBeat(KICK, 1, 1, "___");', opts: ['0---0---0---0---', '0--0--0--0--', '0---0---0---0--'], ans: '0---0---0---0---', gap: 'the rhythm: exactly sixteen characters',
+   no: {'0--0--0--0--': 'Count them: that is twelve, not sixteen.', '0---0---0---0--': 'Count again: the last group is one dash short.'},
+   why: 'Four groups of four: a 0 and three dashes, four times over.'},
+  {t: 'tr', h: 'Make the drum play', p: 'Type the kick line exactly, then press <b>Run</b>. The board reads your line back and shows where each hit landed.',
+   sub: ['<code>makeBeat(KICK, 1, 1, "0---0---0---0---");</code>', 'Press <b>Run</b>']}
+],
+'K|Boss: say it out loud': [
+  {t: 'predict', h: 'Top to bottom, one at a time', p: 'Nothing new here: this is Kindergarten on a new screen.',
+   code: 'hero.say("here I go");\nhero.say("one line at a time");\nhero.moveRight(4);', q: 'What happens when this runs?',
+   ch: [{t: 'All three at once', why: 'A computer does one instruction, finishes it, then does the next.'},
+        {t: 'Two sayings, in order, then the walk', ok: 1, why: 'Top to bottom, one at a time, in the order written.'},
+        {t: 'The walk first, then the talking', why: 'Order is exactly as written: the walk is last.'}]},
+  {t: 'tr', h: 'Clear the board', p: 'Two things said out loud, then a walk to the flag.',
+   sub: ['Two <code>hero.say("...")</code> lines with your own words', 'Then <code>hero.moveRight(4);</code>', 'Press <b>Run</b>']}
+],
+/* ================================ GRADE 1 ================================= */
+'G1|Six sizes of big': [
+  {t: 'predict', h: 'Six sizes', p: 'Headings come in six sizes: <code>h1</code> is the biggest, <code>h6</code> the smallest.',
+   q: 'These are an h1, an h3 and an h6, mixed up. Which one is the h6?',
+   ch: [{pv: '<h3>Chapter One</h3>', cap: 'A', say: 'medium heading', why: 'That is the middle size, h3.'},
+        {pv: '<h6>Chapter One</h6>', cap: 'B', say: 'tiny heading', ok: 1, why: 'The bigger the number, the smaller the heading.'},
+        {pv: '<h1>Chapter One</h1>', cap: 'C', say: 'huge heading', why: 'That is h1, the biggest of all.'}]},
+  {t: 'see', h: 'Sizes are for structure', p: 'Headings work like a report: a title, sections, small notes. Step through and watch each level appear.',
+   code: '<h1>The Book</h1>\n<h3>Chapter One</h3>\n<h6>a tiny footnote heading</h6>', labels: [[0, 'the title'], [1, 'a section'], [2, 'a small note']], steps: [0, 1, 2], pvEach: true,
+   why: 'The number says how important a heading is, not just how big.'},
+  {t: 'fill', h: 'Match the closer', code: '<h6>a tiny footnote heading</___>', opts: ['h6', 'h3', '6'], ans: 'h6', gap: 'the name inside the closer, which must match its opener',
+   no: {'h3': 'The closer has to match its opener, and this one opened an h6.', '6': 'The name is h6: the h matters.'}, why: 'Opener and closer always carry the same name.'},
+  {t: 'tr', h: 'Three sizes', p: 'Make three headings on one page: an h1, an h3 and an h6, each with words in it.',
+   sub: ['An <code>h1</code> with words', 'An <code>h3</code> with words', 'An <code>h6</code> with words', 'Press <b>Run</b>']}
+],
+'G1|A real button': [
+  {t: 'see', h: 'A tag you can press', p: 'Some tags make things you can touch. Tap each part.',
+   parts: [['<button>', 'opens a button'], ['Press me', 'the words on it'], ['</button>', 'closes it']],
+   why: 'After you Run, press it on the page: it clicks down. Making it do something is Grade 4.'},
+  {t: 'fill', h: 'Close the button', code: '<button>Do not press this button___', opts: ['</button>', '<button>', '</btn>'], ans: '</button>', gap: 'the closer for the button',
+   no: {'</btn>': 'Tag names are spelled out in full. btn is not a tag the browser knows.', '<button>': 'That opens a second button instead of closing this one.'},
+   why: 'The same name, with a slash.'},
+  {t: 'tr', h: 'Your button', p: 'Make a button with your own words on it, and press <b>Run</b>. Then press your button.',
+   sub: ['<code>&lt;button&gt;</code>', 'Your own words', '<code>&lt;/button&gt;</code>', 'Press <b>Run</b>']},
+  {t: 'tweak', h: 'New words', p: 'Change the words on the button and press <b>Run</b>.', re: '<button>(?!\\s*Do not press this button\\s*<)[^<]+</button>', why: 'Same button, new words.'}
+],
+'G1|A list': [
+  {t: 'see', h: 'Two tags, one list', p: 'A list is a <code>ul</code> holding one <code>li</code> per thing. Step through it and watch the list build.',
+   code: '<ul>\n  <li>milk</li>\n  <li>bread</li>\n</ul>', labels: [[0, '1 · open the list'], [1, '2 · one li per thing'], [3, '3 · close the list']], steps: [0, 1, 2, 3], pvEach: true,
+   why: 'The li items live inside the ul. Elements living inside elements is called <b>nesting</b>.'},
+  {t: 'bug', h: 'One item is not closed', p: 'Tap the line with the mistake.',
+   lines: ['<ul>', '  <li>tacos</li>', '  <li>camping', '  <li>naps</li>', '</ul>'], bad: 2,
+   why: '<i>camping</i> never got its closer, so the browser has to guess where it ends.', fix: '  <li>camping</li>'},
+  {t: 'arrange', h: 'Build the list', p: 'Put the lines in order. The things you like can go in any order; the list tags cannot.',
+   lines: ['<ul>', '  <li>tacos</li>', '  <li>camping</li>', '  <li>naps</li>', '</ul>'], labels: ['open the list', 'a thing', 'a thing', 'a thing', 'close the list'], free: [[1, 3]],
+   why: 'Open, items, close.'},
+  {t: 'tr', h: 'Three things you like', p: 'The editor has an empty list. Put three <code>li</code> items inside it and press <b>Run</b>.',
+   sub: ['Keep <code>&lt;ul&gt;</code> and <code>&lt;/ul&gt;</code> around everything', 'Three <code>&lt;li&gt;</code> items inside', 'Press <b>Run</b>']}
+],
+'G1|An extra note on an element': [
+  {t: 'see', h: 'Notes ride in the opener', p: 'Tags can carry extra notes called <b>attributes</b>: a name, an equals sign, a value in quotes. Tap each part.',
+   parts: [['<p', 'the opener begins'], [' title="a secret note"', 'an attribute: <b>title</b> = the note, in quotes'], ['>', 'the opener ends'], ['Hover over me', 'the words'], ['</p>', 'the closer: never any notes here']],
+   why: 'After you Run, hold your mouse over the sentence and the note pops up.'},
+  {t: 'predict', h: 'Where does it go?', q: 'Which line puts the note in the right place?',
+   ch: [{code: '<p>Text</p title="hi">', why: 'Closers never carry attributes.'}, {code: '<p>Text title="hi"</p>', why: 'Inside the hug it is just words, and it would show on the page.'},
+        {code: '<p title="hi">Text</p>', ok: 1, why: 'Inside the opener, after the tag name.'}]},
+  {t: 'fill', h: 'Name the note', code: '<p ___="You found the secret note!">Hover over me</p>', opts: ['title', 'name', 'note'], ans: 'title', gap: 'the attribute browsers show as a tooltip',
+   no: {'name': 'name is a real attribute, but it does not pop up.', 'note': 'The browser does not know an attribute called note, so it ignores it.'}, why: 'title is the one every browser shows on hover.'},
+  {t: 'tr', h: 'Hide a note', p: 'Give the paragraph a <code>title</code> with your own message, press <b>Run</b>, then hover over the words.',
+   sub: ['<code>title="..."</code> inside the <code>p</code> opener', 'Your message in the quotes', 'Press <b>Run</b>, then hover']}
+],
+'G1|A link you can click': [
+  {t: 'see', h: 'The tag that makes the web', p: '<code>a</code> is short for anchor: it ties this page to another. Its <code>href</code> is the address. Tap each part.',
+   parts: [['<a', 'a link starts'], [' href="https://example.com"', '<b>href</b>: the address it points at'], ['>', 'the opener ends'], ['Visit my favorite site', 'the words you click'], ['</a>', 'the link ends']],
+   why: 'The address hides in the opener; the words between are what people click.'},
+  {t: 'predict', h: 'What do people click?', code: '<a href="https://example.com">My favorite place</a>', q: 'On the page, what shows up as the link?',
+   ch: [{t: 'https://example.com', why: 'The address is inside the opener, so it never shows.'}, {t: 'My favorite place', ok: 1, why: 'The words between the tags are the part you click.'}, {t: 'the whole line, tags and all', why: 'Tags never show on a page.'}]},
+  {t: 'fill', h: 'Where does it go?', code: '<a ___="https://example.com">My favorite place on the internet</a>', opts: ['href', 'src', 'link'], ans: 'href', gap: 'the attribute that says where the link goes',
+   no: {'src': 'src is for pictures and sounds. Links use href.', 'link': 'The browser does not know an attribute called link.'}, why: 'href: hypertext reference, the address.'},
+  {t: 'arrange', h: 'Build a link', p: 'Put the pieces in order.', pieces: ['<a', ' href="https://example.com"', '>', 'My favorite place', '</a>'], why: 'Opener with its address, words, closer.'},
+  {t: 'tr', h: 'Your link', p: 'Make a link with an address and your own words, and press <b>Run</b>.',
+   sub: ['<code>&lt;a href="..."&gt;</code> with an address', 'Your own link words', '<code>&lt;/a&gt;</code>', 'Press <b>Run</b>']}
+],
+'G1|Boxes to group things': [
+  {t: 'see', h: 'A plain cardboard box', p: '<code>div</code> is a box you cannot see. It holds things that belong together, so later they can be styled or moved as one.',
+   code: '<div>\n  <h2>My corner</h2>\n  <p>Everything in this box belongs together.</p>\n</div>', labels: [[0, '1 · open the box'], [1, '2 · what goes in it'], [3, '3 · close the box']], btn: 'Show the page',
+   why: 'On its own a div shows nothing. In Grade 2 you will color it, and the whole box changes at once.'},
+  {t: 'arrange', h: 'Pack the box', p: 'Put the lines in order: box open, heading, paragraph, box closed.',
+   lines: ['<div>', '  <h2>My corner</h2>', '  <p>Everything in this box belongs together.</p>', '</div>'], labels: ['open the box', 'a heading inside', 'a paragraph inside', 'close the box'],
+   why: 'Everything between the div’s opener and closer is inside the box.'},
+  {t: 'tr', h: 'Your box', p: 'Put an <code>h2</code> and a <code>p</code> together inside one <code>div</code>, and press <b>Run</b>.',
+   sub: ['A <code>&lt;div&gt;</code> ... <code>&lt;/div&gt;</code>', 'An <code>h2</code> inside it', 'A <code>p</code> inside it', 'Press <b>Run</b>']}
+],
+'G1|📋 Review: put it together': [
+  {t: 'arrange', h: 'A profile card, in pieces', p: 'All of Grade 1 in one card. Put the lines in order; the labels say what each slot is for.',
+   lines: ['<div>', '  <h2>About Josh</h2>', '  <ul>', '    <li>learning to code</li>', '    <li>likes tacos</li>', '    <li>building an app</li>', '  </ul>', '  <a href="https://example.com">my favorite site</a>', '  <button>Say hi</button>', '</div>'],
+   labels: ['open the card', 'a heading', 'open the list', 'a thing', 'a thing', 'a thing', 'close the list', 'a link', 'a button', 'close the card'], free: [[3, 5], [7, 8]],
+   why: 'One box holding a heading, a list, a link and a button.'},
+  {t: 'tr', h: 'Your profile card', p: 'Build your own card inside the <code>div</code> the editor starts with.',
+   sub: ['An <code>h2</code>', 'A <code>ul</code> with three <code>li</code>', 'A link with an <code>href</code>', 'A <code>button</code>', 'Press <b>Run</b>']}
+],
+'G1|💻 Everything has a name': [
+  {t: 'see', h: 'Say the file’s name', p: '<code>cat</code> shows what is inside a file. The <code>/</code> joins a folder to a file in it. Tap each part.', pv: false,
+   parts: [['cat', 'show what is inside a file'], [' project/', 'in the folder called project,'], ['readme.md', 'the file called readme.md']],
+   why: 'Folder, slash, file: the way a surname joins a family.'},
+  {t: 'fill', h: 'The exact name', code: 'cat project/___', opts: ['readme.md', 'readme', 'readme.txt'], ans: 'readme.md', gap: 'the file’s full name, ending and all',
+   no: {'readme': 'A terminal does not guess: readme is not readme.md.', 'readme.txt': 'Close, but the file ends in .md.'}, why: 'Every letter of the name, ending included.'},
+  {t: 'tr', h: 'Show two files', p: 'At the prompt, show the readme and then the notes, each followed by Enter. Then press <b>Run</b>.',
+   sub: ['<code>cat project/readme.md</code>, Enter', '<code>cat project/notes.txt</code>, Enter', 'Press <b>Run</b>']}
+],
+'G1|⚔️ Walk to the flag': [
+  {t: 'see', h: 'A move has a name', p: 'The character is called <code>hero</code> and one of its moves is called <code>moveRight</code>. Tap each part.', pv: false,
+   parts: [['hero', 'who: the character on the board'], ['.moveRight', 'what: the move, by its name'], ['(3)', 'how much: three squares'], [';', 'the end of the instruction']],
+   why: 'Who, dot, what, how much.'},
+  {t: 'predict', h: 'Which line gets there?', q: 'The flag is three squares to the right. Which line gets the hero onto it?',
+   ch: [{code: 'hero.moveRight();', why: 'With no number it does not know how far to go.'}, {code: 'moveRight(3);', why: 'Without <code>hero.</code> nobody is told to move.'}, {code: 'hero.moveRight(3);', ok: 1, why: 'Who, what and how far: all three.'}]},
+  {t: 'tr', h: 'Walk to the flag', p: 'Type the move, press <b>Run</b> and watch the hero walk.',
+   sub: ['<code>hero.moveRight(3);</code>', 'Press <b>Run</b>']}
+],
+'G1|Boss: call it by its name': [
+  {t: 'predict', h: 'The right name, in the right place', p: 'Nothing new: Grade 1 was things having names.',
+   code: 'hero.attack("Grubb");', q: 'Grubb is two squares away, not next to the hero. What happens?',
+   ch: [{t: 'The swing misses: Grubb is not beside you', ok: 1, why: 'Naming someone does not bring them closer. Step up first.'}, {t: 'Grubb goes down anyway', why: 'An attack only reaches the square next to you.'}, {t: 'The hero walks over first', why: 'The hero only does what it is told. Walking is a separate line.'}]},
+  {t: 'tr', h: 'Clear the corridor', p: 'Step next to each enemy and attack them by name, then finish on the flag.',
+   sub: ['Step next to Grubb, then <code>hero.attack("Grubb");</code>', 'The same for Mott', 'Finish on the flag', 'Press <b>Run</b>']}
+],
+/* ================================ GRADE 2 ================================= */
+'G2|Your first color': [
+  {t: 'see', h: 'A second language', p: 'CSS says how things look. A rule picks WHO, then says WHAT. Tap each part.',
+   parts: [['p', 'WHO: every paragraph (a tag’s name, no brackets)'], [' {', 'the rule opens'], ['\n  color: red;', 'WHAT: the property, a colon, the value, a semicolon'], ['\n}', 'the rule closes']],
+   why: 'Read it aloud: find every paragraph, make its text red.'},
+  {t: 'predict', h: 'What turns blue?', code: 'h1 {\n  color: blue;\n}', q: 'The page has a headline and a paragraph. Which page does this rule make?',
+   ch: [{pv: 'p { color: blue; }', cap: 'the paragraph', say: 'the paragraph blue', why: 'That would be a p rule. This one picks h1.'},
+        {pv: 'h1 { color: blue; }', cap: 'the headline', say: 'the headline blue', ok: 1, why: 'The rule starts with h1, so only headlines change.'},
+        {pv: 'body { color: blue; }', cap: 'everything', say: 'everything blue', why: 'That would be the whole page, body. This rule picks h1 only.'}]},
+  {t: 'fill', h: 'Between property and value', code: 'p {\n  color___ red;\n}', opts: [':', '=', ';'], ans: ':', gap: 'the mark between the property and its value',
+   no: {'=': 'CSS uses a colon here, not an equals sign.', ';': 'The semicolon ends the line. Between property and value goes a colon.'}, why: 'Property, colon, value, semicolon.'},
+  {t: 'tr', h: 'Make the paragraph red', p: 'Inside the rule the editor starts with, add one line that makes every paragraph red, and press <b>Run</b>.',
+   sub: ['Inside <code>p { }</code>, a <code>color: red;</code> line', 'Press <b>Run</b>']},
+  {t: 'tweak', h: 'Your color', p: 'CSS knows about 140 colors by name. Try <code>crimson</code> or <code>royalblue</code> and press <b>Run</b>.',
+   re: 'color\\s*:\\s*(?!red\\b)[a-z#]', why: 'Same rule, new color.'}
+],
+'G2|Background color': [
+  {t: 'predict', h: 'Ink and paper', p: '<code>color</code> is the ink. The paint behind is <code>background</code>. <code>body</code> means the whole page.',
+   code: 'body {\n  background: lightyellow;\n}', q: 'Which page does this rule make?',
+   ch: [{pv: 'body { background: lightyellow; }', cap: 'yellow page', say: 'the whole page yellow', ok: 1, why: 'The whole page, painted behind everything.'},
+        {pv: 'body { color: #9a8400; }', cap: 'yellow words', say: 'yellow words', why: 'That is color, the ink. Background paints behind the words.'},
+        {pv: 'p { background: lightyellow; }', cap: 'one yellow box', say: 'just the paragraph yellow', why: 'That would be a p rule. body is the whole page.'}]},
+  {t: 'fill', h: 'Paint behind', code: 'body {\n  ___: lightyellow;\n}', opts: ['background', 'color', 'paper'], ans: 'background', gap: 'the property that paints behind everything',
+   no: {'color': 'color is the ink of the letters.', 'paper': 'A good guess, but CSS calls it background.'}, why: 'background: the paper; color: the ink.'},
+  {t: 'tr', h: 'Paint the page', p: 'Give the whole page a background color and press <b>Run</b>.', sub: ['Inside <code>body { }</code>, a <code>background:</code> with a color name', 'Press <b>Run</b>']},
+  {t: 'tweak', h: 'Try another', p: 'Try <code>lavender</code>, <code>mintcream</code> or <code>peachpuff</code> and press <b>Run</b>.', re: 'background\\s*:\\s*(?!lightyellow\\b)[a-z#]', why: 'A new paper, the same rule.'}
+],
+'G2|Size and center': [
+  {t: 'see', h: 'One rule, many lines', p: 'A rule can hold as many lines as you like. Step through this one and watch the headline change.',
+   code: 'h1 {\n  font-size: 60px;\n  text-align: center;\n}', labels: [[1, 'size: 60 dots tall'], [2, 'line it up in the middle']], steps: [0, 1, 2, 3], pvEach: true,
+   why: '<code>px</code> means pixels, the dots on your screen. Each line still ends with a semicolon.'},
+  {t: 'predict', h: 'Which line centers?', q: 'Which of these lines puts the headline in the middle?',
+   ch: [{code: 'font-size: center;', why: 'font-size wants a size, like 60px.'}, {code: 'text-align: center;', ok: 1, why: 'text-align says which way it lines up: left, center or right.'}, {code: 'align: middle;', why: 'CSS does not know align or middle.'}]},
+  {t: 'fill', h: 'Spelled the CSS way', code: 'h1 {\n  font-size: 60px;\n  text-align: ___;\n}', opts: ['center', 'centre', 'middle'], ans: 'center', gap: 'the value that puts it in the middle',
+   no: {'centre': 'CSS is spelled the American way: center.', 'middle': 'CSS calls it center.'}, why: 'center, the only spelling CSS knows.'},
+  {t: 'tr', h: 'Big and centered', p: 'Make the headline bigger and put it in the middle, both in the one rule, and press <b>Run</b>.',
+   sub: ['A <code>font-size:</code> with a number and px', '<code>text-align: center;</code>', 'Press <b>Run</b>']}
+],
+'G2|Breathing room': [
+  {t: 'see', h: 'Space inside the box', p: '<code>padding</code> is space inside a box, between its edge and its words. A background makes it visible. Step through.',
+   code: 'p {\n  background: mintcream;\n  padding: 20px;\n}', labels: [[1, 'paint, so the box shows'], [2, 'room inside the edge']], steps: [1, 2, 3], pvEach: true,
+   why: 'Like the cardboard around a framed photo.'},
+  {t: 'predict', h: 'Turn it up', code: 'p {\n  background: mintcream;\n  padding: 50px;\n}', q: 'padding goes from 20px to 50px. Which page is it now?',
+   ch: [{pv: 'p { background: mintcream; padding: 20px; font-size: 40px; }', cap: 'bigger words', why: 'padding never changes the words: font-size does.'},
+        {pv: 'p { background: mintcream; margin: 50px; }', cap: 'moved away', why: 'Space outside the box is margin, a different property.'},
+        {pv: 'p { background: mintcream; padding: 50px; }', cap: 'a roomier box', ok: 1, why: 'More room inside the edge, same words.'}]},
+  {t: 'tr', h: 'Give it room', p: 'Give the paragraph a background color and at least 20px of padding, and press <b>Run</b>.',
+   sub: ['A <code>background:</code> with a color', 'A <code>padding:</code> with a number and px', 'Press <b>Run</b>']},
+  {t: 'tweak', h: 'Bigger', p: 'Try <code>padding: 40px;</code> and press <b>Run</b>. Watch the box grow.', re: 'padding\\s*:\\s*(?!20px)\\d', why: 'One number, a whole new look.'}
+],
+'G2|Lines and round corners': [
+  {t: 'see', h: 'An outline, three values', p: '<code>border</code> takes three values in one line. Tap each part.',
+   parts: [['border:', 'an outline, around the box'], [' 3px', 'how thick'], [' solid', 'what style'], [' darkgreen;', 'what color'], ['\nborder-radius: 12px;', 'rounds the corners']],
+   pvCode: 'p {\n  border: 3px solid darkgreen;\n  border-radius: 12px;\n}', why: 'Thick, style, color, and then round corners: a card.'},
+  {t: 'fill', h: 'The style of the line', code: 'p {\n  border: 3px ___ darkgreen;\n}', opts: ['solid', 'line', 'straight'], ans: 'solid', gap: 'the style of the line, in the middle of the three',
+   no: {'line': 'CSS calls a plain line solid.', 'straight': 'CSS calls a plain line solid.'}, why: 'solid, or dashed, or dotted: the style sits between thickness and color.'},
+  {t: 'arrange', h: 'Build the card', p: 'Put the lines in order. The two middle lines can go either way round.',
+   lines: ['p {', '  border: 3px solid darkgreen;', '  border-radius: 12px;', '}'], labels: ['who', 'the outline', 'the corners', 'close the rule'], free: [[1, 2]], why: 'Who, then what, then close.'},
+  {t: 'tr', h: 'Your card', p: 'Give the paragraph a border and rounded corners, and press <b>Run</b>.',
+   sub: ['A <code>border:</code> line', 'A <code>border-radius:</code> with a number', 'Press <b>Run</b>']}
+],
+'G2|📋 Review: put it together': [
+  {t: 'bug', h: 'One line CSS will drop', p: 'One line here is quietly ignored by the browser. Tap it.',
+   lines: ['p {', '  color: darkgreen;', '  background mintcream;', '  font-size: 20px;', '}'], bad: 2,
+   why: 'The colon is missing, so CSS throws that whole line away and the paper stays white.', fix: '  background: mintcream;'},
+  {t: 'tr', h: 'Everything, one rule', p: 'Dress the paragraph with everything from Grade 2, in one rule.',
+   sub: ['<code>color</code>', '<code>background</code>', '<code>font-size</code>', '<code>padding</code>', '<code>border-radius</code>', 'Press <b>Run</b>']}
+],
+'G2|🏋 Rep: dress a warning': [
+  {t: 'fill', h: 'Alarming paper', code: 'h1 {\n  color: darkred;\n  ___: mistyrose;\n  padding: 14px;\n}', opts: ['background', 'color', 'back-ground'], ans: 'background', gap: 'the property for the paint behind the words',
+   no: {'color': 'color is already the ink, on the line above.', 'back-ground': 'One word, no dash: background.'}, why: 'Ink, paper, room: the three dials of Grade 2.'},
+  {t: 'tr', h: 'Dress the warning', p: 'One rule on the h1 with all three: color, background and at least 10px of padding.',
+   sub: ['<code>color:</code>', '<code>background:</code>', '<code>padding:</code> of 10px or more', 'Press <b>Run</b>']}
+],
+'G2|🏋 Rep: the pill button': [
+  {t: 'see', h: 'Two numbers, one pill', p: 'Two new tricks make a pill. Tap each one.',
+   parts: [['padding: 10px 20px;', 'two numbers: 10 above and below, 20 left and right'], ['\nborder-radius: 999px;', 'a huge rounding: the ends go fully round']],
+   pvCode: 'p {\n  border: 2px solid seagreen;\n  border-radius: 999px;\n  padding: 10px 20px;\n  background: mintcream;\n}', why: 'Wider sides and round ends: a pill.'},
+  {t: 'tr', h: 'Make the pill', p: 'A border, a huge border-radius (99px or more), padding and a background, on the p.',
+   sub: ['<code>border:</code>', '<code>border-radius:</code> of 99px or more', '<code>padding:</code>', '<code>background:</code>', 'Press <b>Run</b>']}
+],
+'G2|🎵 Color in the slices': [
+  {t: 'see', h: 'Sixteen boxes', p: 'A rhythm string is sixteen empty boxes in four groups of four. Tap each group.', pv: false,
+   parts: [['----', 'boxes 1 to 4'], ['----', 'boxes 5 to 8'], ['----', 'boxes 9 to 12'], ['----', 'boxes 13 to 16']],
+   why: 'Box 9 is the first box of the third group.'},
+  {t: 'predict', h: 'Which one?', q: 'Which string colors in box 1 and box 9 only?',
+   ch: [{code: '"0------0--------"', why: 'Count the dashes after the first 0: seven, so the second 0 lands in box 8.'},
+        {code: '"0-------0-------"', ok: 1, why: 'Box 1, seven dashes, then box 9.'}, {code: '"0---0---0---0---"', why: 'That colors in four boxes: 1, 5, 9 and 13.'}]},
+  {t: 'tr', h: 'Color them in', p: 'A KICK on track 1 with hits on slices 1 and 9 only. Press <b>Run</b> and read what the board says.',
+   sub: ['<code>makeBeat(KICK, 1, 1, "...")</code>', 'A 0 in box 1 and box 9, dashes everywhere else', 'Press <b>Run</b>']}
+],
+'G2|Boss: the exact number': [
+  {t: 'predict', h: 'The number is the instruction', p: 'Nothing new: Grade 2 was exact values.',
+   code: 'hero.moveRight(4);', q: 'How many moves is this one line?',
+   ch: [{t: 'One: it is one line', why: 'One line, but the number inside says how many squares.'}, {t: 'Four: the number says how many', ok: 1, why: 'Four squares, one line.'}, {t: 'None until it is written four times', why: 'The number does the repeating for you.'}]},
+  {t: 'tr', h: 'Six moves, three lines', p: 'Four right and two down, in three lines or fewer.',
+   sub: ['Four right in one line', 'Two down in one line', 'Press <b>Run</b>']}
+],
+/* ================================ GRADE 3 ================================= */
+'G3|Why you need name tags': [
+  {t: 'predict', h: 'The problem', p: 'This page has two paragraphs. You only want to style the second one.',
+   code: 'p {\n  color: crimson;\n}', q: 'What does a p rule do to this page?',
+   ch: [{pv: '.special { color: crimson; }', cap: 'only the second', say: 'only the second paragraph red', why: 'A p rule cannot tell them apart.'},
+        {pv: 'p { color: crimson; }', cap: 'both of them', say: 'both paragraphs red', ok: 1, why: 'Every p, both of them. That is the problem a name tag solves.'},
+        {pv: 'h1 { color: crimson; }', cap: 'neither', say: 'nothing red', why: 'p reaches every paragraph there is.'}]},
+  {t: 'see', h: 'A name tag and a dot', p: 'The second paragraph wears a name tag: <code>class="special"</code>. In CSS a dot means <i>things wearing this name</i>.',
+   code: '.special {\n  color: crimson;\n}', labels: [[0, 'a dot: everything wearing class="special"']], btn: 'Show the page', why: 'Only the paragraph wearing the tag changes.'},
+  {t: 'fill', h: 'The selector', code: '___ {\n  color: crimson;\n}', opts: ['.special', 'special', '#special'], ans: '.special', gap: 'the selector for things wearing class="special"',
+   no: {'special': 'Without the dot, CSS looks for a tag called special. There is none.', '#special': 'A hash looks for an id. This is a class: a dot.'}, why: 'Dot, then the name: things classed as special.'},
+  {t: 'tr', h: 'Style only one', p: 'Write the rule for the paragraph wearing the name tag, and press <b>Run</b>.',
+   sub: ['<code>.special { }</code>', 'A property inside, like a color', 'Press <b>Run</b>: only the second paragraph changes']}
+],
+'G3|Many things, one name': [
+  {t: 'predict', h: 'One rule, many things', p: 'A class can be worn by as many elements as you like.',
+   code: '.fancy {\n  background: lavender;\n}', q: 'Three paragraphs wear <code>class="fancy"</code> and one does not. How many change?',
+   ch: [{t: 'Only the first one', why: 'A class reaches every element wearing it.'}, {t: 'All three that wear it', ok: 1, why: 'Define the look once, apply it anywhere.'}, {t: 'All four', why: 'The plain paragraph wears no tag, so it is left alone.'}]},
+  {t: 'arrange', h: 'Build the rule', p: 'Put the lines in order. The two middle lines can go either way round.',
+   lines: ['.fancy {', '  background: lavender;', '  padding: 10px;', '}'], labels: ['who: things classed fancy', 'paint', 'room', 'close the rule'], free: [[1, 2]], why: 'One rule, three elements dressed.'},
+  {t: 'tr', h: 'Dress all three', p: 'One <code>.fancy</code> rule that gives them a background and padding.',
+   sub: ['<code>.fancy { }</code> with a <code>background:</code>', 'A <code>padding:</code> with a number', 'Press <b>Run</b>']},
+  {t: 'tweak', h: 'Round them off', p: 'Add <code>border-radius: 8px;</code> and press <b>Run</b>. All three change at once.', re: 'border-radius', why: 'One line, three elements.'}
+],
+'G3|A name for exactly one thing': [
+  {t: 'see', h: 'A hash for the one', p: 'A class is for many. An <b>id</b> is for exactly one element on the page, and CSS points at it with a hash. Tap each part.',
+   parts: [['#title', 'a hash: the ONE element with <code>id="title"</code>'], [' {\n  color: royalblue;\n}', 'the style it gets']],
+   pvCode: '#title {\n  color: royalblue;\n}', why: 'Dot for class, many. Hash for id, one.'},
+  {t: 'predict', h: 'Dot or hash?', q: 'Which selector reaches <code>&lt;h1 id="title"&gt;</code>?',
+   ch: [{code: '.title', why: 'A dot looks for a class. This is an id.'}, {code: 'title', why: 'A bare name looks for a tag called title.'}, {code: '#title', ok: 1, why: 'A hash, then the id.'}]},
+  {t: 'tr', h: 'Style the one', p: 'Style the element with <code>id="title"</code> and press <b>Run</b>.', sub: ['<code>#title { }</code>', 'A color inside', 'Press <b>Run</b>']}
+],
+'G3|📋 Review: put it together': [
+  {t: 'arrange', h: 'Three rules, three reaches', p: 'Put the lines in order: every p, then the fancy ones, then the one title.',
+   lines: ['p {', '  color: gray;', '}', '.fancy {', '  color: crimson;', '}', '#title {', '  color: royalblue;', '}'],
+   labels: ['every p', '', '', 'every .fancy', '', '', 'the one #title', '', ''], why: 'A bare name for every tag, a dot for a class, a hash for the one id.'},
+  {t: 'tr', h: 'All three', p: 'Three rules, each with at least a color: one for every p, one for .fancy, one for #title.',
+   sub: ['<code>p { color: ... }</code>', '<code>.fancy { color: ... }</code>', '<code>#title { color: ... }</code>', 'Press <b>Run</b>']}
+],
+'G3|🏋 Rep: aim at both': [
+  {t: 'predict', h: 'Which reach?', code: '<h1 id="headline">Community News</h1>\n<p class="note">Bake sale Friday.</p>\n<p class="note">Bring cookies.</p>', q: 'Which selector reaches both notes?',
+   ch: [{code: '#note', why: 'A hash is for an id, and the notes wear a class.'}, {code: '.note', ok: 1, why: 'A dot reaches everything wearing the class: both notes.'}, {code: 'note', why: 'Without a dot it looks for a tag called note.'}]},
+  {t: 'tr', h: 'Aim at both', p: 'A hash rule for the headline with a color, and a dot rule for the notes with a background.',
+   sub: ['<code>#headline { color: ... }</code>', '<code>.note { background: ... }</code>', 'Press <b>Run</b>']}
+],
+'G3|💻 A name you can change': [
+  {t: 'see', h: 'mv changes the name tag', p: 'In a terminal, <code>mv</code> moves a file, and moving it to a new name renames it. Tap each part.', pv: false,
+   parts: [['mv', '<b>move</b> (here: rename)'], [' project/notes.txt', 'the old name'], [' project/todo.txt', 'the new name']],
+   why: 'Same folder, new name. Nothing inside the file changes.'},
+  {t: 'predict', h: 'After the rename', q: 'After that mv, what does <code>ls project</code> show?',
+   ch: [{t: 'both notes.txt and todo.txt', why: 'Renaming is not copying: one file before, one file after.'}, {t: 'todo.txt, and no notes.txt', ok: 1, why: 'The old name is gone and the new one is there.'}, {t: 'notes.txt only', why: 'The mv already happened: it is called todo.txt now.'}]},
+  {t: 'tr', h: 'Rename it', p: 'At the prompt, rename the notes to todo, then list the folder to check. Then press <b>Run</b>.',
+   sub: ['<code>mv project/notes.txt project/todo.txt</code>, Enter', '<code>ls project</code>, Enter', 'Press <b>Run</b>']}
+],
+'G3|Boss: ask what it is': [
+  {t: 'predict', h: 'The answer, not the words', p: 'Nothing new: Grade 3 was labels, and quotes around a name make it just words.',
+   code: 'hero.say(hero.look("right"));', q: 'A wall is to the right of the hero. What does it say?',
+   ch: [{t: '<code>wall</code>', ok: 1, why: 'No quotes around hero.look("right"), so it is the answer, and the answer is the word wall.'},
+        {t: '<code>hero.look("right")</code>', why: 'That would need quotes around it. Without them the look happens first.'}, {t: 'Nothing: say needs quotes', why: 'say needs words, and look hands some back.'}]},
+  {t: 'tr', h: 'Read the board', p: 'Read out what is ahead of you twice, deal with what you find, and reach the flag.',
+   sub: ['<code>hero.say(hero.look("right"));</code>', 'Move, and look again', 'Deal with what you find', 'Reach the flag and press <b>Run</b>']}
+],
+/* ============================ THE VOWELS LADDER ============================ */
+'KT|Vowels 1: walk the letters': [
+  {t: 'see', h: 'A loop over a word', p: 'This function walks a word one letter at a time and wraps each letter in brackets. Step through it: the labels say what each part is for.', pv: false,
+   code: 'function showEach(text) {\n  let out = "";\n  for (const letter of text) {\n    out = out + "[" + letter + "]";\n  }\n  return out;\n}',
+   labels: [[1, '1 · an empty pile'], [2, '2 · visit every letter'], [3, '3 · add it to the pile'], [5, '4 · hand the pile back']], steps: [1, 2, 3, 5, 6], stepBtn: 'Next part',
+   why: 'The loop hands you each letter in turn, and <code>letter</code> holds the one it is on.'},
+  {t: 'predict', h: 'What comes back?', q: 'What does <code>showEach("hi")</code> hand back?',
+   ch: [{code: '"[hi]"', why: 'The loop runs once per letter, so each letter gets its own brackets.'}, {code: '"[h][i]"', ok: 1, why: 'Two letters, two laps, two pairs of brackets.'}, {code: '"hi"', why: 'Each lap adds a bracket, the letter and a bracket.'}]},
+  {t: 'fill', h: 'Walk it', code: 'for (const letter ___ text) {', opts: ['of', 'in', 'from'], ans: 'of', gap: 'the word that links the letter’s name to what it walks',
+   no: {'in': 'in hands you positions (0, 1, 2), not the letters themselves.', 'from': 'from is not part of a JavaScript loop.'}, why: 'for (const letter <b>of</b> text): each letter of the text.'},
+  {t: 'tr', h: 'Write showEach', p: 'The editor has the pile and the return. Put the loop between them, and press <b>Run</b>.',
+   sub: ['<code>for (const letter of text) {</code>', 'Inside it, add <code>"[" + letter + "]"</code> to the pile', 'Close the loop with <code>}</code>', 'Press <b>Run</b>']}
+],
+'KT|Vowels 2: is it a vowel?': [
+  {t: 'predict', h: 'Ask the string', p: 'A string can answer "do you contain this?" with <code>.includes(...)</code>.',
+   code: '"aeiou".includes("e")', q: 'What does this hand back?',
+   ch: [{code: 'true', ok: 1, why: 'e is one of the five, so the answer is yes: true.'}, {code: '"e"', why: 'includes answers a question, so it hands back true or false.'}, {code: 'false', why: 'Look at the five letters again: e is there.'}]},
+  {t: 'fill', h: 'The question', code: 'return "aeiou".___(letter);', opts: ['includes', 'contains', 'has'], ans: 'includes', gap: 'the name of the question a string can answer',
+   no: {'contains': 'A good English word for it, but JavaScript calls it includes.', 'has': 'JavaScript calls it includes.'}, why: '"aeiou".includes(letter): true for a vowel, false for anything else.'},
+  {t: 'tr', h: 'Write isVowel', p: 'One line inside the function: hand back the answer to the question.', sub: ['<code>return "aeiou".includes(letter);</code>', 'Press <b>Run</b>']}
+],
+'KT|Vowels 3: count them': [
+  {t: 'see', h: 'Walk, test, mark', p: 'Rung one’s loop and rung two’s question, together. Step through: the if sits inside the loop.', pv: false,
+   code: 'function tally(text) {\n  let marks = "";\n  for (const letter of text) {\n    if ("aeiou".includes(letter)) {\n      marks = marks + "|";\n    }\n  }\n  return marks;\n}',
+   labels: [[1, '1 · an empty pile of marks'], [2, '2 · visit every letter'], [3, '3 · is it a vowel?'], [4, '4 · then make a mark'], [7, '5 · hand the marks back']], steps: [2, 3, 4, 6, 8], stepBtn: 'Next part',
+   why: 'Only a letter that passes the test adds to the pile.'},
+  {t: 'arrange', h: 'Build tally', p: 'Put the lines in order. The labels say what each one is for.',
+   lines: ['function tally(text) {', '  let marks = "";', '  for (const letter of text) {', '    if ("aeiou".includes(letter)) {', '      marks = marks + "|";', '    }', '  }', '  return marks;', '}'],
+   labels: ['the function', 'an empty pile', 'visit every letter', 'is it a vowel?', 'make a mark', 'end of the if', 'end of the loop', 'hand it back', 'end of the function'], why: 'Walk, test, keep.'},
+  {t: 'tr', h: 'Write tally', p: 'The editor has the pile, the loop and the return. Put the test inside the loop, and press <b>Run</b>.',
+   sub: ['<code>if ("aeiou".includes(letter)) {</code>', '<code>marks = marks + "|";</code>', '<code>}</code>', 'Press <b>Run</b>']}
+],
+'KT|Vowels 4: hand back the count': [
+  {t: 'bug', h: 'The early return', p: 'This counts the first letter and stops. Tap the line that is in the wrong place.',
+   lines: ['function howMany(text) {', '  let count = 0;', '  for (const letter of text) {', '    if ("aeiou".includes(letter)) {', '      count = count + 1;', '    }', '    return count;', '  }', '}'], bad: 6,
+   why: 'The return is inside the loop, so the function hands back an answer after the very first letter.', fix: 'return count; goes after the loop’s closing }'},
+  {t: 'predict', h: 'Where does the box go?', q: 'Where must <code>let count = 0;</code> go?',
+   ch: [{t: 'Inside the loop', why: 'Then it starts again at 0 on every letter.'}, {t: 'After the return', why: 'Nothing after a return ever runs.'}, {t: 'Above the loop', ok: 1, why: 'Made once, before the walk, so it can keep counting.'}]},
+  {t: 'tr', h: 'Write howMany', p: 'Same walk, same test, a number instead of marks. Mind where each part goes.',
+   sub: ['<code>let count = 0;</code> above the loop', 'Walk the letters and test each one', '<code>count = count + 1;</code> for a vowel', '<code>return count;</code> after the loop', 'Press <b>Run</b>']}
+],
+'KT|Count the vowels': [
+  {t: 'ladder', h: 'Four short rungs first?', p: 'This vault asks for four new ideas at once. The ladder teaches them one at a time, and each rung passes on its own. Or go straight to the door.'},
+  {t: 'see', h: 'The whole shape', p: 'The four rungs, put together, plus one new thing: lower-casing the text on the way in. Step through the parts.', pv: false,
+   code: 'function countVowels(text) {\n  const vowels = "aeiou";\n  let count = 0;\n  for (const letter of text.toLowerCase()) {\n    if (vowels.includes(letter)) {\n      count = count + 1;\n    }\n  }\n  return count;\n}',
+   labels: [[1, '1 · the five vowels'], [2, '2 · a box to count in, above the loop'], [3, '3 · every letter, lower-cased first'], [4, '4 · is it a vowel?'], [5, '5 · then count it'], [8, '6 · hand the count back, after the loop']], steps: [2, 3, 4, 5, 7, 9], stepBtn: 'Next part',
+   why: 'Lower-casing once on the way in means the rest of the function only ever sees one kind of letter.'},
+  {t: 'predict', h: 'The capitals trap', q: 'Without <code>.toLowerCase()</code>, what would <code>countVowels("AEIOU")</code> give?',
+   ch: [{code: '5', why: 'To a computer, A and a are different letters, and "aeiou" holds only the small ones.'}, {code: '0', ok: 1, why: '"aeiou".includes("A") is false. That is exactly the hidden test that catches almost everybody.'}, {code: 'an error', why: 'Nothing breaks: it just quietly counts nothing.'}]},
+  {t: 'arrange', h: 'Build it', p: 'Put the lines in order, with the parts labelled.',
+   lines: ['function countVowels(text) {', '  const vowels = "aeiou";', '  let count = 0;', '  for (const letter of text.toLowerCase()) {', '    if (vowels.includes(letter)) {', '      count = count + 1;', '    }', '  }', '  return count;', '}'],
+   labels: ['the function', 'the vowels', 'a box at 0', 'every letter, lower-cased', 'is it a vowel?', 'count it', 'end of the if', 'end of the loop', 'hand it back', 'end of the function'], free: [[1, 2]],
+   why: 'Set up, walk, test, count, return.'},
+  {t: 'tr', h: 'Open the vault', p: 'Write <code>countVowels(text)</code> so all six tests pass, the hidden four included.',
+   sub: ['A box at 0, above the loop', 'Walk <code>text.toLowerCase()</code>', 'Test each letter', 'Add one for a vowel', 'Return after the loop', 'Press <b>Run</b>']}
+]
+};
+
+/* the ladder's rungs get what every lesson in the school has on its full page:
+   three steps with the key line marked, a gap to fill, and a reminder line */
+var TF_RUNG_GUIDE = {
+  1: {steps: ['<b>Start an empty pile.</b> The editor already has <code class="qkey">let out = "";</code> and the return.', '<b>Walk the letters.</b> <code class="qkey">for (const letter of text) {</code> runs its block once for every letter.', '<b>Add each one in brackets,</b> inside the loop: <code class="qkey">out = out + "[" + letter + "]";</code>'],
+    cz: {code: 'for (const letter ___ text) {', opts: ['of', 'in', 'from'], ans: 'of', why: 'of hands you each letter. in would hand you the positions 0, 1, 2 instead, and from is not JavaScript.'},
+    remind: 'for (const letter of text) { ... } visits every letter · add to a pile inside · return the pile after the loop'},
+  2: {steps: ['<b>One question</b> about one letter: is it a, e, i, o or u?', '<b>Ask the string of vowels:</b> <code class="qkey">"aeiou".includes(letter)</code> answers true or false.', '<b>Hand that answer straight back:</b> <code class="qkey">return "aeiou".includes(letter);</code>'],
+    cz: {code: '  return "aeiou".___(letter);', opts: ['includes', 'contains', 'has'], ans: 'includes', why: 'includes is the question a string can answer: do you contain this?'},
+    remind: '"aeiou".includes(letter) is true for a vowel · return the answer as it is'},
+  3: {steps: ['<b>A pile of marks,</b> above the loop: <code class="qkey">let marks = "";</code>', '<b>Test each letter</b> inside the loop: <code class="qkey">if ("aeiou".includes(letter)) {</code>', '<b>Make a mark for a vowel:</b> <code class="qkey">marks = marks + "|";</code> and close the if with <code>}</code>.'],
+    cz: {code: '      marks = marks + ___;', opts: ['"|"', '|', '"marks"'], ans: '"|"', why: 'The mark is text, so it goes in quotes. Without them | is a sign the computer tries to work out.'},
+    remind: 'the if goes inside the loop · a mark only for a vowel · return the marks after the loop'},
+  4: {steps: ['<b>A box at 0,</b> above the loop: <code class="qkey">let count = 0;</code>', '<b>Walk and test</b> as in rung three, and for a vowel add one: <code class="qkey">count = count + 1;</code>', '<b>After the loop,</b> hand it back: <code class="qkey">return count;</code>'],
+    cz: {code: '  let count = ___;', opts: ['0', '1', '""'], ans: '0', why: 'A count starts at nothing: 0. Starting at 1 counts a vowel that is not there, and quotes would make it text.'},
+    remind: 'let count = 0 above the loop · count = count + 1 for a vowel · return count after the loop'}
+};
+L.forEach((l, i) => { const g = l.rung && TF_RUNG_GUIDE[l.rung]; if (!g) return; LGUIDE[i] = g; CLOZE[i] = g.cz; l.remind = g.remind; });
+/* ==== end of the Step Flow ==== */
+
+teachEl.addEventListener('click', tfClick);
+tfDragInit();
 
 let firstVisit=false;
 try{ firstVisit = !localStorage.getItem('codeschool') && !localStorage.getItem('welcomed'); }catch(e){}

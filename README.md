@@ -684,6 +684,21 @@ The phone is a first-class layout, not a narrowed desktop.
 
 ## Features
 
+- **The Journey.** The home screen is your hero's road: Village Yard
+  (Kindergarten), the Barracks (Grades 1-3), the Dojo (4-6), the Arcane Library &
+  Arena (7-9), the Mountain Monastery (10-12), the Citadel (College), then Legend.
+  Every lesson is training in one of those places, with its own scene and story
+  line on the lesson banner (the real grade name stays on every card); the arcade
+  rooms and extra tracks have their own places on the same map (the Dungeon, the
+  Deep, the Bards' Hall, the Forge, the Citadel Vaults, Market Town, the Guild Hall,
+  the Serpent Isles, the Far Watchtower). A marker walks the road as you finish
+  lessons.
+- **Boss trials, gear and the tier ceremony.** Each grade ends in a boss fight:
+  every objective the coach sees on Run is a hit, a Run with no hits is the boss's
+  attack (nothing is lost), and a pass turns the boss to stone and drops a piece of
+  code-themed gear. Reaching a new tier plays a transformation ceremony. The Armory
+  holds every piece, lets you wear any form you have earned and dye it. Gear is
+  cosmetic and nothing is ever locked.
 - **The Lesson Stage.** Every lesson opens under an illustrated chapter banner
   (its own scene per grade and track) with a Learn → Try → Run → Win trail. The
   goal is a quest card whose objectives are the coach's own checklist, ticking

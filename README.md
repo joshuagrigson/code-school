@@ -757,6 +757,13 @@ The phone is a first-class layout, not a narrowed desktop.
   JavaScript, the Quest, the Sound Room, the Puzzle Vault, Big-O, every lesson
   feature, and how to keep learning; symbols like `===`, `=>` and backticks are
   understood.
+- **Every track teaches in steps.** Quest, the Deep, the Sound Room, the Puzzle
+  Vault, Python, Learn Python, the Terminal, the Machine Room, Hustle, Portfolio,
+  Beyond and the Review Desk all have step flows, with card types of their own:
+  watch the board run a line at a time and predict where the hero stops, tap a
+  rhythm, test a draft against the vault's tests, predict what `ls` or the Python
+  console will show, predict the step count before seeing it. Every answer is
+  worked out live by the lesson's own engine.
 - **Never stuck.** After two failed Runs any lesson offers "Step it down": the
   answer with one to three gaps, each described by its job; after three, the
   lines to put in order. Passing a smaller step passes the lesson.

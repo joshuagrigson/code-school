@@ -719,6 +719,14 @@ The phone is a first-class layout, not a narrowed desktop.
   buttons read left to right from a nudge (amber, one bar) to a lead (orange, two)
   to the full answer (red, three, tagged ANSWER); your backup's button wears their
   face; Start over, Talk it through and Editor look have real labels and tooltips.
+- **A world you travel.** The Journey map is one continuous illustrated land seen
+  from above: each training ground a detailed landmark with tiny villagers,
+  students, monks and boats, the side places where the story puts them, beaten
+  bosses as stone statues, and your gold trail ending at your hero. It opens with
+  a skippable camera pan to where you are, then drags, scrolls and glides to any
+  place you tap. Time of day follows your clock (dawn, day, golden hour, night,
+  with lanterns and stars), or a toggle. Every lesson banner is a close-up of its
+  place with its mentor facing your hero.
 - **A painted world.** Every place is drawn in three to five layers with light
   shafts, textured surfaces and ambient life (waving flags, drifting clouds,
   smoke, petals and snow); the Journey map runs one long day from the Yard at dawn

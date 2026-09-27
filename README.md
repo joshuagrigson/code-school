@@ -693,6 +693,14 @@ The phone is a first-class layout, not a narrowed desktop.
   Deep, the Bards' Hall, the Forge, the Citadel Vaults, Market Town, the Guild Hall,
   the Serpent Isles, the Far Watchtower). A marker walks the road as you finish
   lessons.
+- **Extras that fit everyone.** 151 extras in nine sets (Knight, Ranger, Mage,
+  Skald, Barbarian, Guard, Monk, Artificer, Funny), each recolorable, and each
+  fitted to every species, tier and body: when its usual spot is taken (a closed
+  helm, a snout, a big beard, a shield) it moves somewhere natural (onto the helm,
+  down round the neck, to the belt or the pack) instead of floating or clipping.
+  The Knight's closed-visor great helm fits all six species. Crests and tall hair
+  rise through helms at every tier, and the eye type you pick shows under every
+  expression.
 - **Call for backup.** Make a second character in the same creator (every
   option the hero has, its own name) and call them into any lesson. If your code
   has a problem the coach can see, your backup strikes at it: the exact spot gets

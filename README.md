@@ -693,6 +693,14 @@ The phone is a first-class layout, not a narrowed desktop.
   Deep, the Bards' Hall, the Forge, the Citadel Vaults, Market Town, the Guild Hall,
   the Serpent Isles, the Far Watchtower). A marker walks the road as you finish
   lessons.
+- **Fights that land.** On the Quest board a run of identical events (ten bumps
+  into one wall, swings at thin air, a chaser's repeated hits) plays once and then
+  collapses into one beat marked ×10, while the move meter still counts every
+  move. Every hit freezes the board for a moment and shakes it in proportion to
+  the damage. Losing a fight ends with the foe winding up and landing one finishing
+  blow; stopping short ends calmly, the hero turning to the flag with the missing
+  path dotted in and "Out of moves: 4 squares short". The rules are untouched:
+  every level and all 650 Deep floors play exactly as before.
 - **Extras that fit everyone.** 151 extras in nine sets (Knight, Ranger, Mage,
   Skald, Barbarian, Guard, Monk, Artificer, Funny), each recolorable, and each
   fitted to every species, tier and body: when its usual spot is taken (a closed

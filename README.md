@@ -775,6 +775,31 @@ The phone is a first-class layout, not a narrowed desktop.
 - **Never stuck.** After two failed Runs any lesson offers "Step it down": the
   answer with one to three gaps, each described by its job; after three, the
   lines to put in order. Passing a smaller step passes the lesson.
+- **Guess first.** Every lesson's step flow opens on a question about the idea
+  it is about to teach, before any teaching: the flows that already began with
+  a predict card keep it, the rest get one built from the lesson's own recall
+  question or its fill-the-gap. A guess costs nothing and earns nothing; when
+  the lesson passes, a line under the verdict says what you guessed and what
+  you know now. Asking before telling gives the explanation something to land
+  on, and shows what was already known.
+- **Two tries, then the answer.** Fill-the-gap and spot-the-bug cards, the
+  warm-up boxes and the review drill all work the same way: a first miss gets
+  a hint aimed at the piece you picked and one more try; a second miss shows
+  the answer with the reason, finishes without a tick, and sends the question
+  to the front of the review queue. Only a first-try answer is graded as
+  remembered.
+- **Quick check and Practice.** Every grade has a row in the sidebar with a
+  Quick check (five questions) and a Practice (fifteen), drawn two in three
+  from that grade's passed lessons and one in three from the grades before it,
+  shuffled, with no hints, no pictures and no reminder line; the lesson a
+  question came from is named only after you answer. The step flows' own
+  fill, bug and text predict cards join the review bank for it, so a miss
+  there lands in the mistakes book like any other. The summary gives first-try
+  %, eventually-right % and one next step from the hub's own priority; the
+  grade heading, the practice row and the character sheet carry the first-try
+  number. The hub offers the Quick check once a grade's lessons and reps are
+  done and before its challenge. None of it counts toward graduation: it is a
+  reading of whether the grade stuck, not a moved goalpost.
 - **Warm-ups you can answer.** Every fill-the-gap card shows what the code is for,
   the code around the gap and the page it makes.
 - **Count the vowels, as a ladder.** Four short lessons lead up to Vault I.
@@ -836,6 +861,9 @@ they exist so the typing lands on an idea that already clicked.
 | 👣 **The footpath** | Khan talk-through ordering | Chips walk the learner through the page's stations in order, ending at the editor. |
 | 👻 **The ghost coach** | worked-example fading | A guided lap where the next word types itself faintly, then a solo lap for the tick. |
 | 🦆 **The duck** | rubber-duck debugging | Explain your own code aloud, one line at a time. |
+| 🎯 **Guess first** | Brilliant's pretesting | The first card of every lesson is a question about the lesson's own idea, asked before anything is taught. One try, no XP either way; when the lesson passes, a line says what you guessed and what you know now. |
+| ✌ **Two tries** | Brilliant's feedback | A fill-the-gap or spot-the-bug miss gets a hint aimed at the piece you picked and one more go; a second miss shows the answer with the reason, no tick, and the question goes to the front of the review queue. |
+| 📝 **Quick check / Practice** | Brilliant's practice sets | Five or fifteen questions per grade with the hints and pictures off, two in three from that grade and one in three from earlier ones, ending on first-try %, eventually-right % and one next step. |
 
 Warm-ups (tiles, gap, bug, scrambled lines) disappear once a lesson is ticked;
 the picture, the plan and the recall card stay. The review schedule lives in
@@ -845,7 +873,10 @@ mechanics' XP under `teach2`.
 Two things were deliberately **not** taken from the apps that popularised them:
 hearts, energy and lives, which meter learning rather than teach it; and
 leagues, leaderboards and streak pressure, which reward showing up over knowing
-things. The daily streak stays because it celebrates without threatening.
+things. The daily streak stays because it celebrates without threatening, and
+it now holds up to two **charges**, earned by finishing a practice set or
+beating a grade boss: a missed day spends a charge rather than the streak, and
+with none to spend the streak still breaks quietly.
 
 After College graduation the course sends learners off to build a small real project of their own — the school is deliberately self-contained.
 

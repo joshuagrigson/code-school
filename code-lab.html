@@ -768,6 +768,9 @@ body.dark .wcard{background:var(--panel)}
 .drillopen:hover{border-color:var(--accent);color:var(--ink)}
 .drillscore{font-size:2rem;font-family:var(--mono);font-weight:700;margin-bottom:10px}
 .drillscore span{font-size:.9rem;color:var(--acct)}
+.drillscore .drillev{display:block;font-size:.8rem;font-weight:400;color:var(--soft);margin-top:2px}
+.tfagainw,.czwhy em,.bgwhy em{font-style:italic;color:var(--soft)}
+.clozebox.lost .czgap,.bugbox.lost .bgl.hit{box-shadow:0 0 0 2px var(--badline) inset}
 .drillmiss{margin:0 0 10px 0;padding:0;list-style:none}
 .drillmiss li{margin:5px 0}
 .drillmiss button{font-family:inherit;font-size:.88rem;padding:5px 11px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink);cursor:pointer;text-align:left}
@@ -26600,16 +26603,20 @@ teachEl.addEventListener('click',(e)=>{
   if (co){
     const box=co.closest('.clozebox'); if (box.classList.contains('won')) return;
     const cz=CLOZE[+box.dataset.cz], pick=cz.opts[+co.dataset.k];
+    const czReveal=()=>{ box.querySelector('.czgap').textContent=cz.ans; box.querySelector('.czgap').classList.add('hit');
+      box.querySelectorAll('.czo').forEach(b=>{ b.disabled=true; if (cz.opts[+b.dataset.k]===cz.ans) b.classList.add('hit'); }); };
     if (pick===cz.ans){
-      box.classList.add('won');
-      box.querySelector('.czgap').textContent=pick; box.querySelector('.czgap').classList.add('hit');
-      box.querySelectorAll('.czo').forEach(b=>{ b.disabled=true; if (cz.opts[+b.dataset.k]===cz.ans) b.classList.add('hit'); });
-      box.querySelector('.czwhy').innerHTML='&#9989; <b>Filled.</b> '+cz.why;
+      box.classList.add('won'); czReveal();
+      box.querySelector('.czwhy').innerHTML='&#9989; <b>'+(box.dataset.missed?'Filled, on the second try.':'Filled.')+'</b> '+cz.why;
       if (!box.dataset.missed) txAward('cz'+box.dataset.cz, 2);
       guideDone('cloze');
-    } else {
+    } else if (!box.dataset.missed){
       box.dataset.missed='1'; co.classList.add('miss'); co.disabled=true;
-      box.querySelector('.czwhy').innerHTML='&#10060; Not that one. Look at the pieces around the gap: what shape has to fit there?';
+      box.querySelector('.czwhy').innerHTML='&#10060; Not that one. Look at the pieces around the gap: what shape has to fit there? <em>One more try.</em>';
+    } else {
+      box.dataset.missed='2'; co.classList.add('miss'); box.classList.add('won','lost'); czReveal();
+      tfMissItem('c'+box.dataset.cz);
+      box.querySelector('.czwhy').innerHTML='&#10060; <b>The piece is <code>'+hlEsc(cz.ans)+'</code>.</b> '+cz.why+' <em>It will come back in a warm-up.</em>';
     }
     return;
   }
@@ -26617,15 +26624,19 @@ teachEl.addEventListener('click',(e)=>{
   if (bl){
     const box=bl.closest('.bugbox'); if (box.classList.contains('won')) return;
     const bg=BUGS[+box.dataset.bg], k=+bl.dataset.k;
+    const bgReveal=()=>box.querySelectorAll('.bgl').forEach(b=>{ b.disabled=true; if (bg.bad.includes(+b.dataset.k)) b.classList.add('hit'); });
     if (bg.bad.includes(k)){
-      box.classList.add('won');
-      box.querySelectorAll('.bgl').forEach(b=>{ b.disabled=true; if (bg.bad.includes(+b.dataset.k)) b.classList.add('hit'); });
-      box.querySelector('.bgwhy').innerHTML='&#9989; <b>Caught it.</b> '+bg.why+'<div class="bgfix">Fix: <code>'+hlEsc(bg.fix)+'</code></div>';
+      box.classList.add('won'); bgReveal();
+      box.querySelector('.bgwhy').innerHTML='&#9989; <b>'+(box.dataset.missed?'Caught it, on the second try.':'Caught it.')+'</b> '+bg.why+'<div class="bgfix">Fix: <code>'+hlEsc(bg.fix)+'</code></div>';
       if (!box.dataset.missed) txAward('bg'+box.dataset.bg, 2);
       guideDone('bug');
-    } else {
+    } else if (!box.dataset.missed){
       box.dataset.missed='1'; bl.classList.add('miss'); bl.disabled=true;
-      box.querySelector('.bgwhy').innerHTML='&#10060; That line is innocent. Read each line out loud and ask: does it do what the lesson says it should?';
+      box.querySelector('.bgwhy').innerHTML='&#10060; That line is innocent. Read each line out loud and ask: does it do what the lesson says it should? <em>One more try.</em>';
+    } else {
+      box.dataset.missed='2'; bl.classList.add('miss'); box.classList.add('won','lost'); bgReveal();
+      tfMissItem('g'+box.dataset.bg);
+      box.querySelector('.bgwhy').innerHTML='&#10060; <b>It was line '+(bg.bad[0]+1)+'.</b> '+bg.why+'<div class="bgfix">Fix: <code>'+hlEsc(bg.fix)+'</code></div><em>It will come back in a warm-up.</em>';
     }
     return;
   }
@@ -26727,6 +26738,8 @@ function srsGrade(id, right) {
   s[3] = (s[3] | 0) + 1;
   srs.q[id] = s; srsSave();
 }
+/* a second miss on a card sends its question to the front of the review queue */
+function tfMissItem(id){ try { if (id && !/NaN|^f-1/.test(id)) srsGrade(id, false); } catch (e) {} }
 /* one normalised question card, whatever kind of item it came from */
 function drillCard(id) {
   const kind = id[0], n = itemLesson(id), title = L[n] ? L[n].title : '';
@@ -26756,7 +26769,7 @@ function drillStart(ids, mode, title) {
   if (!ids.length) return false;
   hub = false; drillOn = true; sandbox = false; syncModeUI();
   ghostTalkOff(); killGhost();
-  drill = { ids: ids.slice(), at: 0, right: 0, wrong: [], mode: mode, title: title };
+  drill = { ids: ids.slice(), at: 0, right: 0, ev: 0, wrong: [], miss1: false, mode: mode, title: title };
   $('#scaffold').style.display = 'none';
   remindBox.style.display = 'none';
   btnNext.style.display = 'none';
@@ -26793,18 +26806,34 @@ function drillShow() {
   announce('Question ' + (d.at + 1) + ' of ' + d.ids.length + '. ' + card.q);
   const first = teachEl.querySelector('.rco'); if (first) first.focus();
 }
+/* Two tries, the way Brilliant does it: a miss gets the reason that option is
+   wrong and one more go; a second miss shows the answer. Only a first-try answer
+   counts as remembered: the schedule is graded on that, and the summary keeps
+   first-try and eventually-right apart. */
 function drillAnswer(k) {
   const d = drill, id = d.ids[d.at], card = drillCard(id), c = card.ch[k];
   const box = teachEl.querySelector('.drillcard');
   if (!box || box.classList.contains('done')) return;
-  box.classList.add('done');
-  srsGrade(id, c.ok);
-  if (c.ok) d.right++; else d.wrong.push(id);
-  box.querySelectorAll('.rco').forEach((b, n) => { b.disabled = true; if (card.ch[+b.dataset.n].ok) b.classList.add('hit'); });
   const picked = box.querySelector('.rco[data-n="' + k + '"]');
+  if (!c.ok && !d.miss1){
+    d.miss1 = true;
+    if (picked){ picked.classList.add('miss'); picked.disabled = true; }
+    box.querySelector('.rcwhy').innerHTML = '&#10060; <b>Not that one.</b> ' + c.why + ' <em>One more try.</em>';
+    tfMountPvs(teachEl);
+    announce('Not correct. ' + String(c.why).replace(/<[^>]+>/g, '') + ' One more try.');
+    return;
+  }
+  box.classList.add('done');
+  const first = c.ok && !d.miss1;
+  srsGrade(id, first);
+  if (first) d.right++; else d.wrong.push(id);
+  if (c.ok) d.ev++;
+  d.miss1 = false;
+  box.querySelectorAll('.rco').forEach((b, n) => { b.disabled = true; if (card.ch[+b.dataset.n].ok) b.classList.add('hit'); });
   if (picked && !c.ok) picked.classList.add('miss');
+  const right = card.ch.find(x => x.ok);
   box.querySelector('.rcwhy').innerHTML =
-    (c.ok ? '&#9989; <b>Yes.</b> ' : '&#10060; <b>Not this time.</b> ') + c.why
+    (first ? '&#9989; <b>Yes.</b> ' + c.why : c.ok ? '&#9989; <b>Yes, on the second try.</b> ' + c.why : '&#10060; <b>Not this time.</b> ' + c.why + (right ? ' <b>The answer:</b> ' + hlEsc(right.t) + '. ' + right.why : ''))
     + '<div class="drillnext"><button class="drillgo">' + (d.at + 1 >= d.ids.length ? 'See how you did &rarr;' : 'Next &rarr;') + '</button>'
     + '<button class="drillopen" data-go="' + card.les + '">Open that lesson</button></div>';
   tfMountPvs(teachEl);
@@ -26812,15 +26841,16 @@ function drillAnswer(k) {
   const go = box.querySelector('.drillgo'); if (go) go.focus();
 }
 function drillEnd() {
-  const d = drill, n = d.ids.length, pct = Math.round(100 * d.right / n);
+  const d = drill, n = d.ids.length, pct = Math.round(100 * d.right / n), evp = Math.round(100 * (d.ev | 0) / n);
   const left = mistakeItems().length;
   if (d.right) { stk.xp = (stk.xp | 0) + d.right; saveP(); }
   let msg;
-  if (d.wrong.length === 0) msg = 'Every one. That is what a memory that has settled looks like &mdash; these questions will now leave you alone for a while and come back much later.';
-  else if (pct >= 60) msg = 'Solid. The ones you missed just moved to the front of the queue, so you will see them again tomorrow rather than never.';
+  if (d.wrong.length === 0) msg = 'Every one, first time. That is what a memory that has settled looks like &mdash; these questions will now leave you alone for a while and come back much later.';
+  else if (pct >= 60) msg = 'Solid. The ones you did not get first time just moved to the front of the queue, so you will see them again tomorrow rather than never.';
   else msg = 'This is the drill doing its job. Missing them here, cheaply, is exactly how they stop being missed later. Nothing about your progress changed.';
   teachEl.innerHTML = '<h2>' + (d.wrong.length === 0 ? 'Clean sweep' : 'Warm-up done') + '</h2>'
-    + '<div class="drillscore"><b>' + d.right + ' / ' + n + '</b> <span>+' + d.right + ' XP</span></div>'
+    + '<div class="drillscore"><b>' + pct + '%</b> <span>first try &middot; ' + d.right + ' of ' + n + '</span>'
+    +   ((d.ev | 0) > d.right ? '<small class="drillev">' + evp + '% right in the end (' + (d.ev | 0) + ' of ' + n + ')</small>' : '') + ' <span>+' + d.right + ' XP</span></div>'
     + '<p>' + msg + '</p>'
     + (d.wrong.length ? '<p><b>Coming back soon:</b></p><ul class="drillmiss">'
         + d.wrong.map(id => { const c = drillCard(id); return '<li><button data-go="' + c.les + '">' + esc(c.from) + '</button></li>'; }).join('')
@@ -32206,27 +32236,39 @@ function tfClick(e){
   }
   const op = t.closest('.tfopt');
   if (op && !op.disabled){
-    const pick = c.opts[+op.dataset.n];
+    const pick = c.opts[+op.dataset.n], st = TF.st[k] || (TF.st[k] = {});
+    const reveal = () => { const g = card.querySelector('.tfgap'); g.textContent = c.ans; g.classList.add('hit');
+      card.querySelectorAll('.tfopt').forEach(b => { b.disabled = true; if (c.opts[+b.dataset.n] === c.ans) b.classList.add('hit'); }); };
     if (pick === c.ans){
-      const g = card.querySelector('.tfgap'); g.textContent = pick; g.classList.add('hit');
-      card.querySelectorAll('.tfopt').forEach(b => { b.disabled = true; if (c.opts[+b.dataset.n] === c.ans) b.classList.add('hit'); });
-      tfDone(card);
-    } else {
-      op.classList.add('miss'); op.disabled = true;
+      reveal();
+      tfDone(card, st.miss ? '<b>Got it on the second try.</b> ' + (c.why || '') : undefined);
+    } else if (!st.miss){
+      /* first miss: a hint aimed at the piece picked, and one more try */
+      st.miss = 1; op.classList.add('miss'); op.disabled = true;
       const w = card.querySelector('.tfwhy');
-      w.innerHTML = '<span class="tfno2">' + lsIc('left') + '</span>' + ((c.no && c.no[pick]) || 'Not that one. Read the code on both sides of the gap: what has to fit there?');
+      w.innerHTML = '<span class="tfno2">' + lsIc('left') + '</span>' + ((c.no && c.no[pick]) || (c.gap ? 'Not that one. The gap holds ' + c.gap + '.' : 'Not that one. Read the code on both sides of the gap: what has to fit there?')) + ' <em class="tfagainw">One more try.</em>';
+    } else {
+      /* second miss: the answer, with the reason, and no tick */
+      st.miss = 2; op.classList.add('miss'); reveal();
+      tfMissItem('f' + TF.i + '_' + k);
+      tfDone(card, '<b>The piece is <code>' + esc(c.ans) + '</code>.</b> ' + (c.why || '') + ' <em class="tfagainw">It will come back in a warm-up.</em>', true);
     }
     return;
   }
   const bl = t.closest('.tfbl');
   if (bl && !bl.disabled){
+    const st = TF.st[k] || (TF.st[k] = {}), fixed = c.fix ? '<span class="tffix"><b>Fixed:</b> <code>' + esc(c.fix) + '</code></span>' : '';
+    const reveal = () => card.querySelectorAll('.tfbl').forEach(b => { b.disabled = true; if (+b.dataset.n === c.bad) b.classList.add('hit'); });
     if (+bl.dataset.n === c.bad){
-      card.querySelectorAll('.tfbl').forEach(b => { b.disabled = true; });
-      bl.classList.add('hit');
-      tfDone(card, c.why + (c.fix ? '<span class="tffix"><b>Fixed:</b> <code>' + esc(c.fix) + '</code></span>' : ''));
+      reveal();
+      tfDone(card, (st.miss ? '<b>Caught it on the second try.</b> ' : '') + c.why + fixed);
+    } else if (!st.miss){
+      st.miss = 1; bl.classList.add('miss'); bl.disabled = true;
+      card.querySelector('.tfwhy').innerHTML = '<span class="tfno2">' + lsIc('left') + '</span>' + ((c.no && c.no[+bl.dataset.n]) || 'That line is fine. Read each one aloud and ask: does it say exactly what it means?') + ' <em class="tfagainw">One more try.</em>';
     } else {
-      bl.classList.add('miss'); bl.disabled = true;
-      card.querySelector('.tfwhy').innerHTML = '<span class="tfno2">' + lsIc('left') + '</span>' + ((c.no && c.no[+bl.dataset.n]) || 'That line is fine. Read each one aloud and ask: does it say exactly what it means?');
+      st.miss = 2; bl.classList.add('miss'); reveal();
+      tfMissItem('f' + TF.i + '_' + k);
+      tfDone(card, '<b>It was line ' + (c.bad + 1) + '.</b> ' + c.why + fixed + ' <em class="tfagainw">It will come back in a warm-up.</em>', true);
     }
     return;
   }

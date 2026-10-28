@@ -2616,6 +2616,12 @@ body.dark .tfcard.done .tfbadge{background:transparent;color:var(--tfSoft)}
 .tfch.hit::after,.tfch.miss::after{font-family:var(--mono);font-size:.72rem;font-weight:700;padding:2px 9px 5px;letter-spacing:.06em}
 .tfch.hit::after{content:'RIGHT';color:var(--tfEmT)}
 .tfch.miss::after{content:'YOUR PICK';color:var(--tfBad)}
+.tfcard.tfpre .tfbadge{background:#1f3a2e;color:#b8f0c8}
+.tfguess{display:flex;gap:9px;align-items:flex-start;margin:8px 0 0;padding:9px 12px;border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;background:var(--panel2);font-size:.9rem;line-height:1.45}
+.tfguess[hidden]{display:none}
+.tfguess .tfgi{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--accent);color:#fff;flex:0 0 auto}
+.tfguess .tfgi .lsi{width:12px;height:12px}
+.tfguess code{font-family:var(--mono);font-size:.86em}
 .tfwhy{font-size:.95rem;line-height:1.5;margin-top:8px}
 .tfwhy:empty{display:none}
 .tfok,.tfno2{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;margin-right:7px;vertical-align:-4px}
@@ -30076,6 +30082,7 @@ function ghostable(){
 /* One place decides whether the editor is connected, and every screen that
    changes mode calls it. */
 function syncModeUI(){
+  try { tfGuessPaint(); } catch (e) {}
   /* every screen that changes mode passes through here, so a pending push
      from the lesson you just left dies here too */
   if (hub || sandbox || drillOn){ killNext(); document.body.classList.remove('redoready'); }
@@ -31817,12 +31824,71 @@ function tfFlowFor(les, i){
 function tfEsc(s){ return esc(String(s == null ? '' : s)); }
 function tfWords(h){ return plain(h).split(/\s+/).filter(Boolean).length; }
 
+/* ---- Guess first: a pretest card at the head of every flow -----------------
+   Brilliant asks a question about an idea before it teaches the procedure: the
+   attempt gives the explanation something to land on and shows what was already
+   known (pretesting; the About page calls it "we don't teach how to do something
+   before asking questions"). Most flows here already open on a predict card. The
+   ones that open on a worked example, a bug or a ladder get a question put in
+   front of them, built from the lesson's own banks: its recall question if it has
+   one, else its fill-the-gap as a which-piece question. One try, no XP either way,
+   a miss finishes the card without a tick, and the guess is kept so the pass can
+   say what was guessed and what is now known. */
+var guessLog = {};
+try { guessLog = JSON.parse(localStorage.getItem('guess') || '{}') || {}; } catch (e) { guessLog = {}; }
+function guessSave(){ try { localStorage.setItem('guess', JSON.stringify(guessLog)); } catch (e) {} }
+function tfCodey(s){ s = String(s); return /[<>{}()=;:\[\]'"`#$]/.test(s) || (/^[a-z0-9_.-]+$/.test(s) && /[._]/.test(s)); }
+function tfPreCard(les, i){
+  const r = RECALL[i];
+  if (r && r.ch && r.ch.length){
+    return {t: 'predict', pre: 1, label: 'Guess first', h: 'Before the lesson: what do you think?',
+      p: 'Nobody has taught you this yet. A guess costs nothing, and a wrong one makes the right answer stick when it comes.',
+      q: r.q, ch: r.ch.map(c => tfCodey(c[0]) ? {code: c[0], ok: !!c[1], why: c[2]} : {t: esc(c[0]), ok: !!c[1], why: c[2]})};
+  }
+  const d = CLOZE[i];
+  if (d && d.opts && d.opts.length > 1 && d.ans){
+    const whole = String(d.code).trim() === '___';
+    return {t: 'predict', pre: 1, label: 'Guess first', h: 'Before the lesson: take a guess',
+      p: 'Nobody has taught you this yet. A guess costs nothing, and a wrong one makes the right answer stick when it comes.',
+      code: whole ? null : String(d.code).split('___').join('____'),
+      q: (les && les.goal ? '<span class="lsczjob"><b>The job:</b> ' + les.goal + '</span>' : '') + (whole ? 'Which of these does that job?' : 'Which piece belongs where the line is?'),
+      ch: d.opts.map(o => ({code: o, ok: o === d.ans, why: o === d.ans ? d.why : (d.no && d.no[o]) || ''}))};
+  }
+  return null;
+}
+/* the flow's cards with the pretest in front: a copy, so the hand-made flow is never changed */
+function tfWithPre(les, i, cards){
+  if (!cards || !cards.length || TF.lp != null) return cards;
+  if (cards[0].t === 'predict'){ if (!cards[0].pre) cards = [Object.assign({pre: 1, label: cards[0].label || 'Guess first'}, cards[0])].concat(cards.slice(1)); return cards; }
+  const pre = tfPreCard(les, i);
+  return pre ? [pre].concat(cards) : cards;
+}
+/* what the pretest said, kept per lesson: 1 right, 0 wrong, plus the words */
+function tfGuessNote(card, c, x, ok){
+  if (!c.pre || TF.i < 0) return;
+  const right = c.ch.find(y => y.ok) || {};
+  const word = (y) => (y.code != null ? String(y.code) : plain(String(y.t != null ? y.t : y.cap || y.say || ''))).trim();
+  guessLog[TF.i] = {ok: ok ? 1 : 0, got: word(x), ans: word(right), d: dayNum()};
+  guessSave();
+}
+function tfGuessPaint(){
+  let o = document.getElementById('tfGuess');
+  const st = document.getElementById('status');
+  if (!o && st){ o = document.createElement('div'); o.id = 'tfGuess'; o.className = 'tfguess'; o.hidden = true; st.insertAdjacentElement('afterend', o); }
+  if (!o) return;
+  const g = (guessLog || {})[idx];
+  if (sandbox || hub || drillOn || !L[idx] || !g || !lessonDone(idx) || TF.i !== idx){ o.hidden = true; o.innerHTML = ''; return; }
+  o.hidden = false;
+  o.innerHTML = '<span class="tfgi">' + lsIc('star') + '</span><span>' + (g.ok
+    ? '<b>You guessed right before the lesson even started</b>' + (g.ans ? ': <code>' + esc(g.ans) + '</code>.' : '.') + ' Now you know why.'
+    : '<b>Before this lesson you guessed</b> <code>' + esc(g.got || '?') + '</code>. <b>Now you know:</b> <code>' + esc(g.ans || '') + '</code>. That gap closing is the lesson.') + '</span>';
+}
 /* ---- the lesson opens: the page folds into "Read it all", the cards go on top ---- */
 function tfMount(les, i){
   TF.i = i; TF.lp = null; TF.key = tfKey(les); TF.fails = 0; TF.down = null; TF.keep = null; TF.downWon = false; TF.pv = {};
-  tfOfferPaint();
+  tfOfferPaint(); tfGuessPaint();
   teachEl.classList.remove('tfOn', 'tfAllOpen');
-  const cards = tfFlowFor(les, i);
+  const cards = tfWithPre(les, i, tfFlowFor(les, i));
   TF.cards = cards && cards.length ? cards : null;
   if (!TF.cards) return;
   const n = TF.cards.length, tryAt = tfTaskAt();
@@ -31877,7 +31943,7 @@ function tfRender(scroll){
 }
 function tfCardHtml(c, k, done){
   const kind = c.t, lab = c.label || TF_KIND[kind] || '';
-  let h = '<article class="tfcard tf-' + kind + (done ? ' done' : ' now') + '" data-k="' + k + '" aria-labelledby="tfh' + k + '">'
+  let h = '<article class="tfcard tf-' + kind + (c.pre ? ' tfpre' : '') + (done ? ' done' : ' now') + '" data-k="' + k + '" aria-labelledby="tfh' + k + '">'
     + '<div class="tfct"><span class="tfbadge">' + lsIc(TF_ICON[kind] || 'book') + lab + '</span>'
     + (done ? '<button type="button" class="tfpeek" aria-expanded="false" aria-label="Open step ' + (k + 1) + ' again">' + lsIc('check') + '<span>done</span></button>' : '<span class="tfno">' + (k + 1) + '</span>') + '</div>'
     + '<h3 id="tfh' + k + '">' + c.h + '</h3><div class="tfbody">';
@@ -32132,6 +32198,7 @@ function tfClick(e){
     const x = c.ch[+ch.dataset.n];
     card.querySelectorAll('.tfch').forEach(b => { b.disabled = true; if (c.ch[+b.dataset.n].ok) b.classList.add('hit'); });
     if (!x.ok) ch.classList.add('miss');
+    tfGuessNote(card, c, x, !!x.ok);
     const right = c.ch.find(y => y.ok);
     tfDone(card, (x.ok ? '<b>Yes.</b> ' : '<b>Not quite, and that is useful to know.</b> ') + (x.why || '') + (!x.ok && right && right.why ? ' ' + right.why : ''), !x.ok);
     tfLiveFill(card, c);
@@ -32345,6 +32412,7 @@ function tfAfterRun(was){
     if (TF.down) tfDownClose(false);
   } else if (code && code !== String(les.start || '').trim() && !tfMsRun()) TF.fails++;
   tfOfferPaint();
+  tfGuessPaint();
   tfAfterRunFlow(ok);
   if (TF.down && !ok) tfDownMiss();
 }

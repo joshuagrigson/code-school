@@ -788,6 +788,22 @@ The phone is a first-class layout, not a narrowed desktop.
   the answer with the reason, finishes without a tick, and sends the question
   to the front of the review queue. Only a first-try answer is graded as
   remembered.
+- **What it should make.** When a Run does not pass, the Run theater offers
+  "Show what it should make": the page the lesson's own answer builds, or the
+  lines it prints, drawn beside what yours made and never the code. A checker
+  that only says *missing an h1* leaves the learner guessing what right looks
+  like; the step flow already draws this picture as what you are making, and
+  now it sits where the mistake is visible. Off for challenges, projects,
+  bosses and the Terminal, where the picture would be the answer.
+- **Your days.** The character sheet carries a twelve-week calendar, one cell
+  per day shaded by how much was done, today outlined, with the count of
+  active days above it. Every pass, finished drill and practice set adds one
+  to the day.
+- **Certificates per track.** The graduation certificate stays what it was,
+  and every track outside the graduation count (the arcade rooms, Beyond, the
+  Review Desk, Learn Python) earns its own when every one of its lessons is
+  done, printable from a shelf on the character sheet. Finishing a track's
+  last lesson says so. None of it is accredited; it is a record of what ran.
 - **Quick check and Practice.** Every grade has a row in the sidebar with a
   Quick check (five questions) and a Practice (fifteen), drawn two in three
   from that grade's passed lessons and one in three from the grades before it,
@@ -863,6 +879,7 @@ they exist so the typing lands on an idea that already clicked.
 | 🦆 **The duck** | rubber-duck debugging | Explain your own code aloud, one line at a time. |
 | 🎯 **Guess first** | Brilliant's pretesting | The first card of every lesson is a question about the lesson's own idea, asked before anything is taught. One try, no XP either way; when the lesson passes, a line says what you guessed and what you know now. |
 | ✌ **Two tries** | Brilliant's feedback | A fill-the-gap or spot-the-bug miss gets a hint aimed at the piece you picked and one more go; a second miss shows the answer with the reason, no tick, and the question goes to the front of the review queue. |
+| 🔍 **What it should make** | Kodree's checker | On a Run that does not pass, the theater shows the page (or the printed lines) the lesson's own answer makes, beside yours, never the code. |
 | 📝 **Quick check / Practice** | Brilliant's practice sets | Five or fifteen questions per grade with the hints and pictures off, two in three from that grade and one in three from earlier ones, ending on first-try %, eventually-right % and one next step. |
 
 Warm-ups (tiles, gap, bug, scrambled lines) disappear once a lesson is ticked;

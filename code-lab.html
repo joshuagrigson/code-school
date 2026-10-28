@@ -385,6 +385,21 @@ body.dark #duckbar{background:var(--panel2);border-color:var(--line);color:var(-
 .statbar{flex:1;height:10px;background:var(--code);border-radius:5px;overflow:hidden}
 .statbar i{display:block;height:100%;background:var(--accent)}
 .navitem.pract{color:#7b5cb8}
+.navpset{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:6px 14px 7px 18px;font-size:.74rem}
+.navpset button{display:inline-flex;align-items:center;gap:4px;font:inherit;font-size:.74rem;font-weight:600;color:var(--ink);background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:4px 9px 4px 7px;cursor:pointer}
+.navpset button:hover{border-color:var(--accent);color:var(--accent)}
+.navpset button .lsi{width:12px;height:12px}
+.navpset button small{font-weight:400;color:var(--soft)}
+.navpset .npft{margin-left:auto;color:var(--soft);font-variant-numeric:tabular-nums;white-space:nowrap}
+.navpset.ghidden{display:none}
+.gft{font-size:.66rem;color:var(--acct,var(--accent));font-variant-numeric:tabular-nums;margin-left:auto;padding-left:6px}
+.ghead:has(.gft) .gcount{margin-left:0}
+.drillcard.pset .tfgapsay{display:none}
+.drillcard.pset{border-left-color:#d08a1e}
+.drillfrom{display:block;margin-top:6px;font-size:.84rem;color:var(--soft)}
+.hubone{display:block;width:100%;text-align:left}
+.hubone b{display:block;font-size:1.05rem}
+.hubone span{display:block;font-size:.85rem;opacity:.9;margin-top:3px;font-weight:400}
 body.dark .navitem.pract{color:#b89fe0}
 .navitem.prep{color:#1f6f8b}
 body.dark .navitem.prep{color:#7cc4de}
@@ -24733,7 +24748,7 @@ function renderNav(){
     const head = document.createElement('div');
     head.className='ghead';
     const gComplete = lessons.length>0 && gdone===lessons.length;
-    head.innerHTML = '<span>'+(gComplete?'🏅 ':'')+g.name+'<span class="gsub">'+g.sub+'</span></span><span class="gcount">'+(tested.has(g.id)?'⚡ ':'')+gdone+'/'+lessons.length+'</span>';
+    head.innerHTML = '<span>'+(gComplete?'🏅 ':'')+g.name+'<span class="gsub">'+g.sub+'</span></span>'+(psets[g.id] ? '<span class="gft" title="first try on your last practice set">'+(psets[g.id].ft|0)+'%</span>' : '')+'<span class="gcount">'+(tested.has(g.id)?'⚡ ':'')+gdone+'/'+lessons.length+'</span>';
     head.style.setProperty('--gp', lessons.length ? (gdone / lessons.length).toFixed(3) : 0);
     if (gComplete) head.classList.add('gdone');
     if (gdone > 0){
@@ -24749,8 +24764,11 @@ function renderNav(){
     head.onclick = (ev)=>{ if (ev.target.classList.contains('ghreset')) return;
       if (openGrades.has(g.id)) openGrades.delete(g.id); else openGrades.add(g.id); renderNav(); };
     /* a ladder's rungs are listed in front of their door; only the doors are counted */
+    let psRow = !q && psetReady(g.id);
     for (const x of ORDER.filter(i => L[i].g === g.id).map(i => ({l:L[i], i}))){
       if (q && !x.l.title.toLowerCase().includes(q)) continue;
+      /* the practice row sits after the lessons and the reps, before the challenge */
+      if (psRow && ORDER_RANK(x.l) >= 2){ listEl.appendChild(psetRow(g.id, !isOpen)); psRow = false; }
       const b = document.createElement('button');
       b.className = 'navitem' + (x.l.pract ? ' pract' : '') + (x.l.prep ? ' prep' : '') + (x.l.chal ? ' chal' : '') + (x.l.boss ? ' boss' : '') + (x.l.rung ? ' rung' : '')
         + (x.i===idx && !sandbox ? ' cur':'') + (isOpen ? '' : ' ghidden');
@@ -24758,6 +24776,7 @@ function renderNav(){
       b.onclick = ()=>loadLesson(x.i);
       listEl.appendChild(b);
     }
+    if (psRow) listEl.appendChild(psetRow(g.id, !isOpen));
   }
   const total = coreTotal(), nd = done.size;
   $('#progTxt').textContent = nd + ' / ' + total;
@@ -26694,13 +26713,40 @@ function srsSave() { try { localStorage.setItem('srs', JSON.stringify(srs)); } c
 function dayNum() { const d = new Date(); return Math.floor((d.getTime() - d.getTimezoneOffset() * 60000) / 864e5); }
 
 /* An item is eligible once the lesson that taught it has been passed. */
-function itemLesson(id) { return +id.slice(1); }
+function itemLesson(id) { return parseInt(id.slice(1), 10); }
+/* The step flows hold the school's biggest bank of questions: every fill-the-gap,
+   spot-the-bug and text-answer predict card. They join the review items as
+   f<lesson>_<card>, so a practice set can draw on them and a miss lands in the
+   mistakes book. Cards that need a drawn page, a board or a rhythm stay out. */
+let flowBank = null;
+function flowTextOnly(c){
+  return c.t === 'predict' && !c.pre && !c.board && !c.strip && Array.isArray(c.ch) && c.ch.length > 1
+    && c.ch.every(x => x.pv == null && x.at == null && x.rh == null && x.term == null && x.con == null && (x.t != null || x.code != null))
+    && c.ch.filter(x => x.ok).length === 1 && (!c.code || String(c.code).length <= 400);
+}
+function flowItemsOf(i){
+  const les = L[i]; if (!les || les.deep || les.g === 'DP') return [];
+  let f = null; try { f = tfWithPre(les, i, tfFlowFor(les, i)); } catch (e) { return []; }
+  if (!f) return [];
+  const out = [];
+  f.forEach((c, k) => {
+    if (c.pre) return;
+    if (c.t === 'fill' && c.opts && c.opts.length > 1 && c.opts.includes(c.ans) && String(c.code).includes('___')) out.push(k);
+    else if (c.t === 'bug' && Array.isArray(c.lines) && c.lines.length > 1 && c.bad != null && c.lines[c.bad] != null && c.why) out.push(k);
+    else if (flowTextOnly(c)) out.push(k);
+  });
+  return out;
+}
+function flowBankOf(i){ if (!flowBank){ flowBank = []; for (let n = 0; n < L.length; n++) flowBank[n] = flowItemsOf(n); } return flowBank[i] || []; }
+function flowCardOf(id){ const n = itemLesson(id), k = parseInt(id.slice(id.indexOf('_') + 1), 10); const f = tfWithPre(L[n], n, tfFlowFor(L[n], n)); return f && f[k] ? f[k] : null; }
+function txtOf(h){ const e = document.createElement('div'); e.innerHTML = String(h == null ? '' : h); return e.textContent.trim(); }
 function itemReady(id) { const n = itemLesson(id); return done.has(n) || practDone.has(n) || beyondDone.has(n); }
 function allItems() {
   const out = [];
   for (const k in RECALL) out.push('r' + k);
   for (const k in CLOZE) out.push('c' + k);
   for (const k in BUGS) out.push('g' + k);
+  for (let n = 0; n < L.length; n++) for (const k of flowBankOf(n)) out.push('f' + n + '_' + k);
   return out.filter(itemReady);
 }
 function itemState(id) { return srs.q[id] || [0, 0, 0, 0]; }
@@ -26756,11 +26802,87 @@ function drillCard(id) {
       ch: d.opts.map(o => ({ t: o, ok: o === d.ans,
         why: (o === d.ans ? d.why : cz.whole ? 'Not that one: look below at the page each one makes.' : 'Not that one. The gap holds ' + cz.say + ': which piece does that job?') + each })) };
   }
+  if (kind === 'f') {
+    const c = flowCardOf(id); if (!c) return null;
+    if (c.t === 'fill') return { les: n, head: 'Fill the gap', from: title, q: 'Which piece belongs in the gap?', code: String(c.code).split('___').join('████'),
+      ch: c.opts.map(o => ({ t: o, ok: o === c.ans, why: o === c.ans ? (c.why || '') : ((c.no && c.no[o]) || 'Not that one.') + (c.gap ? ' The gap holds ' + txtOf(c.gap) + '.' : '') })) };
+    if (c.t === 'bug') return { les: n, head: 'Spot the bug', from: title, q: 'Exactly one line is wrong. Which one?', code: '',
+      ch: c.lines.map((l, k) => ({ t: (k + 1) + '   ' + l, ok: k === c.bad, why: k === c.bad ? c.why + (c.fix ? '  Fix: ' + c.fix : '') : ((c.no && c.no[k]) || 'That line is fine. Read each one and ask what it is supposed to do.') })) };
+    return { les: n, head: 'Predict', from: title, q: c.q || 'What will it show?', code: c.code ? String(c.code) : '',
+      ch: c.ch.map(x => ({ t: x.code != null ? String(x.code) : txtOf(x.t), ok: !!x.ok, why: x.why || '' })) };
+  }
   const d = BUGS[n]; if (!d) return null;
   return { les: n, head: 'Spot the bug', from: title, q: 'Exactly one line is wrong. Which one?', code: '',
     ch: d.lines.map((l, k) => ({ t: (k + 1) + '   ' + l, ok: d.bad.indexOf(k) > -1,
       why: d.bad.indexOf(k) > -1 ? d.why + '  Fix: ' + d.fix
         : 'That line is innocent. Read each line and ask what it is supposed to do.' })) };
+}
+
+/* ---- Practice sets: the scaffolding comes off ------------------------------
+   Brilliant gives every lesson a practice set with the visual aids and hints
+   removed, mixes in earlier material, and ends with a first-try percentage and
+   one next action. Here each grade has a Quick check (5) and a Practice (15):
+   two in three questions from that grade's passed lessons, one in three from
+   the grades before it, shuffled, nothing on screen but the question. It is not
+   a goalpost: nothing counts it toward graduation. It tells you whether the
+   grade stuck, and the hub offers it once the grade's lessons and reps are done
+   and before the challenge. */
+let psets = {};
+try { psets = JSON.parse(localStorage.getItem('pset') || '{}') || {}; } catch (e) { psets = {}; }
+function psetSave(){ try { localStorage.setItem('pset', JSON.stringify(psets)); } catch (e) {} }
+const PSET_SIZE = {quick: 5, practice: 15};
+function psetGradeIdx(gid){ return GRADES.findIndex(g => g.id === gid); }
+function psetPool(gid){
+  const own = [], earlier = [], gi = psetGradeIdx(gid);
+  if (gi < 0) return {own, earlier};
+  for (const id of allItems()){
+    const l = L[itemLesson(id)]; if (!l) continue;
+    if (l.g === gid) own.push(id);
+    else { const k = psetGradeIdx(l.g); if (k > -1 && k < gi) earlier.push(id); }
+  }
+  return {own, earlier};
+}
+function psetShuffle(a){ a = a.slice(); for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); const t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+function psetPick(gid, n){
+  const pool = psetPool(gid), own = psetShuffle(pool.own), earlier = psetShuffle(pool.earlier);
+  const want = Math.ceil(n * 2 / 3);
+  let a = own.slice(0, want), b = earlier.slice(0, n - a.length);
+  if (a.length + b.length < n) a = own.slice(0, n - b.length);
+  return psetShuffle(a.concat(b));
+}
+function psetReady(gid){ return psetPool(gid).own.length >= 3; }
+function psetStart(gid, kind){
+  kind = PSET_SIZE[kind] ? kind : 'quick';
+  const g = GRADES.find(x => x.id === gid); if (!g) return false;
+  const ids = psetPick(gid, PSET_SIZE[kind]);
+  if (ids.length < 3){ statusEl.className = 'wait'; statusEl.innerHTML = 'Not enough of ' + esc(g.name) + ' passed yet for a practice set. Pass three or more of its lessons and come back.'; return false; }
+  drillStart(ids, 'pset', (kind === 'quick' ? 'Quick check' : 'Practice') + ': ' + g.name);
+  drill.set = {gid, kind};
+  goalEl.innerHTML = '<b>' + (kind === 'quick' ? 'QUICK CHECK' : 'PRACTICE') + ' &middot; ' + esc(g.name) + '.</b> ' + ids.length + ' questions, hints off, pictures off. Nothing here counts against you.';
+  statusEl.innerHTML = 'Practice is where the scaffolding comes off. Answer from memory: the first try is the one that counts.';
+  return true;
+}
+/* the grade the hub should offer a quick check on: lessons and reps done, challenge not yet, no set run */
+function psetDue(){
+  for (const g of GRADES){
+    if (g.id === 'P' || beyondGrade(g.id)) continue;
+    const walk = walkOf(g.id); if (!walk.length) continue;
+    const core = walk.filter(i => ORDER_RANK(L[i]) <= 1), rest = walk.filter(i => ORDER_RANK(L[i]) >= 2);
+    if (!core.length || !core.every(i => done.has(i))) continue;
+    if (rest.some(i => !done.has(i)) && !psets[g.id] && psetReady(g.id)) return {gid: g.id};
+  }
+  return null;
+}
+function psetAvg(){ const v = Object.keys(psets).map(k => psets[k].ft | 0); return v.length ? Math.round(v.reduce((a, b) => a + b, 0) / v.length) : null; }
+function psetRow(gid, hidden){
+  const ps = psets[gid];
+  const d = document.createElement('div'); d.className = 'navpset' + (hidden ? ' ghidden' : '');
+  d.innerHTML = '<button type="button" class="npq" title="Five questions from this grade and the ones before it, hints off">' + lsIc('star') + 'Quick check <small>5</small></button>'
+    + '<button type="button" class="npp" title="Fifteen questions from this grade and the ones before it, hints off">' + lsIc('pencil') + 'Practice <small>15</small></button>'
+    + (ps ? '<span class="npft" title="first try, last time">' + (ps.ft | 0) + '% first try</span>' : '<span class="npft">no hints, no stakes</span>');
+  d.querySelector('.npq').onclick = () => psetStart(gid, 'quick');
+  d.querySelector('.npp').onclick = () => psetStart(gid, 'practice');
+  return d;
 }
 
 /* ---- the drill view: one card at a time, then a summary ----------------- */
@@ -26795,8 +26917,8 @@ function drillShow() {
     '<div class="drillbar"><b>' + (d.at + 1) + ' of ' + d.ids.length + '</b>'
     + '<span class="drillprog"><i style="width:' + Math.round(100 * d.at / d.ids.length) + '%"></i></span>'
     + '<button class="drillquit">Leave</button></div>'
-    + '<div class="drillcard" data-id="' + d.ids[d.at] + '">'
-    + '<div class="tih">' + card.head + ' &middot; from &ldquo;' + esc(card.from) + '&rdquo;</div>'
+    + '<div class="drillcard' + (d.mode === 'pset' ? ' pset' : '') + '" data-id="' + d.ids[d.at] + '">'
+    + '<div class="tih">' + card.head + (d.mode === 'pset' ? '' : ' &middot; from &ldquo;' + esc(card.from) + '&rdquo;') + '</div>'
     + '<div class="rcq">' + card.q + '</div>'
     + (card.czHtml ? card.czHtml : card.code ? '<pre class="czcode">' + hlEsc(card.code) + '</pre>' : '')
     + '<div class="rcch">' + ord.map(k => '<button class="rco" data-n="' + k + '">' + hlEsc(card.ch[k].t) + '</button>').join('') + '</div>'
@@ -26834,6 +26956,7 @@ function drillAnswer(k) {
   const right = card.ch.find(x => x.ok);
   box.querySelector('.rcwhy').innerHTML =
     (first ? '&#9989; <b>Yes.</b> ' + c.why : c.ok ? '&#9989; <b>Yes, on the second try.</b> ' + c.why : '&#10060; <b>Not this time.</b> ' + c.why + (right ? ' <b>The answer:</b> ' + hlEsc(right.t) + '. ' + right.why : ''))
+    + (d.mode === 'pset' ? ' <span class="drillfrom">From &ldquo;' + esc(card.from) + '&rdquo;.</span>' : '')
     + '<div class="drillnext"><button class="drillgo">' + (d.at + 1 >= d.ids.length ? 'See how you did &rarr;' : 'Next &rarr;') + '</button>'
     + '<button class="drillopen" data-go="' + card.les + '">Open that lesson</button></div>';
   tfMountPvs(teachEl);
@@ -26848,7 +26971,18 @@ function drillEnd() {
   if (d.wrong.length === 0) msg = 'Every one, first time. That is what a memory that has settled looks like &mdash; these questions will now leave you alone for a while and come back much later.';
   else if (pct >= 60) msg = 'Solid. The ones you did not get first time just moved to the front of the queue, so you will see them again tomorrow rather than never.';
   else msg = 'This is the drill doing its job. Missing them here, cheaply, is exactly how they stop being missed later. Nothing about your progress changed.';
-  teachEl.innerHTML = '<h2>' + (d.wrong.length === 0 ? 'Clean sweep' : 'Warm-up done') + '</h2>'
+  let head = d.wrong.length === 0 ? 'Clean sweep' : 'Warm-up done', nextRow = '<button class="hubgo" data-act="next">Get on with the lesson &rarr;</button>';
+  if (d.mode === 'pset' && d.set){
+    const g = GRADES.find(x => x.id === d.set.gid) || {name: d.set.gid}, prev = psets[d.set.gid] || {};
+    psets[d.set.gid] = {ft: pct, ev: evp, n: n, k: d.set.kind, d: dayNum(), best: Math.max(prev.best | 0, pct)};
+    psetSave();
+    if (typeof streakCharge === 'function') streakCharge('a practice set');
+    head = (d.set.kind === 'quick' ? 'Quick check' : 'Practice') + ': ' + g.name;
+    msg = pct >= 80 ? 'That grade stuck. ' + msg : pct >= 50 ? 'Most of it stuck. ' + msg : 'A lot of this is still loose, which is exactly what a check is for. ' + msg;
+    const nt = nextThing();
+    nextRow = '<button class="hubgo hubone" data-act="' + nt.act + '"' + (nt.i != null ? ' data-i="' + nt.i + '"' : '') + (nt.g ? ' data-g="' + nt.g + '" data-kind="' + (nt.kind || 'quick') + '"' : '') + '><b>' + esc(nt.label) + '</b><span>' + nt.why + '</span></button>';
+  }
+  teachEl.innerHTML = '<h2>' + head + '</h2>'
     + '<div class="drillscore"><b>' + pct + '%</b> <span>first try &middot; ' + d.right + ' of ' + n + '</span>'
     +   ((d.ev | 0) > d.right ? '<small class="drillev">' + evp + '% right in the end (' + (d.ev | 0) + ' of ' + n + ')</small>' : '') + ' <span>+' + d.right + ' XP</span></div>'
     + '<p>' + msg + '</p>'
@@ -26856,10 +26990,9 @@ function drillEnd() {
         + d.wrong.map(id => { const c = drillCard(id); return '<li><button data-go="' + c.les + '">' + esc(c.from) + '</button></li>'; }).join('')
         + '</ul>' : '')
     + '<p class="drillfoot">' + (left ? left + ' thing' + (left === 1 ? '' : 's') + ' still in your mistakes book.' : 'Your mistakes book is empty.') + '</p>'
-    + '<div class="hubrow"><button class="hubgo" data-act="hub">&larr; Back to the hub</button>'
-    + '<button class="hubgo" data-act="next">Get on with the lesson &rarr;</button></div>';
-  statusEl.className = 'ok'; statusEl.innerHTML = 'Warm-up finished. Your schedule is updated.';
-  announce('Warm-up finished. ' + d.right + ' out of ' + n + ' correct.');
+    + '<div class="hubrow"><button class="hubgo" data-act="hub">&larr; Back to the hub</button>' + nextRow + '</div>';
+  statusEl.className = 'ok'; statusEl.innerHTML = (d.mode === 'pset' ? 'Practice set finished. ' : 'Warm-up finished. ') + 'Your schedule is updated.';
+  announce((d.mode === 'pset' ? 'Practice set finished. ' : 'Warm-up finished. ') + d.right + ' out of ' + n + ' correct first time.');
   drill = null;
   renderNav();
 }
@@ -26871,6 +27004,9 @@ function nextThing() {
     why: 'These are the exact questions you got wrong. Clearing them is worth more than anything else you could do right now.' };
   if (due.length >= 4) return { act: 'warmup', n: due.length, label: 'Two-minute warm-up',
     why: 'A few questions from lessons you have already passed. Answering from memory is what turns having-read-it into knowing-it.' };
+  const ps = psetDue();
+  if (ps) return { act: 'pset', g: ps.gid, kind: 'quick', label: 'Quick check: ' + gradeName(ps.gid),
+    why: 'Five questions from ' + gradeName(ps.gid) + ' and the grades before it, with the hints off, before the challenge. Two minutes, and it says whether the grade stuck.' };
   const nx = ORDER.filter(i => !L[i].beyond).find(i => !done.has(i));
   if (nx != null) return { act: 'lesson', i: nx, label: (done.size ? 'Carry on: ' : 'Start: ') + txtTitle(nx),
     why: done.size ? 'Where you left off.' : 'The first lesson. You will be typing within a minute.' };
@@ -26923,7 +27059,7 @@ function openHub() {
   const hi = hour < 12 ? 'Morning' : hour < 18 ? 'Afternoon' : 'Evening';
   teachEl.innerHTML =
     '<div class="hubhead jyhh">' + jyHeadHtml(hi) + hubRing(dn, total) + '</div>'
-    + '<button class="hubnext" data-act="' + nt.act + '"' + (nt.i != null ? ' data-i="' + nt.i + '"' : '') + '>'
+    + '<button class="hubnext" data-act="' + nt.act + '"' + (nt.i != null ? ' data-i="' + nt.i + '"' : '') + (nt.g ? ' data-g="' + nt.g + '" data-kind="' + (nt.kind || 'quick') + '"' : '') + '>'
       + '<span class="hnl">' + esc(nt.label) + '</span><span class="hnw">' + nt.why + '</span></button>'
     + jyMapHtml()
     + arcadeBand()
@@ -28591,6 +28727,7 @@ teachEl.addEventListener('click', (e) => {
   if (!act) return;
   const a = act.dataset.act;
   if (a === 'hub') return openHub();
+  if (a === 'pset') return psetStart(act.dataset.g, act.dataset.kind || 'quick');
   if (a === 'go' || a === 'lesson') { lsDetour(act, +act.dataset.i); return loadLesson(+act.dataset.i); }
   if (a === 'next') { const nt = nextThing(); return nt.i != null ? loadLesson(nt.i) : openHub(); }
   if (a === 'sandbox') { hub = false; drillOn = false; return openSandbox(); }
@@ -28627,6 +28764,7 @@ const PAL_ACTS = [
   { t: 'Hub — what should I do next?', f: () => openHub() },
   { t: 'Warm-up (questions due today)', f: () => { const q = drillQueue(sessionSize()); q.length ? drillStart(q, 'warmup', 'Warm-up: ' + q.length + ' from memory.') : openHub(); } },
   { t: 'Mistakes book', f: () => { const q = mistakeItems().slice(0, 8); q.length ? drillStart(q, 'mistakes', 'Mistakes book: ' + q.length + ' to clear.') : openHub(); } },
+  { t: 'Quick check \u2014 five questions on the grade you are in, hints off', f: () => { const g = !hub && !sandbox && !drillOn && L[idx] && psetGradeIdx(L[idx].g) > -1 ? L[idx].g : (psetDue() || {}).gid; g ? psetStart(g, 'quick') : openHub(); } },
   { t: 'Test out of what I already know (placement)', f: () => placeStart() },
   { t: 'Free play sandbox', f: () => { hub = false; drillOn = false; openSandbox(); } },
   { t: 'The arcade \u2014 Quest, the Sound Room, the Puzzle Vault, Python, the Terminal', f: () => openArcade() },
@@ -29422,6 +29560,7 @@ function advPaint(what){
 
 /* ---- the character sheet ----------------------------------------------------- */
 const ADV_ROOM_ICO = {
+  first: '<circle cx="12" cy="12" r="8.5"/><path d="M8.3 12.3l2.5 2.5 4.9-5.4"/>',
   QS: '<path d="M14.8 4.4 19.6 4.4 19.6 9.2 10.4 18.4 7.6 15.6Z"/><path d="M6.2 13.4l4.4 4.4M5 19l2.4-2.4"/>',
   SR: '<path d="M9.4 17.6V6.4l10-2.2v11"/><circle cx="7" cy="17.6" r="2.4"/><circle cx="17" cy="15.2" r="2.4"/>',
   KT: '<path d="M5 8h4a2 2 0 1 1 4 0h4v4a2 2 0 1 1 0 4v4H5z"/>',
@@ -29515,6 +29654,7 @@ function advSheet(){
     +   tile('school', nd, coreTotal(), 'the school')
     +   tile('streak', stk.cur | 0, 0, 'day streak')
     +   tile('best', stk.best | 0, 0, 'best streak')
+    +   (psetAvg() != null ? tile('first', psetAvg() + '%', 0, 'first try, practice sets') : '')
     +   tracks + '</div>'
     + '<div class="advlab" id="advRoadLab">Your road &mdash; ' + AV_CAT.tiers[tr].name + '</div>'
     + '<ol class="advroad" aria-labelledby="advRoadLab">' + road + '</ol>'

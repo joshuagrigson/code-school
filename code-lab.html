@@ -2463,6 +2463,17 @@ body.dark .lsthmini .lsdo{background:#f2c14e;color:#2a1d33}
 .lsthol{list-style:none;margin:2px 0 0;padding:0;flex:0 0 100%;display:flex;flex-direction:column;gap:4px;font-size:.84rem;line-height:1.3}
 .lsthol li{display:flex;align-items:flex-start;gap:8px}
 .lsthol .lsck{width:20px;height:20px}.lsthol .lsck .lsi{width:12px;height:12px}
+.lsthcmp{flex:0 0 auto;display:flex;flex-direction:column;gap:6px}
+.lsthcmp[hidden]{display:none}
+.lscmpbtn{display:flex;align-items:center;justify-content:center;gap:7px;min-height:36px;padding:6px 12px;border:1px solid var(--lsCardLine,var(--line));border-radius:10px;background:var(--lsCardA,var(--panel2));color:var(--ink);font:inherit;font-size:.84rem;font-weight:700;cursor:pointer}
+.lscmpbtn .lsi{width:14px;height:14px}
+.lscmph{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:.78rem;font-weight:700;color:var(--ink)}
+.lscmph span{display:inline-flex;align-items:center;gap:5px}
+.lscmph small{font-weight:400;color:var(--soft)}
+.lscmph .lscmphide{min-height:26px;padding:2px 9px;font-size:.74rem}
+.lscmpbox .tfpv{display:block;max-height:180px;overflow:auto;border:1px solid var(--line);border-radius:9px;background:#fffdf8}
+.lscmpbox .lscmpcon{margin:0;max-height:180px;overflow:auto;font-size:.82rem}
+.lscmpnote{margin:0;font-size:.76rem;line-height:1.4;color:var(--soft)}
 .lsthverdict{flex:1 1 auto;min-height:60px;overflow:auto;padding:10px 12px;border-radius:12px;font-size:.88rem;line-height:1.45;border:1px solid var(--badline);background:var(--bad)}
 .lsthverdict.ok{background:var(--good);border-color:var(--goodline)}
 .lsthverdict.wait{background:var(--panel2);border-color:var(--line)}
@@ -31766,7 +31777,7 @@ function lsLoadStart(i){
   const S = lsS(), les = L[i];
   lsInit();
   lsTheaterClose(false);
-  S.quiet = true; S.ran = false; S.won = false; S.proj = null; S.res = null;
+  S.quiet = true; S.ran = false; S.won = false; S.proj = null; S.res = null; S.cmp = false;
   document.body.classList.toggle('lsStage', lsStageable(les));
   document.body.classList.toggle('lsNoMate', lsMateless(les));
   const lg = lsLang(les), tab = document.getElementById('lsTab');
@@ -31908,12 +31919,13 @@ function lsTheaterInit(){
   document.body.appendChild(dim);
   const th = document.createElement('div'); th.id = 'lsTh'; th.setAttribute('role', 'dialog'); th.setAttribute('aria-label', 'Your page, on the big screen');
   th.innerHTML = '<div class="lsthhead"><span class="lsthkick">' + lsIc('play') + 'Run</span><b class="lsthtitle"></b></div>'
-    + '<div class="lsthmini"></div><div class="lsthverdict" aria-hidden="true"></div>'
+    + '<div class="lsthmini"></div><div class="lsthcmp" id="lsThCmp" hidden></div><div class="lsthverdict" aria-hidden="true"></div>'
     + '<div class="lsthmate" id="lsThMate"><div class="lshero" aria-hidden="true"></div><div class="lsfx" aria-hidden="true"></div></div>'
     + '<div class="lsthbtns"><button type="button" class="lsthback" id="lsThBack">' + lsIc('code') + 'Back to my code<kbd>Esc</kbd></button>'
     + '<button type="button" class="lsthnext" id="lsThNext">Next lesson</button></div>';
   document.body.appendChild(th);
   th.querySelector('#lsThBack').onclick = () => lsTheaterClose(true);
+  th.addEventListener('click', (e) => { if (e.target.closest('.lscmpbtn')){ const S = lsS(); S.cmp = !S.cmp; lsCmpFill(th, L[idx], S); } });
   th.querySelector('#lsThNext').onclick = () => { lsTheaterClose(false); btnNext.click(); };
   document.addEventListener('keydown', (e) => {
     if (!document.body.classList.contains('lsTheater')) return;
@@ -31956,6 +31968,7 @@ function lsTheaterFill(){
     + '<span class="lsxp lsthxp">' + LS_COIN + '+' + lsXp(les, idx) + ' XP</span>'
     + (S.items.length ? '<ul class="lsthol">' + S.items.map((t, j) => '<li class="' + (S.got[j] ? 'done' : 'todo') + '"><span class="lsck" aria-hidden="true">' + lsIc('check') + '</span><span>' + t + '</span></li>').join('') + '</ul>'
       : '<ul class="lsthol"><li class="' + (S.won ? 'done' : 'todo') + '"><span class="lsck" aria-hidden="true">' + lsIc('check') + '</span><span>' + les.goal + '</span></li></ul>');
+  lsCmpFill(th, les, S);
   const v = th.querySelector('.lsthverdict');
   v.className = 'lsthverdict ' + (statusEl.className || '');
   v.innerHTML = statusEl.innerHTML;
@@ -31965,6 +31978,39 @@ function lsTheaterFill(){
   lsHero(S.want, true);
   if (S.bub) lsBubble(S.bub[0], S.bub[1]);
   bkTheater();
+}
+/* ---- Compare: what it should make, beside what yours made -----------------
+   A checker that only says "missing an h1" leaves the learner guessing what
+   right looks like. On a Run that does not pass, the theater can show the page
+   (or the printed lines) the lesson's own answer makes, next to yours, and never
+   the code: the step flow already draws this picture as "what you are making";
+   here it sits where the mistake is visible. Off for challenges, projects, bosses
+   and the Terminal, where the picture would be the answer. */
+function lsCmpOk(les, i){
+  if (!les || sandbox || hub || drillOn || les.chal || les.proj || les.deep || les.boss || les.kind === 'shell') return false;
+  if (typeof les.sol !== 'string' || !les.sol.trim()) return false;
+  if (les.lang === 'html' || les.lang === 'css') return true;
+  if (les.lang === 'js') return typeof MAKES_JS !== 'undefined' && !!MAKES_JS[i];
+  if (les.lang === 'py') return typeof PY !== 'undefined' && !!PY.run;
+  return false;
+}
+function lsCmpTarget(les, i){
+  if (les.lang === 'py'){
+    try { const R = PY.run(les.sol, {stdin: ((les.spec && les.spec.stdin) || []).slice(), steps: 250000}); const out = R.out.join('\n').replace(/\s+$/, '');
+      return '<pre class="tfcon lscmpcon">' + (out ? esc(out) : '<i>(nothing printed)</i>') + '</pre>'; } catch (e) { return ''; }
+  }
+  return tfGoalPv(les, i, null);
+}
+function lsCmpFill(th, les, S){
+  const box = th.querySelector('#lsThCmp'); if (!box) return;
+  if (S.won || !lsCmpOk(les, idx)){ box.hidden = true; box.innerHTML = ''; return; }
+  box.hidden = false;
+  if (!S.cmp){ box.innerHTML = '<button type="button" class="lscmpbtn">' + lsIc('star') + 'Show what it should make</button>'; return; }
+  const rnd = les.lang === 'js' && MAKES_JS[idx] && MAKES_JS[idx].rnd;
+  box.innerHTML = '<div class="lscmph"><span>' + lsIc('star') + 'What it should make' + (rnd ? ' <small>(one of the possible results)</small>' : '') + '</span><button type="button" class="lscmpbtn lscmphide">Hide</button></div>'
+    + '<div class="lscmpbox">' + lsCmpTarget(les, idx) + '</div>'
+    + '<p class="lscmpnote">Yours is on the big screen. Find the difference, then change the code. The answer itself stays behind <b>Show me</b>.</p>';
+  tfMountPvs(box);
 }
 function lsTheaterClose(toCode){
   const body = document.body;

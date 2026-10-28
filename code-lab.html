@@ -26766,7 +26766,7 @@ function flowItemsOf(i){
 }
 function flowBankOf(i){ if (!flowBank){ flowBank = []; for (let n = 0; n < L.length; n++) flowBank[n] = flowItemsOf(n); } return flowBank[i] || []; }
 function flowCardOf(id){ const n = itemLesson(id), k = parseInt(id.slice(id.indexOf('_') + 1), 10); const f = tfWithPre(L[n], n, tfFlowFor(L[n], n)); return f && f[k] ? f[k] : null; }
-function txtOf(h){ const e = document.createElement('div'); e.innerHTML = String(h == null ? '' : h); return e.textContent.trim(); }
+function flowTxt(h){ const e = document.createElement('div'); e.innerHTML = String(h == null ? '' : h); return e.textContent.trim(); }
 function itemReady(id) { const n = itemLesson(id); return done.has(n) || practDone.has(n) || beyondDone.has(n); }
 function allItems() {
   const out = [];
@@ -26832,11 +26832,11 @@ function drillCard(id) {
   if (kind === 'f') {
     const c = flowCardOf(id); if (!c) return null;
     if (c.t === 'fill') return { les: n, head: 'Fill the gap', from: title, q: 'Which piece belongs in the gap?', code: String(c.code).split('___').join('████'),
-      ch: c.opts.map(o => ({ t: o, ok: o === c.ans, why: o === c.ans ? (c.why || '') : ((c.no && c.no[o]) || 'Not that one.') + (c.gap ? ' The gap holds ' + txtOf(c.gap) + '.' : '') })) };
+      ch: c.opts.map(o => ({ t: o, ok: o === c.ans, why: o === c.ans ? (c.why || '') : ((c.no && c.no[o]) || 'Not that one.') + (c.gap ? ' The gap holds ' + flowTxt(c.gap) + '.' : '') })) };
     if (c.t === 'bug') return { les: n, head: 'Spot the bug', from: title, q: 'Exactly one line is wrong. Which one?', code: '',
       ch: c.lines.map((l, k) => ({ t: (k + 1) + '   ' + l, ok: k === c.bad, why: k === c.bad ? c.why + (c.fix ? '  Fix: ' + c.fix : '') : ((c.no && c.no[k]) || 'That line is fine. Read each one and ask what it is supposed to do.') })) };
     return { les: n, head: 'Predict', from: title, q: c.q || 'What will it show?', code: c.code ? String(c.code) : '',
-      ch: c.ch.map(x => ({ t: x.code != null ? String(x.code) : txtOf(x.t), ok: !!x.ok, why: x.why || '' })) };
+      ch: c.ch.map(x => ({ t: x.code != null ? String(x.code) : flowTxt(x.t), ok: !!x.ok, why: x.why || '' })) };
   }
   const d = BUGS[n]; if (!d) return null;
   return { les: n, head: 'Spot the bug', from: title, q: 'Exactly one line is wrong. Which one?', code: '',

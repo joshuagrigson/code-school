@@ -1746,6 +1746,18 @@ body.dark .advbar{background:#30343b}
 .advbar.big{height:8px;margin-top:9px;box-shadow:inset 0 1px 2px rgba(0,0,0,.12)}
 .wcard .advlong{font-size:.9rem;color:var(--soft);margin:18px 0 0;line-height:1.6}
 .advstat{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:8px;margin:0}
+.advcalm{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;font-size:.62rem;color:var(--soft);margin:0 0 3px;padding-right:0}
+.advcalm span{overflow:hidden;white-space:nowrap}
+.advcal{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,1fr);grid-template-columns:repeat(12,1fr);gap:3px;aspect-ratio:12/7;max-width:420px}
+.advcal i,.advcalk i{display:block;border-radius:3px;background:var(--line);min-width:0}
+.advcalk i{width:11px;height:11px}
+.advcal i.l1,.advcalk i.l1{background:color-mix(in srgb,var(--accent) 30%,var(--panel))}
+.advcal i.l2,.advcalk i.l2{background:color-mix(in srgb,var(--accent) 55%,var(--panel))}
+.advcal i.l3,.advcalk i.l3{background:color-mix(in srgb,var(--accent) 78%,var(--panel))}
+.advcal i.l4,.advcalk i.l4{background:var(--accent)}
+.advcal i.fut{background:transparent;box-shadow:inset 0 0 0 1px var(--line)}
+.advcal i.today{box-shadow:inset 0 0 0 2px var(--ink)}
+.advcalk{display:flex;align-items:center;gap:4px;font-size:.62rem;color:var(--soft);margin:5px 0 0}
 .advtile{display:flex;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:13px;background:var(--panel2);min-width:0}
 .advtile .ti{flex:0 0 34px;height:34px;border-radius:10px;display:grid;place-items:center;color:var(--tic,#12705a);background:color-mix(in srgb,var(--tic,#12705a) 13%,transparent)}
 .advtile .ti .ic{width:19px;height:19px}
@@ -24655,6 +24667,39 @@ function gradeDone(gid){ const ls=coreOf(gid); return ls.length>0 && ls.every(x=
 function xpFor(){ let xp = done.size*10 + chalDone.size*25 + projDone.size*50 + beyondDone.size*15 + (stk.xp|0); for (const g of GRADES){ const ls=coreOf(g.id); if (ls.length && ls.every(x=>done.has(x.i))) xp+=25; } return xp; }
 function dayKey(d){ return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
 const STREAK_BONUS={3:15,7:35,14:75,30:150};
+/* ---- the day log: one count per day, for the calendar on the character sheet ----
+   What a streak cannot show: which days, and how much. Every pass, finished drill
+   and practice set adds one to today. Only the last twelve weeks are kept. */
+var dayLog = {};
+try { dayLog = JSON.parse(localStorage.getItem('days') || '{}') || {}; } catch (e) { dayLog = {}; }
+function daySave(){
+  const keep = {}; for (const k in dayLog){ const d = daysSince(k); if (d >= 0 && d < 84) keep[k] = dayLog[k] | 0; }
+  dayLog = keep;
+  try { localStorage.setItem('days', JSON.stringify(dayLog)); } catch (e) {}
+}
+function dayMark(n){ const k = dayKey(new Date()); dayLog[k] = (dayLog[k] | 0) + (n || 1); daySave(); }
+function dayLevel(n){ return !n ? 0 : n === 1 ? 1 : n <= 3 ? 2 : n <= 6 ? 3 : 4; }
+/* twelve weeks of days, newest column on the right, Monday at the top */
+function dayCalHtml(){
+  const now = new Date(); now.setHours(12, 0, 0, 0);
+  const dow = (now.getDay() + 6) % 7;                   /* Monday = 0 */
+  const first = new Date(now); first.setDate(now.getDate() - dow - 77);  /* 11 full weeks before this one */
+  let cells = '', months = '', lastM = -1, active = 0, total = 0;
+  const mn = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  for (let w = 0; w < 12; w++){
+    const d0 = new Date(first); d0.setDate(first.getDate() + w * 7);
+    months += '<span>' + (d0.getMonth() !== lastM ? mn[d0.getMonth()] : '') + '</span>'; lastM = d0.getMonth();
+    for (let r = 0; r < 7; r++){
+      const d = new Date(first); d.setDate(first.getDate() + w * 7 + r);
+      const k = dayKey(d), n = dayLog[k] | 0, future = d > now, today = k === dayKey(now);
+      if (n){ active++; total += n; }
+      const lab = d.toLocaleDateString(undefined, {month: 'short', day: 'numeric'}) + (future ? '' : ': ' + (n ? n + (n === 1 ? ' thing' : ' things') + ' done' : 'nothing'));
+      cells += '<i class="l' + dayLevel(n) + (today ? ' today' : '') + (future ? ' fut' : '') + '" title="' + lab + '"><span class="sronly">' + lab + '</span></i>';
+    }
+  }
+  return {html: '<div class="advcalm" aria-hidden="true">' + months + '</div><div class="advcal" role="img" aria-label="' + active + ' active days in the last twelve weeks">' + cells + '</div>'
+    + '<div class="advcalk" aria-hidden="true"><span>less</span><i class="l0"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i><span>more</span></div>', active, total};
+}
 /* days from a saved day key to today, or -1 when there is no saved day */
 function daysSince(key){
   if (!key) return -1;
@@ -24675,6 +24720,7 @@ function streakCharge(why){
   return true;
 }
 function bumpStreak(){
+  dayMark(1);
   const today = dayKey(new Date());
   if (stk.last === today) return;
   const gap = daysSince(stk.last);
@@ -27004,6 +27050,7 @@ function drillAnswer(k) {
 function drillEnd() {
   const d = drill, n = d.ids.length, pct = Math.round(100 * d.right / n), evp = Math.round(100 * (d.ev | 0) / n);
   const left = mistakeItems().length;
+  dayMark(1);
   if (d.right) { stk.xp = (stk.xp | 0) + d.right; saveP(); }
   let msg;
   if (d.wrong.length === 0) msg = 'Every one, first time. That is what a memory that has settled looks like &mdash; these questions will now leave you alone for a while and come back much later.';
@@ -29694,6 +29741,7 @@ function advSheet(){
     +   tile('best', stk.best | 0, 0, 'best streak')
     +   (psetAvg() != null ? tile('first', psetAvg() + '%', 0, 'first try, practice sets') : '')
     +   tracks + '</div>'
+    + (function(){ const c2 = dayCalHtml(); return '<div class="advlab" id="advCalLab">Your days &mdash; ' + c2.active + ' active day' + (c2.active === 1 ? '' : 's') + ' in the last twelve weeks' + (c2.total ? ', ' + c2.total + ' thing' + (c2.total === 1 ? '' : 's') + ' done' : '') + '</div>' + c2.html; })()
     + '<div class="advlab" id="advRoadLab">Your road &mdash; ' + AV_CAT.tiers[tr].name + '</div>'
     + '<ol class="advroad" aria-labelledby="advRoadLab">' + road + '</ol>'
     + '<p class="advnext">' + roadNext + '</p>'

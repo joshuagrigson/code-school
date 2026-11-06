@@ -1,0 +1,834 @@
+<title>Idea Inbox</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: one phone-first column — capture slip on top, deal flow below; the open idea replaces the list as a memo. */
+:root {
+  --bg: #f3f5f9;
+  --surface: #ffffff;
+  --sunk: #e8ecf3;
+  --ink: #141b2b;
+  --muted: #5a6478;
+  --line: #d5dbe6;
+  --accent: #b27600;
+  --accent-ink: #ffffff;
+  --accent-soft: #fbefd6;
+  --good: #1f7a4d;
+  --good-soft: #dcf1e5;
+  --warn: #9a5b00;
+  --warn-soft: #fbecd2;
+  --bad: #b23a3a;
+  --bad-soft: #f8dede;
+  --info: #2d5aa8;
+  --info-soft: #dfe8f8;
+  --f-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Figtree", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --r: 12px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1320; --surface: #161d2e; --sunk: #1d2639; --ink: #e9edf5; --muted: #98a2b8; --line: #2a3550;
+    --accent: #f0b429; --accent-ink: #1a1400; --accent-soft: #3a2e10;
+    --good: #5fd39a; --good-soft: #143326; --warn: #f3b860; --warn-soft: #3a2a10;
+    --bad: #ff8b8b; --bad-soft: #3d1a1d; --info: #8fb4ff; --info-soft: #18264a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1320; --surface: #161d2e; --sunk: #1d2639; --ink: #e9edf5; --muted: #98a2b8; --line: #2a3550;
+  --accent: #f0b429; --accent-ink: #1a1400; --accent-soft: #3a2e10;
+  --good: #5fd39a; --good-soft: #143326; --warn: #f3b860; --warn-soft: #3a2a10;
+  --bad: #ff8b8b; --bad-soft: #3d1a1d; --info: #8fb4ff; --info-soft: #18264a;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 48px;
+}
+.wrap { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: 30px; font-weight: 800; }
+h2 { font-size: 20px; font-weight: 700; }
+h3 { font-size: 15px; font-weight: 700; }
+p { margin: 0; }
+.label { font-size: 11.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.muted { color: var(--muted); }
+.num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+
+header.top { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.brand { display: flex; flex-direction: column; gap: 2px; }
+.brand p { color: var(--muted); }
+.tally { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: 12.5px; font-weight: 600; background: var(--sunk); color: var(--muted); white-space: nowrap; }
+.chip b { font-family: var(--f-mono); font-weight: 500; color: var(--ink); }
+.st-new { background: var(--info-soft); color: var(--info); }
+.st-reviewing { background: var(--warn-soft); color: var(--warn); }
+.st-pursue { background: var(--good-soft); color: var(--good); }
+.st-pass { background: var(--bad-soft); color: var(--bad); }
+.st-saved { background: var(--sunk); color: var(--muted); }
+
+/* capture slip */
+.slip { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+.slip-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.field label { font-weight: 600; font-size: 13.5px; }
+input[type="url"], input[type="text"], textarea {
+  width: 100%; font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 9px; padding: 10px 12px;
+}
+textarea { min-height: 110px; resize: vertical; }
+input:focus-visible, textarea:focus-visible, button:focus-visible, .idea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.platform { font-size: 12.5px; color: var(--muted); min-height: 18px; }
+.platform b { color: var(--ink); }
+.shots { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.shots img { width: 56px; height: 72px; object-fit: cover; border-radius: 6px; border: 1px solid var(--line); }
+.filebtn { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px dashed var(--line); border-radius: 9px; cursor: pointer; font-weight: 600; font-size: 13.5px; color: var(--muted); }
+.filebtn input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+button { font: inherit; cursor: pointer; border-radius: 9px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); padding: 10px 16px; font-weight: 600; }
+button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+button.ghost { background: transparent; }
+button.link { border: none; background: none; padding: 4px 0; color: var(--accent); font-weight: 600; }
+button:disabled { opacity: 0.55; cursor: progress; }
+.hint { font-size: 13px; color: var(--muted); }
+.notice { font-size: 13.5px; padding: 10px 12px; border-radius: 9px; background: var(--warn-soft); color: var(--warn); }
+.notice.err { background: var(--bad-soft); color: var(--bad); }
+.progress { font-size: 13.5px; color: var(--muted); display: flex; gap: 8px; align-items: center; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: pulse 1.2s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: 0.25; } }
+@media (prefers-reduced-motion: reduce) { .dot { animation: none; } }
+
+/* deal flow */
+.flow { display: flex; flex-direction: column; gap: 10px; }
+.flow-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.filters { display: flex; gap: 6px; flex-wrap: wrap; }
+.filters button { padding: 5px 11px; font-size: 13px; border-radius: 999px; }
+.filters button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.idea { display: grid; grid-template-columns: 52px 1fr; gap: 14px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; cursor: pointer; text-align: left; width: 100%; font-weight: 400; }
+.idea:hover { border-color: var(--accent); }
+.score { width: 52px; height: 52px; border-radius: 10px; display: grid; place-items: center; background: var(--sunk); font-family: var(--f-mono); font-size: 19px; }
+.score small { display: block; font-size: 10px; color: var(--muted); margin-top: -4px; }
+.score.hi { background: var(--good-soft); color: var(--good); }
+.score.mid { background: var(--warn-soft); color: var(--warn); }
+.score.lo { background: var(--bad-soft); color: var(--bad); }
+.idea-body { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.idea-body h3 { font-size: 16px; }
+.idea-body p { color: var(--muted); font-size: 14px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.meta { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; font-size: 12.5px; color: var(--muted); }
+.empty { border: 1px dashed var(--line); border-radius: var(--r); padding: 22px; display: flex; flex-direction: column; gap: 8px; color: var(--muted); }
+.empty h3 { color: var(--ink); }
+
+/* memo */
+.memo { display: flex; flex-direction: column; gap: 18px; }
+.memo-top { display: flex; flex-direction: column; gap: 10px; }
+.memo-top h2 { font-size: 26px; font-weight: 800; }
+.verdict { display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: center; padding: 16px; border-radius: var(--r); background: var(--surface); border: 1px solid var(--line); }
+.verdict .score { width: 64px; height: 64px; font-size: 24px; }
+.verdict-word { font-family: var(--f-display); font-weight: 800; font-size: 19px; }
+.bars { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px 16px; }
+.bar { display: flex; flex-direction: column; gap: 4px; font-size: 13px; }
+.bar-top { display: flex; justify-content: space-between; gap: 6px; }
+.track { height: 6px; border-radius: 3px; background: var(--sunk); overflow: hidden; }
+.fill { height: 100%; background: var(--accent); }
+.sec { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.sec > .label { color: var(--accent); }
+.canvas { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px 20px; }
+.cell { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.cell ul, .sec ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 3px; }
+.money { width: 100%; border-collapse: collapse; font-size: 14px; }
+.money td, .money th { padding: 7px 0; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+.money th { font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.money td.r, .money th.r { text-align: right; padding-left: 12px; white-space: nowrap; }
+.money tr.total td { font-weight: 700; border-bottom: none; }
+.tablebox { overflow-x: auto; }
+.scen { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+.scen div { background: var(--sunk); border-radius: 9px; padding: 10px 12px; font-size: 14px; display: flex; flex-direction: column; gap: 4px; }
+.weeks { display: flex; flex-direction: column; gap: 12px; }
+.week { display: grid; grid-template-columns: 74px 1fr; gap: 12px; }
+.week .label { padding-top: 2px; }
+.pairs { display: flex; flex-direction: column; gap: 10px; }
+.pair { display: flex; flex-direction: column; gap: 2px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+.pair:last-child { border-bottom: none; padding-bottom: 0; }
+.pair .muted { font-size: 14px; }
+.callout { background: var(--accent-soft); border-radius: var(--r); padding: 16px; display: flex; flex-direction: column; gap: 6px; }
+.statusbar { display: flex; gap: 6px; flex-wrap: wrap; }
+.statusbar button { padding: 7px 13px; font-size: 13.5px; }
+.statusbar button[aria-pressed="true"] { outline: 2px solid currentColor; outline-offset: -2px; }
+.src { font-size: 13.5px; word-break: break-all; }
+.src a { color: var(--info); }
+.confirm { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; padding: 10px 12px; border-radius: 9px; background: var(--bad-soft); color: var(--bad); font-size: 14px; }
+pre.raw { white-space: pre-wrap; font-size: 13px; background: var(--sunk); padding: 12px; border-radius: 9px; margin: 0; max-height: 240px; overflow: auto; }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>Idea Inbox</h1>
+      <p>Drop in a reel or post. Get back a business model to review.</p>
+    </div>
+    <div class="tally" id="tally"></div>
+  </header>
+
+  <main id="home">
+    <div class="wrap" style="gap:22px">
+      <form class="slip" id="capture" autocomplete="off">
+        <div class="slip-head">
+          <h2>New idea</h2>
+          <button type="button" class="link" id="example">Fill with an example</button>
+        </div>
+        <div class="field">
+          <label for="url">Link to the reel or post</label>
+          <input type="url" id="url" inputmode="url" placeholder="Paste the link: Share → Copy Link">
+          <div class="platform" id="platform"></div>
+        </div>
+        <div class="field">
+          <label for="caption">What the post says</label>
+          <textarea id="caption" placeholder="Paste the caption, or type what the person said in the video: the idea, the numbers they claimed, how they say it makes money."></textarea>
+          <span class="hint">Claude can't open Instagram or TikTok links from here, so this box and the screenshots are what it reads.</span>
+        </div>
+        <div class="field">
+          <span class="label" style="font-size:12px">Screenshots (optional)</span>
+          <div class="shots" id="shots">
+            <label class="filebtn" id="filebtn"><input type="file" id="files" accept="image/*" multiple>Add screenshots</label>
+          </div>
+        </div>
+        <div class="field">
+          <label for="angle">Anything to steer it (optional)</label>
+          <input type="text" id="angle" placeholder="e.g. keep startup under $500, I'd run it nights and weekends">
+        </div>
+        <div id="formMsg" hidden></div>
+        <div class="progress" id="progress" hidden><span class="dot"></span><span id="progressText">Building the model…</span></div>
+        <div class="row">
+          <button type="submit" class="primary" id="buildBtn">Build business model</button>
+          <button type="button" class="ghost" id="saveBtn">Save for later</button>
+        </div>
+      </form>
+
+      <section class="flow" aria-labelledby="flowTitle">
+        <div class="flow-head">
+          <h2 id="flowTitle">Your ideas</h2>
+          <div class="filters" id="filters"></div>
+        </div>
+        <div id="list" class="flow"></div>
+      </section>
+    </div>
+  </main>
+
+  <main id="detail" hidden></main>
+</div>
+
+<script>
+(() => {
+  const STATUSES = [
+    { id: "saved", label: "Not built" },
+    { id: "new", label: "New" },
+    { id: "reviewing", label: "Reviewing" },
+    { id: "pursue", label: "Pursue" },
+    { id: "pass", label: "Pass" },
+  ];
+  const statusLabel = (s) => (STATUSES.find((x) => x.id === s) || STATUSES[1]).label;
+
+  const PLATFORMS = [
+    [/instagram\.com|instagr\.am/, "Instagram"],
+    [/tiktok\.com/, "TikTok"],
+    [/facebook\.com|fb\.watch|fb\.com/, "Facebook"],
+    [/youtube\.com|youtu\.be/, "YouTube"],
+    [/(^|\.)x\.com|twitter\.com/, "X"],
+    [/threads\.net|threads\.com/, "Threads"],
+    [/linkedin\.com/, "LinkedIn"],
+    [/reddit\.com|redd\.it/, "Reddit"],
+    [/pinterest\.|pin\.it/, "Pinterest"],
+    [/snapchat\.com/, "Snapchat"],
+  ];
+  function platformOf(u) {
+    try {
+      const host = new URL(u).hostname.toLowerCase();
+      for (const [re, name] of PLATFORMS) if (re.test(host)) return name;
+      return host.replace(/^www\./, "");
+    } catch { return ""; }
+  }
+  const URL_RE = /https?:\/\/[^\s<>"')]+/i;
+
+  // ---------- tiny DOM helper ----------
+  function h(tag, attrs, ...kids) {
+    const el = document.createElement(tag);
+    if (attrs) for (const [k, v] of Object.entries(attrs)) {
+      if (v == null || v === false) continue;
+      if (k === "class") el.className = v;
+      else if (k.startsWith("on")) el.addEventListener(k.slice(2), v);
+      else el.setAttribute(k, v === true ? "" : v);
+    }
+    for (const kid of kids.flat()) {
+      if (kid == null || kid === false) continue;
+      el.append(kid instanceof Node ? kid : document.createTextNode(String(kid)));
+    }
+    return el;
+  }
+  const $ = (id) => document.getElementById(id);
+  const arr = (x) => (Array.isArray(x) ? x.filter((v) => v != null && v !== "") : x ? [x] : []);
+  const str = (x) => (x == null ? "" : typeof x === "string" ? x : typeof x === "number" ? String(x) : JSON.stringify(x));
+  const money = (n) => {
+    const v = Number(n);
+    if (!isFinite(v)) return str(n);
+    return "$" + Math.round(v).toLocaleString("en-US");
+  };
+
+  // ---------- state ----------
+  let db = null, sample = null, downloads = null, imageLimits = null;
+  let ideas = [];             // [{id, ...data}]
+  let loaded = false, dbProblem = "";
+  let filter = "all";
+  let openId = null;
+  let files = [];
+  let busy = false;
+
+  // ---------- capture form ----------
+  const urlEl = $("url"), capEl = $("caption"), angleEl = $("angle");
+  function showPlatform() {
+    const u = urlEl.value.trim();
+    const p = u ? platformOf(u) : "";
+    $("platform").replaceChildren(p ? h("span", null, "From ", h("b", null, p)) : "");
+  }
+  urlEl.addEventListener("input", showPlatform);
+  capEl.addEventListener("paste", () => setTimeout(() => {
+    if (!urlEl.value.trim()) {
+      const m = capEl.value.match(URL_RE);
+      if (m) { urlEl.value = m[0]; showPlatform(); }
+    }
+  }, 0));
+
+  $("files").addEventListener("change", (e) => {
+    const max = imageLimits?.maxCount || 4;
+    files = Array.from(e.target.files || []).slice(0, max);
+    renderShots();
+  });
+  function renderShots() {
+    const box = $("shots");
+    box.querySelectorAll("img, .shotclear").forEach((n) => n.remove());
+    for (const f of files) {
+      const img = h("img", { alt: "Screenshot to send" });
+      img.src = URL.createObjectURL(f);
+      box.insertBefore(img, $("filebtn"));
+    }
+    if (files.length) box.append(h("button", { type: "button", class: "link shotclear", onclick: () => { files = []; $("files").value = ""; renderShots(); } }, "Remove"));
+  }
+
+  $("example").addEventListener("click", () => {
+    urlEl.value = "https://www.instagram.com/reel/EXAMPLE/";
+    capEl.value = "EXAMPLE POST — Nobody is doing this in small towns: trash can cleaning. I bought a pressure washer and a used trailer, charge $25 a can per month, and after 4 months I have 180 customers. Costs me about $4 a can. You can start this for under $3k. Comment CAN and I'll send my flyer template.";
+    angleEl.value = "";
+    showPlatform();
+    capEl.focus();
+  });
+
+  function formMsg(text, kind) {
+    const m = $("formMsg");
+    if (!text) { m.hidden = true; m.textContent = ""; return; }
+    m.hidden = false; m.className = "notice" + (kind === "err" ? " err" : ""); m.textContent = text;
+  }
+
+  function readForm() {
+    return {
+      url: urlEl.value.trim(),
+      caption: capEl.value.trim(),
+      angle: angleEl.value.trim(),
+    };
+  }
+  function clearForm() {
+    urlEl.value = ""; capEl.value = ""; angleEl.value = ""; files = []; $("files").value = "";
+    renderShots(); showPlatform();
+  }
+
+  $("capture").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (busy) return;
+    const f = readForm();
+    if (!f.caption && !files.length) {
+      formMsg("Add the caption or a screenshot first. Claude can't open the link itself, so it needs one of those to work from. Or tap Save for later.", "err");
+      return;
+    }
+    if (!sample) { formMsg("Claude isn't available in this view. Open the page on claude.ai while signed in, or tap Save for later.", "err"); return; }
+    formMsg("");
+    setBusy(true, "Reading the post…");
+    try {
+      const model = await generate(f, files);
+      const doc = {
+        createdAt: Date.now(), updatedAt: Date.now(), url: f.url, platform: f.url ? platformOf(f.url) : "",
+        caption: f.caption, angle: f.angle, shots: files.length, status: "new", notes: "", model,
+      };
+      const id = await saveNew(doc);
+      clearForm();
+      openIdea(id);
+    } catch (err) {
+      formMsg(errText(err), "err");
+    } finally { setBusy(false); }
+  });
+
+  $("saveBtn").addEventListener("click", async () => {
+    if (busy) return;
+    const f = readForm();
+    if (!f.url && !f.caption) { formMsg("Paste a link or some text to save.", "err"); return; }
+    formMsg("");
+    try {
+      await saveNew({
+        createdAt: Date.now(), updatedAt: Date.now(), url: f.url, platform: f.url ? platformOf(f.url) : "",
+        caption: f.caption, angle: f.angle, shots: 0, status: "saved", notes: "", model: null,
+      });
+      const hadShots = files.length > 0;
+      clearForm();
+      formMsg(hadShots ? "Saved. Screenshots aren't stored, so add them again when you build it." : "Saved to your ideas. Build it whenever you're ready.");
+    } catch (err) { formMsg(errText(err), "err"); }
+  });
+
+  function setBusy(on, text) {
+    busy = on;
+    $("buildBtn").disabled = on; $("saveBtn").disabled = on;
+    $("progress").hidden = !on;
+    if (text) $("progressText").textContent = text;
+  }
+
+  function errText(err) {
+    const code = err && err.code;
+    if (code === "not_granted") return "Claude wasn't allowed for this page. Open the page's Permissions menu to allow it.";
+    if (code === "rate_limited") return "You've hit your Claude usage limit for now. Save the idea and build it later.";
+    if (code === "invalid_json") return "Claude's answer came back cut off. Try again, or shorten the caption.";
+    if (code === "image_rejected") return "One of the screenshots couldn't be used. Try a PNG or JPEG.";
+    if (code === "images_unavailable") return "Screenshots can't be sent from this view. Remove them and paste the caption instead.";
+    return (err && err.message) || "Something went wrong. Try again.";
+  }
+
+  // ---------- Claude ----------
+  const JOSHUA = `The person reviewing this is Joshua Grigson, Texarkana, Texas; family of five. What he already has to build on:
+- An online store, "Prepared at Home": digital emergency-preparedness kits ($9), a Facebook page, Instagram, reels, and a comment-to-DM automation.
+- A clip account, TheGamerzFeed (TikTok + Instagram), paid through Whop Content Rewards.
+- He builds apps and websites with Claude (iOS apps on TestFlight, Netlify and Render sites, Shopify).
+- Day job: call-center team lead (outbound sales coaching, dialer settings, call QA).
+Limited cash and time; he favors things he can start small and automate.`;
+
+  function buildPrompt(f, nShots) {
+    return `You are a sharp, skeptical small-business analyst. Turn a business idea found on social media into a complete business model that the reader can review and decide on.
+
+${JOSHUA}
+
+THE POST
+Link: ${f.url || "(none)"} (you cannot open it; work only from the text${nShots ? " and the " + nShots + " screenshot(s) attached, which are frames or captions from the post" : ""}).
+Caption / what was said:
+"""
+${f.caption || "(no text; read the screenshots)"}
+"""
+${f.angle ? "Reader's steer: " + f.angle + "\n" : ""}
+RULES
+- Social posts exaggerate. Separate what the post claims from what is realistic, and say which claims look inflated or are really selling a course or template.
+- All money in USD, as plain numbers (no $ or commas). Give realistic ranges for a solo founder in a small US city like Texarkana.
+- Name competitors only if you are confident they exist; otherwise describe the type of competitor.
+- If the post is not really a business idea, still fill the model for the closest real business it points to, and say so in sourceSummary.
+- Be concrete: real prices, real tools, real first customers. No filler.
+
+Reply with ONLY one JSON object, exactly this shape:
+{
+ "name": "short business name for the idea",
+ "oneLiner": "what it is and who pays, one sentence",
+ "category": "e.g. local service, e-commerce, content, SaaS, digital product",
+ "sourceSummary": "what the post actually said, 2-3 sentences",
+ "claimCheck": [{"claim": "a claim from the post", "reality": "how realistic it is and why"}],
+ "canvas": {
+   "problem": "...", "customer": "the specific first customer", "valueProp": "...",
+   "channels": ["how customers find it"], "revenueStreams": ["..."],
+   "keyActivities": ["..."], "keyResources": ["..."], "partners": ["..."], "costStructure": ["..."]
+ },
+ "pricing": {"model": "subscription / per job / one-time ...", "pricePoints": ["$X for Y"]},
+ "economics": {
+   "startupCosts": [{"item": "...", "low": 0, "high": 0}],
+   "monthlyFixed": [{"item": "...", "amount": 0}],
+   "unitName": "per what (customer, job, order)",
+   "unitPrice": 0, "unitVariableCost": 0,
+   "breakEven": "how many units per month to cover fixed costs, and how long to pay back startup cost",
+   "month6": {"conservative": "units and monthly profit", "base": "...", "strong": "..."}
+ },
+ "competitors": [{"name": "...", "note": "how they compete and the gap"}],
+ "risks": [{"risk": "...", "mitigation": "..."}],
+ "firstDollarTest": "the cheapest way to test real demand within 7 days, with the exact steps",
+ "launchPlan": [{"week": "Week 1", "tasks": ["..."]}, {"week": "Week 2", "tasks": ["..."]}, {"week": "Week 3", "tasks": ["..."]}, {"week": "Week 4", "tasks": ["..."]}],
+ "fit": {"why": "how it fits Joshua's time, cash, location and skills", "leverage": ["which of his existing assets help and how"]},
+ "scores": {"demand": 1, "lowStartupCost": 1, "speedToRevenue": 1, "lowCompetition": 1, "fitForJoshua": 1},
+ "verdict": "Pursue" or "Test first" or "Pass",
+ "verdictWhy": "two sentences, direct",
+ "assumptions": ["assumptions the numbers rest on"],
+ "openQuestions": ["what to find out before committing"]
+}
+Scores are integers 1-10 where 10 is best for the reader (10 lowStartupCost = very cheap to start; 10 lowCompetition = wide open).`;
+  }
+
+  async function generate(f, shots) {
+    const opts = {
+      modelTier: "complex",
+      onText: ({ text }) => {
+        const n = text.length;
+        $("progressText").textContent = n < 200 ? "Reading the post…" : `Writing the model… ${Math.round(n / 1000 * 10) / 10}k characters`;
+      },
+    };
+    if (shots && shots.length) opts.images = shots;
+    const out = await sample.json(buildPrompt(f, shots ? shots.length : 0), opts);
+    if (!out || typeof out !== "object" || !out.name) throw { message: "Claude's answer didn't have the expected shape. Try again." };
+    return out;
+  }
+
+  // ---------- storage ----------
+  const COLL = "ideas";
+  async function saveNew(doc) {
+    if (db) {
+      const ref = await db.collection(COLL).add(doc);
+      return ref.id;
+    }
+    const id = "local-" + Date.now();
+    ideas.unshift({ id, ...doc });
+    render();
+    return id;
+  }
+  async function patch(id, fields) {
+    const i = ideas.findIndex((x) => x.id === id);
+    if (i >= 0) ideas[i] = { ...ideas[i], ...fields, updatedAt: Date.now() };
+    render();
+    if (db && !id.startsWith("local-")) await db.collection(COLL).doc(id).update({ ...fields, updatedAt: Date.now() });
+  }
+  async function remove(id) {
+    ideas = ideas.filter((x) => x.id !== id);
+    closeIdea();
+    if (db && !id.startsWith("local-")) await db.collection(COLL).doc(id).delete();
+  }
+
+  // ---------- list ----------
+  function overall(m) {
+    const s = m && m.scores; if (!s) return null;
+    const vals = Object.values(s).map(Number).filter((v) => isFinite(v));
+    if (!vals.length) return null;
+    return Math.round(vals.reduce((a, b) => a + b, 0) / vals.length * 10) / 10;
+  }
+  const scoreClass = (v) => (v == null ? "" : v >= 7 ? "hi" : v >= 5 ? "mid" : "lo");
+  const dateStr = (ms) => new Date(ms).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+
+  function renderTally() {
+    const t = $("tally"); t.replaceChildren();
+    const counts = {};
+    for (const i of ideas) counts[i.status] = (counts[i.status] || 0) + 1;
+    for (const s of STATUSES) if (counts[s.id]) t.append(h("span", { class: "chip st-" + s.id }, s.label, " ", h("b", null, counts[s.id])));
+  }
+
+  function renderFilters() {
+    const box = $("filters"); box.replaceChildren();
+    const opts = [{ id: "all", label: "All" }, ...STATUSES];
+    for (const o of opts) {
+      if (o.id !== "all" && !ideas.some((i) => i.status === o.id)) continue;
+      box.append(h("button", { type: "button", "aria-pressed": String(filter === o.id), onclick: () => { filter = o.id; render(); } }, o.label));
+    }
+  }
+
+  function renderList() {
+    const list = $("list"); list.replaceChildren();
+    if (!loaded) { list.append(h("div", { class: "empty" }, h("p", null, "Loading your ideas…"))); return; }
+    if (dbProblem) list.append(h("div", { class: "notice" }, dbProblem));
+    const shown = ideas.filter((i) => filter === "all" || i.status === filter);
+    if (!ideas.length) {
+      list.append(h("div", { class: "empty" },
+        h("h3", null, "No ideas yet"),
+        h("p", null, "Each idea you add shows up here with its score, its verdict and where you left it: New, Reviewing, Pursue or Pass."),
+        h("p", null, "On your phone: open the reel, tap Share, then Copy Link. Come back here, paste the link and the caption, and tap Build."),
+      ));
+      return;
+    }
+    if (!shown.length) { list.append(h("div", { class: "empty" }, h("p", null, "Nothing in this filter."))); return; }
+    for (const i of shown) {
+      const m = i.model; const sc = overall(m);
+      list.append(h("button", { type: "button", class: "idea", onclick: () => openIdea(i.id) },
+        h("div", { class: "score " + scoreClass(sc) }, sc == null ? "–" : h("span", null, String(sc), h("small", null, "/10"))),
+        h("div", { class: "idea-body" },
+          h("h3", null, m?.name || (i.caption ? i.caption.slice(0, 60) : i.platform ? i.platform + " post" : "Saved link")),
+          h("p", null, m?.oneLiner || i.caption || i.url),
+          h("div", { class: "meta" },
+            h("span", { class: "chip st-" + i.status }, statusLabel(i.status)),
+            m?.verdict ? h("span", null, m.verdict) : null,
+            i.platform ? h("span", null, "· " + i.platform) : null,
+            h("span", null, "· " + dateStr(i.createdAt || Date.now())),
+          ),
+        ),
+      ));
+    }
+  }
+
+  function render() {
+    renderTally();
+    if (openId) { const i = ideas.find((x) => x.id === openId); if (i) renderDetail(i); else closeIdea(); return; }
+    renderFilters(); renderList();
+  }
+
+  // ---------- detail memo ----------
+  function openIdea(id) {
+    openId = id;
+    $("home").hidden = true; $("detail").hidden = false;
+    render();
+    window.scrollTo(0, 0);
+  }
+  function closeIdea() {
+    openId = null;
+    $("detail").hidden = true; $("home").hidden = false;
+    render();
+  }
+
+  function listOf(items) { const a = arr(items); return a.length ? h("ul", null, a.map((x) => h("li", null, str(x)))) : h("p", { class: "muted" }, "—"); }
+  function sec(label, ...kids) { return h("section", { class: "sec" }, h("span", { class: "label" }, label), ...kids); }
+
+  function renderDetail(i) {
+    const d = $("detail"); d.replaceChildren();
+    const m = i.model;
+    const wrap = h("div", { class: "memo" });
+    d.append(wrap);
+    wrap.append(h("div", { class: "row" }, h("button", { type: "button", class: "link", onclick: closeIdea }, "← All ideas")));
+
+    const top = h("div", { class: "memo-top" },
+      h("span", { class: "label" }, [m?.category, i.platform, dateStr(i.createdAt || Date.now())].filter(Boolean).join(" · ")),
+      h("h2", null, m?.name || "Saved idea"),
+      m?.oneLiner ? h("p", { style: "font-size:17px" }, m.oneLiner) : null,
+      i.url ? h("p", { class: "src" }, "Source: ", h("a", { href: i.url, target: "_blank", rel: "noopener" }, i.url)) : null,
+    );
+    wrap.append(top);
+
+    // status
+    const bar = h("div", { class: "statusbar" });
+    for (const s of STATUSES) {
+      if (s.id === "saved" && m) continue;
+      if (s.id !== "saved" && !m) continue;
+      bar.append(h("button", { type: "button", class: "st-" + s.id, "aria-pressed": String(i.status === s.id), onclick: () => patch(i.id, { status: s.id }).catch(showDetailErr) }, s.label));
+    }
+    wrap.append(bar);
+    const err = h("div", { class: "notice err", id: "detailErr", hidden: true });
+    wrap.append(err);
+
+    if (!m) {
+      wrap.append(sec("Not built yet",
+        i.caption ? h("pre", { class: "raw" }, i.caption) : h("p", { class: "muted" }, "Only the link was saved. Add the caption or what was said, then build."),
+        buildControls(i),
+      ));
+    } else {
+      const sc = overall(m);
+      const s = m.scores || {};
+      const scoreNames = [["demand", "Demand"], ["lowStartupCost", "Cheap to start"], ["speedToRevenue", "Speed to revenue"], ["lowCompetition", "Open market"], ["fitForJoshua", "Fit for you"]];
+      wrap.append(h("div", { class: "verdict" },
+        h("div", { class: "score " + scoreClass(sc) }, sc == null ? "–" : String(sc)),
+        h("div", { style: "display:flex;flex-direction:column;gap:4px;min-width:0" },
+          h("span", { class: "verdict-word" }, m.verdict || "No verdict"),
+          h("p", null, str(m.verdictWhy)),
+        ),
+      ));
+      wrap.append(h("div", { class: "bars" }, scoreNames.filter(([k]) => s[k] != null).map(([k, label]) => {
+        const v = Math.max(0, Math.min(10, Number(s[k]) || 0));
+        return h("div", { class: "bar" },
+          h("div", { class: "bar-top" }, h("span", null, label), h("span", { class: "num" }, v + "/10")),
+          h("div", { class: "track" }, h("div", { class: "fill", style: "width:" + v * 10 + "%" })),
+        );
+      })));
+
+      wrap.append(sec("What the post said", h("p", null, str(m.sourceSummary)),
+        arr(m.claimCheck).length ? h("div", { class: "pairs" }, arr(m.claimCheck).map((c) => h("div", { class: "pair" }, h("strong", null, str(c.claim)), h("span", { class: "muted" }, str(c.reality))))) : null,
+      ));
+
+      const c = m.canvas || {};
+      wrap.append(sec("Business model",
+        h("div", { class: "canvas" },
+          h("div", { class: "cell" }, h("h3", null, "Problem"), h("p", null, str(c.problem))),
+          h("div", { class: "cell" }, h("h3", null, "First customer"), h("p", null, str(c.customer))),
+          h("div", { class: "cell" }, h("h3", null, "Why they'd pay"), h("p", null, str(c.valueProp))),
+          h("div", { class: "cell" }, h("h3", null, "How they find you"), listOf(c.channels)),
+          h("div", { class: "cell" }, h("h3", null, "Revenue"), listOf(c.revenueStreams)),
+          h("div", { class: "cell" }, h("h3", null, "Pricing"), h("p", null, str(m.pricing?.model)), listOf(m.pricing?.pricePoints)),
+          h("div", { class: "cell" }, h("h3", null, "What you do"), listOf(c.keyActivities)),
+          h("div", { class: "cell" }, h("h3", null, "What you need"), listOf(c.keyResources)),
+          h("div", { class: "cell" }, h("h3", null, "Partners"), listOf(c.partners)),
+          h("div", { class: "cell" }, h("h3", null, "Main costs"), listOf(c.costStructure)),
+        ),
+      ));
+
+      const e = m.economics || {};
+      const start = arr(e.startupCosts);
+      const lo = start.reduce((a, x) => a + (Number(x.low) || 0), 0);
+      const hi = start.reduce((a, x) => a + (Number(x.high) || 0), 0);
+      const fixed = arr(e.monthlyFixed);
+      const fixedTotal = fixed.reduce((a, x) => a + (Number(x.amount) || 0), 0);
+      const price = Number(e.unitPrice), vc = Number(e.unitVariableCost);
+      const margin = isFinite(price) && isFinite(vc) ? price - vc : null;
+      const beUnits = margin && margin > 0 ? Math.ceil(fixedTotal / margin) : null;
+      wrap.append(sec("The numbers",
+        start.length ? h("div", { class: "tablebox" }, h("table", { class: "money" },
+          h("thead", null, h("tr", null, h("th", null, "Startup cost"), h("th", { class: "r" }, "Low"), h("th", { class: "r" }, "High"))),
+          h("tbody", null,
+            start.map((x) => h("tr", null, h("td", null, str(x.item)), h("td", { class: "r num" }, money(x.low)), h("td", { class: "r num" }, money(x.high)))),
+            h("tr", { class: "total" }, h("td", null, "Total to start"), h("td", { class: "r num" }, money(lo)), h("td", { class: "r num" }, money(hi))),
+          ),
+        )) : null,
+        fixed.length ? h("div", { class: "tablebox" }, h("table", { class: "money" },
+          h("thead", null, h("tr", null, h("th", null, "Monthly fixed"), h("th", { class: "r" }, "Per month"))),
+          h("tbody", null,
+            fixed.map((x) => h("tr", null, h("td", null, str(x.item)), h("td", { class: "r num" }, money(x.amount)))),
+            h("tr", { class: "total" }, h("td", null, "Total per month"), h("td", { class: "r num" }, money(fixedTotal))),
+          ),
+        )) : null,
+        margin != null ? h("div", { class: "tablebox" }, h("table", { class: "money" },
+          h("tbody", null,
+            h("tr", null, h("td", null, "Price " + (e.unitName ? "per " + str(e.unitName).replace(/^per /i, "") : "per unit")), h("td", { class: "r num" }, money(price))),
+            h("tr", null, h("td", null, "Cost to deliver it"), h("td", { class: "r num" }, money(vc))),
+            h("tr", { class: "total" }, h("td", null, "Kept per unit"), h("td", { class: "r num" }, money(margin) + (price > 0 ? "  (" + Math.round(margin / price * 100) + "%)" : ""))),
+            beUnits != null ? h("tr", null, h("td", null, "Units a month to cover fixed costs"), h("td", { class: "r num" }, String(beUnits))) : null,
+          ),
+        )) : null,
+        e.breakEven ? h("p", null, h("strong", null, "Break-even: "), str(e.breakEven)) : null,
+        e.month6 ? h("div", null, h("h3", { style: "margin-bottom:8px" }, "Month 6"), h("div", { class: "scen" },
+          h("div", null, h("span", { class: "label" }, "Conservative"), str(e.month6.conservative)),
+          h("div", null, h("span", { class: "label" }, "Base"), str(e.month6.base)),
+          h("div", null, h("span", { class: "label" }, "Strong"), str(e.month6.strong)),
+        )) : null,
+        h("p", { class: "hint" }, "Estimates from the post and typical small-city costs. Check the assumptions below before trusting them."),
+      ));
+
+      if (m.firstDollarTest) wrap.append(h("div", { class: "callout" }, h("span", { class: "label", style: "color:var(--accent)" }, "Test it this week"), h("p", null, str(m.firstDollarTest))));
+
+      if (arr(m.launchPlan).length) wrap.append(sec("First 30 days", h("div", { class: "weeks" }, arr(m.launchPlan).map((w) =>
+        h("div", { class: "week" }, h("span", { class: "label" }, str(w.week)), listOf(w.tasks))))));
+
+      if (m.fit) wrap.append(sec("Fit for you", h("p", null, str(m.fit.why)), arr(m.fit.leverage).length ? h("div", null, h("h3", { style: "margin-bottom:4px" }, "What you already have that helps"), listOf(m.fit.leverage)) : null));
+
+      if (arr(m.competitors).length) wrap.append(sec("Competition", h("div", { class: "pairs" }, arr(m.competitors).map((x) => h("div", { class: "pair" }, h("strong", null, str(x.name)), h("span", { class: "muted" }, str(x.note)))))));
+      if (arr(m.risks).length) wrap.append(sec("Risks", h("div", { class: "pairs" }, arr(m.risks).map((x) => h("div", { class: "pair" }, h("strong", null, str(x.risk)), h("span", { class: "muted" }, str(x.mitigation)))))));
+      if (arr(m.assumptions).length || arr(m.openQuestions).length) wrap.append(sec("Before you commit",
+        arr(m.assumptions).length ? h("div", null, h("h3", { style: "margin-bottom:4px" }, "Assumptions"), listOf(m.assumptions)) : null,
+        arr(m.openQuestions).length ? h("div", null, h("h3", { style: "margin-bottom:4px" }, "Find out first"), listOf(m.openQuestions)) : null,
+      ));
+
+      if (i.caption) wrap.append(sec("Original caption", h("pre", { class: "raw" }, i.caption)));
+    }
+
+    // notes
+    const notes = h("textarea", { id: "notes-" + i.id, placeholder: "Your thoughts, what you checked, next step…" });
+    notes.value = i.notes || "";
+    let t = null;
+    notes.addEventListener("input", () => { clearTimeout(t); t = setTimeout(() => patch(i.id, { notes: notes.value }).catch(showDetailErr), 900); });
+    notes.addEventListener("blur", () => { clearTimeout(t); if ((i.notes || "") !== notes.value) patch(i.id, { notes: notes.value }).catch(showDetailErr); });
+    wrap.append(sec("Your notes", notes));
+
+    // actions
+    const actions = h("div", { class: "row" });
+    if (m) actions.append(h("button", { type: "button", onclick: () => doDownload(i) }, "Download as Markdown"));
+    if (m) actions.append(h("button", { type: "button", class: "ghost", onclick: () => { const box = $("rebuild"); box.hidden = !box.hidden; } }, "Rebuild"));
+    actions.append(h("button", { type: "button", class: "ghost", onclick: () => { $("confirmDel").hidden = false; } }, "Delete"));
+    wrap.append(actions);
+    if (m) { const rb = h("div", { id: "rebuild", hidden: true }, sec("Rebuild with changes", buildControls(i))); wrap.append(rb); }
+    wrap.append(h("div", { class: "confirm", id: "confirmDel", hidden: true },
+      h("span", null, "Delete this idea for good?"),
+      h("button", { type: "button", onclick: () => remove(i.id).catch(showDetailErr) }, "Delete"),
+      h("button", { type: "button", class: "ghost", onclick: () => { $("confirmDel").hidden = true; } }, "Keep it"),
+    ));
+  }
+
+  function buildControls(i) {
+    const cap = h("textarea", { id: "cap-" + i.id, placeholder: "Caption or what was said in the video" }); cap.value = i.caption || "";
+    const ang = h("input", { type: "text", id: "ang-" + i.id, placeholder: "Anything to steer it (optional)" }); ang.value = i.angle || "";
+    let shots = [];
+    const fileIn = h("input", { type: "file", accept: "image/*", multiple: true });
+    const count = h("span", { class: "hint" });
+    fileIn.addEventListener("change", () => { shots = Array.from(fileIn.files || []).slice(0, imageLimits?.maxCount || 4); count.textContent = shots.length ? shots.length + " screenshot(s) ready" : ""; });
+    const prog = h("div", { class: "progress", hidden: true }, h("span", { class: "dot" }), h("span", null, "Building…"));
+    const go = h("button", { type: "button", class: "primary" }, i.model ? "Rebuild" : "Build business model");
+    go.addEventListener("click", async () => {
+      if (!cap.value.trim() && !shots.length) { showDetailErr({ message: "Add the caption or a screenshot first." }); return; }
+      if (!sample) { showDetailErr({ message: "Claude isn't available in this view. Open the page on claude.ai while signed in." }); return; }
+      go.disabled = true; prog.hidden = false;
+      try {
+        const f = { url: i.url, caption: cap.value.trim(), angle: ang.value.trim() };
+        const model = await sample.json(buildPrompt(f, shots.length), { modelTier: "complex", ...(shots.length ? { images: shots } : {}), onText: ({ text }) => { prog.lastChild.textContent = text.length < 200 ? "Reading the post…" : "Writing the model… " + (Math.round(text.length / 100) / 10) + "k characters"; } });
+        if (!model || !model.name) throw { message: "Claude's answer didn't have the expected shape. Try again." };
+        await patch(i.id, { model, caption: f.caption, angle: f.angle, shots: shots.length, status: i.status === "saved" ? "new" : i.status });
+      } catch (err) { showDetailErr(err); go.disabled = false; prog.hidden = true; }
+    });
+    return h("div", { style: "display:flex;flex-direction:column;gap:10px" },
+      h("div", { class: "field" }, h("label", { for: "cap-" + i.id }, "What the post says"), cap),
+      h("div", { class: "field" }, h("label", { for: "ang-" + i.id }, "Steer"), ang),
+      h("label", { class: "filebtn" }, fileIn, "Add screenshots"), count, prog, h("div", { class: "row" }, go),
+    );
+  }
+
+  function showDetailErr(err) {
+    const e = $("detailErr"); if (!e) return;
+    e.hidden = false; e.textContent = errText(err);
+  }
+
+  function toMarkdown(i) {
+    const m = i.model || {}; const c = m.canvas || {}; const e = m.economics || {};
+    const L = (a) => arr(a).map((x) => "- " + str(x)).join("\n");
+    const out = [];
+    out.push("# " + str(m.name), "", "_" + str(m.oneLiner) + "_", "");
+    if (i.url) out.push("Source: " + i.url, "");
+    out.push("**Verdict: " + str(m.verdict) + "** (" + (overall(m) ?? "–") + "/10). " + str(m.verdictWhy), "");
+    out.push("## What the post said", str(m.sourceSummary), "", ...arr(m.claimCheck).map((x) => "- **" + str(x.claim) + "**: " + str(x.reality)), "");
+    out.push("## Business model",
+      "**Problem:** " + str(c.problem), "", "**First customer:** " + str(c.customer), "", "**Why they'd pay:** " + str(c.valueProp), "",
+      "**Channels**", L(c.channels), "", "**Revenue**", L(c.revenueStreams), "", "**Pricing:** " + str(m.pricing?.model), L(m.pricing?.pricePoints), "",
+      "**Key activities**", L(c.keyActivities), "", "**Key resources**", L(c.keyResources), "", "**Partners**", L(c.partners), "", "**Costs**", L(c.costStructure), "");
+    out.push("## Numbers");
+    for (const x of arr(e.startupCosts)) out.push("- Start: " + str(x.item) + ": " + money(x.low) + "–" + money(x.high));
+    for (const x of arr(e.monthlyFixed)) out.push("- Monthly: " + str(x.item) + ": " + money(x.amount));
+    out.push("- Price per " + str(e.unitName) + ": " + money(e.unitPrice) + "; cost to deliver: " + money(e.unitVariableCost));
+    out.push("- Break-even: " + str(e.breakEven));
+    if (e.month6) out.push("- Month 6: conservative " + str(e.month6.conservative) + "; base " + str(e.month6.base) + "; strong " + str(e.month6.strong));
+    out.push("", "## Test it this week", str(m.firstDollarTest), "", "## First 30 days");
+    for (const w of arr(m.launchPlan)) out.push("**" + str(w.week) + "**", L(w.tasks), "");
+    out.push("## Fit", str(m.fit?.why), L(m.fit?.leverage), "", "## Competition", ...arr(m.competitors).map((x) => "- **" + str(x.name) + "**: " + str(x.note)), "");
+    out.push("## Risks", ...arr(m.risks).map((x) => "- **" + str(x.risk) + "**: " + str(x.mitigation)), "");
+    out.push("## Assumptions", L(m.assumptions), "", "## Find out first", L(m.openQuestions), "");
+    if (i.notes) out.push("## My notes", i.notes, "");
+    return out.join("\n");
+  }
+  async function doDownload(i) {
+    if (!downloads) { showDetailErr({ message: "Downloads aren't available in this view." }); return; }
+    const slug = (str(i.model?.name) || "idea").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "idea";
+    try { await downloads.save({ filename: slug + ".md", data: toMarkdown(i) }); }
+    catch (err) { if (err && err.code !== "declined" && err.code !== "cancelled") showDetailErr(err); }
+  }
+
+  // ---------- boot ----------
+  render();
+  const cl = window.claude;
+  if (!cl || typeof cl.use !== "function") {
+    loaded = true; dbProblem = "Open this page on claude.ai, signed in, to save ideas and build models."; render();
+    return;
+  }
+  cl.use("sample").then(async (s) => {
+    sample = s;
+    if (s) { try { imageLimits = (await s.limits()).images || null; } catch { imageLimits = null; } }
+    if (!imageLimits) $("filebtn").hidden = true;
+    else $("files").accept = imageLimits.mediaTypes.join(",");
+  });
+  cl.use("downloads").then((d) => { downloads = d; });
+  cl.use("db").then((d) => {
+    db = d;
+    if (!d) { loaded = true; dbProblem = "Saving isn't available in this view. Ideas you build now will be gone when you close the page."; render(); return; }
+    const timer = setTimeout(() => { if (!loaded) { loaded = true; dbProblem = "Your saved ideas are taking a while to load."; render(); } }, 10000);
+    d.collection(COLL).orderBy("createdAt", "desc").limit(500).onSnapshot((snap) => {
+      clearTimeout(timer);
+      const local = ideas.filter((x) => x.id.startsWith("local-"));
+      ideas = [...local, ...snap.docs.filter((x) => x.exists).map((x) => ({ id: x.id, ...x.data() }))];
+      loaded = true; dbProblem = "";
+      // keep a typing user's notes from being redrawn under them
+      const active = document.activeElement;
+      if (openId && active && active.tagName === "TEXTAREA" && $("detail").contains(active)) { renderTally(); return; }
+      render();
+    }, (err) => {
+      clearTimeout(timer);
+      loaded = true;
+      dbProblem = err && err.code === "permission_denied" ? "Only Joshua can see these ideas." : "Couldn't load your saved ideas. Reload the page to try again.";
+      render();
+    });
+  });
+})();
+</script>

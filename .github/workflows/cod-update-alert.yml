@@ -1,0 +1,48 @@
+# Hourly check for a new Call of Duty: Modern Warfare 4 patch, with a phone
+# push through ntfy when one appears. The script is tools/cod_watch.py.
+#
+# What it remembers between runs (state.json) lives on its own branch,
+# cod-watch-state, so the hourly save never touches main and never sets off
+# the "Deploy the lab" workflow that runs on every push to main.
+name: CoD update alert
+
+on:
+  schedule:
+    - cron: "17 * * * *"   # every hour at :17 (GitHub can run it a few minutes late)
+  workflow_dispatch:        # "Run workflow" button for a manual check
+
+permissions:
+  contents: write           # to save state.json to the cod-watch-state branch
+
+concurrency:
+  group: cod-watch
+  cancel-in-progress: false
+
+env:
+  NTFY_TOPIC: cod-96833bdffcf23af8   # subscribe to this in the ntfy app
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Load last run's state
+        run: |
+          git fetch origin cod-watch-state 2>/dev/null \
+            && git show origin/cod-watch-state:state.json > state.json \
+            || echo "First run: no state yet."
+
+      - name: Check patch notes
+        run: python3 tools/cod_watch.py
+
+      - name: Save state
+        run: |
+          mkdir -p /tmp/s && cp state.json /tmp/s/
+          git config user.name  "cod-watch"
+          git config user.email "cod-watch@users.noreply.github.com"
+          git checkout --orphan cod-watch-state
+          git rm -rfq . && cp /tmp/s/state.json .
+          git add state.json
+          git commit -qm "CoD watch state" || exit 0
+          git push -f origin cod-watch-state

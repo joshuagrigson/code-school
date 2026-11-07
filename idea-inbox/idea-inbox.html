@@ -87,7 +87,11 @@ input:focus-visible, textarea:focus-visible, button:focus-visible, .idea:focus-v
 .shots { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .shots img { width: 56px; height: 72px; object-fit: cover; border-radius: 6px; border: 1px solid var(--line); }
 .filebtn { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px dashed var(--line); border-radius: 9px; cursor: pointer; font-weight: 600; font-size: 13.5px; color: var(--muted); }
-.filebtn input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.filebtn input, .drop input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.drop { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-align: center; width: 100%; min-height: 108px; padding: 16px; border: 2px dashed var(--line); border-radius: var(--r); background: var(--bg); cursor: pointer; color: var(--muted); font-size: 13.5px; }
+.drop strong { color: var(--ink); font-size: 15px; }
+.drop:hover, .drop.over { border-color: var(--accent); background: var(--accent-soft); }
+.drop:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
 .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 button { font: inherit; cursor: pointer; border-radius: 9px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); padding: 10px 16px; font-weight: 600; }
 button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
@@ -191,10 +195,11 @@ pre.raw { white-space: pre-wrap; font-size: 13px; background: var(--sunk); paddi
           <span class="hint">Claude can't open Instagram or TikTok links from here, so this box and the screenshots are what it reads.</span>
         </div>
         <div class="field">
-          <span class="label" style="font-size:12px">Screenshots (optional)</span>
-          <div class="shots" id="shots">
-            <label class="filebtn" id="filebtn"><input type="file" id="files" accept="image/*" multiple>Add screenshots</label>
-          </div>
+          <label class="drop" id="drop"><input type="file" id="files" accept="image/*,video/*" multiple>
+            <strong>Drop screenshots or a screen recording</strong>
+            <span>or tap to pick from Photos or Files</span>
+          </label>
+          <div class="shots" id="shots"></div>
         </div>
         <div class="field">
           <label for="angle">Anything to steer it (optional)</label>
@@ -301,18 +306,74 @@ pre.raw { white-space: pre-wrap; font-size: 13px; background: var(--sunk); paddi
     }
   }, 0));
 
-  $("files").addEventListener("change", (e) => {
+  // Turn picked or dropped files into images Claude can read: images pass through,
+  // videos (saved reels, screen recordings) become evenly spaced frames.
+  async function toImages(list, max) {
+    const out = [];
+    const all = Array.from(list || []);
+    const vids = all.filter((f) => f.type.startsWith("video/")).length;
+    for (const f of all) {
+      if (out.length >= max) break;
+      if (f.type.startsWith("image/")) out.push(f);
+      else if (f.type.startsWith("video/")) {
+        const room = max - out.length;
+        const n = Math.max(1, Math.min(room, Math.ceil(room / Math.max(1, vids))));
+        out.push(...await videoFrames(f, n));
+      }
+    }
+    return out.slice(0, max);
+  }
+  function videoFrames(file, n) {
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(file);
+      const v = document.createElement("video");
+      v.muted = true; v.playsInline = true; v.preload = "auto"; v.src = url;
+      const fail = () => { URL.revokeObjectURL(url); reject({ message: "That video couldn't be opened here. Take a screenshot of it instead." }); };
+      const seek = (t) => new Promise((res) => { const done = () => { v.removeEventListener("seeked", done); res(); }; v.addEventListener("seeked", done); setTimeout(done, 4000); v.currentTime = t; });
+      v.onerror = fail;
+      v.onloadeddata = async () => {
+        try {
+          const d = isFinite(v.duration) && v.duration > 0 ? v.duration : 1;
+          const scale = Math.min(1, 1280 / Math.max(v.videoWidth || 1, v.videoHeight || 1));
+          const c = document.createElement("canvas");
+          c.width = Math.max(1, Math.round((v.videoWidth || 720) * scale));
+          c.height = Math.max(1, Math.round((v.videoHeight || 1280) * scale));
+          const ctx = c.getContext("2d");
+          const frames = [];
+          for (let k = 0; k < n; k++) {
+            await seek(Math.min(d - 0.05, d * (k + 0.5) / n));
+            ctx.drawImage(v, 0, 0, c.width, c.height);
+            const b = await new Promise((r) => c.toBlob(r, "image/jpeg", 0.85));
+            if (b) frames.push(b);
+          }
+          URL.revokeObjectURL(url);
+          frames.length ? resolve(frames) : fail();
+        } catch { fail(); }
+      };
+    });
+  }
+  async function addFiles(list) {
     const max = imageLimits?.maxCount || 4;
-    files = Array.from(e.target.files || []).slice(0, max);
+    formMsg("");
+    try {
+      const imgs = await toImages(list, max - files.length);
+      files = files.concat(imgs).slice(0, max);
+      if (imgs.length === 0 && list && list.length) formMsg("Only images and videos can go in the box.", "err");
+    } catch (err) { formMsg(errText(err), "err"); }
     renderShots();
-  });
+  }
+  $("files").addEventListener("change", (e) => { addFiles(e.target.files); e.target.value = ""; });
+  const drop = $("drop");
+  ["dragenter", "dragover"].forEach((t) => drop.addEventListener(t, (e) => { e.preventDefault(); drop.classList.add("over"); }));
+  ["dragleave", "drop"].forEach((t) => drop.addEventListener(t, () => drop.classList.remove("over")));
+  drop.addEventListener("drop", (e) => { e.preventDefault(); addFiles(e.dataTransfer && e.dataTransfer.files); });
   function renderShots() {
     const box = $("shots");
     box.querySelectorAll("img, .shotclear").forEach((n) => n.remove());
     for (const f of files) {
       const img = h("img", { alt: "Screenshot to send" });
       img.src = URL.createObjectURL(f);
-      box.insertBefore(img, $("filebtn"));
+      box.append(img);
     }
     if (files.length) box.append(h("button", { type: "button", class: "link shotclear", onclick: () => { files = []; $("files").value = ""; renderShots(); } }, "Remove"));
   }
@@ -415,7 +476,7 @@ Limited cash and time; he favors things he can start small and automate.`;
 ${JOSHUA}
 
 THE POST
-Link: ${f.url || "(none)"} (you cannot open it; work only from the text${nShots ? " and the " + nShots + " screenshot(s) attached, which are frames or captions from the post" : ""}).
+Link: ${f.url || "(none)"} (you cannot open it; work only from the text${nShots ? " and the " + nShots + " image(s) attached: screenshots or frames pulled from a recording of the post. Read any on-screen text in them carefully; you cannot hear the audio" : ""}).
 Caption / what was said:
 """
 ${f.caption || "(no text; read the screenshots)"}
@@ -735,9 +796,18 @@ Scores are integers 1-10 where 10 is best for the reader (10 lowStartupCost = ve
     const cap = h("textarea", { id: "cap-" + i.id, placeholder: "Caption or what was said in the video" }); cap.value = i.caption || "";
     const ang = h("input", { type: "text", id: "ang-" + i.id, placeholder: "Anything to steer it (optional)" }); ang.value = i.angle || "";
     let shots = [];
-    const fileIn = h("input", { type: "file", accept: "image/*", multiple: true });
+    const fileIn = h("input", { type: "file", accept: "image/*,video/*", multiple: true });
     const count = h("span", { class: "hint" });
-    fileIn.addEventListener("change", () => { shots = Array.from(fileIn.files || []).slice(0, imageLimits?.maxCount || 4); count.textContent = shots.length ? shots.length + " screenshot(s) ready" : ""; });
+    const take = async (list) => {
+      try { shots = await toImages(list, imageLimits?.maxCount || 4); count.textContent = shots.length ? shots.length + " image(s) ready" : "Only images and videos can go in the box."; }
+      catch (err) { count.textContent = errText(err); }
+    };
+    fileIn.addEventListener("change", () => take(fileIn.files));
+    const dz = h("label", { class: "drop" }, fileIn, h("strong", null, "Drop screenshots or a screen recording"), h("span", null, "or tap to pick from Photos or Files"));
+    ["dragenter", "dragover"].forEach((t) => dz.addEventListener(t, (e) => { e.preventDefault(); dz.classList.add("over"); }));
+    ["dragleave", "drop"].forEach((t) => dz.addEventListener(t, () => dz.classList.remove("over")));
+    dz.addEventListener("drop", (e) => { e.preventDefault(); take(e.dataTransfer && e.dataTransfer.files); });
+    if (!imageLimits) dz.hidden = true;
     const prog = h("div", { class: "progress", hidden: true }, h("span", { class: "dot" }), h("span", null, "Building…"));
     const go = h("button", { type: "button", class: "primary" }, i.model ? "Rebuild" : "Build business model");
     go.addEventListener("click", async () => {
@@ -754,7 +824,7 @@ Scores are integers 1-10 where 10 is best for the reader (10 lowStartupCost = ve
     return h("div", { style: "display:flex;flex-direction:column;gap:10px" },
       h("div", { class: "field" }, h("label", { for: "cap-" + i.id }, "What the post says"), cap),
       h("div", { class: "field" }, h("label", { for: "ang-" + i.id }, "Steer"), ang),
-      h("label", { class: "filebtn" }, fileIn, "Add screenshots"), count, prog, h("div", { class: "row" }, go),
+      dz, count, prog, h("div", { class: "row" }, go),
     );
   }
 
@@ -806,8 +876,7 @@ Scores are integers 1-10 where 10 is best for the reader (10 lowStartupCost = ve
   cl.use("sample").then(async (s) => {
     sample = s;
     if (s) { try { imageLimits = (await s.limits()).images || null; } catch { imageLimits = null; } }
-    if (!imageLimits) $("filebtn").hidden = true;
-    else $("files").accept = imageLimits.mediaTypes.join(",");
+    if (!imageLimits) $("drop").hidden = true;
   });
   cl.use("downloads").then((d) => { downloads = d; });
   cl.use("db").then((d) => {

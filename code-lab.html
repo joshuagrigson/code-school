@@ -613,7 +613,7 @@ body.dark .wcard{background:var(--panel)}
 .navitem,.btnrow button,header .hbtn,.ghead{transition:background .12s,border-color .12s,color .12s}
 .tick.pop{animation:tickpop .45s ease}
 @keyframes tickpop{40%{transform:scale(1.7)}}
-.xpfloat{position:fixed;font-family:var(--mono);font-weight:bold;color:var(--acct);z-index:120;pointer-events:none;animation:xprise 1.2s ease forwards}
+.xpfloat{position:fixed;font-family:var(--mono);font-weight:bold;font-size:.82rem;color:var(--acct);background:var(--panel);padding:2px 8px;border-radius:999px;box-shadow:0 0 0 1px var(--line),0 6px 14px -8px rgba(0,0,0,.45);white-space:nowrap;z-index:120;pointer-events:none;animation:xprise 1.2s ease forwards}
 /* faint is the point; illegible is not. Measured >=4.5:1 on all five editor
    themes, which a single var(--soft) at .55 opacity never was. */
 .ghost{color:#a6acb2;opacity:.85}
@@ -852,7 +852,7 @@ body.dark .saybox{background:var(--good);border-color:var(--goodline)}
 @keyframes gtwig{0%,100%{transform:rotate(0)}25%{transform:rotate(-14deg) scale(1.25)}65%{transform:rotate(12deg) scale(1.15)}}
 .navtip{position:fixed;top:54px;left:0;max-width:290px;background:var(--panel);color:var(--ink);border:2px solid var(--accent);border-radius:10px;padding:11px 14px;font-size:.9rem;line-height:1.45;box-shadow:0 10px 30px rgba(0,0,0,.3);z-index:130;cursor:pointer}
 .navtip:after{content:'';position:absolute;top:-9px;left:24px;border:8px solid transparent;border-top:none;border-bottom-color:var(--accent)}
-@keyframes xprise{to{transform:translateY(-42px);opacity:0}}
+@keyframes xprise{0%{transform:translateY(10px);opacity:0}18%{transform:none;opacity:1}70%{transform:none;opacity:1}100%{transform:translateY(-6px);opacity:0}}
 #status{transition:background .25s,color .25s}
 a{color:var(--acct);text-underline-offset:2px}
 a:hover{color:var(--ink)}
@@ -2589,10 +2589,11 @@ body.dark .tf-tr .tfbadge{background:#2bb080;color:#10231b}
 .tfcard.done{padding:9px 14px;background:var(--tfA);box-shadow:inset 0 0 0 1.5px var(--tfLine)}
 .tfcard.done .tfct{margin:0}
 .tfcard.done h3{font-size:.98rem;margin:0;font-family:inherit;font-weight:620;letter-spacing:0}
-.tfcard.done{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:0 10px}
-.tfcard.done .tfct{grid-column:1}
-.tfcard.done h3{grid-column:2;grid-row:1}
-.tfcard.done .tfbody{grid-column:1 / -1;display:none}
+.tfcard.done{display:flex;flex-wrap:wrap;align-items:center;gap:2px 10px}
+.tfcard.done .tfct{flex:0 0 auto}
+.tfcard.done h3{flex:1 1 14ch;min-width:0}
+.tfcard.done .tfbody{flex:0 0 100%;display:none}
+.tfpeek.tfskd{color:var(--tfSoft);background:transparent;box-shadow:inset 0 0 0 1px var(--tfLine)}
 .tfcard.done.open .tfbody{display:block;margin-top:8px}
 .tfpeek{margin-left:2px;display:inline-flex;align-items:center;gap:4px;border:0;cursor:pointer;font:inherit;font-size:.72rem;font-weight:700;padding:3px 8px;border-radius:999px;color:var(--tfEmT);background:var(--tfEmBg);box-shadow:inset 0 0 0 1px var(--tfEmLine)}
 .tfpeek .lsi{width:12px;height:12px}
@@ -24337,7 +24338,7 @@ function lsRunCheck0(){
     if (curNav) curNav.classList.add('pop');
     const xr = $('#xpTxt').getBoundingClientRect();
     const fl = document.createElement('div'); fl.className='xpfloat'; fl.textContent = bonus ? '+35 XP' : '+10 XP';
-    fl.style.left = xr.left+'px'; fl.style.top = (xr.top-4)+'px';
+    fl.style.left = xr.left+'px'; fl.style.top = (xr.bottom+4)+'px';
     document.body.appendChild(fl); setTimeout(()=>fl.remove(), 1300);
   }
   /* A pass moves you on. The next lesson is not an offer to take up: after a
@@ -26622,7 +26623,7 @@ function txAward(key, n){
   stk.xp=(stk.xp|0)+n; saveP();
   const xr=$('#xpTxt').getBoundingClientRect();
   const fl=document.createElement('div'); fl.className='xpfloat'; fl.textContent='+'+n+' XP';
-  fl.style.left=xr.left+'px'; fl.style.top=(xr.top-4)+'px';
+  fl.style.left=xr.left+'px'; fl.style.top=(xr.bottom+4)+'px';
   document.body.appendChild(fl); setTimeout(()=>fl.remove(),1300);
 }
 /* deterministic scramble that is never the answer: rotate by a third, then swap pairs */
@@ -30163,7 +30164,7 @@ teachEl.addEventListener('click', (e) => {
       stk.xp = (stk.xp | 0) + 3; saveP();
       const xr = $('#xpTxt').getBoundingClientRect();
       const fl = document.createElement('div'); fl.className = 'xpfloat'; fl.textContent = '+3 XP';
-      fl.style.left = xr.left + 'px'; fl.style.top = (xr.top - 4) + 'px';
+      fl.style.left = xr.left + 'px'; fl.style.top = (xr.bottom + 4) + 'px';
       document.body.appendChild(fl); setTimeout(() => fl.remove(), 1300);
     }
     return;
@@ -30861,8 +30862,8 @@ function setNav(hidden){
   try{ localStorage.setItem('navhid', hidden?'1':'0'); }catch(e){}
 }
 $('#btnNav').onclick = ()=>setNav(!document.body.classList.contains('navhid'));
-/* Show the wide-open typing mode once, the first time someone actually goes to
-   type - otherwise they can finish a whole lesson never knowing it exists. */
+/* Point out the wide-open typing mode once, the first time someone actually goes
+   to type - otherwise they can finish a whole lesson never knowing it exists. */
 function teachNav(){
   let taught=false; try{ taught = localStorage.getItem('navtaught')==='1'; }catch(e){}
   if (taught) return;
@@ -30873,9 +30874,10 @@ function teachNav(){
   const mark=()=>{ try{ localStorage.setItem('navtaught','1'); }catch(e){} };
   if (document.body.classList.contains('navhid')){ mark(); return; }  /* already found it */
   mark();
-  setNav(true);
+  /* the list stays where it is: folding it here moved the whole page under the
+     pointer and dropped this note on the DO THIS card. The note only points. */
   const tip=document.createElement('div'); tip.className='navtip';
-  tip.innerHTML='Gave you room to type. Press <b>&#9776; Lessons</b> up there to bring the lesson list back.';
+  tip.innerHTML='Want more room to type? This button hides the lesson list, and brings it back.';
   const go=()=>tip.remove();
   tip.onclick=go; document.body.appendChild(tip);
   /* point the arrow at the actual button, wherever the header puts it */
@@ -30991,7 +30993,7 @@ function predShow(i){
       if (c[1]){ stk.xp=(stk.xp|0)+2; saveP();
         const xr=$('#xpTxt').getBoundingClientRect();
         const fl=document.createElement('div'); fl.className='xpfloat'; fl.textContent='+2 XP';
-        fl.style.left=xr.left+'px'; fl.style.top=(xr.top-4)+'px';
+        fl.style.left=xr.left+'px'; fl.style.top=(xr.bottom+4)+'px';
         document.body.appendChild(fl); setTimeout(()=>fl.remove(),1300);
       }
       return;
@@ -32158,6 +32160,27 @@ var TF = {key: '', i: -1, cards: null, at: 0, st: [], pv: {}, pvn: 0, all: false
 try { TF.pos = JSON.parse(localStorage.getItem('tflow') || '{}') || {}; } catch (e) { TF.pos = {}; }
 try { TF.all = localStorage.getItem('tfAll') === '1'; } catch (e) {}
 function tfSavePos(){ try { localStorage.setItem('tflow', JSON.stringify(TF.pos)); } catch (e) {} }
+/* Passing in the editor, or "Skip to the task", moves the flow past cards nobody
+   opened. Nothing gates the editor, and nothing claims those cards were done:
+   they fold with "skipped" on them until someone works through them. */
+TF.skp = {};
+try { TF.skp = JSON.parse(localStorage.getItem('tflowSkip') || '{}') || {}; } catch (e) { TF.skp = {}; }
+function tfSkipSave(){ try { localStorage.setItem('tflowSkip', JSON.stringify(TF.skp)); } catch (e) {} }
+function tfSkipped(k){ const a = TF.lp == null && TF.skp[TF.key]; return !!a && a.indexOf(k) > -1; }
+function tfSkipCount(){ const a = TF.lp == null && TF.skp[TF.key]; return a ? a.length : 0; }
+function tfSkipMark(from, to){
+  if (TF.lp != null || !TF.cards) return;
+  const a = TF.skp[TF.key] || [];
+  for (let k = Math.max(0, from); k < Math.min(to, TF.cards.length); k++)
+    if (!(TF.st[k] && TF.st[k].done) && a.indexOf(k) < 0 && !((TF.cards[k].t === 'tr' || TF.cards[k].t === 'ms') && lessonDone(TF.i))) a.push(k);
+  if (a.length){ TF.skp[TF.key] = a; tfSkipSave(); }
+}
+function tfSkipClear(k){
+  const a = TF.lp == null && TF.skp[TF.key]; if (!a) return;
+  const x = a.indexOf(k); if (x < 0) return;
+  a.splice(x, 1); if (!a.length) delete TF.skp[TF.key];
+  tfSkipSave();
+}
 function tfKey(les){ return les.g + '|' + plain(les.title); }
 var TF_KIND = {see: 'See it', predict: 'Predict', fill: 'Fill the gap', arrange: 'Put it in order', bug: 'Spot the bug', tr: 'Try it', tweak: 'Tweak it', ladder: 'The ladder'};
 var TF_ICON = {see: 'book', predict: 'star', fill: 'pencil', arrange: 'code', bug: 'check', tr: 'play', tweak: 'pencil', ladder: 'right'};
@@ -32240,7 +32263,8 @@ function tfMount(les, i){
   if (!TF.cards) return;
   const n = TF.cards.length, tryAt = tfTaskAt();
   let at = TF.pos[TF.key] | 0;
-  if (lessonDone(i)) at = n;
+  /* a passed lesson folds every card; the ones never reached say so */
+  if (lessonDone(i)){ TF.st = []; tfSkipMark(Math.max(0, Math.min(at, n)), n); at = n; }
   TF.at = Math.max(0, Math.min(at, n));
   TF.st = TF.cards.map((c, k) => ({done: k < TF.at}));
   /* the page as it was, all of it, folded away under the cards */
@@ -32274,11 +32298,11 @@ function tfRender(scroll){
   const n = TF.cards.length;
   let h = '';
   for (let k = 0; k < Math.min(TF.at + 1, n); k++) h += tfCardHtml(TF.cards[k], k, k < TF.at);
-  if (TF.at >= n) h += TF.lp != null ? lpWarmEnd() : '<div class="tfend">' + lsIc('star') + '<span><b>Every step done.</b> ' + (lessonDone(TF.i) ? 'This lesson is yours. Go through the steps again whenever you like.' : 'Now make it pass in the editor.') + '</span>'
+  if (TF.at >= n) h += TF.lp != null ? lpWarmEnd() : '<div class="tfend">' + lsIc('star') + '<span><b>' + (tfSkipCount() ? 'You passed, with ' + tfSkipCount() + (tfSkipCount() === 1 ? ' step' : ' steps') + ' skipped.' : 'Every step done.') + '</b> ' + (lessonDone(TF.i) ? 'This lesson is yours. Go through the steps again whenever you like.' : 'Now make it pass in the editor.') + '</span>'
     + '<button type="button" class="tfagain">Walk through it again</button></div>';
   box.innerHTML = h;
   markCode(box, tfLes());
-  const c = teachEl.querySelector('.tfcount'); if (c) c.textContent = TF.at >= n ? 'All ' + n + ' steps done' : 'Step ' + (TF.at + 1) + ' of ' + n;
+  const c = teachEl.querySelector('.tfcount'); if (c) c.textContent = TF.at >= n ? (tfSkipCount() ? (n - tfSkipCount()) + ' of ' + n + ' steps done' : 'All ' + n + ' steps done') : 'Step ' + (TF.at + 1) + ' of ' + n;
   teachEl.querySelectorAll('.tfpips i').forEach((e, k) => { e.className = k < TF.at ? 'on' : k === TF.at ? 'now' : ''; });
   const sk = teachEl.querySelector('.tfskip'); if (sk) sk.hidden = TF.at >= tfTaskAt();
   tfMountPvs(box);
@@ -32292,7 +32316,8 @@ function tfCardHtml(c, k, done){
   const kind = c.t, lab = c.label || TF_KIND[kind] || '';
   let h = '<article class="tfcard tf-' + kind + (c.pre ? ' tfpre' : '') + (done ? ' done' : ' now') + '" data-k="' + k + '" aria-labelledby="tfh' + k + '">'
     + '<div class="tfct"><span class="tfbadge">' + lsIc(TF_ICON[kind] || 'book') + lab + '</span>'
-    + (done ? '<button type="button" class="tfpeek" aria-expanded="false" aria-label="Open step ' + (k + 1) + ' again">' + lsIc('check') + '<span>done</span></button>' : '<span class="tfno">' + (k + 1) + '</span>') + '</div>'
+    + (done ? (tfSkipped(k) ? '<button type="button" class="tfpeek tfskd" aria-expanded="false" aria-label="Open step ' + (k + 1) + ', which you skipped">' + lsIc('right') + '<span>skipped</span></button>'
+        : '<button type="button" class="tfpeek" aria-expanded="false" aria-label="Open step ' + (k + 1) + ' again">' + lsIc('check') + '<span>done</span></button>') : '<span class="tfno">' + (k + 1) + '</span>') + '</div>'
     + '<h3 id="tfh' + k + '">' + c.h + '</h3><div class="tfbody">';
   if (c.p) h += '<p class="tfp">' + c.p + '</p>';
   if (kind === 'see') h += tfSeeHtml(c, k, done);
@@ -32315,7 +32340,7 @@ function tfWhyDone(c){ return '<span class="tfok">' + lsIc('check') + '</span>' 
 /* a card is done: say why, then offer the next one */
 function tfDone(card, why, miss){
   if (!card || card.classList.contains('solved')) return;
-  const k = +card.dataset.k; TF.st[k] = {done: true};
+  const k = +card.dataset.k; TF.st[k] = {done: true}; tfSkipClear(k);
   card.classList.add('solved');
   const w = card.querySelector('.tfwhy'), c = TF.cards[k];
   const say = why != null ? why : c.why;
@@ -32334,6 +32359,7 @@ function tfNext(){
   if (now){ now.setAttribute('tabindex', '-1'); try { now.focus({preventScroll: true}); } catch (e) {} }
 }
 function tfGoto(k){
+  if (k > TF.at) tfSkipMark(TF.at, k);
   TF.at = Math.max(0, Math.min(k, TF.cards.length)); TF.pos[TF.key] = TF.at; tfSavePos(); tfRender(true);
 }
 
@@ -32705,6 +32731,7 @@ function tfAfterRunFlow(ok){
   const tryAt = TF.cards.findIndex(c => c.t === 'tr');
   if (ok && lessonDone(idx) && tryAt > -1 && TF.at <= tryAt){
     /* passing jumps the flow past the Try card: nothing ever gates the editor */
+    tfSkipMark(TF.at, tryAt);
     TF.at = tryAt + 1; TF.pos[TF.key] = TF.at; tfSavePos(); tfRender(false);
     return;
   }

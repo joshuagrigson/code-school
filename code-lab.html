@@ -1633,6 +1633,17 @@ body.dark #advOv button:focus-visible,body.dark #advOv input:focus-visible{outli
    plinth top (y 292 of 400). All its motion is the class's own, from the kit. */
 .advhero{position:absolute;left:18%;top:15%;width:64%;aspect-ratio:1;padding:0;margin:0;border:0;background:none;cursor:pointer;border-radius:30%}
 .advhero:focus-visible{outline:2px dashed rgba(255,255,255,.85)!important;outline-offset:4px}
+/* "See your final form": the painted Legend art takes the stage and the drawn
+   hero (your own look) steps down to the corner. The art is a file beside the
+   page; if it cannot load, nothing here applies and the drawn hero stays put. */
+.advart{position:absolute;left:14%;top:10%;width:72%;height:90%;object-fit:cover;object-position:50% 0;display:block;pointer-events:none;opacity:0;
+  transition:opacity .35s ease;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 14%,#000 86%,transparent),linear-gradient(180deg,#000 72%,transparent 96%);
+  -webkit-mask-composite:source-in;mask-image:linear-gradient(90deg,transparent,#000 14%,#000 86%,transparent),linear-gradient(180deg,#000 72%,transparent 96%);
+  mask-composite:intersect}
+.advstage.art .advart{opacity:1}
+.advstage.art .advbd{opacity:.3;transition:opacity .35s ease}
+.advstage.art .advhero{left:2%;top:auto;bottom:15%;width:27%;transition:left .3s ease,width .3s ease}
 .advhero .fr,.advhero .fxl{position:absolute;inset:0;display:block}
 .advhero .fxl{pointer-events:none}
 .advhero .fr svg,.advhero .fxl svg{position:absolute;inset:0;width:100%;height:100%;display:block;overflow:visible}
@@ -29470,7 +29481,23 @@ function advBackdrop(){
    fresh sprite; the effects sit in their own layer over the same box. */
 let advAnimT = 0, advAnimRun = 0, advFxN = 0;
 function advStageStop(){ clearTimeout(advAnimT); advAnimT = 0; advAnimRun++; }
+/* The painted Legend art for "See your final form". It lives in art/legend/
+   beside the page, one picture for each class and body. A copy of the page on
+   its own has no such folder: the picture fails to load and the stage keeps
+   the drawn hero, exactly as before. */
+function advArtSync(){
+  const d = advDraft, st = $('#advStage'), im = $('#advArt'); if (!d || !st || !im) return;
+  const want = d.final && d.cls ? 'art/legend/' + d.cls + '-' + (d.look.sex === 'f' ? 'f' : 'm') + '.webp' : '';
+  if (!want){ st.classList.remove('art'); return; }
+  if (im.dataset.src === want){ st.classList.toggle('art', im.complete && im.naturalWidth > 0); return; }
+  st.classList.remove('art'); im.dataset.src = want;
+  im.alt = 'Painted art: ' + AV_CAT.formsByCls[d.cls][4];
+  im.onload = () => { if (im.dataset.src === want && advDraft && advDraft.final) st.classList.add('art'); };
+  im.onerror = () => { st.classList.remove('art'); };
+  im.src = want;
+}
 function advStagePlay(){
+  advArtSync();
   advStageStop();
   const d = advDraft, fig = $('#advFig'), fxl = $('#advFx'), scene = $('#advScene');
   if (!d || !fig || !fxl) return;
@@ -29587,6 +29614,7 @@ function advMaker(){
     + '<div class="advtop">' + bkSwitchHtml(d) + '<h2 id="advTitle">' + bkMkTitle(d) + '</h2>'
     +   '<p class="advintro">' + bkMkIntro(d) + '</p></div>'
     + '<div class="advstagecol"><div class="advstage" id="advStage"><div class="advscene" id="advScene">' + advBackdrop()
+    +   '<img class="advart" id="advArt" alt="" decoding="async">'
     +   '<button class="advhero" id="advHero" data-pose="' + d.pose + '" aria-label="Your hero. Show the next pose">' + advHeroFrames() + '</button></div>'
     +   '<div class="advposes" role="group" aria-label="Preview a pose">' + ADV_POSES.map(p =>
           '<button data-pose="' + p[0] + '" aria-pressed="' + (p[0] === d.pose) + '" aria-label="' + p[1] + '"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' + ADV_POSE_ICO[p[0]] + '</svg><span>' + p[1] + '</span></button>').join('') + '</div>'

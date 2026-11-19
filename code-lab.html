@@ -3370,6 +3370,14 @@ body.jyOvOn{overflow:hidden}
 .jyfig svg.jyav,.jyahf>svg.jyav{position:absolute;display:block;left:-15.625%;top:-21.875%;width:131.25%;height:131.25%;overflow:visible}
 .jyabf>img.jybi{left:-10.94%;top:-13.28%;width:121.875%;height:121.875%}
 .jybm{position:relative}.jybm img.jybi{position:absolute;left:50%;top:50%;transform:translate(-50%,-44%)}
+.jybm svg.jybi{position:absolute;left:50%;top:50%;width:46px;height:46px;margin-top:4px;transform:translate(-50%,-44%);overflow:visible}
+.jyonmap .jybm svg.jybi{width:40px;height:40px}
+.jykick2 .jybm svg.jybi{width:38px;height:38px}
+.gbanner.jytrial .jytm .jybm svg.jybi{width:54px;height:54px}
+.jybm.shadow svg.jybi{filter:brightness(.2) saturate(0)}
+.jyabf>svg.jybi{position:absolute;display:block;left:-10.94%;top:-13.28%;width:121.875%;height:121.875%;overflow:visible}
+.wa2st svg.jybi{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.wa2st.shadow svg.jybi{filter:brightness(.42) saturate(.2) sepia(.4) hue-rotate(210deg);opacity:.55}
 .jynd{margin-top:16px;padding:12px;border-radius:16px;background:rgba(15,12,28,.55);background-color:#17121f;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);display:flex;flex-direction:column;gap:8px}
 .jynd>b{color:#fff;font-family:var(--serif);font-size:1.05rem}.jynd>span:last-child{font-size:.8rem;color:#c9bedb}
 .jyndr{display:flex;align-items:center;gap:10px}.jyndr b{display:block;font-size:.9rem;color:#fff}.jyndr span span{display:block;font-size:.76rem;color:#c3b8d4}
@@ -17737,6 +17745,25 @@ function foeSvg(f, o) {
     else if (has(KIND, f.kind)) key = KIND[f.kind];
   }
   if (!key) key = 'ogre';
+  /* The painted foe (art/foes/<key>.webp, next to the painted heroes; see HERO_ART). It keeps the root classes,
+     the 64 box with the feet on y 58 and the fo-rig > fo-bob hooks, so every caller and the bob loop keep
+     working. A pose is a move of the whole figure plus its effect (hit flash, sleep z's, cast glow). */
+  var FA = typeof HERO_ART === 'object' && HERO_ART && HERO_ART.ok && HERO_ART.base ? HERO_ART : null;
+  if (FA) {
+    var fp = /^(idle|hit|down|sleep|cast)$/.test(o.pose) ? o.pose : 'idle', fr = o.dir === 'r';
+    var fsrc = (FA.data && FA.data['foe-' + key]) || FA.base.replace(/hero\/?$/, 'foes/') + key + '.webp';
+    var FT = {hit: 'rotate(7 32 58) translate(2.5 0)', down: 'rotate(80 32 57) translate(0 3)', sleep: 'translate(32 58) scale(1 .94) translate(-32 -58)', cast: 'translate(0 -1.5)'};
+    var FF = {hit: 'brightness(1.7) sepia(.35) saturate(1.6) hue-rotate(-25deg)', down: 'brightness(.7) saturate(.6)', sleep: 'brightness(.78)', cast: 'drop-shadow(0 0 3px #c58bff) brightness(1.1)'};
+    var fsh = o.shadow === false ? '' : '<g class="fo-shadow"><g class="fo-sh"><ellipse cx="32" cy="58.3" rx="' + (fp === 'down' ? 17 : key === 'wisp' ? 8 : 12) + '" ry="2.3" fill="' + (key === 'wisp' ? '#5fe8ff' : '#000') + '" opacity=".3"/></g></g>';
+    var faura = fp === 'cast' ? '<g class="fo-aura"><ellipse cx="32" cy="34" rx="20" ry="25" fill="#a46cff" opacity=".22"/><ellipse cx="32" cy="34" rx="12" ry="16" fill="#e2c8ff" opacity=".18"/></g>' : '';
+    var ffx = fp === 'hit' ? '<g class="fo-fx"><path d="M20 22l4 4M18 32h5M22 41l3-3" stroke="#fff3c4" stroke-width="2" stroke-linecap="round"/></g>'
+      : fp === 'down' ? '<g class="fo-fx"><circle cx="40" cy="44" r="1.6" fill="#ffd36b"/><circle cx="46" cy="40" r="1.2" fill="#fff"/><circle cx="51" cy="45" r="1.4" fill="#ffd36b"/></g>' : '';
+    var fzz = fp === 'sleep' ? '<g class="fo-zz"><text class="fo-z1" x="44" y="16" font-size="8" font-weight="700" fill="#cfe3ff" font-family="sans-serif">z</text><text class="fo-z2" x="50" y="9" font-size="10" font-weight="700" fill="#cfe3ff" font-family="sans-serif">Z</text></g>' : '';
+    return '<svg xmlns="http://www.w3.org/2000/svg" class="fo fo-art fo-' + key + ' fo-' + fp + (fr ? ' fo-dr' : '') + '" viewBox="0 0 64 64" overflow="visible" aria-hidden="true" focusable="false">'
+      + '<g' + (fr ? ' transform="matrix(-1 0 0 1 64 0)"' : '') + '>' + fsh + faura
+      + '<g class="fo-rig"><g class="fo-bob"><g' + (FT[fp] ? ' transform="' + FT[fp] + '"' : '') + '><image href="' + fsrc + '" x="2" y="-1.4" width="60" height="60"'
+      + (FF[fp] ? ' style="filter:' + FF[fp] + '"' : '') + '/></g></g></g>' + ffx + '</g>' + fzz + '</svg>';
+  }
 
   var ID = String(o.id == null ? '' : o.id).replace(/[^\w-]/g, function (c) { return '_' + c.charCodeAt(0).toString(36); });
   if (!ID) ID = 'fo' + Math.random().toString(36).slice(2, 8);
@@ -41297,6 +41324,30 @@ function bossSvg(id, o){
   for (i = 0; i < PN.length; i++) if (o.pose === PN[i]){ pose = PN[i]; pi = i; }
   var hp = (typeof o.hp === 'number' && isFinite(o.hp)) ? Math.max(0, Math.min(1, o.hp)) : 1;
   var stone = !!o.stone;
+  /* The painted boss (art/bosses/<id>.webp, see HERO_ART): the root classes and every animation hook stay (the
+     limb hooks are empty), the ground stays on y 232, a pose moves the whole figure, stone greys it out and a
+     boss under 0.3 hp burns red. */
+  var BA = typeof HERO_ART === 'object' && HERO_ART && HERO_ART.ok && HERO_ART.base ? HERO_ART : null;
+  if (BA){
+    var bp = String(o.id != null ? o.id : 'boss' + key).replace(/[^A-Za-z0-9_-]/g, '_'), bc = CAT[ci].palette[3];
+    var bsrc = (BA.data && BA.data['boss-' + key]) || BA.base.replace(/hero\/?$/, 'bosses/') + key + '.webp';
+    var BT = {attack: 'translate(-18 0) rotate(-5 128 232)', hit: 'translate(10 0) rotate(5 128 232)', stagger: 'translate(16 4) rotate(9 128 232)', defeat: 'translate(0 34) rotate(14 128 232)'};
+    var bf = stone ? 'grayscale(1) brightness(.6) contrast(1.15)' : pose === 'hit' ? 'brightness(1.8) saturate(1.4)' : pose === 'defeat' ? 'brightness(.7) saturate(.6)' : hp < 0.3 ? 'drop-shadow(0 0 8px #ff3a1a) saturate(1.2)' : '';
+    var bg = hp < 0.3 && !stone ? '#ff3a1a' : bc;
+    var bh = function(c, x, y){ return '<g class="' + c + '" data-pivot="' + x + ' ' + y + '" style="transform-origin:' + x + 'px ' + y + 'px"></g>'; };
+    var baura = stone ? '' : '<g class="boss-aura" data-pivot="128 128" style="transform-origin:128px 128px"><ellipse cx="128" cy="140" rx="112" ry="104" fill="url(#' + bp + '-glow)"/><ellipse cx="128" cy="232" rx="96" ry="12" fill="' + bg + '" opacity=".28"/></g>';
+    var bfx = pose === 'hit' ? '<path d="M70 70l16 14M60 110h20M72 150l14-10" stroke="#fff3c4" stroke-width="5" stroke-linecap="round"/>'
+      : pose === 'stagger' || pose === 'defeat' ? '<g fill="#ffd36b"><circle cx="110" cy="20" r="5"/><circle cx="136" cy="10" r="4"/><circle cx="160" cy="22" r="5"/></g>' : '';
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" overflow="visible" aria-hidden="true" focusable="false" class="boss boss-art boss-' + key + ' boss-' + pose + (stone ? ' boss-stone' : '') + '">'
+      + '<defs><radialGradient id="' + bp + '-glow"><stop offset="0" stop-color="' + bg + '" stop-opacity=".34"/><stop offset="1" stop-color="' + bg + '" stop-opacity="0"/></radialGradient></defs>'
+      + '<ellipse cx="128" cy="233" rx="84" ry="9" fill="#000" opacity=".45"/>' + baura
+      + '<g class="boss-body" data-pivot="128 232" style="transform-origin:128px 232px"><g' + (BT[pose] ? ' transform="' + BT[pose] + '"' : '') + '>'
+      + bh('boss-wing', 128, 120) + bh('boss-tail', 128, 200) + bh('boss-armb', 100, 120)
+      + '<image href="' + bsrc + '" x="4" y="-14" width="248" height="248"' + (bf ? ' style="filter:' + bf + '"' : '') + '/>'
+      + '<g class="boss-head" data-pivot="128 80" style="transform-origin:128px 80px">' + bh('boss-eyes', 128, 60) + bh('boss-jaw', 128, 90) + '</g>'
+      + '<g class="boss-armf" data-pivot="150 120" style="transform-origin:150px 120px">' + bh('boss-weapon', 150, 150) + '</g>' + bh('boss-core', 128, 140)
+      + '</g></g><g class="boss-fx">' + bfx + '</g></svg>';
+  }
   var P = String(o.id != null ? o.id : 'boss' + key).replace(/[^A-Za-z0-9_-]/g, function(c){ return '_' + c.charCodeAt(0).toString(36); });
   if (!/^[A-Za-z_]/.test(P)) P = 'b' + P;
 
@@ -43145,6 +43196,8 @@ function jyRoadD(segs, upto){
 /* the map's drawings go in as pictures: many sprites, no ids to clash, and their glows cannot push the page wider */
 function jyImg(svg, cls){
   if (svg.indexOf('class="av av-art') >= 0) return svg.replace('class="av av-art', 'class="' + (cls || '') + ' av av-art');
+  /* a painted boss or foe holds a picture file, which an <img> of an SVG cannot load: it goes in as inline SVG */
+  if (/class="(boss boss-art|fo fo-art)/.test(svg)) return svg.replace(/class="(boss boss-art|fo fo-art)/, 'class="' + (cls || '') + ' $1');
   return '<img class="' + (cls || '') + '" alt="" aria-hidden="true" draggable="false" src="data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg) + '">';
 }
 /* a sprite drawn past its own box (a raised blade, a crest, an aura) keeps it: the picture's box grows, and CSS puts it back in place */

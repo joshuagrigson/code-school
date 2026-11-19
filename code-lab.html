@@ -1642,6 +1642,12 @@ body.dark #advOv button:focus-visible,body.dark #advOv input:focus-visible{outli
   -webkit-mask-composite:source-in;mask-image:linear-gradient(90deg,transparent,#000 14%,#000 86%,transparent),linear-gradient(180deg,#000 72%,transparent 96%);
   mask-composite:intersect}
 .advstage.art .advart{opacity:1}
+/* painted heroes: the stage hero is already the painting, so the corner copy goes; one body choice needs no tabs;
+   the road's art card is the hero, so its small bust goes too */
+body.heroart .advstage.art .advhero{visibility:hidden}
+body.heroart .advtabs{display:none}
+body.heroart .advroad .la + .lp{display:none}
+body.heroart .advroad .la{margin-bottom:2px}
 .advstage.art .advbd{opacity:.3;transition:opacity .35s ease}
 .advstage.art .advhero{left:2%;top:auto;bottom:15%;width:27%;transition:left .3s ease,width .3s ease}
 .advhero .fr,.advhero .fxl{position:absolute;inset:0;display:block}
@@ -3338,6 +3344,7 @@ body.jyOvOn{overflow:hidden}
 .jyslot[aria-pressed="true"]{background-color:#1e2433}
 /* padded sprites: the 64-unit hero box (and the 256-unit boss box) stays where it was */
 .jyfig img.jyav,.jyahf>img.jyav{left:-15.625%;top:-21.875%;width:131.25%;height:131.25%}
+.jyfig svg.jyav,.jyahf>svg.jyav{position:absolute;display:block;left:-15.625%;top:-21.875%;width:131.25%;height:131.25%;overflow:visible}
 .jyabf>img.jybi{left:-10.94%;top:-13.28%;width:121.875%;height:121.875%}
 .jybm{position:relative}.jybm img.jybi{position:absolute;left:50%;top:50%;transform:translate(-50%,-44%)}
 .jynd{margin-top:16px;padding:12px;border-radius:16px;background:rgba(15,12,28,.55);background-color:#17121f;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);display:flex;flex-direction:column;gap:8px}
@@ -12067,6 +12074,44 @@ const CONSOLE_CSS = "\n.term{background:#0d1017;border:1px solid #232936;border-
    monsters in the same hand. Both are self-contained on purpose - the Quest
    preview gets them by calling .toString(), the same way it gets questRun.
    ========================================================================= */
+/* PAINTED HEROES. The hero is a painted figure, one cut-out picture for each class, body and tier, kept in
+   art/hero/ beside the page. HERO_ART.ok says whether those pictures can be reached: yes on the web, and
+   remembered from the last visit; a quick probe corrects it. When they cannot (a copy of the page on its own),
+   avatarSvg falls back to the drawn hero, so there is always a hero. */
+var HERO_ART = (function(){
+  var base = '', ok = false, seen = null;
+  try { base = new URL('art/hero/', location.href).href; ok = /^https?:$/.test(location.protocol); seen = localStorage.getItem('heroArt'); } catch(e){}
+  if (seen === '1') ok = true; else if (seen === '0') ok = false;
+  return {ok: ok && !!base, base: base, data: {}, warm: {}};
+})();
+/* Some screens put the hero inside an SVG that is itself shown as an image, and a picture in there may only be
+   a data URI. So the five pictures of a hero that is shown full size are read once and kept as data. At most
+   three heroes are kept. */
+function heroArtWarm(cls, sx){
+  var k = cls + '-' + sx;
+  if (HERO_ART.warm[k] || !HERO_ART.ok || typeof fetch !== 'function' || typeof FileReader === 'undefined') return;
+  HERO_ART.warm[k] = 1;
+  var ks = Object.keys(HERO_ART.warm);
+  if (ks.length > 3){ delete HERO_ART.warm[ks[0]]; for (var j = 0; j < 5; j++) delete HERO_ART.data[ks[0] + '-' + j + '.webp']; }
+  [0, 1, 2, 3, 4].forEach(function(t){
+    var n = k + '-' + t + '.webp';
+    fetch(HERO_ART.base + n).then(function(r){ return r.ok ? r.blob() : null; }).then(function(b){
+      if (!b) return;
+      var fr = new FileReader(); fr.onload = function(){ if (HERO_ART.warm[k]) HERO_ART.data[n] = fr.result; }; fr.readAsDataURL(b);
+    }).catch(function(){});
+  });
+}
+(function(){
+  if (HERO_ART.ok && document.body) document.body.classList.add('heroart');
+  if (!HERO_ART.base || typeof Image === 'undefined') return;
+  var im = new Image(), set = function(v){
+    try { localStorage.setItem('heroArt', v ? '1' : '0'); } catch(e){}
+    HERO_ART.ok = v; if (document.body) document.body.classList.toggle('heroart', v);
+  };
+  im.onload = function(){ set(true); }; im.onerror = function(){ set(false); };
+  im.src = HERO_ART.base + 'knight-m-0.webp';
+})();
+function heroArtSrc(){ return 'var HERO_ART = ' + JSON.stringify(HERO_ART) + ';' + String.fromCharCode(10); }
 function avatarSvg(look, o){
   /* The hero, RPG edition: a layered chibi warrior built from parts, inked and lit the same way as
      foeSvg. You start as a scruffy recruit and grow into a legend as you finish grades; each class is
@@ -12501,6 +12546,31 @@ function avatarSvg(look, o){
   var feat = deep ? dk(sk, 0.55) : '';
   /* a dwarf saved before the beard had its own list keeps its old combined entry (no beard field) */
   var fem = look.sex === 'f', legacyDw = spc === 'dwarf' && look.beard == null;
+  /* the painted hero (see HERO_ART above): same root classes, same 64 box with the feet on y 58, same crops,
+     so every caller keeps working. A pose is a simple move of the whole figure. */
+  var HA = typeof HERO_ART === 'object' && HERO_ART && HERO_ART.ok ? HERO_ART : null;
+  if (HA){
+    var pc = o.crop === 'bust' || o.crop === 'head' ? o.crop : 'full';
+    var pt = Math.max(0, Math.min(4, isNaN(tier) ? 0 : tier));
+    var pname = cls + '-' + (fem ? 'f' : 'm') + '-' + pt + '.webp';
+    if (pc === 'full' && typeof heroArtWarm === 'function') heroArtWarm(cls, fem ? 'f' : 'm');
+    var psrc = (HA.data && HA.data[pname]) || HA.base + pname;
+    var pvb = '0 0 64 64', pimg;
+    if (pc === 'full'){
+      var PM = {walk:'rotate(-2.5 32 58) translate(0 -1.4)', walk2:'rotate(2.5 32 58)', attack:'rotate(7 32 58) translate(3.5 -0.6)',
+                hurt:'rotate(-8 32 58) translate(-2.5 0)', win:'translate(0 -4)', cheer:'translate(0 -5) rotate(-3 32 58)', down:'rotate(82 32 56) translate(0 4)'};
+      var pmv = (o.dir === 'l' ? 'translate(64 0) scale(-1 1) ' : '') + (PM[pose] || '');
+      pimg = (o.shadow === false ? '' : '<ellipse cx="32" cy="58.4" rx="11" ry="2.3" fill="#000" opacity=".22"/>')
+        + '<g class="av-fig"' + (pmv ? ' transform="' + pmv + '"' : '') + '><image href="' + psrc + '" x="12.8" y="-0.2" width="38.4" height="64"/></g>';
+    } else {
+      /* where the face sits in the 307 x 512 picture, by class (the dwarf, the long-horned and the tall-hatted sit lower) */
+      var pside = pc === 'head' ? 118 : 220, pcy = ({skald:0.155, mage:0.15, warden:0.16, monk:0.15}[cls] || 0.135) * 512;
+      pvb = (153.5 - pside / 2) + ' ' + Math.max(0, pcy - (pc === 'head' ? 59 : 66)) + ' ' + pside + ' ' + pside;
+      pimg = '<image href="' + psrc + '" x="0" y="0" width="307" height="512"/>';
+    }
+    return '<svg xmlns="http://www.w3.org/2000/svg" class="av av-art av-' + cls + ' av-' + MO + ' av-t' + pt + ' av-s-' + spc + ' av-' + pose + (pc === 'full' ? '' : ' av-crop')
+      + '" viewBox="' + pvb + '"' + (pc === 'full' ? ' overflow="visible"' : '') + ' aria-hidden="true" focusable="false">' + pimg + '</svg>';
+  }
   var HL = HAIRS[spc], hIdx = legacyDw ? ix(look.hair, DWARF.length) : ix(look.hair, HL.length), hs = legacyDw ? DWARF[hIdx][1] : hIdx;
   var bIdx = legacyDw ? DWARF_B[DWARF[hIdx][2]] : look.beard == null ? 0 : ix(look.beard, BEARD.length), beard = BEARD[bIdx][0];
   var expr = look.expr == null ? 0 : ix(look.expr, EXPR.length), accC = look.accC == null || look.accC === '' ? -1 : ix(look.accC, ACCC.length);
@@ -22257,7 +22327,7 @@ function questDoc(les, code){
     + ';var ZONE=' + JSON.stringify({id:P.id, band:P.band || 0})
     + ';var SOUND=' + (questSound ? 'true' : 'false') + ';var SOUND_RECIPES=' + JSON.stringify(QUEST_SFX)
     + ';var SPR=' + JSON.stringify(questSprites(P)) + ';var HUDI=' + JSON.stringify(QUEST_HUD) + ';\n'
-    + soundKit.toString() + '\n' + questRun.toString() + '\n' + avatarSvg.toString() + '\n' + foeSvg.toString()
+    + soundKit.toString() + '\n' + questRun.toString() + '\n' + heroArtSrc() + avatarSvg.toString() + '\n' + foeSvg.toString()
     + '\n' + heroAnimKit.toString() + '\n' + foeAnimKit.toString() + '\n' + QUEST_VIEW;
   return arcPage(QUEST_CSS + questArt(P), body, js);
 }
@@ -23021,7 +23091,7 @@ function soundDoc(les, code){
   const js = 'var CODE=' + JSON.stringify(code) + ';var SOUND_RECIPES=' + JSON.stringify(SOUND_RECIPES)
     + ';var HERO_LOOK=' + JSON.stringify(look) + ';var HERO_NAME=' + JSON.stringify((adv && adv.name) || 'Your hero')
     + ';var WON=' + (won ? 'true' : 'false') + ';\n'
-    + soundRun.toString() + '\n' + soundKit.toString() + '\n' + avatarSvg.toString() + '\n' + heroAnimKit.toString() + '\n' + SOUND_VIEW;
+    + soundRun.toString() + '\n' + soundKit.toString() + '\n' + heroArtSrc() + avatarSvg.toString() + '\n' + heroAnimKit.toString() + '\n' + SOUND_VIEW;
   return arcPage(SOUND_CSS + waSoundCss(), body, js);
 }
 
@@ -23245,7 +23315,7 @@ function kataDoc(les, code){
   const V = {st, ran, anim, look, sound: typeof questSound === 'undefined' ? true : questSound, shown: spec.tests.length,
     relicName: room ? room.relic : '', idleHead, idleSub};
   const js = 'var V=' + JSON.stringify(V) + ';var SOUND_RECIPES=' + JSON.stringify(VAULT_SFX) + ';\n'
-    + soundKit.toString() + '\n' + avatarSvg.toString() + '\n' + heroAnimKit.toString() + '\n' + vaultArt.toString() + '\n'
+    + soundKit.toString() + '\n' + heroArtSrc() + avatarSvg.toString() + '\n' + heroAnimKit.toString() + '\n' + vaultArt.toString() + '\n'
     + vaultView.toString() + '\nvaultView();';
   return arcPage(CONSOLE_CSS + VAULT_CSS + waVaultCss(), stage + banner + table, js);
 }
@@ -29617,6 +29687,8 @@ function advGoState(){
 function advMaker(){
   const d = advDraft, g = advGoState();
   const cc = d.cls ? ADV_CLASSES.find(c => c.id === d.cls) : null;
+  /* a painted hero has a class and a body, nothing else to choose */
+  const art = HERO_ART.ok; if (art) d.tab = 'sex';
   return '<div class="advmk cl-' + (d.cls || 'none') + '" id="advMk">'
     + '<div class="advtop">' + bkSwitchHtml(d) + '<h2 id="advTitle">' + bkMkTitle(d) + '</h2>'
     +   '<p class="advintro">' + bkMkIntro(d) + '</p></div>'
@@ -29639,11 +29711,11 @@ function advMaker(){
           '<button data-cls="' + c.id + '" class="cl-' + c.id + (c.id === d.cls ? ' on' : '') + '" aria-pressed="' + (c.id === d.cls) + '">'
           + '<span class="clp" aria-hidden="true">' + advClsPortrait(c.id) + '</span><span class="clt"><b>' + c.name + '</b><span>' + c.blurb + '</span></span></button>').join('') + '</div>'
     +   '<p class="advclnote" id="advClNote" aria-live="polite">' + bkClsNote(d, cc) + '</p>'
-    +   '<div class="advlab" id="advSpLab">Species</div>'
-    +   '<div class="advopts advsps" role="group" aria-labelledby="advSpLab">' + advSpeciesHtml() + '</div>'
-    +   '<div class="advlookhd"><span class="advlab" id="advLookLab">Appearance</span>'
-    +     '<button id="advDice" title="A random species and look that still suit the class">' + ADV_DICE + '<span>Randomise</span></button></div>'
-    +   '<div class="advtabs" role="tablist" aria-labelledby="advLookLab">' + ADV_TABS.map(t =>
+    +   (art ? '' : '<div class="advlab" id="advSpLab">Species</div>'
+    +   '<div class="advopts advsps" role="group" aria-labelledby="advSpLab">' + advSpeciesHtml() + '</div>')
+    +   '<div class="advlookhd"><span class="advlab" id="advLookLab">' + (art ? 'Body' : 'Appearance') + '</span>'
+    +     (art ? '' : '<button id="advDice" title="A random species and look that still suit the class">' + ADV_DICE + '<span>Randomise</span></button>') + '</div>'
+    +   '<div class="advtabs" role="tablist" aria-labelledby="advLookLab">' + (art ? ADV_TABS.filter(t => t[0] === 'sex') : ADV_TABS).map(t =>
           '<button role="tab" id="advTab-' + t[0] + '" data-tab="' + t[0] + '" aria-controls="advPanel" aria-selected="' + (t[0] === d.tab) + '" tabindex="' + (t[0] === d.tab ? '0' : '-1') + '">' + advTabName(t[0], advSpeciesId(d.look.species)) + '</button>').join('') + '</div>'
     +   '<div class="advpanel" id="advPanel" role="tabpanel" aria-labelledby="advTab-' + d.tab + '">' + advPanelHtml() + '</div>'
     +   '<button class="advpeek" id="advPeek" tabindex="-1" aria-hidden="true">' + advPeekSvg() + '</button>'
@@ -43006,7 +43078,10 @@ function jyRoadD(segs, upto){
   return d;
 }
 /* the map's drawings go in as pictures: many sprites, no ids to clash, and their glows cannot push the page wider */
-function jyImg(svg, cls){ return '<img class="' + (cls || '') + '" alt="" aria-hidden="true" draggable="false" src="data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg) + '">'; }
+function jyImg(svg, cls){
+  if (svg.indexOf('class="av av-art') >= 0) return svg.replace('class="av av-art', 'class="' + (cls || '') + ' av av-art');
+  return '<img class="' + (cls || '') + '" alt="" aria-hidden="true" draggable="false" src="data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg) + '">';
+}
 /* a sprite drawn past its own box (a raised blade, a crest, an aura) keeps it: the picture's box grows, and CSS puts it back in place */
 function jyPad(svg, l, t, r, b){ return svg.replace(/viewBox="([-\d.]+) ([-\d.]+) ([\d.]+) ([\d.]+)"/, (m, x, y, w, h) => 'viewBox="' + (+x - l) + ' ' + (+y - t) + ' ' + (+w + l + r) + ' ' + (+h + t + b) + '"'); }
 function jyAvImg(svg){ return jyImg(jyPad(svg, 10, 14, 10, 6), 'jyav'); }

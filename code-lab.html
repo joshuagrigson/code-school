@@ -2520,28 +2520,48 @@ body.dark .lsthmini .lsdo{background:#f2c14e;color:#2a1d33}
 .lscmpbox .tfpv{display:block;max-height:180px;overflow:auto;border:1px solid var(--line);border-radius:9px;background:#fffdf8}
 .lscmpbox .lscmpcon{margin:0;max-height:180px;overflow:auto;font-size:.82rem}
 .lscmpnote{margin:0;font-size:.76rem;line-height:1.4;color:var(--soft)}
-.lsthverdict{flex:1 1 auto;min-height:60px;overflow:auto;padding:10px 12px;border-radius:12px;font-size:.88rem;line-height:1.45;border:1px solid var(--badline);background:var(--bad)}
+.lsthverdict{flex:0 1 auto;min-height:44px;max-height:36%;overflow:auto;padding:10px 12px;border-radius:12px;font-size:.88rem;line-height:1.45;border:1px solid var(--badline);background:var(--bad)}
 .lsthverdict.ok{background:var(--good);border-color:var(--goodline)}
 .lsthverdict.wait{background:var(--panel2);border-color:var(--line)}
 .lsthverdict.coach{background:#fbf4e0;border-color:#e7d9a8;color:#2a1d33}
 body.dark .lsthverdict.coach{background:#2e2716;border-color:#5c4d22;color:var(--ink)}
 .lsthverdict .wild{display:block;margin-top:5px;font-size:.8rem;color:var(--soft);border-top:1px dashed var(--goodline);padding-top:5px}
 .lsthverdict .rnarrow{display:none}
-.lsthmate{position:relative;flex:0 0 118px;border-radius:12px;background:radial-gradient(90% 70% at 30% 10%,#fff6e3,#f3e5cc 60%,#ead9bd);box-shadow:inset 0 0 0 1px #e1cfb1}
-body.dark .lsthmate{background:radial-gradient(90% 70% at 30% 10%,#3a3044,#2a2232 60%,#221c29);box-shadow:inset 0 0 0 1px #4a3d55}
-.lsthmate .lshero,.lsthmate .lsfx{position:absolute;left:50%;bottom:6px;height:108px;aspect-ratio:1;transform:translateX(-50%);pointer-events:none}
+/* The hero's stage. It takes every pixel the panel has left, and it is a stage in both themes: dark, one key
+   light from above, the class color pooled on the floor and thrown behind the figure. The hero is the reward. */
+.lsthmate{position:relative;flex:1 1 150px;min-height:150px;border-radius:14px;overflow:hidden;isolation:isolate;
+  background:radial-gradient(62% 30% at 50% 97%,color-mix(in srgb,var(--cc,#f2c14e) 62%,transparent),transparent 72%),
+    radial-gradient(78% 86% at 50% -12%,color-mix(in srgb,var(--ccl,#ffe7a6) 34%,transparent),transparent 64%),
+    linear-gradient(180deg,#1d1528,#0b0811);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.09),inset 0 -70px 90px -50px rgba(0,0,0,.85)}
+/* the beam */
+.lsthmate::before{content:'';position:absolute;inset:0;z-index:0;pointer-events:none;mix-blend-mode:screen;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--ccl,#ffe7a6) 30%,transparent),transparent 78%);
+  clip-path:polygon(37% 0,63% 0,92% 100%,8% 100%);animation:lsMateBeam 5.5s ease-in-out infinite alternate}
+/* the pool of light under the feet */
+.lsthmate::after{content:'';position:absolute;z-index:0;left:50%;bottom:3.5%;width:66%;height:9%;transform:translateX(-50%);border-radius:50%;pointer-events:none;
+  background:radial-gradient(closest-side,color-mix(in srgb,var(--cc,#f2c14e) 78%,#fff 8%),transparent);filter:blur(3px);opacity:.6;animation:lsMatePool 3.6s ease-in-out infinite alternate}
+.lsthmate .lshero,.lsthmate .lsfx{position:absolute;z-index:1;left:50%;bottom:4%;height:93%;aspect-ratio:1;transform:translateX(-50%);transform-origin:50% 100%;pointer-events:none}
+.lsthmate .lshero{filter:drop-shadow(0 12px 16px rgba(0,0,0,.6)) drop-shadow(0 0 26px color-mix(in srgb,var(--cc,#f2c14e) 42%,transparent));animation:lsMateBreathe 4.4s ease-in-out infinite}
+#lsTh.win .lsthmate::after{opacity:.95}
+#lsTh.win .lsthmate .lshero{filter:drop-shadow(0 12px 16px rgba(0,0,0,.6)) drop-shadow(0 0 34px color-mix(in srgb,var(--cc,#f2c14e) 70%,transparent))}
+@keyframes lsMateBeam{from{opacity:.55}to{opacity:1}}
+@keyframes lsMatePool{from{opacity:.45;width:60%}to{opacity:.8;width:70%}}
+@keyframes lsMateBreathe{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.022) translateY(-.6%)}}
 body.lsNoMate .lsthmate{display:none}
-.lsthbtns{display:flex;flex-direction:column;gap:8px}
-.lsthbtns button{display:flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:8px 14px;border:0;border-radius:12px;cursor:pointer;font-family:inherit;font-size:.95rem;font-weight:700}
+.lsthbtns{display:flex;flex-direction:row;gap:8px}
+.lsthbtns button{flex:1 1 0;min-width:0;white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:7px;min-height:44px;padding:8px 10px;border:0;border-radius:12px;cursor:pointer;font-family:inherit;font-size:.95rem;font-weight:700}
 .lsthback{color:var(--lsBtnInk);background:var(--lsBtnB) linear-gradient(180deg,var(--lsBtnA),var(--lsBtnB));box-shadow:inset 0 0 0 1.5px var(--lsBtnLine),0 3px 0 var(--lsBtnEdge)}
 .lsthback kbd{font-family:var(--mono);font-size:.66rem;font-weight:600;padding:2px 5px;border-radius:5px;background:var(--panel2);box-shadow:inset 0 0 0 1px var(--line2);color:var(--soft)}
 .lsthnext{color:#2a1d33;background:#f2c14e linear-gradient(180deg,#ffe28a,#f2c14e 55%,#e0a93a);box-shadow:inset 0 0 0 1.5px #2a1d33,0 4px 0 #8d5f12,0 0 18px 2px rgba(242,193,78,.4)}
 .lsthbtns button .lsi{width:16px;height:16px}
+.lsthbtns .lsthback{flex:1.25 1 0;font-size:.86rem}
 .lsthbtns button:focus-visible{outline:3px solid #f2c14e!important;outline-offset:2px}
 @media (max-width:1000px){
   body.lsTheater .prevwrap{right:calc(2vw + 276px);left:2vw}
   body.lsTheater #lsTh{width:262px;right:2vw}
-  .lsthmate{flex-basis:96px}.lsthmate .lshero,.lsthmate .lsfx{height:88px}
+  #lsTh .lsthback kbd{display:none}
+  #lsTh .lsthbtns button{font-size:.82rem;padding:8px 6px}
 }
 @media (max-width:700px){
   body.lsTheater #lsDim{background:rgba(8,5,14,.9)}
@@ -2558,6 +2578,7 @@ body.lsNoMate .lsthmate{display:none}
 }
 @media (prefers-reduced-motion:reduce){
   body.lsTheater #lsDim,body.lsTheater #lsTh,.czgap.lsgap{animation:none!important}
+  .lsthmate::before,.lsthmate::after,.lsthmate .lshero{animation:none!important}
 }
 /* ==== end of the Lesson Stage ==== */
 /* ==== The Step Flow ===========================================================
@@ -3570,9 +3591,9 @@ body.dark #bkCard .bkgo{background:var(--ccl);color:#1a1422}
 
 /* ---- in the Run theater ---- */
 .bkthmate{position:absolute;inset:0;pointer-events:none;z-index:1}
-.bkthmate .bkhero,.bkthmate .bkfx{position:absolute;left:30%;bottom:6px;height:min(96px,calc(100% - 10px));aspect-ratio:1;transform:translateX(-50%);pointer-events:none}
+.bkthmate .bkhero,.bkthmate .bkfx{position:absolute;left:30%;bottom:4%;height:70%;aspect-ratio:1;transform:translateX(-50%);pointer-events:none}
 .bkthmate svg{width:100%;height:100%;display:block;overflow:visible}
-#lsThMate.bkduo>.lshero,#lsThMate.bkduo>.lsfx{left:68%}
+#lsThMate.bkduo>.lshero,#lsThMate.bkduo>.lsfx{left:66%;height:84%}
 
 /* ---- in a boss trial: fighting beside you ---- */
 .jyarena .bkah{display:none;position:absolute;left:3%;bottom:10px;width:112px;height:112px;z-index:1}
@@ -4102,6 +4123,8 @@ body.dark .jyscene.wa2map{box-shadow:0 18px 40px -22px rgba(0,0,0,.95),inset 0 0
   .teach .lsban.jyb2 .lsart:after{background:linear-gradient(90deg,rgba(12,8,20,.88) 0,rgba(12,8,20,.74) 44%,rgba(12,8,20,.24) 80%,rgba(12,8,20,.08) 100%),linear-gradient(0deg,rgba(12,8,20,.7),rgba(12,8,20,0) 50%)}
 }
 .wa2ban .wa2tint .night{opacity:calc(var(--wa2-night) * .74)}
+.wa2ban>.wa2chars.wa2pchars{filter:drop-shadow(0 2px 3px rgba(0,0,0,.6))!important}
+.wa2pchars .av-fig,.wa .av-art .av-fig[transform]{transform-origin:0 0!important}
 .wa2ban>.wa2chars{filter:brightness(calc(1 - var(--wa2-night) * .28 - var(--wa2-dawn) * .06)) saturate(calc(1 - var(--wa2-night) * .2))}
 .wa2cl>img{filter:brightness(calc(1 - var(--wa2-night) * .62 - var(--wa2-gold) * .08)) saturate(calc(1 - var(--wa2-night) * .3))}
 </style>
@@ -12113,6 +12136,32 @@ function heroArtWarm(cls, sx){
   im.onload = function(){ set(true); }; im.onerror = function(){ set(false); };
   im.src = HERO_ART.base + 'knight-m-0.webp';
 })();
+/* The painted world: one painting per place in art/world/, in the same style as the painted heroes. A place
+   scene shows its painting in place of the drawn one whenever the painted heroes are on. Each painting was made
+   from its drawn scene, so the buildings stand where the drawing had them. Scenes that are shown as a picture
+   (an <img> of an SVG) can only hold a data URI, so the paintings are also read once and kept as data. */
+var WORLD_ART = {base: '', data: {}, has: {}, warm: false};
+'yard barracks dojo library monastery citadel legend dungeon deep bards vault isle tower market forge guild questhall'.split(' ').forEach(function(k){ WORLD_ART.has[k] = 1; });
+try { WORLD_ART.base = new URL('art/world/', location.href).href; } catch(e){}
+function worldArtOn(place){ return !!(HERO_ART.ok && WORLD_ART.base && WORLD_ART.has[place]); }
+function worldArtWarm(){
+  if (WORLD_ART.warm || !HERO_ART.ok || !WORLD_ART.base || typeof fetch !== 'function' || typeof FileReader === 'undefined') return;
+  WORLD_ART.warm = true;
+  Object.keys(WORLD_ART.has).forEach(function(k){
+    fetch(WORLD_ART.base + k + '.webp').then(function(r){ return r.ok ? r.blob() : null; }).then(function(b){
+      if (!b) return;
+      var fr = new FileReader(); fr.onload = function(){ WORLD_ART.data[k] = fr.result; }; fr.readAsDataURL(b);
+    }).catch(function(){});
+  });
+}
+/* the painting as SVG, in a place's own 440 x 150 stage (the Quest Hall's is 300 wide); it reaches a little past
+   the stage on every side so any crop of the scene is covered */
+function worldArtQ(place){
+  var b = place === 'questhall' ? [-14.7, -10, 329.4, 170] : [-24, -18, 488, 183];
+  return '<rect x="-80" y="-80" width="640" height="340" fill="#0b0912"/><image href="' + (WORLD_ART.data[place] || WORLD_ART.base + place + '.webp')
+    + '" x="' + b[0] + '" y="' + b[1] + '" width="' + b[2] + '" height="' + b[3] + '" preserveAspectRatio="xMidYMid slice"/>';
+}
+setTimeout(worldArtWarm, 600);
 function heroArtSrc(){ return 'var HERO_ART = ' + JSON.stringify(HERO_ART) + ';' + String.fromCharCode(10); }
 function avatarSvg(look, o){
   /* The hero, RPG edition: a layered chibi warrior built from parts, inked and lit the same way as
@@ -32178,6 +32227,7 @@ function lsTheaterFill(){
   const th = document.getElementById('lsTh'); if (!th || !document.body.classList.contains('lsTheater')) return;
   const S = lsS(), les = L[idx];
   th.querySelector('.lsthtitle').innerHTML = les.title;
+  [...th.classList].forEach(c => { if (c.indexOf('cl-') === 0) th.classList.remove(c); }); th.classList.add(advCls());
   const n = S.items.length || 1, k = S.items.length ? S.got.filter(Boolean).length : (S.won ? 1 : 0);
   th.classList.toggle('win', S.won);
   th.querySelector('.lsthmini').innerHTML = '<b class="lsdo">' + (S.won ? 'QUEST COMPLETE' : 'DO THIS') + '</b><span class="lsmt">' + k + ' of ' + n + '</span>'
@@ -37037,6 +37087,7 @@ function waBuilder(id, vb, par){
   B.layer = function(cls){ cur = {cls: cls || '', q: ''}; L.push(cur); return B; };
   B.add = function(s){ if (!cur) B.layer(''); cur.q += s; return B; };
   /* a layer slipped in under the near framing (the cast of a key art stands behind the foreground) */
+  B.reset = function(){ L.length = 0; cur = null; return B; };
   B.under = function(cls, q){
     var at = -1, i; for (i = 0; i < L.length; i++) if (/wa-near/.test(L[i].cls)){ at = i; break; }
     var l = {cls: cls || '', q: q}; if (at < 0) L.push(l); else L.splice(at, 0, l); return B;
@@ -37047,7 +37098,7 @@ function waBuilder(id, vb, par){
      inside it can reach past the scene's edge */
   B.html = function(K, extraCls, attrs){
     var h = '', defs = K.allDefs();
-    L.forEach(function(l){ if (l.q) h += '<img class="wa-l' + (l.cls ? ' ' + l.cls : '') + '" alt="" draggable="false" src="data:image/svg+xml;charset=utf-8,' + encodeURIComponent('<svg viewBox="' + B.vb + '" preserveAspectRatio="' + B.par + '" xmlns="http://www.w3.org/2000/svg">' + defs + l.q + '</svg>') + '">'; });
+    L.forEach(function(l){ if (l.q && (/wa-paint/.test(l.cls) || l.q.indexOf('href="http') > -1)){ h += B.svgOf(l.q, l.cls, l.q.indexOf('url(#') > -1 ? defs : ''); return; } if (l.q) h += '<img class="wa-l' + (l.cls ? ' ' + l.cls : '') + '" alt="" draggable="false" src="data:image/svg+xml;charset=utf-8,' + encodeURIComponent('<svg viewBox="' + B.vb + '" preserveAspectRatio="' + B.par + '" xmlns="http://www.w3.org/2000/svg">' + defs + l.q + '</svg>') + '">'; });
     return '<div class="wa' + (extraCls ? ' ' + extraCls : '') + '"' + (attrs || '') + ' aria-hidden="true">' + h + (B.fx ? '<div class="wa-fx">' + B.fx + '</div>' : '') + '</div>';
   };
   /* one flat picture: still layers plus the first pose of each live one */
@@ -37079,6 +37130,7 @@ function waPlace(place, id, o){
   var F = {yard: waP_yard, barracks: waP_barracks, dojo: waP_dojo, library: waP_library, monastery: waP_monastery, citadel: waP_citadel, legend: waP_legend,
     dungeon: waP_dungeon, deep: waP_deep, bards: waP_bards, vault: waP_vault, isle: waP_isle, tower: waP_tower, market: waP_market, forge: waP_forge, guild: waP_guild, questhall: waP_questhall, lppath: waP_lppath};
   (F[place] || waP_yard)(K, B, o);
+  if (worldArtOn(place)){ B.reset(); B.layer('wa-sky wa-paint'); B.add(worldArtQ(place)); }
   if (o.cast) o.cast(K, B);
   if (o.fx === false) B.fx = '';
   return {K: K, B: B};
@@ -40574,6 +40626,17 @@ function wa2BannerHtml(place, id){
   var cfg = WA2_BAN[place] || WA2_BAN.yard, lp = cfg.place || place, n = function(v){ return Math.round(v * 10) / 10; };
   var h = '', seed = 0, i; for (i = 0; i < place.length; i++) seed = seed * 31 + place.charCodeAt(i);
   var hz = cfg.sea ? 52 : 44;
+  if (worldArtOn(place)){
+    var pfy = 113, pmw = 72, phw = 64, pwho = cfg.who;
+    /* a sprite keeps its own size even where a stylesheet stretches every svg in the banner */
+    var pin = function(v){ return v.replace(/^<svg ([^>]*?)width="([\d.]+)" height="([\d.]+)"/, function(m, a, w, h2){ return '<svg ' + a.replace(/style="[^"]*"/, '') + 'width="' + w + '" height="' + h2 + '" style="width:' + w + 'px;height:' + h2 + 'px"'; }); };
+    var pm = avatarSvg(pwho, {id: id + 'm', pose: 'idle', dir: 'l'}), ph = avatarSvg(wa2BanHero(), {id: id + 'h', pose: 'idle', dir: 'r'});
+    h += '<svg class="wa-l wa2paint" viewBox="' + WA2_BVB + '" preserveAspectRatio="xMaxYMax slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">' + worldArtQ(place)
+      + '<ellipse cx="370" cy="' + (pfy + 1) + '" rx="56" ry="5" fill="#000" opacity=".45"/></svg>';
+    h += '<svg class="wa-l wa2chars wa2pchars wa-an wa-idle" viewBox="' + WA2_BVB + '" preserveAspectRatio="xMaxYMax slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">' + pin(waSprite(ph, 322, pfy - phw * 58 / 64, phw)) + pin(waSprite(pm, 368, pfy - pmw * 58 / 64, pmw)) + '</svg>';
+    var pfx = (cfg.fx || []).map(function(f, k){ return waFx(f[0], f[1], f[2], k * 13 + 7, {dur: f[0] === 'ember' ? 4 : f[0] === 'fly' ? 7 : 10, color: f[3]}); }).join('');
+    return '<div class="wa wa-' + place + ' wa2ban wa2painted" aria-hidden="true">' + h + (pfx ? '<div class="wa-fx">' + pfx + '</div>' : '') + '</div>';
+  }
   /* ---- the sky and the far land, once per time of day ---- */
   ['day', 'dawn', 'golden', 'night'].forEach(function(ph){
     var K = wa2Kit(id + ph, Math.abs(seed) % 97 + 3), q = '', F = WA2_FARC[ph];

@@ -3990,6 +3990,7 @@ body.dark .jyscene.wa2map{box-shadow:0 18px 40px -22px rgba(0,0,0,.95),inset 0 0
 .wa2ly[data-f]{will-change:transform}
 .wa2ly>img,.wa2s,.wa2o{position:absolute;display:block;max-width:none;user-select:none;-webkit-user-drag:none}
 .wa2ob img[data-pl]{pointer-events:auto;cursor:pointer}
+.wa2ob.wa2pnt img{opacity:0}
 .wa2map.wa2drag .wa2ob img[data-pl]{cursor:grabbing}
 /* the times of day: the day sky is always there, the others fade over it */
 .wa2ph{opacity:0;transition:opacity 2.4s ease}
@@ -40402,13 +40403,19 @@ function wa2Mount(sc, vert, here, u){
     lbl += '<button type="button" class="wa2lb ' + WA2_PLACES[pl].kind + (info.here ? ' here' : '') + '" data-jy="wa2" data-w="pl" data-pl="' + pl + '" style="left:' + wa2Px(lx) + ';top:' + wa2Px(ly) + '" aria-label="' + esc(info.name + ': ' + info.sub) + '"><b>' + info.name.replace('&', '&amp;') + '</b>' + (info.tag ? '<small>' + info.tag + '</small>' : '') + '</button>';
   });
   const tint = '<div class="wa2tint" aria-hidden="true"><i class="dawn"></i><i class="gold"></i><i class="night"></i></div>';
+  /* the painted land (art/map/, painted from this same drawing, so every place and the road stand where they did):
+     it takes the place of the drawn ground, buildings and road; the drawn buildings stay as invisible tap targets,
+     and the sky, the life, the statues, the heroes and the signs stay on top */
+  const MP = HERO_ART.ok && WORLD_ART.base ? WORLD_ART.base.replace(/world\/?$/, 'map/') : '';
+  let paint = '';
+  if (MP){ const n = vert ? 5 : 3; for (let k = 0; k < n; k++) paint += wa2Img(vert ? [0, Wd.H * k / n, Wd.W, Wd.H * (k + 1) / n] : [Wd.W * k / n, 0, Wd.W * (k + 1) / n, Wd.H], MP + (vert ? 'v-' : 'h-') + k + '.webp', 'wa2pm'); }
   const world = '<div class="wa2world" style="--W:' + Wd.W + ';--H:' + Wd.H + '">'
     + '<div class="wa2ly wa2sky" data-f="' + (vert ? 0.9 : 0.25) + '" data-fy="' + (vert ? 0.4 : 0.3) + '" data-ay="0">' + B.sky + '</div>'
     + '<div class="wa2ly wa2far" data-f="' + (vert ? 1 : 0.55) + '" data-fy="' + (vert ? 0.6 : 0.5) + '" data-ay="0">' + B.far + '</div>'
-    + '<div class="wa2ly wa2gr">' + B.ground + '</div>'
-    + '<div class="wa2ly wa2gl wa-an wa-fa">' + B.glintA + '</div><div class="wa2ly wa2gl wa-an wa-fb">' + B.glintB + '</div>'
-    + '<div class="wa2ly wa2ob">' + B.objs + '</div>'
-    + '<div class="wa2ly wa2rd">' + B.road + wa2Gold(Wd, u) + '</div>'
+    + '<div class="wa2ly wa2gr">' + (paint || B.ground) + '</div>'
+    + (paint ? '' : '<div class="wa2ly wa2gl wa-an wa-fa">' + B.glintA + '</div><div class="wa2ly wa2gl wa-an wa-fb">' + B.glintB + '</div>')
+    + '<div class="wa2ly wa2ob' + (paint ? ' wa2pnt' : '') + '">' + B.objs + '</div>'
+    + '<div class="wa2ly wa2rd">' + (paint ? '' : B.road) + wa2Gold(Wd, u) + '</div>'
     + '<div class="wa2ly wa2sp">' + st + B.sprites + '</div>'
     + '<div class="wa2ly wa2me">' + me + '</div>'
     + '<div class="wa2ly wa2cl wa-an" data-f="1.18" data-fy="1.12">' + B.cloud + '</div>'
